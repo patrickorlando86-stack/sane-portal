@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.A.N.E. Italia | Portale Biologi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --dark:#0A2647; --teal:#00A896; --teal-light:#00C9B1; }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:#f0f4f8;}
+        h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;}
+
+        /* LOGIN */
+        #loginScreen{position:fixed;inset:0;z-index:200;background:var(--dark);display:flex;align-items:center;justify-content:center;transition:opacity 0.5s;}
+        #loginScreen.hidden{opacity:0;pointer-events:none;}
+        .login-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:28px;padding:44px 40px;width:100%;max-width:400px;}
+        .login-input{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:13px 16px;color:white;font-size:14px;outline:none;margin-bottom:12px;transition:border-color 0.2s;}
+        .login-input:focus{border-color:var(--teal);}
+        .login-input::placeholder{color:rgba(255,255,255,0.3);}
+
+        /* LAYOUT */
+        .sidebar{width:256px;background:var(--dark);height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:10;overflow-y:auto;}
+        .main-content{margin-left:256px;min-height:100vh;padding:36px 40px;}
+        @media(max-width:1024px){
+            .sidebar{width:68px;}
+            .sidebar .label{display:none;}
+            .main-content{margin-left:68px;padding:24px 20px;}
+            .mobile-only{display:block !important;}
+            .btn-esci{padding:10px 0 !important;justify-content:center;}
+        }
+        @media(max-width:640px){
+            .sidebar{width:56px;}
+            .main-content{margin-left:56px;padding:14px 12px;}
+            .kpi-grid{grid-template-columns:repeat(2,1fr) !important;}
+            .kpi-val{font-size:26px;}
+            .card{border-radius:18px;padding:18px;}
+            .dash-codice-gioco{grid-template-columns:1fr !important;}
+            h2.dash-title{font-size:18px !important;}
+            .dash-header{flex-direction:column;align-items:flex-start !important;}
+            .btn-primary{font-size:11px;padding:11px 18px;}
+            .mobile-only{display:block !important;}
+        }
+
+        /* NAV */
+        .nav-item{display:flex;align-items:center;gap:12px;padding:13px 16px;margin:2px 10px;border-radius:14px;cursor:pointer;transition:all 0.2s;color:rgba(255,255,255,0.45);font-size:13px;font-weight:600;}
+        .nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
+        .nav-item.active{background:var(--teal);color:white;}
+        .nav-item i{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
+
+        /* CARDS */
+        .card{background:white;border-radius:24px;padding:24px;box-shadow:0 2px 16px rgba(10,38,71,0.06);}
+        .kpi-card{background:white;border-radius:20px;padding:22px;text-align:center;box-shadow:0 2px 12px rgba(10,38,71,0.05);}
+        .kpi-card.teal{background:var(--teal);}
+        .kpi-card.teal .kpi-val,.kpi-card.teal .kpi-lbl{color:white;}
+        .kpi-val{font-family:'Syne',sans-serif;font-size:32px;font-weight:700;color:var(--dark);line-height:1;}
+        .kpi-lbl{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-top:5px;}
+
+        /* BUTTONS */
+        .btn-primary{background:var(--teal);color:white;border:none;border-radius:12px;padding:13px 24px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;}
+        .btn-primary:hover{background:var(--teal-light);transform:translateY(-1px);}
+        .btn-dark{background:var(--dark);color:white;border:none;border-radius:12px;padding:13px 24px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;}
+        .btn-ghost{background:transparent;color:#64748b;border:1px solid #e2e8f0;border-radius:12px;padding:11px 20px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+        .btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+
+        /* FORM */
+        .form-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;display:block;}
+        .form-input{width:100%;border:1.5px solid #e2e8f0;border-radius:11px;padding:11px 14px;font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:14px;color:var(--dark);font-family:'Inter',sans-serif;}
+        .form-input:focus{border-color:var(--teal);}
+        .form-select{width:100%;border:1.5px solid #e2e8f0;border-radius:11px;padding:11px 14px;font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:14px;background:white;color:var(--dark);cursor:pointer;}
+        .form-select:focus{border-color:var(--teal);}
+
+        /* PROGRESS */
+        .progress-bar{height:7px;background:#e2e8f0;border-radius:99px;overflow:hidden;}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-light));border-radius:99px;transition:width 0.8s ease;}
+
+        /* BADGE */
+        .badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;}
+        .badge-green{background:#d1fae5;color:#065f46;}
+        .badge-blue{background:#dbeafe;color:#1e40af;}
+        .badge-yellow{background:#fef3c7;color:#92400e;}
+
+        /* CHECK ITEMS */
+        .check-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid #e2e8f0;border-radius:14px;cursor:pointer;transition:all 0.2s;margin-bottom:10px;}
+        .check-item:hover{border-color:var(--teal);background:#f0fdf9;}
+        .check-item.checked{border-color:var(--teal);background:#f0fdf9;}
+        .check-box{width:22px;height:22px;border-radius:7px;border:2px solid #cbd5e1;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+        .check-item.checked .check-box{background:var(--teal);border-color:var(--teal);}
+        .check-label{font-size:14px;font-weight:600;color:var(--dark);}
+        .check-sub{font-size:11px;color:#94a3b8;margin-top:1px;}
+
+        /* SCORE */
+        .score-group{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+        .score-box{background:#f8fafc;border-radius:14px;padding:16px;text-align:center;}
+        .score-box label{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:8px;}
+        .score-box input{width:100%;text-align:center;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px;font-size:20px;font-weight:700;font-family:'Syne',sans-serif;color:var(--dark);outline:none;background:white;}
+        .score-box input:focus{border-color:var(--teal);}
+
+        /* MODAL */
+        .modal-overlay{display:none;position:fixed;inset:0;z-index:150;background:rgba(10,38,71,0.8);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;}
+        .modal-overlay.open{display:flex;}
+        .modal-box{background:white;border-radius:28px;padding:36px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;}
+
+        /* SECTIONS */
+        .section{display:none;}
+        .section.active{display:block;}
+
+        /* TOAST */
+        #toast{position:fixed;bottom:28px;right:28px;background:var(--dark);color:white;padding:14px 22px;border-radius:14px;font-size:13px;font-weight:600;border-left:4px solid var(--teal);transform:translateY(80px);opacity:0;transition:all 0.4s ease;z-index:300;}
+        #toast.show{transform:translateY(0);opacity:1;}
+
+        /* PULSE */
+        @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+        .pulse-dot{animation:pulse-dot 2s infinite;}
+
+        /* IMPROVEMENT */
+        .impr-badge{display:inline-flex;align-items:center;gap:4px;background:#d1fae5;color:#065f46;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:700;}
+
+        /* PRINT */
+        @media print{.sidebar,#loginScreen,#toast,.no-print{display:none !important;}.main-content{margin-left:0;padding:20px;}body{background:white;}}
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar{width:5px;}
+        ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px;}
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+    <div class="login-card">
+        <div style="text-align:center;margin-bottom:32px;">
+            <img src="immagini/logo/logo2.webp" alt="SANE" style="height:64px;margin:0 auto 16px;display:block;">
+            <h1 style="color:white;font-size:22px;font-weight:700;margin:0;">S.A.N.E. Italia</h1>
+            <p style="color:rgba(255,255,255,0.35);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin-top:6px;">Portale Biologi Certificati</p>
+        </div>
+        <label class="form-label" style="color:rgba(255,255,255,0.4);">Email</label>
+        <input class="login-input" type="email" id="loginEmail" placeholder="tuanome@email.it" onkeydown="if(event.key==='Enter')doLogin()">
+        <label class="form-label" style="color:rgba(255,255,255,0.4);">Password</label>
+        <input class="login-input" type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        <!-- Campi extra solo per registrazione -->
+        <div id="signupFields" style="display:none;">
+            <label class="form-label" style="color:rgba(255,255,255,0.4);">Nome e Cognome</label>
+            <input class="login-input" type="text" id="loginNome" placeholder="es. Serafina Cardaci">
+        </div>
+        <button id="loginBtn" onclick="doLogin()" style="width:100%;background:var(--teal);color:white;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:background 0.2s;">Accedi al Portale</button>
+        <p style="color:rgba(255,255,255,0.35);font-size:12px;text-align:center;margin-top:16px;">
+            Non hai un account?
+            <a href="#" id="toggleSignup" onclick="toggleAuthMode(event)" style="color:var(--teal);font-weight:700;text-decoration:none;">Registrati</a>
+        </p>
+        <div style="margin-top:20px;text-align:center;">
+            <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
+                <i class="fas fa-arrow-left" style="font-size:10px;"></i> Torna alla pagina iniziale
+            </a>
+        </div>
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.07);text-align:center;">
+            <p style="color:rgba(255,255,255,0.2);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;">In collaborazione con</p>
+            <img src="immagini/logo/fnob.webp" alt="FNOB" style="height:28px;opacity:0.6;margin:0 auto;display:block;">
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MODAL NUOVA SCUOLA -->
+<div class="modal-overlay" id="nuovaScuolaModal">
+    <div class="modal-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <h3 style="font-size:20px;font-weight:700;color:var(--dark);">Aggiungi Scuola</h3>
+            <button onclick="closeModal('nuovaScuolaModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
+        </div>
+        <label class="form-label">Nome Istituto</label>
+        <input class="form-input" id="scuolaNome" placeholder="es. I.C. Carducci-Fattori">
+        <label class="form-label">Comune</label>
+        <input class="form-input" id="scuolaComune" placeholder="es. Rosignano Marittimo">
+        <label class="form-label">Numero Classi</label>
+        <input class="form-input" type="number" id="scuolaClassi" placeholder="es. 5" min="1" max="30">
+        <label class="form-label">Pacchetto</label>
+        <select class="form-select" id="scuolaPacchetto">
+            <option value="base">Base — 15 ore (€ 2.100)</option>
+            <option value="standard" selected>Standard — 30 ore (€ 4.500)</option>
+            <option value="premium">Premium — 30 ore + Genitori (€ 5.800)</option>
+        </select>
+        <div style="display:flex;gap:10px;margin-top:4px;">
+            <button class="btn-ghost" onclick="closeModal('nuovaScuolaModal')">Annulla</button>
+            <button class="btn-primary" style="flex:1;" onclick="aggiungiScuola()"><i class="fas fa-plus"></i>Aggiungi</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL NUOVA SESSIONE -->
+<div class="modal-overlay" id="sessioneModal">
+    <div class="modal-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <h3 style="font-size:20px;font-weight:700;color:var(--dark);">Registra Sessione</h3>
+            <button onclick="closeModal('sessioneModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
+        </div>
+        <label class="form-label">Scuola</label>
+        <select class="form-select" id="sessioneScuola"></select>
+        <label class="form-label">Classe / Sezione</label>
+        <input class="form-input" id="sessioneClasse" placeholder="es. 3ª A">
+        <label class="form-label">Data sessione</label>
+        <input class="form-input" type="date" id="sessioneData">
+        <label class="form-label" style="margin-bottom:12px;">Cosa hai fatto oggi?</label>
+        <div class="check-item" onclick="toggleCheck(this,'pre')">
+            <div class="check-box"><i class="fas fa-check" style="color:white;font-size:11px;display:none;"></i></div>
+            <div><div class="check-label">📋 Questionario PRE</div><div class="check-sub">Somministrato prima della lezione (carta A4)</div></div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'gioco')">
+            <div class="check-box"><i class="fas fa-check" style="color:white;font-size:11px;display:none;"></i></div>
+            <div><div class="check-label">🎮 Gioco LIM — Il Piatto Sano</div><div class="check-sub">Sessione interattiva in classe</div></div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'post')">
+            <div class="check-box"><i class="fas fa-check" style="color:white;font-size:11px;display:none;"></i></div>
+            <div><div class="check-label">📋 Questionario POST</div><div class="check-sub">Somministrato dopo la lezione (carta A4)</div></div>
+        </div>
+        <div id="scoreSection" style="display:none;margin-top:16px;">
+            <label class="form-label">Punteggio medio classe (su 10)</label>
+            <div class="score-group">
+                <div class="score-box"><label>PRE</label><input type="number" id="scorePre" min="0" max="10" step="0.1" placeholder="0.0"></div>
+                <div class="score-box"><label>POST</label><input type="number" id="scorePost" min="0" max="10" step="0.1" placeholder="0.0"></div>
+            </div>
+        </div>
+        <label class="form-label" style="margin-top:4px;">Note del biologo</label>
+        <textarea class="form-input" id="sessioneNote" rows="3" placeholder="Osservazioni, reazioni della classe, punti di forza o criticità..."></textarea>
+        <div style="display:flex;gap:10px;">
+            <button class="btn-ghost" onclick="closeModal('sessioneModal')">Annulla</button>
+            <button class="btn-primary" style="flex:1;" onclick="salvaSessione()"><i class="fas fa-save"></i>Salva Sessione</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL REPORT -->
+<div class="modal-overlay" id="reportModal">
+    <div class="modal-box" id="reportContent" style="max-width:600px;"></div>
+</div>
+
+<!-- APP -->
+<div id="appShell" style="opacity:0;transition:opacity 0.5s;">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <!-- LOGO -->
+        <div style="padding:18px 14px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;">
+            <img src="immagini/logo/logo2.webp" alt="SANE" style="height:34px;flex-shrink:0;background:white;border-radius:8px;padding:3px;">
+            <div class="label">
+                <div style="color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;line-height:1.1;">S.A.N.E.</div>
+                <div style="color:rgba(255,255,255,0.35);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;">Italia</div>
+            </div>
+        </div>
+
+        <!-- UTENTE -->
+        <div style="margin:10px 8px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px;display:flex;align-items:center;gap:8px;">
+            <div style="width:30px;height:30px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-user" style="color:white;font-size:11px;"></i>
+            </div>
+            <div class="label" style="min-width:0;">
+                <div id="sidebarNome" style="color:white;font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+                <div style="display:flex;align-items:center;gap:4px;margin-top:1px;">
+                    <span class="pulse-dot" style="width:5px;height:5px;background:#22c55e;border-radius:50%;display:inline-block;"></span>
+                    <span style="color:rgba(255,255,255,0.35);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;">Online</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAV -->
+        <nav style="flex:1;padding:6px 0;">
+            <div class="nav-item" onclick="window.location.href='index.html'" title="Torna alla Home">
+                <i class="fas fa-home"></i><span class="label">Home</span>
+            </div>
+            <div class="nav-item active" onclick="showSection('dashboard',this)">
+                <i class="fas fa-chart-pie"></i><span class="label">Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="showSection('scuole',this)">
+                <i class="fas fa-school"></i><span class="label">Le Mie Scuole</span>
+            </div>
+            <div class="nav-item" onclick="showSection('sessioni',this)">
+                <i class="fas fa-clipboard-list"></i><span class="label">Sessioni</span>
+            </div>
+            <div class="nav-item" onclick="showSection('report',this)">
+                <i class="fas fa-file-medical"></i><span class="label">Report</span>
+            </div>
+            <div class="nav-item" onclick="apriGioco()">
+                <i class="fas fa-gamepad"></i><span class="label">Il Piatto Sano</span>
+            </div>
+            <div class="nav-item" onclick="window.open('questionario.html','_blank')" style="background:rgba(0,168,150,0.1);">
+                <i class="fas fa-print" style="color:var(--teal);"></i><span class="label" style="color:rgba(255,255,255,0.85);font-size:13px;">Stampa Questionari</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='admin.html'" style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.07);padding-top:10px;">
+                <i class="fas fa-shield-alt" style="color:var(--accent,#F4A261);"></i><span class="label" style="color:rgba(255,255,255,0.5);font-size:12px;">Pannello Admin</span>
+            </div>
+        </nav>
+
+        <!-- FOOTER SIDEBAR — sempre visibile anche su mobile -->
+        <div style="padding:10px 8px;border-top:1px solid rgba(255,255,255,0.07);">
+            <!-- Logo FNOB — su desktop grande, su mobile solo icona -->
+            <div class="label" style="background:white;border-radius:12px;padding:12px 10px;text-align:center;margin-bottom:8px;">
+                <div style="color:#94a3b8;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;font-weight:700;">Partner Scientifico</div>
+                <img src="immagini/logo/fnob.webp" alt="FNOB" style="height:36px;margin:0 auto;display:block;">
+            </div>
+            <!-- Su mobile: solo icona FNOB -->
+            <div style="display:none;" class="mobile-only" style="text-align:center;margin-bottom:8px;padding:8px 0;">
+                <img src="immagini/logo/fnob.webp" alt="FNOB" style="height:22px;margin:0 auto;display:block;background:white;border-radius:6px;padding:3px;">
+            </div>
+            <!-- Bottone Esci — sempre visibile -->
+            <button onclick="doLogout()" class="btn-esci"
+                style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;cursor:pointer;padding:10px 8px;border-radius:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;"
+                onmouseover="this.style.background='rgba(239,68,68,0.2)';this.style.borderColor='rgba(239,68,68,0.5)';this.style.color='#fca5a5'"
+                onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='rgba(255,255,255,0.7)'">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="label">Esci</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+        <!-- DASHBOARD -->
+        <section id="sec-dashboard" class="section active">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;" class="dash-header">
+                <div>
+                    <h2 id="dashGreeting" style="font-size:22px;font-weight:700;color:var(--dark);line-height:1.2;" class="dash-title"></h2>
+                    <p id="dashDate" style="color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;"></p>
+                </div>
+                <button class="btn-primary no-print" onclick="openModal('sessioneModal')"><i class="fas fa-plus"></i>Nuova Sessione</button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;" class="kpi-grid">
+                <div class="kpi-card"><div class="kpi-val" id="kpiScuole">0</div><div class="kpi-lbl">Scuole</div></div>
+                <div class="kpi-card"><div class="kpi-val" id="kpiSessioni">0</div><div class="kpi-lbl">Sessioni</div></div>
+                <div class="kpi-card"><div class="kpi-val" id="kpiStudenti">0</div><div class="kpi-lbl">Studenti Est.</div></div>
+                <div class="kpi-card teal"><div class="kpi-val" id="kpiMiglioramento">—</div><div class="kpi-lbl">Miglioramento</div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-bottom:28px;" class="dash-codice-gioco">
+                <div class="card" style="background:var(--dark);color:white;position:relative;overflow:hidden;">
+                    <div style="position:absolute;right:-16px;bottom:-16px;font-size:90px;opacity:0.04;"><i class="fas fa-qrcode"></i></div>
+                    <p style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.35);margin-bottom:6px;">Codice Sessione Attiva</p>
+                    <div id="codiceProgetto" style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--teal);letter-spacing:0.05em;word-break:break-all;">—</div>
+                    <p id="codiceData" style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:5px;"></p>
+                    <p style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:10px;line-height:1.5;"><i class="fas fa-info-circle" style="margin-right:5px;color:var(--teal);"></i>Scrivi questo codice sui questionari cartacei prima di distribuirli in classe</p>
+                    <button onclick="generaCodice()" class="btn-primary no-print" style="margin-top:14px;font-size:10px;padding:9px 18px;"><i class="fas fa-sync-alt"></i>Nuovo Codice</button>
+                </div>
+                <div class="card" style="background:linear-gradient(135deg,var(--teal),var(--teal-light));color:white;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;min-height:120px;" onclick="apriGioco()">
+                    <i class="fas fa-gamepad" style="font-size:32px;margin-bottom:10px;opacity:0.9;"></i>
+                    <h4 style="font-weight:700;font-size:17px;margin:0;">Il Piatto Sano</h4>
+                    <p style="font-size:11px;opacity:0.75;margin-top:5px;">Apri il gioco in classe →</p>
+                </div>
+            </div>
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                    <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Avanzamento Progetti</h4>
+                    <button class="btn-ghost no-print" onclick="showSection('scuole',document.querySelector('[onclick*=scuole]'))" style="font-size:11px;padding:7px 14px;">Vedi tutte</button>
+                </div>
+                <div id="dashScuole"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola ancora. <a href="#" onclick="openModal('nuovaScuolaModal')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p></div>
+            </div>
+            <div class="card" style="margin-top:18px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                    <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Ultime Sessioni</h4>
+                    <button class="btn-ghost no-print" onclick="showSection('sessioni',document.querySelector('[onclick*=sessioni]'))" style="font-size:11px;padding:7px 14px;">Vedi tutte</button>
+                </div>
+                <div id="dashSessioni"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna sessione ancora. <a href="#" onclick="openModal('sessioneModal')" style="color:var(--teal);font-weight:600;">Registra la prima</a></p></div>
+            </div>
+            <!-- GRAFICO PRE/POST — card cliccabile -->
+            <div class="card" style="margin-top:18px;cursor:pointer;" onclick="apriGrafico()" id="chartPreviewCard">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Miglioramento Pre → Post</h4>
+                    <span style="background:#f0fdf9;color:var(--teal);font-size:10px;font-weight:700;padding:5px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:0.08em;display:flex;align-items:center;gap:5px;">
+                        <i class="fas fa-expand"></i>Espandi
+                    </span>
+                </div>
+                <canvas id="chartPrePost" height="90"></canvas>
+                <p style="font-size:10px;color:#94a3b8;text-align:center;margin-top:12px;">Tocca per vedere il grafico completo</p>
+            </div>
+        </section>
+
+        <!-- SCUOLE -->
+        <section id="sec-scuole" class="section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
+                <div><h2 style="font-size:22px;font-weight:700;color:var(--dark);">Le Mie Scuole</h2><p style="color:#94a3b8;font-size:12px;margin-top:3px;">Gestisci gli istituti assegnati</p></div>
+                <button class="btn-primary no-print" onclick="openModal('nuovaScuolaModal')"><i class="fas fa-plus"></i>Aggiungi Scuola</button>
+            </div>
+            <div id="scuoleGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;"><p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Nessuna scuola ancora.</p></div>
+        </section>
+
+        <!-- SESSIONI -->
+        <section id="sec-sessioni" class="section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
+                <div><h2 style="font-size:22px;font-weight:700;color:var(--dark);">Registro Sessioni</h2><p style="color:#94a3b8;font-size:12px;margin-top:3px;">Tutte le sessioni in classe</p></div>
+                <button class="btn-primary no-print" onclick="openModal('sessioneModal')"><i class="fas fa-plus"></i>Nuova Sessione</button>
+            </div>
+            <div class="card"><div id="sessioniList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessuna sessione registrata.</p></div></div>
+        </section>
+
+        <!-- REPORT -->
+        <section id="sec-report" class="section">
+            <div style="margin-bottom:28px;">
+                <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Report & Certificati</h2>
+                <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Genera report PDF per le scuole — con bollino FNOB</p>
+            </div>
+            <div id="reportGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;"><p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Aggiungi scuole per generare report.</p></div>
+        </section>
+
+    </main>
+</div>
+
+<!-- MODAL GRAFICO FULLSCREEN -->
+<div id="graficoModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(10,38,71,0.92);backdrop-filter:blur(8px);padding:20px;align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:28px;padding:28px;width:100%;max-width:860px;max-height:90vh;overflow-y:auto;position:relative;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <div>
+                <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--dark);margin:0;">Miglioramento Pre → Post per Classe</h3>
+                <p style="font-size:11px;color:#94a3b8;margin-top:3px;">Punteggio medio su 10</p>
+            </div>
+            <button onclick="chiudiGrafico()" style="background:#f1f5f9;border:none;cursor:pointer;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#64748b;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <!-- KPI riassuntivi -->
+        <div id="graficoKpi" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;"></div>
+        <!-- Grafico grande -->
+        <canvas id="chartPrePostBig" height="120"></canvas>
+        <!-- Lista sessioni con score -->
+        <div id="graficoLista" style="margin-top:24px;"></div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// SUPABASE
+// ============================================================
+const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_VxN-7lIjR3lgcG1Kv_nMrg_c0xJpY0n';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ============================================================
+// STATO
+// ============================================================
+let appState={utente:null,scuole:[],sessioni:[]};
+let currentChecks={pre:false,gioco:false,post:false};
+let _authMode = 'login'; // 'login' | 'signup'
+
+function toggleAuthMode(e){
+    e.preventDefault();
+    _authMode = _authMode==='login' ? 'signup' : 'login';
+    const isSignup = _authMode==='signup';
+    document.getElementById('signupFields').style.display = isSignup ? 'block' : 'none';
+    document.getElementById('loginBtn').textContent = isSignup ? 'Crea Account' : 'Accedi al Portale';
+    document.getElementById('toggleSignup').textContent = isSignup ? 'Hai già un account? Accedi' : 'Registrati';
+}
+
+async function doLogin(){
+    const email=document.getElementById('loginEmail').value.trim();
+    const pass=document.getElementById('loginPassword').value;
+    if(!email){showToast('Inserisci la tua email','error');return;}
+    if(!pass){showToast('Inserisci la password','error');return;}
+    document.getElementById('loginBtn').disabled=true;
+    document.getElementById('loginBtn').textContent='...';
+
+    if(_authMode==='signup'){
+        const nome=document.getElementById('loginNome').value.trim();
+        if(!nome){showToast('Inserisci il tuo nome','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
+        const {error}=await db.auth.signUp({email,password:pass,options:{data:{nome}}});
+        if(error){showToast(error.message,'error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
+        showToast('Account creato! Controlla la tua email per confermare.');
+        document.getElementById('loginBtn').disabled=false;
+        document.getElementById('loginBtn').textContent='Crea Account';
+    } else {
+        const {error}=await db.auth.signInWithPassword({email,password:pass});
+        if(error){showToast('Credenziali non valide','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Accedi al Portale';return;}
+        // onAuthStateChange gestirà il resto
+    }
+}
+
+function doLogout(){
+    appState = {utente:null, scuole:[], sessioni:[]};
+    document.getElementById('appShell').style.opacity='0';
+    setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
+    db.auth.signOut();
+}
+
+async function caricaDati(){
+    const {data:{user}}=await db.auth.getUser();
+    if(!user) return;
+    const [{data:scuole},{data:sessioni}]=await Promise.all([
+        db.from('scuole').select('*').eq('biologo_id',user.id).order('created_at'),
+        db.from('sessioni').select('*').eq('biologo_id',user.id).order('data',{ascending:false})
+    ]);
+    appState.scuole=scuole||[];
+    appState.sessioni=sessioni||[];
+}
+
+async function inizializzaApp(user){
+    const {data:profilo}=await db.from('profiles').select('*').eq('id',user.id).single();
+    if(!profilo){showToast('Profilo non trovato. Contatta l\'amministratore.','error');await db.auth.signOut();return;}
+    if(profilo.stato!=='active'){
+        const msg=profilo.stato==='pending'?'Licenza in attesa di approvazione.':'Licenza sospesa o scaduta.';
+        showToast(msg+' Contatta l\'amministratore.','error');
+        await db.auth.signOut();return;
+    }
+    appState.utente={nome:profilo.nome||user.email.split('@')[0],email:user.email,id:user.id};
+    await caricaDati();
+    document.getElementById('loginScreen').classList.add('hidden');
+    setTimeout(()=>{document.getElementById('appShell').style.opacity='1';aggiornaUI();showToast('Bentornato, '+appState.utente.nome+'!');},400);
+}
+
+function showSection(id,el){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById('sec-'+id).classList.add('active');
+    if(el)el.classList.add('active');
+    if(id==='dashboard'){aggiornaDashboard();aggiornaGrafico();}
+    if(id==='scuole')aggiornaScuole();
+    if(id==='sessioni')aggiornaSessioni();
+    if(id==='report')aggiornaReport();
+}
+
+function apriGioco(){window.open('https://ilpiattosano.netlify.app/','_blank');}
+
+function aggiornaUI(){
+    document.getElementById('sidebarNome').textContent=appState.utente?.nome||'';
+    const ora=new Date().getHours();
+    const saluto=ora<12?'Buongiorno':ora<18?'Buon pomeriggio':'Buonasera';
+    document.getElementById('dashGreeting').textContent=saluto+', '+(appState.utente?.nome||'')+' 👋';
+    document.getElementById('dashDate').textContent=new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    aggiornaDashboard();aggiornaGrafico();generaCodice();
+}
+
+function aggiornaDashboard(){
+    const classiUniche=[...new Set(appState.sessioni.map(s=>s.scuola_id+'_'+s.classe))];
+    const studenti=classiUniche.length*22;
+    const sessConScore=appState.sessioni.filter(s=>s.score_pre&&s.score_post);
+    let migLabel='—';
+    if(sessConScore.length>0){
+        const m=sessConScore.reduce((a,s)=>a+(parseFloat(s.score_post)-parseFloat(s.score_pre)),0)/sessConScore.length;
+        migLabel='+'+m.toFixed(1);
+    }
+    document.getElementById('kpiScuole').textContent=appState.scuole.length;
+    document.getElementById('kpiSessioni').textContent=appState.sessioni.length;
+    document.getElementById('kpiStudenti').textContent=studenti;
+    document.getElementById('kpiMiglioramento').textContent=migLabel;
+
+    const el=document.getElementById('dashScuole');
+    if(appState.scuole.length===0){
+        el.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola ancora. <a href="#" onclick="openModal(\'nuovaScuolaModal\')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p>';
+    }else{
+        el.innerHTML=appState.scuole.slice(0,3).map(s=>renderScuolaRow(s)).join('');
+    }
+
+    const elS=document.getElementById('dashSessioni');
+    if(appState.sessioni.length===0){
+        elS.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna sessione ancora. <a href="#" onclick="openModal(\'sessioneModal\')" style="color:var(--teal);font-weight:600;">Registra la prima</a></p>';
+    }else{
+        elS.innerHTML=appState.sessioni.slice(0,3).map(s=>renderSessioneRow(s)).join('');
+    }
+}
+
+function renderScuolaRow(s){
+    const sess=appState.sessioni.filter(se=>se.scuola_id===s.id);
+    const max=s.pacchetto==='base'?5:8;
+    const pct=Math.min(100,Math.round((sess.length/max)*100));
+    return `<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #f1f5f9;">
+        <div style="width:44px;height:44px;background:#f1f5f9;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:#94a3b8;font-size:16px;flex-shrink:0;">${s.nome.charAt(0)}</div>
+        <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-weight:700;font-size:13px;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">${s.nome}</span>
+                <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--teal);flex-shrink:0;margin-left:8px;">${pct}%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+            <div style="font-size:10px;color:#94a3b8;margin-top:4px;">${s.comune} · ${sess.length} sessioni</div>
+        </div>
+    </div>`;
+}
+
+function renderSessioneRow(s){
+    const scuola=appState.scuole.find(sc=>sc.id===s.scuola_id);
+    const nome=scuola?scuola.nome:'—';
+    const haScore=s.score_pre&&s.score_post;
+    const mig=haScore?((parseFloat(s.score_post)-parseFloat(s.score_pre)).toFixed(1)):null;
+    const stepDone=[s.check_pre,s.check_gioco,s.check_post].filter(Boolean).length;
+    return `<div style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid #f1f5f9;">
+        <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--teal),var(--teal-light));border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas fa-clipboard-check" style="color:white;font-size:15px;"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;font-size:13px;color:var(--dark);">${nome} — Classe ${s.classe}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${s.data} · ${stepDone}/3 step</div>
+        </div>
+        ${mig?`<span class="impr-badge"><i class="fas fa-arrow-up" style="font-size:9px;"></i>${mig>0?'+':''}${mig}</span>`:''}
+    </div>`;
+}
+
+async function aggiungiScuola(){
+    const nome=document.getElementById('scuolaNome').value.trim();
+    const comune=document.getElementById('scuolaComune').value.trim();
+    const classi=document.getElementById('scuolaClassi').value;
+    const pacchetto=document.getElementById('scuolaPacchetto').value;
+    if(!nome||!comune||!classi){showToast('Compila tutti i campi','error');return;}
+    const {data:{user}}=await db.auth.getUser();
+    const {data,error}=await db.from('scuole').insert({biologo_id:user.id,nome,comune,classi:parseInt(classi),pacchetto}).select().single();
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    appState.scuole.push(data);
+    ['scuolaNome','scuolaComune','scuolaClassi'].forEach(id=>document.getElementById(id).value='');
+    closeModal('nuovaScuolaModal');
+    aggiornaDashboard();aggiornaScuole();
+    showToast('Scuola aggiunta: '+nome);
+}
+
+async function eliminaScuola(scuolaId){
+    if(!confirm('Eliminare questa scuola e tutte le sessioni collegate?'))return;
+    const {error}=await db.from('scuole').delete().eq('id',scuolaId);
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    appState.scuole=appState.scuole.filter(s=>s.id!==scuolaId);
+    appState.sessioni=appState.sessioni.filter(s=>s.scuola_id!==scuolaId);
+    aggiornaScuole();aggiornaDashboard();showToast('Scuola eliminata');
+}
+
+function aggiornaScuole(){
+    const grid=document.getElementById('scuoleGrid');
+    if(appState.scuole.length===0){
+        grid.innerHTML='<p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Nessuna scuola ancora.</p>';return;
+    }
+    grid.innerHTML=appState.scuole.map(s=>{
+        const sess=appState.sessioni.filter(se=>se.scuola_id===s.id);
+        const max=s.pacchetto==='base'?5:8;
+        const pct=Math.min(100,Math.round((sess.length/max)*100));
+        const bc=s.pacchetto==='premium'?'badge-blue':s.pacchetto==='standard'?'badge-green':'badge-yellow';
+        return `<div class="card" style="position:relative;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px;">
+                <div style="width:46px;height:46px;background:linear-gradient(135deg,var(--teal),var(--teal-light));border-radius:13px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:white;font-size:18px;">${s.nome.charAt(0)}</div>
+                <button onclick="eliminaScuola('${s.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:12px;padding:4px;" class="no-print"><i class="fas fa-trash"></i></button>
+            </div>
+            <h4 style="font-weight:700;color:var(--dark);font-size:15px;margin:0 0 3px;">${s.nome}</h4>
+            <p style="color:#64748b;font-size:12px;margin:0 0 14px;"><i class="fas fa-map-marker-alt" style="margin-right:3px;"></i>${s.comune}</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+                <div style="background:#f8fafc;border-radius:11px;padding:10px;text-align:center;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--dark);">${s.classi}</div>
+                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Classi</div>
+                </div>
+                <div style="background:#f8fafc;border-radius:11px;padding:10px;text-align:center;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--teal);">${sess.length}</div>
+                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Sessioni</div>
+                </div>
+            </div>
+            <div class="progress-bar" style="margin-bottom:10px;"><div class="progress-fill" style="width:${pct}%"></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span class="badge ${bc}">${s.pacchetto}</span>
+                <button class="btn-ghost no-print" style="font-size:11px;padding:7px 13px;" onclick="apriSessionePerScuola('${s.id}')"><i class="fas fa-plus" style="margin-right:3px;"></i>Sessione</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function apriSessionePerScuola(scuolaId){
+    aggiornaSelectScuole(scuolaId);openModal('sessioneModal');
+}
+
+function aggiornaSelectScuole(preselect){
+    const sel=document.getElementById('sessioneScuola');
+    if(appState.scuole.length===0){sel.innerHTML='<option value="">— Prima aggiungi una scuola —</option>';return;}
+    sel.innerHTML=appState.scuole.map(s=>`<option value="${s.id}" ${preselect===s.id?'selected':''}>${s.nome} (${s.comune})</option>`).join('');
+}
+
+function toggleCheck(el,tipo){
+    currentChecks[tipo]=!currentChecks[tipo];
+    el.classList.toggle('checked',currentChecks[tipo]);
+    el.querySelector('.check-box i').style.display=currentChecks[tipo]?'block':'none';
+    document.getElementById('scoreSection').style.display=(currentChecks.pre&&currentChecks.post)?'block':'none';
+}
+
+async function salvaSessione(){
+    const scuola_id=document.getElementById('sessioneScuola').value;
+    const classe=document.getElementById('sessioneClasse').value.trim();
+    const data=document.getElementById('sessioneData').value;
+    const note=document.getElementById('sessioneNote').value.trim();
+    const scorePre=document.getElementById('scorePre').value;
+    const scorePost=document.getElementById('scorePost').value;
+    if(!scuola_id||!classe||!data){showToast('Compila scuola, classe e data','error');return;}
+    const {data:{user}}=await db.auth.getUser();
+    const {data:newSess,error}=await db.from('sessioni').insert({
+        biologo_id:user.id, scuola_id, classe, data, note,
+        check_pre:currentChecks.pre, check_gioco:currentChecks.gioco, check_post:currentChecks.post,
+        score_pre:scorePre?parseFloat(scorePre):null,
+        score_post:scorePost?parseFloat(scorePost):null
+    }).select().single();
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    appState.sessioni.unshift(newSess);
+    currentChecks={pre:false,gioco:false,post:false};
+    document.querySelectorAll('.check-item').forEach(el=>el.classList.remove('checked'));
+    document.querySelectorAll('.check-box i').forEach(i=>i.style.display='none');
+    document.getElementById('scoreSection').style.display='none';
+    ['sessioneClasse','sessioneNote','scorePre','scorePost'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('sessioneData').value='';
+    closeModal('sessioneModal');aggiornaDashboard();showToast('Sessione registrata!');
+}
+
+function aggiornaSessioni(){
+    const list=document.getElementById('sessioniList');
+    if(appState.sessioni.length===0){list.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessuna sessione registrata.</p>';return;}
+    list.innerHTML=appState.sessioni.map((s,ri)=>{
+        const scuola=appState.scuole.find(sc=>sc.id===s.scuola_id);
+        const nome=scuola?scuola.nome:'—';
+        const haScore=s.score_pre&&s.score_post;
+        const migVal=haScore?(parseFloat(s.score_post)-parseFloat(s.score_pre)):null;
+        const migStr=migVal!==null?(migVal>=0?'+':'')+migVal.toFixed(1):null;
+        const steps=[{k:'check_pre',label:'Q.PRE'},{k:'check_gioco',label:'GIOCO'},{k:'check_post',label:'Q.POST'}];
+        return `<div style="display:flex;align-items:start;gap:14px;padding:16px 0;border-bottom:1px solid #f1f5f9;">
+            <div style="width:42px;height:42px;background:#f1f5f9;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:700;color:#94a3b8;font-size:13px;">${String(appState.sessioni.length-ri).padStart(2,'0')}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:13px;color:var(--dark);">${nome} — Classe ${s.classe}</div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${s.data}</div>
+                <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+                    ${steps.map(st=>`<span style="padding:3px 8px;border-radius:7px;font-size:10px;font-weight:700;background:${s[st.k]?'#d1fae5':'#f1f5f9'};color:${s[st.k]?'#065f46':'#94a3b8'};">${st.label}${s[st.k]?' ✓':''}</span>`).join('')}
+                </div>
+                ${s.note?`<div style="font-size:11px;color:#64748b;margin-top:6px;font-style:italic;">${s.note.substring(0,80)}${s.note.length>80?'...':''}</div>`:''}
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+                ${haScore?`<div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">${s.score_pre}→${s.score_post}</div><div style="background:${migVal>=0?'#d1fae5':'#fee2e2'};color:${migVal>=0?'#065f46':'#991b1b'};padding:4px 8px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">${migStr}</div>`:'<div style="font-size:10px;color:#cbd5e1;">—</div>'}
+                <button onclick="eliminaSessione('${s.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:11px;margin-top:6px;display:block;margin-left:auto;" class="no-print"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+async function eliminaSessione(sessId){
+    if(!confirm('Eliminare questa sessione?'))return;
+    const {error}=await db.from('sessioni').delete().eq('id',sessId);
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    appState.sessioni=appState.sessioni.filter(s=>s.id!==sessId);
+    aggiornaSessioni();aggiornaDashboard();showToast('Sessione eliminata');
+}
+
+function aggiornaReport(){
+    const grid=document.getElementById('reportGrid');
+    if(appState.scuole.length===0){grid.innerHTML='<p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Aggiungi scuole per generare report.</p>';return;}
+    grid.innerHTML=appState.scuole.map(s=>{
+        const sess=appState.sessioni.filter(se=>se.scuola_id===s.id);
+        const conScore=sess.filter(se=>se.score_pre&&se.score_post);
+        const mig=conScore.length>0?(conScore.reduce((a,se)=>a+(parseFloat(se.score_post)-parseFloat(se.score_pre)),0)/conScore.length).toFixed(1):null;
+        return `<div class="card" style="text-align:center;">
+            <div style="width:52px;height:52px;background:var(--dark);border-radius:15px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:20px;">${s.nome.charAt(0)}</div>
+            <h4 style="font-weight:700;color:var(--dark);font-size:14px;margin:0 0 3px;">${s.nome}</h4>
+            <p style="color:#64748b;font-size:11px;margin:0 0 14px;">${s.comune}</p>
+            <div style="display:flex;justify-content:center;gap:16px;margin-bottom:14px;">
+                <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--dark);">${sess.length}</div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Sessioni</div></div>
+                ${mig?`<div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--teal);">+${mig}</div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Miglioramento</div></div>`:''}
+            </div>
+            <button class="btn-dark no-print" style="width:100%;font-size:11px;justify-content:center;" onclick="generaReport('${s.id}')"><i class="fas fa-file-pdf"></i>Genera Report PDF</button>
+        </div>`;
+    }).join('');
+}
+
+function generaReport(scuolaId){
+    const s=appState.scuole.find(sc=>sc.id===scuolaId);
+    if(!s) return;
+    const sess=appState.sessioni.filter(se=>se.scuola_id===scuolaId);
+    const conScore=sess.filter(se=>se.score_pre&&se.score_post);
+    const oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+    let mPre='—',mPost='—',mig='—',pct='—';
+    if(conScore.length>0){
+        const vPre=conScore.reduce((a,se)=>a+parseFloat(se.score_pre),0)/conScore.length;
+        const vPost=conScore.reduce((a,se)=>a+parseFloat(se.score_post),0)/conScore.length;
+        mPre=vPre.toFixed(1);mPost=vPost.toFixed(1);
+        mig='+'+(vPost-vPre).toFixed(1);
+        pct='+'+Math.round(((vPost-vPre)/vPre)*100)+'%';
+    }
+    document.getElementById('reportContent').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="background:var(--dark);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-leaf" style="color:var(--teal);font-size:14px;"></i></div>
+            <div><div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);font-size:13px;">S.A.N.E. Italia</div><div style="font-size:9px;color:#94a3b8;letter-spacing:0.15em;text-transform:uppercase;">Portale Biologi</div></div>
+        </div>
+        <div style="background:#f0fdf9;border-radius:9px;padding:7px 12px;text-align:center;">
+            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Partner Scientifico</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);font-size:12px;">F.N.O.B.</div>
+        </div>
+    </div>
+    <div style="background:var(--dark);border-radius:18px;padding:20px;color:white;margin-bottom:20px;">
+        <div style="font-size:9px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:3px;">Report di Progetto</div>
+        <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin:0 0 7px;">${s.nome}</h2>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;">
+            <span style="font-size:11px;color:rgba(255,255,255,0.45);">📍 ${s.comune}</span>
+            <span style="font-size:11px;color:rgba(255,255,255,0.45);">📅 ${oggi}</span>
+            <span style="font-size:11px;color:rgba(255,255,255,0.45);">📋 Pacchetto ${s.pacchetto}</span>
+            <span style="font-size:11px;color:rgba(255,255,255,0.45);">👤 ${appState.utente?.nome||'—'}</span>
+        </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+        <div style="background:#f8fafc;border-radius:14px;padding:14px;text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:22px;color:var(--dark);">${sess.length}</div>
+            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Sessioni</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:14px;padding:14px;text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--dark);">${mPre} → ${mPost}</div>
+            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Score Pre→Post</div>
+        </div>
+        <div style="background:#f0fdf9;border-radius:14px;padding:14px;text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--teal);">${mig} (${pct})</div>
+            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Miglioramento</div>
+        </div>
+    </div>
+    <h4 style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);margin:0 0 10px;font-size:13px;">Registro Sessioni</h4>
+    ${sess.length>0?sess.map(se=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f8fafc;border-radius:10px;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
+        <div><div style="font-weight:600;font-size:12px;color:var(--dark);">Classe ${se.classe}</div><div style="font-size:10px;color:#94a3b8;">${se.data}</div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+            ${se.check_pre?'<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.PRE ✓</span>':''}
+            ${se.check_gioco?'<span style="background:#dbeafe;color:#1e40af;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">GIOCO ✓</span>':''}
+            ${se.check_post?'<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.POST ✓</span>':''}
+        </div>
+        ${se.score_pre&&se.score_post?`<div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:13px;">${se.score_pre} → ${se.score_post}</div>`:''}
+    </div>`).join(''):'<p style="color:#94a3b8;font-size:12px;text-align:center;padding:16px;">Nessuna sessione ancora.</p>'}
+    <div style="margin-top:20px;padding:14px;background:#f0fdf9;border-radius:14px;border-left:4px solid var(--teal);">
+        <p style="font-size:11px;color:#065f46;margin:0;line-height:1.5;"><strong>Attestato:</strong> Il presente report certifica l'avvenuta implementazione del Programma "Mangiare Bene, Crescere Meglio" — Metodo Cardaci-Orlando — presso ${s.nome}. Dati raccolti e validati in conformità alle linee guida F.N.O.B.</p>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;" class="no-print">
+        <button class="btn-ghost" onclick="closeModal('reportModal')">Chiudi</button>
+        <button class="btn-primary" style="flex:1;justify-content:center;" onclick="window.print()"><i class="fas fa-print"></i>Stampa / Salva PDF</button>
+    </div>`;
+    openModal('reportModal');
+}
+
+function generaCodice(){
+    const rand=Math.random().toString(36).substring(2,6).toUpperCase();
+    const codice='SANE-'+new Date().getFullYear()+'-'+rand;
+    document.getElementById('codiceProgetto').textContent=codice;
+    document.getElementById('codiceData').textContent='Generato il '+new Date().toLocaleDateString('it-IT');
+}
+
+function openModal(id){
+    if(id==='sessioneModal'){
+        aggiornaSelectScuole();
+        currentChecks={pre:false,gioco:false,post:false};
+        document.querySelectorAll('.check-item').forEach(el=>el.classList.remove('checked'));
+        document.querySelectorAll('.check-box i').forEach(i=>i.style.display='none');
+        document.getElementById('scoreSection').style.display='none';
+        document.getElementById('sessioneData').value=new Date().toISOString().split('T')[0];
+    }
+    document.getElementById(id).classList.add('open');
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function showToast(msg,tipo){
+    const t=document.getElementById('toast');
+    t.textContent=msg;
+    t.style.borderLeftColor=tipo==='error'?'#ef4444':'var(--teal)';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ============================================================
+// GRAFICO PRE/POST
+// ============================================================
+let chartInstance = null;
+let chartBigInstance = null;
+
+function buildChartData() {
+    const sess = appState.sessioni.filter(s => s.score_pre && s.score_post);
+    const labels = sess.map(s => {
+        const sc = appState.scuole.find(sc=>sc.id===s.scuola_id);
+        return (sc ? sc.nome.split(' ').slice(-1)[0] : '?') + ' ' + s.classe;
+    });
+    const pre  = sess.map(s => parseFloat(s.score_pre));
+    const post = sess.map(s => parseFloat(s.score_post));
+    return { labels, pre, post, sess };
+}
+
+function aggiornaGrafico() {
+    const canvas = document.getElementById('chartPrePost');
+    if (!canvas) return;
+    const { labels, pre, post, sess } = buildChartData();
+    const card = document.getElementById('chartPreviewCard');
+    if (sess.length === 0) { if(card) card.style.display='none'; return; }
+    if(card) card.style.display='block';
+    if (chartInstance) chartInstance.destroy();
+    chartInstance = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [
+                { label: 'PRE', data: pre, backgroundColor: 'rgba(148,163,184,0.5)', borderColor: '#94a3b8', borderWidth: 2, borderRadius: 6 },
+                { label: 'POST', data: post, backgroundColor: 'rgba(0,168,150,0.75)', borderColor: '#00A896', borderWidth: 2, borderRadius: 6 }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 }, color: '#64748b', boxWidth: 12 } },
+                tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + '/10' } }
+            },
+            scales: {
+                y: { min: 0, max: 10, ticks: { stepSize: 2, color: '#94a3b8', font: { size: 10 } }, grid: { color: '#f1f5f9' } },
+                x: { ticks: { color: '#64748b', font: { size: 9 }, maxRotation: 30 }, grid: { display: false } }
+            }
+        }
+    });
+}
+
+function apriGrafico() {
+    const modal = document.getElementById('graficoModal');
+    modal.style.display = 'flex';
+    const { labels, pre, post, sess } = buildChartData();
+    if (sess.length === 0) return;
+
+    // KPI riassuntivi
+    const mediaPre  = (pre.reduce((a,b)=>a+b,0)/pre.length).toFixed(1);
+    const mediaPost = (post.reduce((a,b)=>a+b,0)/post.length).toFixed(1);
+    const mediaMig  = (post.reduce((a,b)=>a+b,0)/post.length - pre.reduce((a,b)=>a+b,0)/pre.length).toFixed(1);
+    const pct = Math.round(((parseFloat(mediaPost)-parseFloat(mediaPre))/parseFloat(mediaPre))*100);
+    document.getElementById('graficoKpi').innerHTML = `
+        <div style="background:#f8fafc;border-radius:14px;padding:16px;text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:26px;color:var(--dark);">${mediaPre}</div>
+            <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;">Media PRE</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:14px;padding:16px;text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:26px;color:var(--teal);">${mediaPost}</div>
+            <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;">Media POST</div>
+        </div>
+        <div style="background:#f0fdf9;border-radius:14px;padding:16px;text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:26px;color:var(--teal);">+${mediaMig} (${pct}%)</div>
+            <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;">Miglioramento medio</div>
+        </div>`;
+
+    // Grafico grande
+    const bigCanvas = document.getElementById('chartPrePostBig');
+    if (chartBigInstance) chartBigInstance.destroy();
+    chartBigInstance = new Chart(bigCanvas, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [
+                { label: 'PRE', data: pre, backgroundColor: 'rgba(148,163,184,0.5)', borderColor: '#94a3b8', borderWidth: 2, borderRadius: 8 },
+                { label: 'POST', data: post, backgroundColor: 'rgba(0,168,150,0.75)', borderColor: '#00A896', borderWidth: 2, borderRadius: 8 }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top', labels: { font: { family: 'Inter', size: 13 }, color: '#64748b' } },
+                tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + '/10' } }
+            },
+            scales: {
+                y: { min: 0, max: 10, ticks: { stepSize: 1, color: '#94a3b8', font: { size: 12 } }, grid: { color: '#f1f5f9' } },
+                x: { ticks: { color: '#64748b', font: { size: 12 } }, grid: { display: false } }
+            }
+        }
+    });
+
+    // Lista sessioni
+    document.getElementById('graficoLista').innerHTML = `
+        <h4 style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--dark);margin:0 0 12px;">Dettaglio per Sessione</h4>
+        ${sess.map(s => {
+            const sc = appState.scuole.find(sc=>sc.id===s.scuola_id);
+            const mig = (parseFloat(s.score_post) - parseFloat(s.score_pre)).toFixed(1);
+            const migPos = parseFloat(mig) >= 0;
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#f8fafc;border-radius:12px;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+                <div>
+                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${sc ? sc.nome : '—'} — Classe ${s.classe}</div>
+                    <div style="font-size:11px;color:#94a3b8;">${s.data}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:13px;color:#94a3b8;">${s.score_pre} → ${s.score_post}</span>
+                    <span style="background:${migPos?'#d1fae5':'#fee2e2'};color:${migPos?'#065f46':'#991b1b'};padding:4px 10px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">${migPos?'+':''}${mig}</span>
+                </div>
+            </div>`;
+        }).join('')}`;
+}
+
+function chiudiGrafico() {
+    document.getElementById('graficoModal').style.display = 'none';
+    if (chartBigInstance) { chartBigInstance.destroy(); chartBigInstance = null; }
+}
+// Chiudi cliccando fuori
+document.getElementById('graficoModal').addEventListener('click', function(e) {
+    if (e.target === this) chiudiGrafico();
+});
+
+// ============================================================
+// AVVIO — Auth state listener
+// ============================================================
+db.auth.onAuthStateChange(async (event, session) => {
+    if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session){
+        await inizializzaApp(session.user);
+    } else if(event === 'SIGNED_OUT'){
+        appState = {utente:null, scuole:[], sessioni:[]};
+        document.getElementById('appShell').style.opacity='0';
+        setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
+    }
+});
+</script>
+</body>
+</html>

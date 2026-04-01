@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.A.N.E. Italia | Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root{--dark:#0A2647;--teal:#00A896;--teal-light:#00C9B1;--accent:#F4A261;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:#f0f4f8;}
+        h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;}
+
+        /* LOGIN */
+        #loginScreen{position:fixed;inset:0;z-index:200;background:var(--dark);display:flex;align-items:center;justify-content:center;transition:opacity 0.5s;}
+        #loginScreen.hidden{opacity:0;pointer-events:none;}
+        .login-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:28px;padding:44px 40px;width:100%;max-width:400px;}
+        .login-input{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:13px 16px;color:white;font-size:14px;outline:none;margin-bottom:12px;transition:border-color 0.2s;}
+        .login-input:focus{border-color:var(--teal);}
+        .login-input::placeholder{color:rgba(255,255,255,0.3);}
+
+        /* LAYOUT */
+        .sidebar{width:256px;background:var(--dark);height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:10;overflow-y:auto;}
+        .main-content{margin-left:256px;min-height:100vh;padding:36px 40px;}
+        @media(max-width:1024px){.sidebar{width:68px;}.sidebar .label{display:none;}.main-content{margin-left:68px;padding:24px 20px;}}
+        @media(max-width:640px){.sidebar{width:56px;}.main-content{margin-left:56px;padding:14px 12px;}}
+
+        /* NAV */
+        .nav-item{display:flex;align-items:center;gap:12px;padding:13px 16px;margin:2px 10px;border-radius:14px;cursor:pointer;transition:all 0.2s;color:rgba(255,255,255,0.45);font-size:13px;font-weight:600;}
+        .nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
+        .nav-item.active{background:var(--teal);color:white;}
+        .nav-item i{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
+
+        /* CARDS */
+        .card{background:white;border-radius:24px;padding:24px;box-shadow:0 2px 16px rgba(10,38,71,0.06);}
+        .kpi-card{background:white;border-radius:20px;padding:22px;text-align:center;box-shadow:0 2px 12px rgba(10,38,71,0.05);transition:transform 0.2s;}
+        .kpi-card:hover{transform:translateY(-3px);}
+        .kpi-card.teal{background:var(--teal);}
+        .kpi-card.dark{background:var(--dark);}
+        .kpi-card.teal .kpi-val,.kpi-card.teal .kpi-lbl{color:white;}
+        .kpi-card.dark .kpi-val,.kpi-card.dark .kpi-lbl{color:white;}
+        .kpi-card.orange{background:#F4A261;}
+        .kpi-card.orange .kpi-val,.kpi-card.orange .kpi-lbl{color:white;}
+        .kpi-val{font-family:'Syne',sans-serif;font-size:32px;font-weight:700;color:var(--dark);line-height:1;}
+        .kpi-lbl{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-top:5px;}
+
+        /* BUTTONS */
+        .btn-primary{background:var(--teal);color:white;border:none;border-radius:12px;padding:11px 20px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:7px;}
+        .btn-primary:hover{background:var(--teal-light);transform:translateY(-1px);}
+        .btn-dark{background:var(--dark);color:white;border:none;border-radius:12px;padding:11px 20px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:7px;}
+        .btn-ghost{background:transparent;color:#64748b;border:1px solid #e2e8f0;border-radius:12px;padding:9px 16px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+        .btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+        .btn-danger{background:#fee2e2;color:#991b1b;border:none;border-radius:10px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+        .btn-danger:hover{background:#fecaca;}
+        .btn-success{background:#d1fae5;color:#065f46;border:none;border-radius:10px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+        .btn-success:hover{background:#a7f3d0;}
+        .btn-warn{background:#fef3c7;color:#92400e;border:none;border-radius:10px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+        .btn-warn:hover{background:#fde68a;}
+
+        /* FORM */
+        .form-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;display:block;}
+        .form-input{width:100%;border:1.5px solid #e2e8f0;border-radius:11px;padding:11px 14px;font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:14px;color:var(--dark);font-family:'Inter',sans-serif;}
+        .form-input:focus{border-color:var(--teal);}
+        .form-select{width:100%;border:1.5px solid #e2e8f0;border-radius:11px;padding:11px 14px;font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:14px;background:white;color:var(--dark);cursor:pointer;}
+        .form-select:focus{border-color:var(--teal);}
+
+        /* BADGE */
+        .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;}
+        .badge-active{background:#d1fae5;color:#065f46;}
+        .badge-expired{background:#fee2e2;color:#991b1b;}
+        .badge-pending{background:#fef3c7;color:#92400e;}
+        .badge-suspended{background:#f1f5f9;color:#64748b;}
+
+        /* SECTIONS */
+        .section{display:none;}
+        .section.active{display:block;}
+
+        /* MODAL */
+        .modal-overlay{display:none;position:fixed;inset:0;z-index:150;background:rgba(10,38,71,0.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;}
+        .modal-overlay.open{display:flex;}
+        .modal-box{background:white;border-radius:28px;padding:36px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;}
+
+        /* TOAST */
+        #toast{position:fixed;bottom:28px;right:28px;background:var(--dark);color:white;padding:14px 22px;border-radius:14px;font-size:13px;font-weight:600;border-left:4px solid var(--teal);transform:translateY(80px);opacity:0;transition:all 0.4s ease;z-index:300;}
+        #toast.show{transform:translateY(0);opacity:1;}
+
+        /* PULSE */
+        @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+        .pulse-dot{animation:pulse-dot 2s infinite;}
+
+        /* TABLE */
+        .bio-row{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid #f1f5f9;transition:background 0.15s;}
+        .bio-row:last-child{border-bottom:none;}
+        .bio-row:hover{background:#fafbfc;margin:0 -8px;padding:16px 8px;border-radius:12px;}
+        .bio-avatar{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:white;flex-shrink:0;}
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar{width:5px;}
+        ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px;}
+
+        /* PRINT */
+        @media print{.sidebar,#loginScreen,#toast,.no-print{display:none !important;}.main-content{margin-left:0;padding:20px;}body{background:white;}}
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+    <div class="login-card">
+        <div style="text-align:center;margin-bottom:32px;">
+            <div style="width:56px;height:56px;background:var(--accent);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <i class="fas fa-shield-alt" style="color:white;font-size:24px;"></i>
+            </div>
+            <h1 style="color:white;font-size:22px;font-weight:700;margin:0;">S.A.N.E. Admin</h1>
+            <p style="color:rgba(255,255,255,0.35);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin-top:6px;">Pannello di Controllo</p>
+        </div>
+        <label class="form-label" style="color:rgba(255,255,255,0.4);">Email Admin</label>
+        <input class="login-input" type="email" id="loginEmail" placeholder="admin@saneitalia.it" onkeydown="if(event.key==='Enter')doLogin()">
+        <label class="form-label" style="color:rgba(255,255,255,0.4);">Password</label>
+        <input class="login-input" type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        <button onclick="doLogin()" style="width:100%;background:var(--accent);color:white;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:background 0.2s;">
+            Accedi al Pannello
+        </button>
+        <p id="loginMsg" style="color:rgba(255,255,255,0.35);font-size:11px;text-align:center;margin-top:16px;min-height:16px;"></p>
+        <div style="margin-top:8px;text-align:center;">
+            <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
+                <i class="fas fa-arrow-left" style="font-size:10px;"></i> Torna alla pagina iniziale
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MODAL NUOVO BIOLOGO -->
+<div class="modal-overlay" id="nuovoBiologoModal">
+    <div class="modal-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <h3 style="font-size:20px;font-weight:700;color:var(--dark);">Aggiungi Biologo</h3>
+            <button onclick="closeModal('nuovoBiologoModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
+        </div>
+        <label class="form-label">Nome e Cognome</label>
+        <input class="form-input" id="bioNome" placeholder="es. Serafina Cardaci">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="bioEmail" placeholder="es. serafina@email.it">
+        <label class="form-label">Regione</label>
+        <select class="form-select" id="bioRegione">
+            <option value="">Seleziona regione...</option>
+            <option>Piemonte</option><option>Liguria</option><option>Lombardia</option>
+            <option>Veneto</option><option>Toscana</option><option>Lazio</option>
+            <option>Campania</option><option>Sicilia</option><option>Sardegna</option>
+            <option>Emilia-Romagna</option><option>Puglia</option><option>Calabria</option>
+        </select>
+        <label class="form-label">Numero Ordine Biologi</label>
+        <input class="form-input" id="bioOrdine" placeholder="es. AL-2847">
+        <label class="form-label">Stato Licenza</label>
+        <select class="form-select" id="bioStato">
+            <option value="pending">In attesa di approvazione</option>
+            <option value="active">Attiva</option>
+            <option value="suspended">Sospesa</option>
+        </select>
+        <label class="form-label">Scadenza Licenza</label>
+        <input class="form-input" type="date" id="bioScadenza">
+        <div style="display:flex;gap:10px;margin-top:4px;">
+            <button class="btn-ghost" onclick="closeModal('nuovoBiologoModal')">Annulla</button>
+            <button class="btn-primary" style="flex:1;" onclick="aggiungiBiologo()"><i class="fas fa-plus"></i>Aggiungi Biologo</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DETTAGLIO BIOLOGO -->
+<div class="modal-overlay" id="dettaglioBiologoModal">
+    <div class="modal-box" id="dettaglioBiologoContent"></div>
+</div>
+
+<!-- APP -->
+<div id="appShell" style="opacity:0;transition:opacity 0.5s;">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div style="padding:18px 14px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;">
+            <div style="width:34px;height:34px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-shield-alt" style="color:white;font-size:14px;"></i>
+            </div>
+            <div class="label">
+                <div style="color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;line-height:1.1;">S.A.N.E. Admin</div>
+                <div style="color:rgba(255,255,255,0.35);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;">Pannello Controllo</div>
+            </div>
+        </div>
+
+        <div style="margin:10px 8px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px;display:flex;align-items:center;gap:8px;">
+            <div style="width:30px;height:30px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-user-shield" style="color:white;font-size:11px;"></i>
+            </div>
+            <div class="label">
+                <div style="color:white;font-weight:600;font-size:12px;">Patrick Orlando</div>
+                <div style="color:rgba(255,255,255,0.35);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;margin-top:1px;">Amministratore</div>
+            </div>
+        </div>
+
+        <nav style="flex:1;padding:6px 0;">
+            <div class="nav-item" onclick="window.location.href='index.html'" title="Torna alla Home">
+                <i class="fas fa-home"></i><span class="label">Home</span>
+            </div>
+            <div class="nav-item active" onclick="showSection('dashboard',this)">
+                <i class="fas fa-chart-line"></i><span class="label">Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="showSection('licenze',this)">
+                <i class="fas fa-id-card"></i><span class="label">Licenze Biologi</span>
+            </div>
+            <div class="nav-item" onclick="showSection('nazionale',this)">
+                <i class="fas fa-map-marked-alt"></i><span class="label">Dati Nazionali</span>
+            </div>
+            <div class="nav-item" onclick="showSection('impostazioni',this)">
+                <i class="fas fa-cog"></i><span class="label">Impostazioni</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='biologo.html'" style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.07);padding-top:10px;">
+                <i class="fas fa-user" style="color:var(--teal);"></i><span class="label" style="color:rgba(255,255,255,0.5);font-size:12px;">Portale Biologo</span>
+            </div>
+        </nav>
+
+        <div style="padding:10px 8px;border-top:1px solid rgba(255,255,255,0.07);">
+            <div class="label" style="background:white;border-radius:12px;padding:10px;text-align:center;margin-bottom:8px;">
+                <div style="color:#94a3b8;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;font-weight:700;">Partner Scientifico</div>
+                <img src="immagini/logo/fnob.webp" alt="FNOB" style="height:32px;margin:0 auto;display:block;">
+            </div>
+            <button onclick="doLogout()" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;cursor:pointer;padding:10px 8px;border-radius:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;"
+                onmouseover="this.style.background='rgba(239,68,68,0.2)';this.style.color='#fca5a5'"
+                onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='rgba(255,255,255,0.7)'">
+                <i class="fas fa-sign-out-alt"></i><span class="label">Esci</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+        <!-- DASHBOARD -->
+        <section id="sec-dashboard" class="section active">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
+                <div>
+                    <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Panoramica Nazionale</h2>
+                    <p id="dashDate" style="color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;"></p>
+                </div>
+                <button class="btn-primary no-print" onclick="showSection('licenze',document.querySelector('[onclick*=licenze]'))">
+                    <i class="fas fa-id-card"></i>Gestisci Licenze
+                </button>
+            </div>
+
+            <!-- KPI LICENZE -->
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;">
+                <div class="kpi-card teal"><div class="kpi-val" id="kpiAttive">0</div><div class="kpi-lbl">Licenze Attive</div></div>
+                <div class="kpi-card orange"><div class="kpi-val" id="kpiPending">0</div><div class="kpi-lbl">In Attesa</div></div>
+                <div class="kpi-card"><div class="kpi-val" id="kpiScadute">0</div><div class="kpi-lbl">Scadute</div></div>
+                <div class="kpi-card dark"><div class="kpi-val" id="kpiTotali">0</div><div class="kpi-lbl">Biologi Totali</div></div>
+            </div>
+
+            <!-- KPI NAZIONALI -->
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;">
+                <div class="card" style="text-align:center;">
+                    <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:var(--dark);" id="kpiScuoleNaz">0</div>
+                    <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;">Scuole Totali</div>
+                </div>
+                <div class="card" style="text-align:center;">
+                    <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:var(--teal);" id="kpiSessioniNaz">0</div>
+                    <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;">Sessioni Totali</div>
+                </div>
+                <div class="card" style="text-align:center;">
+                    <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:var(--teal);" id="kpiMiglioramentoNaz">—</div>
+                    <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;">Miglioramento Medio</div>
+                </div>
+            </div>
+
+            <!-- LICENZE IN SCADENZA + ULTIMI ISCRITTI -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                        <h4 style="font-size:15px;font-weight:700;color:var(--dark);">⚠️ Licenze in Scadenza</h4>
+                        <span style="font-size:10px;color:#94a3b8;font-weight:600;">prossimi 30 giorni</span>
+                    </div>
+                    <div id="licenzeScadenza"></div>
+                </div>
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                        <h4 style="font-size:15px;font-weight:700;color:var(--dark);">🕐 In Attesa di Approvazione</h4>
+                        <button class="btn-ghost no-print" style="font-size:10px;padding:6px 12px;" onclick="showSection('licenze',document.querySelector('[onclick*=licenze]'))">Vedi tutte</button>
+                    </div>
+                    <div id="biologiPending"></div>
+                </div>
+            </div>
+
+            <!-- GRAFICO ATTIVITA' -->
+            <div class="card" style="margin-top:18px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                    <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Distribuzione Licenze</h4>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;">
+                    <canvas id="chartLicenze" height="200"></canvas>
+                    <div id="chartLicenzeLegend" style="padding:10px;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LICENZE BIOLOGI -->
+        <section id="sec-licenze" class="section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
+                <div>
+                    <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Gestione Licenze</h2>
+                    <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Tutti i biologi registrati nel sistema</p>
+                </div>
+                <button class="btn-primary no-print" onclick="openModal('nuovoBiologoModal')">
+                    <i class="fas fa-plus"></i>Aggiungi Biologo
+                </button>
+            </div>
+
+            <!-- FILTRI -->
+            <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;" class="no-print">
+                <button onclick="filtraLicenze('tutti')" id="filtro-tutti" style="background:var(--dark);color:white;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">Tutti</button>
+                <button onclick="filtraLicenze('active')" id="filtro-active" style="background:#f1f5f9;color:#64748b;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">Attivi</button>
+                <button onclick="filtraLicenze('pending')" id="filtro-pending" style="background:#f1f5f9;color:#64748b;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">In Attesa</button>
+                <button onclick="filtraLicenze('expired')" id="filtro-expired" style="background:#f1f5f9;color:#64748b;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">Scadute</button>
+                <button onclick="filtraLicenze('suspended')" id="filtro-suspended" style="background:#f1f5f9;color:#64748b;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">Sospese</button>
+            </div>
+
+            <div class="card">
+                <div id="biologiList"></div>
+            </div>
+        </section>
+
+        <!-- DATI NAZIONALI -->
+        <section id="sec-nazionale" class="section">
+            <div style="margin-bottom:28px;">
+                <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Dati Nazionali</h2>
+                <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Aggregato di tutti i biologi attivi</p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:28px;">
+                <div class="kpi-card teal"><div class="kpi-val" id="nazStudenti">0</div><div class="kpi-lbl">Studenti Monitorati</div></div>
+                <div class="kpi-card"><div class="kpi-val" id="nazScuole">0</div><div class="kpi-lbl">Scuole</div></div>
+                <div class="kpi-card"><div class="kpi-val" id="nazSessioni">0</div><div class="kpi-lbl">Sessioni</div></div>
+                <div class="kpi-card dark"><div class="kpi-val" id="nazMiglioramento">—</div><div class="kpi-lbl">Miglioramento Medio</div></div>
+            </div>
+
+            <!-- TOP BIOLOGI -->
+            <div class="card" style="margin-bottom:18px;">
+                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:18px;">🏆 Top Biologi per Sessioni</h4>
+                <div id="topBiologi"></div>
+            </div>
+
+            <!-- EXPORT -->
+            <div class="card">
+                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:6px;">Export Dati</h4>
+                <p style="font-size:13px;color:#64748b;margin-bottom:18px;">Esporta i dati aggregati per il Report Nazionale FNOB</p>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                    <button class="btn-primary no-print" onclick="exportCSV()"><i class="fas fa-file-csv"></i>Esporta CSV</button>
+                    <button class="btn-dark no-print" onclick="window.print()"><i class="fas fa-print"></i>Stampa Report</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- IMPOSTAZIONI -->
+        <section id="sec-impostazioni" class="section">
+            <div style="margin-bottom:28px;">
+                <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Impostazioni</h2>
+                <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Configurazione del sistema S.A.N.E.</p>
+            </div>
+            <div class="card" style="margin-bottom:18px;">
+                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:18px;">Prezzi Pacchetti</h4>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+                    <div>
+                        <label class="form-label">Pacchetto Base</label>
+                        <input class="form-input" value="€ 2.100" readonly style="background:#f8fafc;">
+                    </div>
+                    <div>
+                        <label class="form-label">Pacchetto Standard</label>
+                        <input class="form-input" value="€ 4.500" readonly style="background:#f8fafc;">
+                    </div>
+                    <div>
+                        <label class="form-label">Pacchetto Premium</label>
+                        <input class="form-input" value="€ 5.800" readonly style="background:#f8fafc;">
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="margin-bottom:18px;">
+                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:18px;">Licenza Biologi</h4>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+                    <div>
+                        <label class="form-label">Canone Annuale</label>
+                        <input class="form-input" value="€ 420 + IVA" readonly style="background:#f8fafc;">
+                    </div>
+                    <div>
+                        <label class="form-label">Durata Licenza</label>
+                        <input class="form-input" value="12 mesi" readonly style="background:#f8fafc;">
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:6px;">Reset Dati Demo</h4>
+                <p style="font-size:13px;color:#64748b;margin-bottom:18px;">Rimuove tutti i dati e ricarica i dati demo iniziali</p>
+                <button class="btn-danger no-print" onclick="resetDemo()"><i class="fas fa-redo" style="margin-right:6px;"></i>Reset Demo</button>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+// ============================================================
+// SUPABASE
+// ============================================================
+const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_VxN-7lIjR3lgcG1Kv_nMrg_c0xJpY0n';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ============================================================
+// STATO
+// ============================================================
+let adminState = { biologi: [] };
+let filtroAttivo = 'tutti';
+let chartLicenzeInstance = null;
+
+// ============================================================
+// AUTH
+// ============================================================
+async function doLogin(){
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPassword').value;
+    const msg   = document.getElementById('loginMsg');
+    if(!email){ msg.textContent='Inserisci la tua email'; return; }
+    if(!pass){  msg.textContent='Inserisci la password';  return; }
+    msg.textContent = 'Accesso in corso...';
+    const { data, error } = await db.auth.signInWithPassword({ email, password: pass });
+    if(error){ msg.textContent = 'Credenziali non valide'; return; }
+    // onAuthStateChange gestirà il resto
+}
+
+function doLogout(){
+    adminState = { biologi:[] };
+    document.getElementById('appShell').style.opacity='0';
+    setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
+    db.auth.signOut();
+}
+
+async function caricaDati(){
+    const [{ data: profiles }, { data: scuoleRaw }, { data: sessioniRaw }] = await Promise.all([
+        db.from('profiles').select('*').eq('role','biologo').order('data_iscrizione',{ascending:false}),
+        db.from('scuole').select('biologo_id'),
+        db.from('sessioni').select('biologo_id, score_pre, score_post')
+    ]);
+    adminState.biologi = (profiles||[]).map(p => {
+        const sc  = (scuoleRaw||[]).filter(s=>s.biologo_id===p.id);
+        const se  = (sessioniRaw||[]).filter(s=>s.biologo_id===p.id);
+        const seS = se.filter(s=>s.score_pre&&s.score_post);
+        const mig = seS.length>0
+            ? Math.round((seS.reduce((a,s)=>a+(parseFloat(s.score_post)-parseFloat(s.score_pre)),0)/seS.length)*10)/10
+            : null;
+        return { id:p.id, nome:p.nome||p.email, email:p.email, regione:p.regione||'—',
+                 ordine:p.ordine||'—', stato:p.stato, scadenza:p.scadenza,
+                 dataIscrizione:p.data_iscrizione, scuole:sc.length, sessioni:se.length, miglioramento:mig };
+    });
+}
+
+async function inizializzaApp(){
+    await caricaDati();
+    document.getElementById('dashDate').textContent = new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    aggiornaDashboard();
+}
+
+// ============================================================
+// NAVIGAZIONE
+// ============================================================
+function showSection(id, el){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById('sec-'+id).classList.add('active');
+    if(el) el.classList.add('active');
+    if(id==='dashboard') aggiornaDashboard();
+    if(id==='licenze') aggiornaLicenze();
+    if(id==='nazionale') aggiornaNazionale();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function aggiornaDashboard(){
+    const b = adminState.biologi;
+    const attive    = b.filter(x=>x.stato==='active').length;
+    const pending   = b.filter(x=>x.stato==='pending').length;
+    const scadute   = b.filter(x=>x.stato==='expired').length;
+    const sospese   = b.filter(x=>x.stato==='suspended').length;
+
+    document.getElementById('kpiAttive').textContent    = attive;
+    document.getElementById('kpiPending').textContent   = pending;
+    document.getElementById('kpiScadute').textContent   = scadute;
+    document.getElementById('kpiTotali').textContent    = b.length;
+
+    // KPI nazionali
+    const totScuole   = b.reduce((a,x)=>a+(x.scuole||0),0);
+    const totSessioni = b.reduce((a,x)=>a+(x.sessioni||0),0);
+    const conMig = b.filter(x=>x.miglioramento);
+    const mediaMig = conMig.length>0 ? (conMig.reduce((a,x)=>a+x.miglioramento,0)/conMig.length).toFixed(1) : '—';
+
+    document.getElementById('kpiScuoleNaz').textContent    = totScuole;
+    document.getElementById('kpiSessioniNaz').textContent  = totSessioni;
+    document.getElementById('kpiMiglioramentoNaz').textContent = conMig.length>0 ? '+'+mediaMig : '—';
+
+    // Licenze in scadenza (30 giorni)
+    const oggi = new Date();
+    const tra30 = new Date(); tra30.setDate(oggi.getDate()+30);
+    const inScadenza = b.filter(x=>x.stato==='active'&&x.scadenza&&new Date(x.scadenza)<=tra30&&new Date(x.scadenza)>=oggi);
+    const elSc = document.getElementById('licenzeScadenza');
+    if(inScadenza.length===0){
+        elSc.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:16px;">Nessuna licenza in scadenza nei prossimi 30 giorni 👍</p>';
+    } else {
+        elSc.innerHTML = inScadenza.map(x=>{
+            const giorni = Math.ceil((new Date(x.scadenza)-oggi)/(1000*60*60*24));
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+                <div>
+                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${x.nome}</div>
+                    <div style="font-size:11px;color:#94a3b8;">${x.regione}</div>
+                </div>
+                <span style="background:#fef3c7;color:#92400e;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;">tra ${giorni}gg</span>
+            </div>`;
+        }).join('');
+    }
+
+    // In attesa
+    const elP = document.getElementById('biologiPending');
+    const pendingList = b.filter(x=>x.stato==='pending');
+    if(pendingList.length===0){
+        elP.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:16px;">Nessuna richiesta in attesa ✓</p>';
+    } else {
+        elP.innerHTML = pendingList.map(x=>`
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+                <div>
+                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${x.nome}</div>
+                    <div style="font-size:11px;color:#94a3b8;">${x.regione} · ${x.dataIscrizione}</div>
+                </div>
+                <div style="display:flex;gap:6px;">
+                    <button class="btn-success" onclick="cambiaStato(${x.id},'active')"><i class="fas fa-check"></i></button>
+                    <button class="btn-danger" onclick="cambiaStato(${x.id},'suspended')"><i class="fas fa-times"></i></button>
+                </div>
+            </div>`).join('');
+    }
+
+    // Grafico ciambella
+    aggiornaGraficoCiambella(attive, pending, scadute, sospese);
+}
+
+function aggiornaGraficoCiambella(attive, pending, scadute, sospese){
+    const canvas = document.getElementById('chartLicenze');
+    if(!canvas) return;
+    if(chartLicenzeInstance) chartLicenzeInstance.destroy();
+    chartLicenzeInstance = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            labels: ['Attive','In Attesa','Scadute','Sospese'],
+            datasets:[{ data:[attive,pending,scadute,sospese], backgroundColor:['#00A896','#F4A261','#ef4444','#94a3b8'], borderWidth:0, hoverOffset:6 }]
+        },
+        options:{ responsive:true, cutout:'65%', plugins:{ legend:{ display:false } } }
+    });
+    const tot = attive+pending+scadute+sospese;
+    document.getElementById('chartLicenzeLegend').innerHTML = [
+        {label:'Attive',val:attive,color:'#00A896'},
+        {label:'In Attesa',val:pending,color:'#F4A261'},
+        {label:'Scadute',val:scadute,color:'#ef4444'},
+        {label:'Sospese',val:sospese,color:'#94a3b8'}
+    ].map(l=>`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="width:12px;height:12px;border-radius:4px;background:${l.color};flex-shrink:0;"></div>
+            <div style="flex:1;font-size:13px;font-weight:600;color:var(--dark);">${l.label}</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--dark);">${l.val}</div>
+            <div style="font-size:11px;color:#94a3b8;width:32px;text-align:right;">${tot>0?Math.round(l.val/tot*100):0}%</div>
+        </div>`).join('');
+}
+
+// ============================================================
+// LICENZE
+// ============================================================
+let filtroCorrente = 'tutti';
+
+function filtraLicenze(filtro){
+    filtroCorrente = filtro;
+    document.querySelectorAll('[id^=filtro-]').forEach(b=>{
+        b.style.background='#f1f5f9'; b.style.color='#64748b';
+    });
+    const btn = document.getElementById('filtro-'+filtro);
+    if(btn){ btn.style.background='var(--dark)'; btn.style.color='white'; }
+    aggiornaLicenze();
+}
+
+function aggiornaLicenze(){
+    const list = document.getElementById('biologiList');
+    let biologi = adminState.biologi;
+    if(filtroCorrente !== 'tutti') biologi = biologi.filter(b=>b.stato===filtroCorrente);
+
+    if(biologi.length===0){
+        list.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessun biologo trovato.</p>';
+        return;
+    }
+
+    const colors = ['#00A896','#0A2647','#F4A261','#8b5cf6','#3b82f6','#ec4899'];
+    list.innerHTML = biologi.map((b,i)=>{
+        const color = colors[i % colors.length];
+        const badge = badgeHtml(b.stato);
+        const scad = b.scadenza ? new Date(b.scadenza).toLocaleDateString('it-IT') : '—';
+        return `<div class="bio-row">
+            <div class="bio-avatar" style="background:${color};">${b.nome.charAt(0)}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:14px;color:var(--dark);">${b.nome}</div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${b.email} · ${b.regione} · Ordine: ${b.ordine}</div>
+                <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+                    ${badge}
+                    <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.scuole} scuole</span>
+                    <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.sessioni} sessioni</span>
+                    ${b.miglioramento ? `<span style="font-size:10px;color:#065f46;background:#d1fae5;padding:2px 8px;border-radius:6px;">+${b.miglioramento} miglioramento</span>` : ''}
+                </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+                <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">Scadenza</div>
+                <div style="font-weight:700;font-size:13px;color:var(--dark);margin-bottom:10px;">${scad}</div>
+                <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;">
+                    ${b.stato==='pending' ? `<button class="btn-success" onclick="cambiaStato(${b.id},'active')"><i class="fas fa-check" style="margin-right:4px;"></i>Approva</button>` : ''}
+                    ${b.stato==='active' ? `<button class="btn-warn" onclick="rinnovaLicenza(${b.id})"><i class="fas fa-redo" style="margin-right:4px;"></i>Rinnova</button>` : ''}
+                    ${b.stato==='active'||b.stato==='pending' ? `<button class="btn-danger" onclick="cambiaStato(${b.id},'suspended')"><i class="fas fa-ban" style="margin-right:4px;"></i>Sospendi</button>` : ''}
+                    ${b.stato==='suspended'||b.stato==='expired' ? `<button class="btn-success" onclick="cambiaStato(${b.id},'active')"><i class="fas fa-check" style="margin-right:4px;"></i>Riattiva</button>` : ''}
+                    <button class="btn-ghost" onclick="eliminaBiologo(${b.id})" style="font-size:10px;padding:7px 10px;"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function badgeHtml(stato){
+    const map = {
+        active:   ['badge-active','check-circle','Attiva'],
+        pending:  ['badge-pending','clock','In Attesa'],
+        expired:  ['badge-expired','times-circle','Scaduta'],
+        suspended:['badge-suspended','ban','Sospesa']
+    };
+    const [cls,icon,label] = map[stato]||['badge-suspended','question','Sconosciuto'];
+    return `<span class="badge ${cls}"><i class="fas fa-${icon}"></i>${label}</span>`;
+}
+
+async function cambiaStato(id, nuovoStato){
+    const b = adminState.biologi.find(x=>x.id===id);
+    if(!b) return;
+    const update = { stato: nuovoStato };
+    if(nuovoStato==='active' && !b.scadenza){
+        const sc = new Date(); sc.setFullYear(sc.getFullYear()+1);
+        update.scadenza = sc.toISOString().split('T')[0];
+    }
+    const { error } = await db.from('profiles').update(update).eq('id', id);
+    if(error){ showToast('Errore: '+error.message,'error'); return; }
+    Object.assign(b, update);
+    aggiornaLicenze(); aggiornaDashboard();
+    const labels = {active:'Licenza attivata ✓', suspended:'Biologo sospeso', expired:'Licenza scaduta'};
+    showToast(labels[nuovoStato]||'Stato aggiornato');
+}
+
+async function rinnovaLicenza(id){
+    const sc = new Date(); sc.setFullYear(sc.getFullYear()+1);
+    const scadenza = sc.toISOString().split('T')[0];
+    const { error } = await db.from('profiles').update({ stato:'active', scadenza }).eq('id', id);
+    if(error){ showToast('Errore: '+error.message,'error'); return; }
+    const b = adminState.biologi.find(x=>x.id===id);
+    if(b){ b.stato='active'; b.scadenza=scadenza; }
+    aggiornaLicenze(); aggiornaDashboard();
+    showToast('Licenza rinnovata per 12 mesi ✓');
+}
+
+async function eliminaBiologo(id){
+    if(!confirm('Sospendere questo biologo? (non può essere rimosso dal portale senza accesso al backend)')) return;
+    await cambiaStato(id, 'suspended');
+}
+
+async function aggiungiBiologo(){
+    const nome     = document.getElementById('bioNome').value.trim();
+    const email    = document.getElementById('bioEmail').value.trim();
+    const regione  = document.getElementById('bioRegione').value;
+    const ordine   = document.getElementById('bioOrdine').value.trim();
+    const stato    = document.getElementById('bioStato').value;
+    const scadenza = document.getElementById('bioScadenza').value;
+    if(!nome||!email||!regione){ showToast('Compila nome, email e regione','error'); return; }
+
+    // Aggiorna profilo esistente se già registrato, altrimenti mostra istruzione
+    const { data: existing } = await db.from('profiles').select('id').eq('email', email).single();
+    if(existing){
+        const update = { nome, regione, ordine:ordine||'—', stato, scadenza:scadenza||null };
+        const { error } = await db.from('profiles').update(update).eq('id', existing.id);
+        if(error){ showToast('Errore: '+error.message,'error'); return; }
+        closeModal('nuovoBiologoModal');
+        await caricaDati(); aggiornaDashboard(); aggiornaLicenze();
+        showToast('Profilo aggiornato: '+nome);
+    } else {
+        showToast('Biologo non ancora registrato. Condividi il link del portale con '+email,'error');
+    }
+}
+
+// ============================================================
+// DATI NAZIONALI
+// ============================================================
+function aggiornaNazionale(){
+    const b = adminState.biologi.filter(x=>x.stato==='active');
+    const totScuole   = b.reduce((a,x)=>a+(x.scuole||0),0);
+    const totSessioni = b.reduce((a,x)=>a+(x.sessioni||0),0);
+    const totStudenti = totSessioni * 22;
+    const conMig = b.filter(x=>x.miglioramento);
+    const mediaMig = conMig.length>0 ? '+' + (conMig.reduce((a,x)=>a+x.miglioramento,0)/conMig.length).toFixed(1) : '—';
+
+    document.getElementById('nazStudenti').textContent    = totStudenti;
+    document.getElementById('nazScuole').textContent      = totScuole;
+    document.getElementById('nazSessioni').textContent    = totSessioni;
+    document.getElementById('nazMiglioramento').textContent = mediaMig;
+
+    // Top biologi
+    const top = [...adminState.biologi].sort((a,b)=>(b.sessioni||0)-(a.sessioni||0)).slice(0,5);
+    document.getElementById('topBiologi').innerHTML = top.map((b,i)=>`
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #f1f5f9;">
+            <div style="width:28px;height:28px;background:${i===0?'#F4A261':i===1?'#94a3b8':i===2?'#d97706':'#e2e8f0'};border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:white;flex-shrink:0;">#${i+1}</div>
+            <div style="flex:1;">
+                <div style="font-weight:700;font-size:13px;color:var(--dark);">${b.nome}</div>
+                <div style="font-size:11px;color:#94a3b8;">${b.regione}</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--teal);">${b.sessioni}</div>
+                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;">Sessioni</div>
+            </div>
+        </div>`).join('');
+}
+
+// ============================================================
+// EXPORT CSV
+// ============================================================
+function exportCSV(){
+    const headers = ['Nome','Email','Regione','Ordine','Stato','Scadenza','Scuole','Sessioni','Miglioramento Medio'];
+    const rows = adminState.biologi.map(b=>[
+        b.nome, b.email, b.regione, b.ordine, b.stato,
+        b.scadenza||'—', b.scuole, b.sessioni,
+        b.miglioramento ? '+'+b.miglioramento : '—'
+    ]);
+    const csv = [headers, ...rows].map(r=>r.join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'SANE_Biologi_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+    showToast('Export CSV scaricato ✓');
+}
+
+// ============================================================
+// EXPORT CSV (invariato, usa adminState.biologi già caricati)
+// ============================================================
+
+// ============================================================
+// MODAL
+// ============================================================
+function openModal(id){
+    if(id==='nuovoBiologoModal'){
+        const sc = new Date(); sc.setFullYear(sc.getFullYear()+1);
+        document.getElementById('bioScadenza').value = sc.toISOString().split('T')[0];
+    }
+    document.getElementById(id).classList.add('open');
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, tipo){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.borderLeftColor = tipo==='error' ? '#ef4444' : 'var(--teal)';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 3200);
+}
+
+// ============================================================
+// AVVIO — Auth state listener
+// ============================================================
+db.auth.onAuthStateChange(async (event, session) => {
+    if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session){
+        // Verifica che sia admin
+        const { data: profilo } = await db.from('profiles').select('role,stato').eq('id', session.user.id).single();
+        if(!profilo || profilo.role !== 'admin'){
+            document.getElementById('loginMsg').textContent = 'Accesso non autorizzato.';
+            await db.auth.signOut();
+            return;
+        }
+        document.getElementById('loginScreen').classList.add('hidden');
+        setTimeout(async ()=>{
+            document.getElementById('appShell').style.opacity='1';
+            await inizializzaApp();
+        }, 400);
+    } else if(event === 'SIGNED_OUT'){
+        adminState = { biologi:[] };
+        document.getElementById('appShell').style.opacity='0';
+        setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.A.N.E. Italia</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root{--dark:#0A2647;--teal:#00A896;--teal-light:#00C9B1;--accent:#F4A261;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:var(--dark);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow:hidden;position:relative;}
+
+        /* SFONDO ANIMATO */
+        .bg-circle{position:absolute;border-radius:50%;opacity:0.05;animation:float 8s ease-in-out infinite;}
+        .bg-circle-1{width:600px;height:600px;background:var(--teal);top:-200px;right:-200px;animation-delay:0s;}
+        .bg-circle-2{width:400px;height:400px;background:var(--accent);bottom:-150px;left:-150px;animation-delay:3s;}
+        .bg-circle-3{width:300px;height:300px;background:var(--teal-light);top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:1.5s;}
+        @keyframes float{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-20px) scale(1.05);}}
+        .bg-circle-3{animation:float2 6s ease-in-out infinite;}
+        @keyframes float2{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-55%) scale(1.08);}}
+
+        /* CONTAINER */
+        .container{position:relative;z-index:10;text-align:center;max-width:560px;width:100%;}
+
+        /* LOGO */
+        .logo-wrap{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:40px;}
+        .logo-icon{width:64px;height:64px;background:var(--teal);border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(0,168,150,0.4);}
+        .logo-text h1{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:white;text-align:left;line-height:1;}
+        .logo-text p{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.25em;text-transform:uppercase;margin-top:4px;text-align:left;}
+
+        /* TAGLINE */
+        .tagline{font-size:15px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:48px;font-weight:400;}
+        .tagline strong{color:rgba(255,255,255,0.8);font-weight:600;}
+
+        /* CARDS */
+        .cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px;}
+        .entry-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:32px 24px;cursor:pointer;transition:all 0.3s ease;text-decoration:none;display:block;}
+        .entry-card:hover{background:rgba(255,255,255,0.09);border-color:rgba(255,255,255,0.2);transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,0.3);}
+        .entry-card.teal:hover{border-color:var(--teal);box-shadow:0 20px 40px rgba(0,168,150,0.2);}
+        .entry-card.orange:hover{border-color:var(--accent);box-shadow:0 20px 40px rgba(244,162,97,0.2);}
+
+        .card-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:22px;}
+        .teal .card-icon{background:rgba(0,168,150,0.2);color:var(--teal);}
+        .orange .card-icon{background:rgba(244,162,97,0.2);color:var(--accent);}
+
+        .card-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:white;margin-bottom:8px;}
+        .card-desc{font-size:12px;color:rgba(255,255,255,0.4);line-height:1.5;}
+
+        .card-arrow{display:inline-flex;align-items:center;gap:6px;margin-top:18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;}
+        .teal .card-arrow{color:var(--teal);}
+        .orange .card-arrow{color:var(--accent);}
+
+        /* FNOB */
+        .fnob-wrap{display:flex;align-items:center;justify-content:center;gap:12px;opacity:0.4;}
+        .fnob-wrap img{height:20px;filter:brightness(10);}
+        .fnob-wrap span{font-size:10px;color:white;letter-spacing:0.15em;text-transform:uppercase;}
+
+        /* MOBILE */
+        @media(max-width:480px){
+            .cards{grid-template-columns:1fr;}
+            .logo-text h1{font-size:22px;}
+            .entry-card{padding:24px 20px;}
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SFONDO -->
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+    <div class="bg-circle bg-circle-3"></div>
+
+    <div class="container">
+
+        <!-- LOGO -->
+        <div class="logo-wrap">
+            <div class="logo-icon">
+                <img src="immagini/logo/logo2.webp" alt="SANE" style="height:38px;">
+            </div>
+            <div class="logo-text">
+                <h1>S.A.N.E. Italia</h1>
+                <p>Sicurezza · Alimentazione · Nutrizione · Educazione</p>
+            </div>
+        </div>
+
+        <!-- TAGLINE -->
+        <p class="tagline">Il programma di <strong>educazione alimentare nelle scuole</strong><br>con Biologi Nutrizionisti certificati FNOB</p>
+
+        <!-- CARDS -->
+        <div class="cards">
+
+            <a href="biologo.html" class="entry-card teal">
+                <div class="card-icon"><i class="fas fa-user"></i></div>
+                <div class="card-title">Portale Biologo</div>
+                <div class="card-desc">Accedi per gestire le tue scuole, registrare sessioni e generare report</div>
+                <div class="card-arrow">Accedi <i class="fas fa-arrow-right"></i></div>
+            </a>
+
+            <a href="admin.html" class="entry-card orange">
+                <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="card-title">Pannello Admin</div>
+                <div class="card-desc">Gestisci licenze, visualizza dati nazionali e monitora i biologi attivi</div>
+                <div class="card-arrow">Accedi <i class="fas fa-arrow-right"></i></div>
+            </a>
+
+        </div>
+
+        <!-- FNOB -->
+        <div class="fnob-wrap">
+            <span>In collaborazione con</span>
+            <img src="immagini/logo/fnob.webp" alt="FNOB">
+        </div>
+
+    </div>
+
+</body>
+</html>
