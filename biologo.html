@@ -974,15 +974,15 @@ async function eliminaPacchetto(pacchettoId){
 }
 
 function apriNuovaClassePerPacchetto(scuolaId,pacchettoId){
-    aggiornaSelectPacchetti(scuolaId,pacchettoId);
-    openModal('classeModal');
+    openModal('classeModal');                       // reset prima
+    aggiornaSelectPacchetti(scuolaId,pacchettoId);  // poi pre-seleziona il pacchetto giusto
 }
 
 function apriNuovaClassePerScuola(scuolaId){
     const primoP=appState.pacchetti.find(p=>p.scuola_id===scuolaId);
     if(!primoP){showToast('Aggiungi prima un pacchetto alla scuola','error');return;}
-    aggiornaSelectPacchetti(scuolaId,primoP.id);
     openModal('classeModal');
+    aggiornaSelectPacchetti(scuolaId,primoP.id);
 }
 
 function aggiornaSelectClasseScuole(preselect){ aggiornaSelectPacchetti(null,preselect); }
