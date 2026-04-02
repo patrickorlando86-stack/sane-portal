@@ -801,31 +801,133 @@ function aggiornaReport(){
     }).join('');
 }
 
-function generaReport(scuolaId){
-    const s=appState.scuole.find(sc=>sc.id===scuolaId);
-    if(!s) return;
-    const sess=appState.sessioni.filter(se=>se.scuola_id===scuolaId);
-    const conScore=sess.filter(se=>se.score_pre&&se.score_post);
-    const oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
-    let mPre='—',mPost='—',mig='—',pct='—';
-    if(conScore.length>0){
-        const vPre=conScore.reduce((a,se)=>a+parseFloat(se.score_pre),0)/conScore.length;
-        const vPost=conScore.reduce((a,se)=>a+parseFloat(se.score_post),0)/conScore.length;
-        mPre=vPre.toFixed(1);mPost=vPost.toFixed(1);
-        mig='+'+(vPost-vPre).toFixed(1);
-        pct='+'+Math.round(((vPost-vPre)/vPre)*100)+'%';
+async function generaReport(scuolaId) {
+    const s = appState.scuole.find(sc => sc.id === scuolaId);
+    if (!s) return;
+
+    // Mostra loading e apre il modal subito
+    document.getElementById('reportContent').innerHTML = `
+        <div style="text-align:center;padding:60px 20px;">
+            <i class="fas fa-spinner fa-spin" style="font-size:28px;color:var(--teal);margin-bottom:14px;display:block;"></i>
+            <p style="color:#94a3b8;font-size:13px;">Caricamento dati da Supabase...</p>
+        </div>`;
+    openModal('reportModal');
+
+    const sess = appState.sessioni.filter(se => se.scuola_id === scuolaId);
+    if (sess.length === 0) {
+        document.getElementById('reportContent').innerHTML = `
+            <p style="text-align:center;padding:40px;color:#94a3b8;">Nessuna sessione registrata per questa scuola.</p>
+            <div style="display:flex;justify-content:center;">
+                <button class="btn-ghost" onclick="closeModal('reportModal')">Chiudi</button>
+            </div>`;
+        return;
     }
-    document.getElementById('reportContent').innerHTML=`
+
+    const sessIds = sess.map(se => se.id);
+    const { data: stats, error } = await db.from('sessioni_stats').select('*').in('sessione_id', sessIds);
+    if (error) { showToast('Errore dati: ' + error.message, 'error'); return; }
+
+    // La view restituisce una riga per sessione_id con PRE e POST già uniti
+    const rows = stats || [];
+    const oggi = new Date().toLocaleDateString('it-IT', {day:'numeric', month:'long', year:'numeric'});
+
+    // Helper: media numerica di una colonna su tutte le righe
+    function media(campo) {
+        const vals = rows.map(r => parseFloat(r[campo])).filter(v => !isNaN(v));
+        return vals.length ? vals.reduce((a,b) => a+b, 0) / vals.length : null;
+    }
+    // Helper: media percentuale arrotondata (colonne d1_pre_pct, d1_post_pct …)
+    function avgPct(col) {
+        const vals = rows.map(r => parseFloat(r[col])).filter(v => !isNaN(v));
+        return vals.length ? Math.round(vals.reduce((a,b) => a+b, 0) / vals.length) : null;
+    }
+
+    // Studenti monitorati (somma pre + post, evita doppio conteggio usando il max)
+    const totStudenti = rows.reduce((a, r) => a + Math.max(r.studenti_pre || 0, r.studenti_post || 0), 0);
+
+    // Score medi e miglioramento
+    const avgPre  = media('media_pre');
+    const avgPost = media('media_post');
+    const migVal  = media('miglioramento') ?? (avgPre !== null && avgPost !== null ? avgPost - avgPre : null);
+    const migPct  = migVal !== null && avgPre ? Math.round((migVal / avgPre) * 100) : null;
+
+    // Determina versione massima in base alle colonne non-null
+    const haD12 = rows.some(r => r.d12_pre_pct != null || r.d12_post_pct != null);
+    const haD10 = rows.some(r => r.d10_pre_pct != null || r.d10_post_pct != null);
+    const maxVersione = haD12 ? 'C' : haD10 ? 'B' : 'A';
+    const versioni = [...new Set(rows.map(r => r.versione).filter(Boolean))];
+    const vLabel = versioni.length ? versioni.sort().join('/') : maxVersione;
+
+    // Costruisce lista domande rilevanti con colonne reali della view
+    const campi = ['d1','d2','d3','d4','d5','d6','d7','d8','d9'];
+    if (maxVersione === 'B' || maxVersione === 'C') campi.push('d10','d11');
+    if (maxVersione === 'C') campi.push('d12','d13');
+
+    const righe = campi.map(c => ({
+        campo: c,
+        testo: DOMANDE[c],
+        pre:   avgPct(c + '_pre_pct'),
+        post:  avgPct(c + '_post_pct')
+    }));
+
+    // d_post: solo POST, colonna unica d_post_pct nella view
+    const dpostPct = avgPct('d_post_pct');
+
+    // Render riga domanda con doppia barra CSS
+    function renderRiga(r) {
+        const delta    = r.pre !== null && r.post !== null ? r.post - r.pre : null;
+        const dStr     = delta !== null ? (delta >= 0 ? '+' + delta : delta) + '%' : '—';
+        const dColor   = delta === null ? '#94a3b8' : delta >= 0 ? '#065f46' : '#991b1b';
+        const dBg      = delta === null ? '#f1f5f9' : delta >= 0 ? '#d1fae5' : '#fee2e2';
+        const arrowIco = delta === null ? '' : delta >= 0
+            ? `<i class="fas fa-arrow-up" style="font-size:9px;"></i>`
+            : `<i class="fas fa-arrow-down" style="font-size:9px;"></i>`;
+        return `
+        <div style="margin-bottom:12px;padding:12px 14px;background:#f8fafc;border-radius:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:11px;font-weight:600;color:var(--dark);line-height:1.4;">
+                    <span style="font-family:'Syne',sans-serif;color:var(--teal);margin-right:4px;">${r.campo.toUpperCase()}</span>${r.testo}
+                </span>
+                <span style="background:${dBg};color:${dColor};font-family:'Syne',sans-serif;font-weight:700;font-size:11px;padding:3px 10px;border-radius:99px;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;">${arrowIco}${dStr}</span>
+            </div>
+            ${r.pre !== null ? `
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+                <span style="width:32px;font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;">PRE</span>
+                <div style="flex:1;background:#e2e8f0;border-radius:99px;height:12px;overflow:hidden;">
+                    <div style="width:${r.pre}%;background:#94a3b8;height:100%;border-radius:99px;"></div>
+                </div>
+                <span style="width:34px;text-align:right;font-size:11px;font-weight:700;color:#64748b;">${r.pre}%</span>
+            </div>` : ''}
+            ${r.post !== null ? `
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span style="width:32px;font-size:9px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.06em;">POST</span>
+                <div style="flex:1;background:#e2e8f0;border-radius:99px;height:12px;overflow:hidden;">
+                    <div style="width:${r.post}%;background:var(--teal);height:100%;border-radius:99px;"></div>
+                </div>
+                <span style="width:34px;text-align:right;font-size:11px;font-weight:700;color:var(--teal);">${r.post}%</span>
+            </div>` : ''}
+        </div>`;
+    }
+
+    document.getElementById('reportContent').innerHTML = `
+    <!-- Header -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
         <div style="display:flex;align-items:center;gap:10px;">
-            <div style="background:var(--dark);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-leaf" style="color:var(--teal);font-size:14px;"></i></div>
-            <div><div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);font-size:13px;">S.A.N.E. Italia</div><div style="font-size:9px;color:#94a3b8;letter-spacing:0.15em;text-transform:uppercase;">Portale Biologi</div></div>
+            <div style="background:var(--dark);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-leaf" style="color:var(--teal);font-size:14px;"></i>
+            </div>
+            <div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);font-size:13px;">S.A.N.E. Italia</div>
+                <div style="font-size:9px;color:#94a3b8;letter-spacing:0.15em;text-transform:uppercase;">Portale Biologi</div>
+            </div>
         </div>
         <div style="background:#f0fdf9;border-radius:9px;padding:7px 12px;text-align:center;">
             <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Partner Scientifico</div>
             <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);font-size:12px;">F.N.O.B.</div>
         </div>
     </div>
+
+    <!-- Intestazione scuola -->
     <div style="background:var(--dark);border-radius:18px;padding:20px;color:white;margin-bottom:20px;">
         <div style="font-size:9px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:3px;">Report di Progetto</div>
         <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin:0 0 7px;">${s.nome}</h2>
@@ -834,41 +936,85 @@ function generaReport(scuolaId){
             <span style="font-size:11px;color:rgba(255,255,255,0.45);">📅 ${oggi}</span>
             <span style="font-size:11px;color:rgba(255,255,255,0.45);">📋 Pacchetto ${s.pacchetto}</span>
             <span style="font-size:11px;color:rgba(255,255,255,0.45);">👤 ${appState.utente?.nome||'—'}</span>
+            <span style="font-size:11px;color:rgba(255,255,255,0.45);">📝 Versioni ${vLabel}</span>
         </div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+
+    <!-- KPI -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;">
         <div style="background:#f8fafc;border-radius:14px;padding:14px;text-align:center;">
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:22px;color:var(--dark);">${sess.length}</div>
-            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Sessioni</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:22px;color:var(--dark);">${totStudenti || sess.length}</div>
+            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;">Studenti Monitorati</div>
         </div>
         <div style="background:#f8fafc;border-radius:14px;padding:14px;text-align:center;">
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--dark);">${mPre} → ${mPost}</div>
-            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Score Pre→Post</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--dark);">
+                ${avgPre !== null ? avgPre.toFixed(1)+'/9' : '—'} → ${avgPost !== null ? avgPost.toFixed(1)+'/9' : '—'}
+            </div>
+            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;">Score Medio Pre→Post</div>
         </div>
         <div style="background:#f0fdf9;border-radius:14px;padding:14px;text-align:center;">
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--teal);">${mig} (${pct})</div>
-            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Miglioramento</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--teal);">
+                ${migVal !== null ? (migVal >= 0 ? '+' : '') + migVal.toFixed(1) + (migPct !== null ? ' ('+migPct+'%)' : '') : '—'}
+            </div>
+            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;">Miglioramento Medio</div>
         </div>
     </div>
-    <h4 style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);margin:0 0 10px;font-size:13px;">Registro Sessioni</h4>
-    ${sess.length>0?sess.map(se=>`
+
+    <!-- Analisi per domanda -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <h4 style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);font-size:13px;margin:0;">Analisi per Domanda</h4>
+        <div style="display:flex;gap:6px;">
+            <span style="background:#e2e8f0;color:#64748b;font-size:9px;font-weight:700;padding:3px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:0.06em;">▪ PRE</span>
+            <span style="background:#f0fdf9;color:var(--teal);font-size:9px;font-weight:700;padding:3px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:0.06em;">▪ POST</span>
+        </div>
+        <span style="font-size:9px;color:#94a3b8;margin-left:auto;">% risposte corrette</span>
+    </div>
+    ${righe.map(renderRiga).join('')}
+
+    <!-- Registro sessioni -->
+    <h4 style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);margin:18px 0 10px;font-size:13px;">Registro Sessioni</h4>
+    ${sess.map(se => `
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f8fafc;border-radius:10px;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
-        <div><div style="font-weight:600;font-size:12px;color:var(--dark);">Classe ${se.classe}</div><div style="font-size:10px;color:#94a3b8;">${se.data}</div></div>
-        <div style="display:flex;gap:5px;flex-wrap:wrap;">
-            ${se.check_pre?'<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.PRE ✓</span>':''}
-            ${se.check_gioco?'<span style="background:#dbeafe;color:#1e40af;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">GIOCO ✓</span>':''}
-            ${se.check_post?'<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.POST ✓</span>':''}
+        <div>
+            <div style="font-weight:600;font-size:12px;color:var(--dark);">Classe ${se.classe}</div>
+            <div style="font-size:10px;color:#94a3b8;">${se.data}</div>
         </div>
-        ${se.score_pre&&se.score_post?`<div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:13px;">${se.score_pre} → ${se.score_post}</div>`:''}
-    </div>`).join(''):'<p style="color:#94a3b8;font-size:12px;text-align:center;padding:16px;">Nessuna sessione ancora.</p>'}
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+            ${se.check_pre  ? '<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.PRE ✓</span>' : ''}
+            ${se.check_gioco? '<span style="background:#dbeafe;color:#1e40af;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">GIOCO ✓</span>' : ''}
+            ${se.check_post ? '<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.POST ✓</span>' : ''}
+        </div>
+    </div>`).join('')}
+
+    <!-- Impatto sul comportamento -->
+    ${dpostPct !== null ? `
+    <div style="margin-top:20px;background:linear-gradient(135deg,var(--dark),#0d3a6e);border-radius:18px;padding:20px;color:white;">
+        <div style="font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:6px;">Sezione Comportamentale · Solo POST</div>
+        <h4 style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin:0 0 4px;color:white;">Impatto sul Comportamento</h4>
+        <p style="font-size:11px;color:rgba(255,255,255,0.55);margin:0 0 18px;line-height:1.5;">${DOMANDE.d_post}</p>
+        <div style="display:flex;align-items:center;gap:14px;">
+            <div style="flex:1;background:rgba(255,255,255,0.12);border-radius:99px;height:16px;overflow:hidden;">
+                <div style="width:${dpostPct}%;background:var(--teal-light);height:100%;border-radius:99px;"></div>
+            </div>
+            <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:26px;color:var(--teal-light);flex-shrink:0;">${dpostPct}%</span>
+        </div>
+        <p style="font-size:10px;color:rgba(255,255,255,0.4);margin:8px 0 0;">Studenti che hanno risposto <strong style="color:rgba(255,255,255,0.7);">"Sì, molto"</strong> o <strong style="color:rgba(255,255,255,0.7);">"Un po'"</strong></p>
+    </div>` : ''}
+
+    <!-- Attestato -->
     <div style="margin-top:20px;padding:14px;background:#f0fdf9;border-radius:14px;border-left:4px solid var(--teal);">
-        <p style="font-size:11px;color:#065f46;margin:0;line-height:1.5;"><strong>Attestato:</strong> Il presente report certifica l'avvenuta implementazione del Programma "Mangiare Bene, Crescere Meglio" — Metodo Cardaci-Orlando — presso ${s.nome}. Dati raccolti e validati in conformità alle linee guida F.N.O.B.</p>
+        <p style="font-size:11px;color:#065f46;margin:0;line-height:1.5;">
+            <strong>Attestato:</strong> Il presente report certifica l'avvenuta implementazione del Programma "Mangiare Bene, Crescere Meglio" — Metodo Cardaci-Orlando — presso ${s.nome}. Dati raccolti e validati in conformità alle linee guida F.N.O.B.
+        </p>
     </div>
+
+    <!-- Azioni -->
     <div style="display:flex;gap:10px;margin-top:20px;" class="no-print">
         <button class="btn-ghost" onclick="closeModal('reportModal')">Chiudi</button>
-        <button class="btn-primary" style="flex:1;justify-content:center;" onclick="window.print()"><i class="fas fa-print"></i>Stampa / Salva PDF</button>
+        <button class="btn-primary" style="flex:1;justify-content:center;" onclick="window.print()">
+            <i class="fas fa-print"></i>Stampa / Salva PDF
+        </button>
     </div>`;
-    openModal('reportModal');
 }
 
 function generaCodice(){
@@ -1030,6 +1176,23 @@ document.getElementById('graficoModal').addEventListener('click', function(e) {
 // INSERISCI RISPOSTE
 // ============================================================
 const RISPOSTE_CORRETTE = {d1:'A',d2:'A',d3:'A',d4:'A',d5:'A',d6:'A',d7:'A',d8:'A',d9:'A'};
+
+const DOMANDE = {
+    d1:    'Il Piatto Sano è composto da',
+    d2:    'Scelta più bilanciata al mattino',
+    d3:    "L'acqua è importante perché",
+    d4:    'Frequenza della colazione',
+    d5:    'Consumo di frutta e verdura',
+    d6:    'Consumo di bevande zuccherate',
+    d7:    'Definizione di allergia alimentare',
+    d8:    'Comportamento con un compagno allergico',
+    d9:    'Giorni di attività fisica settimanale',
+    d10:   'Lettura delle etichette alimentari',
+    d11:   'Conoscenza pregressa degli argomenti',
+    d12:   'Modifica della dieta per salute o scelta etica',
+    d13:   "Opinione sull'educazione alimentare scolastica",
+    d_post:'Cambiamento delle abitudini dopo il programma'
+};
 
 function aggiornaRisposte() {
     const sel = document.getElementById('risposteSessione');
