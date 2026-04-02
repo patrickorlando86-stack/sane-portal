@@ -563,9 +563,10 @@ async function doLogin(){
     }
 }
 
-function doLogout(){
+async function doLogout(){
     document.getElementById('appShell').style.opacity='0';
-    db.auth.signOut(); // SIGNED_OUT handler gestisce reset e pulizia
+    await db.auth.signOut();
+    window.location.href='index.html';
 }
 
 async function caricaDati(){
@@ -2052,9 +2053,7 @@ db.auth.onAuthStateChange(async (event, session) => {
         catch(err){ console.error('Init error:', err); showToast('Errore caricamento — ricarica la pagina','error'); }
     } else if(event === 'SIGNED_OUT'){
         Object.keys(localStorage).filter(k=>k.startsWith('sane_')).forEach(k=>localStorage.removeItem(k));
-        appState = {utente:null, scuole:[], pacchetti:[], classi:[]};
-        document.getElementById('appShell').style.opacity='0';
-        document.getElementById('loginScreen').classList.remove('hidden');
+        window.location.href='index.html';
     }
 });
 </script>
