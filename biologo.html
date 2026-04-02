@@ -282,6 +282,9 @@
             <div class="nav-item" onclick="showSection('sessioni',this)">
                 <i class="fas fa-clipboard-list"></i><span class="label">Sessioni</span>
             </div>
+            <div class="nav-item" onclick="showSection('risposte',this)">
+                <i class="fas fa-pen-to-square"></i><span class="label">Inserisci Risposte</span>
+            </div>
             <div class="nav-item" onclick="showSection('report',this)">
                 <i class="fas fa-file-medical"></i><span class="label">Report</span>
             </div>
@@ -394,6 +397,48 @@
                 <button class="btn-primary no-print" onclick="openModal('sessioneModal')"><i class="fas fa-plus"></i>Nuova Sessione</button>
             </div>
             <div class="card"><div id="sessioniList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessuna sessione registrata.</p></div></div>
+        </section>
+
+        <!-- INSERISCI RISPOSTE -->
+        <section id="sec-risposte" class="section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
+                <div>
+                    <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Inserisci Risposte</h2>
+                    <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Registra le risposte dei questionari PRE e POST studente per studente</p>
+                </div>
+            </div>
+            <!-- Step 1 -->
+            <div class="card" style="margin-bottom:20px;">
+                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:16px;"><span style="background:var(--teal);color:white;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;margin-right:8px;">1</span>Seleziona Sessione e Tipo</h4>
+                <div style="display:grid;grid-template-columns:1fr 1fr 120px;gap:14px;align-items:end;">
+                    <div>
+                        <label class="form-label">Sessione</label>
+                        <select class="form-select" id="risposteSessione" style="margin-bottom:0;"></select>
+                    </div>
+                    <div>
+                        <label class="form-label">Tipo Questionario</label>
+                        <select class="form-select" id="risposteTipo" style="margin-bottom:0;">
+                            <option value="PRE">PRE — Prima della lezione</option>
+                            <option value="POST">POST — Dopo la lezione</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">N° Studenti</label>
+                        <input class="form-input" type="number" id="risposteNumStudenti" min="1" max="40" placeholder="es. 22" style="margin-bottom:0;">
+                    </div>
+                </div>
+                <button class="btn-primary" style="margin-top:16px;" onclick="generaFormStudenti()">
+                    <i class="fas fa-list-ul"></i>Genera Form Studenti
+                </button>
+            </div>
+            <!-- Form studenti generati dinamicamente -->
+            <div id="risposteStudentiContainer"></div>
+            <!-- Salva tutte -->
+            <div id="risposteSalvaContainer" style="display:none;margin-top:8px;">
+                <button class="btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:16px;" onclick="salvaRisposte()">
+                    <i class="fas fa-save"></i>Salva Tutte le Risposte
+                </button>
+            </div>
         </section>
 
         <!-- REPORT -->
@@ -517,6 +562,7 @@ function showSection(id,el){
     if(id==='dashboard'){aggiornaDashboard();aggiornaGrafico();}
     if(id==='scuole')aggiornaScuole();
     if(id==='sessioni')aggiornaSessioni();
+    if(id==='risposte')aggiornaRisposte();
     if(id==='report')aggiornaReport();
 }
 
@@ -979,6 +1025,209 @@ function chiudiGrafico() {
 document.getElementById('graficoModal').addEventListener('click', function(e) {
     if (e.target === this) chiudiGrafico();
 });
+
+// ============================================================
+// INSERISCI RISPOSTE
+// ============================================================
+const RISPOSTE_CORRETTE = {d1:'A',d2:'A',d3:'A',d4:'A',d5:'A',d6:'A',d7:'A',d8:'A',d9:'A'};
+
+function aggiornaRisposte() {
+    const sel = document.getElementById('risposteSessione');
+    if (!sel) return;
+    if (appState.sessioni.length === 0) {
+        sel.innerHTML = '<option value="">— Nessuna sessione disponibile —</option>';
+    } else {
+        sel.innerHTML = appState.sessioni.map(s => {
+            const sc = appState.scuole.find(sc => sc.id === s.scuola_id);
+            const label = (sc ? sc.nome : '?') + ' — Classe ' + s.classe + ' (' + s.data + ')';
+            return `<option value="${s.id}">${label}</option>`;
+        }).join('');
+    }
+    document.getElementById('risposteStudentiContainer').innerHTML = '';
+    document.getElementById('risposteSalvaContainer').style.display = 'none';
+}
+
+function generaFormStudenti() {
+    const sessId = document.getElementById('risposteSessione').value;
+    const tipo = document.getElementById('risposteTipo').value;
+    const numStudenti = parseInt(document.getElementById('risposteNumStudenti').value);
+    if (!sessId) { showToast('Seleziona una sessione', 'error'); return; }
+    if (!numStudenti || numStudenti < 1) { showToast('Inserisci il numero di studenti', 'error'); return; }
+    const sessione = appState.sessioni.find(s => s.id === sessId);
+    const classeDefault = sessione ? sessione.classe : '';
+    const container = document.getElementById('risposteStudentiContainer');
+    let html = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div style="height:2px;flex:1;background:#e2e8f0;"></div>
+        <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;">${numStudenti} studenti · ${tipo}</span>
+        <div style="height:2px;flex:1;background:#e2e8f0;"></div>
+    </div>`;
+    for (let i = 1; i <= numStudenti; i++) {
+        html += renderFormStudente(i, tipo, classeDefault);
+    }
+    container.innerHTML = html;
+    document.getElementById('risposteSalvaContainer').style.display = 'block';
+}
+
+function renderDomandeGruppo(lista, studenteNum) {
+    return lista.map(d => {
+        const group = 's' + studenteNum + '_' + d;
+        return `<div style="margin-bottom:12px;">
+            <label class="form-label">${d.toUpperCase()}</label>
+            <div style="display:flex;gap:7px;">
+                ${['A','B','C','D'].map(op => `
+                    <button type="button"
+                        data-group="${group}" data-val="${op}"
+                        onclick="selectAnswer(this,'${group}','${op}',${studenteNum})"
+                        style="flex:1;padding:9px 4px;border:1.5px solid #e2e8f0;border-radius:10px;background:white;color:var(--dark);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.15s;">
+                        ${op}
+                    </button>`).join('')}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderFormStudente(num, tipo, classeDefault) {
+    const group_dpost = 's' + num + '_d_post';
+    return `<div class="card" style="margin-bottom:14px;" id="studenteCard_${num}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:34px;height:34px;background:var(--dark);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:13px;">${num}</div>
+                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin:0;">Studente ${num}</h4>
+            </div>
+            <div id="scoreDisplay_${num}" style="background:#f0fdf9;color:var(--teal);font-family:'Syne',sans-serif;font-weight:700;padding:6px 14px;border-radius:10px;font-size:14px;display:none;"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px;">
+            <div>
+                <label class="form-label">Versione</label>
+                <select class="form-select" id="versione_${num}" style="margin-bottom:0;" onchange="aggiornaVersioneStudente(${num})">
+                    <option value="A">Versione A</option>
+                    <option value="B">Versione B</option>
+                    <option value="C">Versione C</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Classe Studente</label>
+                <input class="form-input" id="classe_${num}" value="${classeDefault}" style="margin-bottom:0;" placeholder="es. 3A">
+            </div>
+            <div>
+                <label class="form-label">Sesso</label>
+                <select class="form-select" id="sesso_${num}" style="margin-bottom:0;">
+                    <option value="M">M — Maschio</option>
+                    <option value="F">F — Femmina</option>
+                    <option value="NI">NI — Non indicato</option>
+                </select>
+            </div>
+        </div>
+        <div style="border-top:1px solid #f1f5f9;padding-top:16px;">
+            <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:12px;">Domande D1–D9 (tutte le versioni)</p>
+            <div id="domandeABC_${num}">${renderDomandeGruppo(['d1','d2','d3','d4','d5','d6','d7','d8','d9'], num)}</div>
+            <div id="domandeBC_${num}" style="display:none;">
+                <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin:4px 0 12px;">Domande D10–D11 (versione B e C)</p>
+                ${renderDomandeGruppo(['d10','d11'], num)}
+            </div>
+            <div id="domandeC_${num}" style="display:none;">
+                <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin:4px 0 12px;">Domande D12–D13 (versione C)</p>
+                ${renderDomandeGruppo(['d12','d13'], num)}
+            </div>
+            ${tipo === 'POST' ? `
+            <div style="margin-top:4px;">
+                <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:12px;">D_POST (tutte le versioni)</p>
+                <div style="display:flex;gap:7px;">
+                    ${['A','B','C','D'].map(op => `
+                        <button type="button"
+                            data-group="${group_dpost}" data-val="${op}"
+                            onclick="selectAnswer(this,'${group_dpost}','${op}',${num})"
+                            style="flex:1;padding:9px 4px;border:1.5px solid #e2e8f0;border-radius:10px;background:white;color:var(--dark);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.15s;">
+                            ${op}
+                        </button>`).join('')}
+                </div>
+            </div>` : ''}
+        </div>
+    </div>`;
+}
+
+function selectAnswer(btn, group, val, studenteNum) {
+    document.querySelectorAll(`[data-group="${group}"]`).forEach(b => {
+        b.style.background = 'white';
+        b.style.color = 'var(--dark)';
+        b.style.borderColor = '#e2e8f0';
+        b.removeAttribute('data-selected');
+    });
+    btn.style.background = 'var(--teal)';
+    btn.style.color = 'white';
+    btn.style.borderColor = 'var(--teal)';
+    btn.setAttribute('data-selected', 'true');
+    aggiornaScoreStudente(studenteNum);
+}
+
+function getSelectedAnswer(group) {
+    const btn = document.querySelector(`[data-group="${group}"][data-selected]`);
+    return btn ? btn.getAttribute('data-val') : null;
+}
+
+function aggiornaVersioneStudente(num) {
+    const versione = document.getElementById('versione_' + num).value;
+    document.getElementById('domandeBC_' + num).style.display = (versione === 'B' || versione === 'C') ? 'block' : 'none';
+    document.getElementById('domandeC_' + num).style.display = (versione === 'C') ? 'block' : 'none';
+    aggiornaScoreStudente(num);
+}
+
+function aggiornaScoreStudente(num) {
+    let punti = 0;
+    for (const [campo, corretta] of Object.entries(RISPOSTE_CORRETTE)) {
+        const val = getSelectedAnswer('s' + num + '_' + campo);
+        if (val === corretta) punti++;
+    }
+    const el = document.getElementById('scoreDisplay_' + num);
+    el.style.display = 'block';
+    el.textContent = punti + '/9';
+}
+
+async function salvaRisposte() {
+    const sessId = document.getElementById('risposteSessione').value;
+    const tipo = document.getElementById('risposteTipo').value;
+    const numStudenti = parseInt(document.getElementById('risposteNumStudenti').value);
+    if (!sessId || !numStudenti) { showToast('Dati mancanti', 'error'); return; }
+
+    const righe = [];
+    for (let i = 1; i <= numStudenti; i++) {
+        const versione = document.getElementById('versione_' + i).value;
+        const classe_studente = document.getElementById('classe_' + i).value.trim();
+        const sesso = document.getElementById('sesso_' + i).value;
+        const riga = { sessione_id: sessId, studente_num: i, tipo, versione, classe_studente, sesso };
+
+        let punti = 0;
+        for (let d = 1; d <= 9; d++) {
+            const campo = 'd' + d;
+            const val = getSelectedAnswer('s' + i + '_' + campo);
+            riga[campo] = val;
+            if (val && val === RISPOSTE_CORRETTE[campo]) punti++;
+        }
+        if (versione === 'B' || versione === 'C') {
+            for (let d = 10; d <= 11; d++) {
+                riga['d' + d] = getSelectedAnswer('s' + i + '_d' + d);
+            }
+        }
+        if (versione === 'C') {
+            for (let d = 12; d <= 13; d++) {
+                riga['d' + d] = getSelectedAnswer('s' + i + '_d' + d);
+            }
+        }
+        if (tipo === 'POST') {
+            riga.d_post = getSelectedAnswer('s' + i + '_d_post');
+        }
+        riga.punteggio = punti;
+        riga.punteggio_max = 9;
+        righe.push(riga);
+    }
+
+    const { error } = await db.from('risposte').insert(righe);
+    if (error) { showToast('Errore: ' + error.message, 'error'); return; }
+    showToast('Risposte salvate con successo!');
+    document.getElementById('risposteStudentiContainer').innerHTML = '';
+    document.getElementById('risposteSalvaContainer').style.display = 'none';
+    document.getElementById('risposteNumStudenti').value = '';
+}
 
 // ============================================================
 // AVVIO — Auth state listener
