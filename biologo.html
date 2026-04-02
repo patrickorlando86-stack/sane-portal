@@ -1052,15 +1052,25 @@ async function salvaClasse(){
     if(_editClasseId){
         const {data:updated,error}=await db.from('classi').update(payload).eq('id',_editClasseId).select().single();
         if(error){showToast('Errore: '+error.message,'error');return;}
-        const idx=appState.classi.findIndex(c=>c.id===_editClasseId);
-        if(idx!==-1)appState.classi[idx]=updated;
+        if(updated){
+            const idx=appState.classi.findIndex(c=>c.id===_editClasseId);
+            if(idx!==-1)appState.classi[idx]=updated;
+        } else {
+            await caricaDati();
+        }
         closeModal('classeModal');aggiornaClassi();aggiornaScuole();aggiornaDashboard();
         showToast('Classe aggiornata!');
     } else {
-        const {data:{user}}=await db.auth.getUser();
+        const {data:authData}=await db.auth.getUser();
+        const user=authData?.user;
+        if(!user){showToast('Sessione scaduta, effettua il login','error');return;}
         const {data:nuova,error}=await db.from('classi').insert({biologo_id:user.id,...payload}).select().single();
         if(error){showToast('Errore: '+error.message,'error');return;}
-        appState.classi.unshift(nuova);
+        if(nuova){
+            appState.classi.unshift(nuova);
+        } else {
+            await caricaDati();
+        }
         closeModal('classeModal');aggiornaClassi();aggiornaScuole();aggiornaDashboard();
         showToast('Classe registrata!');
     }
