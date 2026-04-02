@@ -996,9 +996,15 @@ function aggiornaSelectPacchetti(preScuolaId, prePacchettoId){
     sel.innerHTML=appState.pacchetti.map(p=>{
         const s=appState.scuole.find(sc=>sc.id===p.scuola_id);
         const label=`${s?s.nome:'?'} · ${p.tipo.charAt(0).toUpperCase()+p.tipo.slice(1)}${p.anno_scolastico?' '+p.anno_scolastico:''}`;
-        const selected=prePacchettoId===p.id||(preScuolaId===p.scuola_id&&!prePacchettoId);
-        return `<option value="${p.id}" data-scuola="${p.scuola_id}" ${selected?'selected':''}>${label}</option>`;
+        return `<option value="${p.id}" data-scuola="${p.scuola_id}">${label}</option>`;
     }).join('');
+    // Forza la selezione tramite .value (l'attributo HTML selected non è affidabile su innerHTML dinamico)
+    if(prePacchettoId){
+        sel.value=prePacchettoId;
+    } else if(preScuolaId){
+        const firstP=appState.pacchetti.find(p=>p.scuola_id===preScuolaId);
+        if(firstP) sel.value=firstP.id;
+    }
 }
 
 function renderModuliGrid(){
