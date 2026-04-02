@@ -410,6 +410,9 @@
 </div>
 
 <script>
+// Pulizia una-tantum del vecchio sistema di login localStorage
+if (localStorage.getItem('sane_v2') !== null) { localStorage.clear(); }
+
 // ============================================================
 // SUPABASE
 // ============================================================

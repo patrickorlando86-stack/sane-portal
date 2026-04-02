@@ -487,6 +487,9 @@
 </div>
 
 <script>
+// Pulizia una-tantum del vecchio sistema di login localStorage
+if (localStorage.getItem('sane_v2') !== null) { localStorage.clear(); }
+
 // ============================================================
 // SUPABASE
 // ============================================================
@@ -1295,25 +1298,70 @@ function aggiornaRisposte() {
     document.getElementById('risposteSalvaContainer').style.display = 'none';
 }
 
-function generaFormStudenti() {
+async function generaFormStudenti() {
     const sessId = document.getElementById('risposteSessione').value;
     const tipo = document.getElementById('risposteTipo').value;
-    const numStudenti = parseInt(document.getElementById('risposteNumStudenti').value);
     if (!sessId) { showToast('Seleziona una sessione', 'error'); return; }
-    if (!numStudenti || numStudenti < 1) { showToast('Inserisci il numero di studenti', 'error'); return; }
+
+    const container = document.getElementById('risposteStudentiContainer');
+    container.innerHTML = `<div style="text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin" style="color:var(--teal);font-size:20px;"></i></div>`;
+
+    // Carica risposte già salvate per questa sessione+tipo
+    const { data: esistenti, error } = await db.from('risposte')
+        .select('*')
+        .eq('sessione_id', sessId)
+        .eq('tipo', tipo)
+        .order('studente_num');
+    if (error) { showToast('Errore caricamento: ' + error.message, 'error'); return; }
+
+    // Se esistono già risposte e il campo n° studenti è vuoto, usa il conteggio esistente
+    const inputNum = document.getElementById('risposteNumStudenti');
+    let numStudenti = parseInt(inputNum.value);
+    if (esistenti.length > 0 && (!numStudenti || numStudenti < 1)) {
+        numStudenti = esistenti.length;
+        inputNum.value = numStudenti;
+    }
+    if (!numStudenti || numStudenti < 1) { showToast('Inserisci il numero di studenti', 'error'); container.innerHTML = ''; return; }
+
     const sessione = appState.sessioni.find(s => s.id === sessId);
     const classeDefault = sessione ? sessione.classe : '';
-    const container = document.getElementById('risposteStudentiContainer');
+    const esistentiMap = {};
+    esistenti.forEach(r => { esistentiMap[r.studente_num] = r; });
+
     let html = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
         <div style="height:2px;flex:1;background:#e2e8f0;"></div>
-        <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;">${numStudenti} studenti · ${tipo}</span>
+        <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;">${numStudenti} studenti · ${tipo}${esistenti.length > 0 ? ' · ' + esistenti.length + ' già salvati' : ''}</span>
         <div style="height:2px;flex:1;background:#e2e8f0;"></div>
     </div>`;
     for (let i = 1; i <= numStudenti; i++) {
-        html += renderFormStudente(i, tipo, classeDefault);
+        html += renderFormStudente(i, tipo, classeDefault, !!esistentiMap[i]);
     }
     container.innerHTML = html;
     document.getElementById('risposteSalvaContainer').style.display = 'block';
+
+    // Precompila i form degli studenti con dati esistenti
+    for (let i = 1; i <= numStudenti; i++) {
+        if (esistentiMap[i]) precompileStudente(i, esistentiMap[i]);
+    }
+}
+
+function precompileStudente(num, riga) {
+    // Versione e campi anagrafici
+    const versSel = document.getElementById('versione_' + num);
+    if (versSel) { versSel.value = riga.versione || 'A'; aggiornaVersioneStudente(num); }
+    const classeEl = document.getElementById('classe_' + num);
+    if (classeEl) classeEl.value = riga.classe_studente || '';
+    const sessoEl = document.getElementById('sesso_' + num);
+    if (sessoEl) sessoEl.value = riga.sesso || 'M';
+
+    // Risposte domande
+    const tuttiCampi = ['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11','d12','d13','d_post'];
+    tuttiCampi.forEach(campo => {
+        if (!riga[campo]) return;
+        const group = 's' + num + '_' + campo;
+        const btn = document.querySelector(`[data-group="${group}"][data-val="${riga[campo]}"]`);
+        if (btn) selectAnswer(btn, group, riga[campo], num);
+    });
 }
 
 function renderDomandeGruppo(lista, studenteNum) {
@@ -1334,13 +1382,14 @@ function renderDomandeGruppo(lista, studenteNum) {
     }).join('');
 }
 
-function renderFormStudente(num, tipo, classeDefault) {
+function renderFormStudente(num, tipo, classeDefault, giaEsistente = false) {
     const group_dpost = 's' + num + '_d_post';
     return `<div class="card" style="margin-bottom:14px;" id="studenteCard_${num}">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="width:34px;height:34px;background:var(--dark);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:13px;">${num}</div>
                 <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin:0;">Studente ${num}</h4>
+                ${giaEsistente ? `<span style="background:#dbeafe;color:#1e40af;font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:0.06em;"><i class="fas fa-sync-alt" style="margin-right:3px;font-size:8px;"></i>Modifica</span>` : ''}
             </div>
             <div id="scoreDisplay_${num}" style="background:#f0fdf9;color:var(--teal);font-family:'Syne',sans-serif;font-weight:700;padding:6px 14px;border-radius:10px;font-size:14px;display:none;"></div>
         </div>
@@ -1469,7 +1518,10 @@ async function salvaRisposte() {
         righe.push(riga);
     }
 
-    const { error } = await db.from('risposte').insert(righe);
+    const { error } = await db.from('risposte').upsert(righe, {
+        onConflict: 'sessione_id,studente_num,tipo',
+        ignoreDuplicates: false
+    });
     if (error) { showToast('Errore: ' + error.message, 'error'); return; }
     showToast('Risposte salvate con successo!');
     document.getElementById('risposteStudentiContainer').innerHTML = '';
