@@ -1568,7 +1568,7 @@ async function salvaRisposte() {
         const versione = document.getElementById('versione_' + i).value;
         const classe_studente = document.getElementById('classe_' + i).value.trim();
         const sesso = document.getElementById('sesso_' + i).value;
-        const riga = { classe_id: sessId, studente_num: i, tipo, versione, classe_studente, sesso };
+        const riga = { sessione_id: sessId, studente_num: i, tipo, versione, classe_studente, sesso };
 
         let punti = 0;
         for (let d = 1; d <= 9; d++) {
@@ -1596,7 +1596,7 @@ async function salvaRisposte() {
     }
 
     const { error } = await db.from('risposte').upsert(righe, {
-        onConflict: 'classe_id,studente_num,tipo',
+        onConflict: 'sessione_id,studente_num,tipo',
         ignoreDuplicates: false
     });
     if (error) { showToast('Errore: ' + error.message, 'error'); return; }
