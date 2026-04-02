@@ -551,7 +551,9 @@ async function doLogin(){
 }
 
 function doLogout(){
-    appState = {utente:null, scuole:[], classi:[]};
+    // Pulisci tutte le bozze localStorage
+    Object.keys(localStorage).filter(k=>k.startsWith('sane_')).forEach(k=>localStorage.removeItem(k));
+    appState = {utente:null, scuole:[], pacchetti:[], classi:[]};
     document.getElementById('appShell').style.opacity='0';
     setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
     db.auth.signOut();
@@ -1972,7 +1974,8 @@ db.auth.onAuthStateChange(async (event, session) => {
     if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session){
         await inizializzaApp(session.user);
     } else if(event === 'SIGNED_OUT'){
-        appState = {utente:null, scuole:[], classi:[]};
+        Object.keys(localStorage).filter(k=>k.startsWith('sane_')).forEach(k=>localStorage.removeItem(k));
+        appState = {utente:null, scuole:[], pacchetti:[], classi:[]};
         document.getElementById('appShell').style.opacity='0';
         setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
     }
