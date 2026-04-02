@@ -913,7 +913,7 @@ function aggiornaScuole(){
                     <div style="width:42px;height:42px;background:linear-gradient(135deg,var(--teal),var(--teal-light));border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:white;font-size:17px;flex-shrink:0;">${s.nome.charAt(0)}</div>
                     <div>
                         <h4 style="font-weight:700;color:var(--dark);font-size:14px;margin:0 0 2px;">${s.nome}</h4>
-                        <p style="color:#64748b;font-size:11px;margin:0;">${s.comune} · ${tutteClassi.length} cl.${totStudenti?' · '+totStudenti+' st.':''}</p>
+                        <p style="color:#64748b;font-size:11px;margin:0;">${s.comune}${s.anno_scolastico?' · '+s.anno_scolastico:''}</p>
                     </div>
                 </div>
                 <div style="display:flex;align-items:center;gap:7px;">
@@ -2041,12 +2041,14 @@ async function salvaRisposte() {
 // ============================================================
 db.auth.onAuthStateChange(async (event, session) => {
     if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session){
-        await inizializzaApp(session.user);
+        if(appState.utente) return; // già inizializzato, evita doppia chiamata
+        try { await inizializzaApp(session.user); }
+        catch(err){ console.error('Init error:', err); showToast('Errore caricamento — ricarica la pagina','error'); }
     } else if(event === 'SIGNED_OUT'){
         Object.keys(localStorage).filter(k=>k.startsWith('sane_')).forEach(k=>localStorage.removeItem(k));
         appState = {utente:null, scuole:[], pacchetti:[], classi:[]};
         document.getElementById('appShell').style.opacity='0';
-        setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
+        document.getElementById('loginScreen').classList.remove('hidden');
     }
 });
 </script>
