@@ -193,45 +193,59 @@
     </div>
 </div>
 
-<!-- MODAL NUOVA SESSIONE -->
-<div class="modal-overlay" id="sessioneModal">
-    <div class="modal-box">
+<!-- MODAL CLASSE -->
+<div class="modal-overlay" id="classeModal">
+    <div class="modal-box" style="max-width:580px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-            <h3 id="sessioneModalTitle" style="font-size:20px;font-weight:700;color:var(--dark);">Registra Sessione</h3>
-            <button onclick="closeModal('sessioneModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
+            <h3 id="classeModalTitle" style="font-size:20px;font-weight:700;color:var(--dark);">Nuova Classe</h3>
+            <button onclick="closeModal('classeModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
         </div>
-        <label class="form-label">Scuola</label>
-        <select class="form-select" id="sessioneScuola"></select>
-        <label class="form-label">Classe / Sezione</label>
-        <input class="form-input" id="sessioneClasse" placeholder="es. 3ª A">
-        <label class="form-label">Data sessione</label>
-        <input class="form-input" type="date" id="sessioneData">
-        <label class="form-label" style="margin-bottom:12px;">Cosa hai fatto oggi?</label>
-        <div class="check-item" id="checkItemPre" onclick="toggleCheck(this,'pre')">
-            <div class="check-box"><i class="fas fa-check" style="color:white;font-size:11px;display:none;"></i></div>
-            <div><div class="check-label">📋 Questionario PRE</div><div class="check-sub">Somministrato prima della lezione (carta A4)</div></div>
-        </div>
-        <div class="check-item" id="checkItemGioco" onclick="toggleCheck(this,'gioco')">
-            <div class="check-box"><i class="fas fa-check" style="color:white;font-size:11px;display:none;"></i></div>
-            <div><div class="check-label">🎮 Gioco LIM — Il Piatto Sano</div><div class="check-sub">Sessione interattiva in classe</div></div>
-        </div>
-        <div class="check-item" id="checkItemPost" onclick="toggleCheck(this,'post')">
-            <div class="check-box"><i class="fas fa-check" style="color:white;font-size:11px;display:none;"></i></div>
-            <div><div class="check-label">📋 Questionario POST</div><div class="check-sub">Somministrato dopo la lezione (carta A4)</div></div>
-        </div>
-        <!-- Azioni rapide risposte — visibili solo in modalità modifica -->
-        <div id="sessioneAzioniRapide" style="display:none;margin-top:14px;padding:14px;background:#f0fdf9;border-radius:14px;border:1.5px dashed var(--teal);">
-            <p style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.1em;margin:0 0 10px;"><i class="fas fa-bolt" style="margin-right:5px;"></i>Inserimento Risposte</p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button id="btnRispostePre" class="btn-ghost" style="font-size:11px;display:none;align-items:center;gap:6px;" onclick="apriRispostePerSessione('PRE')">
-                    <i class="fas fa-clipboard-list"></i>Risposte PRE
-                </button>
-                <button id="btnRispostePost" class="btn-ghost" style="font-size:11px;display:none;align-items:center;gap:6px;" onclick="apriRispostePerSessione('POST')">
-                    <i class="fas fa-clipboard-check"></i>Risposte POST
-                </button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div style="grid-column:1/-1;">
+                <label class="form-label">Scuola</label>
+                <select class="form-select" id="classeScuola"></select>
+            </div>
+            <div>
+                <label class="form-label">Classe / Sezione</label>
+                <input class="form-input" id="classeNome" placeholder="es. 3ª A" style="margin-bottom:0;">
+            </div>
+            <div>
+                <label class="form-label">N° Studenti</label>
+                <input class="form-input" type="number" id="classeStudenti" placeholder="es. 22" min="1" max="40" style="margin-bottom:0;">
             </div>
         </div>
-        <div id="scoreSection" style="display:none;margin-top:16px;">
+        <!-- 6 MODULI -->
+        <div style="margin-top:18px;">
+            <p style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Moduli Erogati</p>
+            <div id="moduliGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                <!-- generato da JS -->
+            </div>
+        </div>
+        <!-- PRE / POST -->
+        <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="prePostSection">
+            <div id="preBox" style="background:#f8fafc;border-radius:14px;padding:14px;opacity:0.4;">
+                <p style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">📋 Questionario PRE</p>
+                <label class="form-label">Data PRE</label>
+                <input class="form-input" type="date" id="classePreData" style="margin-bottom:8px;">
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <button id="btnRispostePre" class="btn-ghost" style="font-size:11px;flex:1;display:none;justify-content:center;" onclick="apriRispostePerClasse('PRE')">
+                        <i class="fas fa-clipboard-list" style="margin-right:4px;"></i>Inserisci Risposte PRE
+                    </button>
+                </div>
+            </div>
+            <div id="postBox" style="background:#f8fafc;border-radius:14px;padding:14px;opacity:0.4;">
+                <p style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">📋 Questionario POST</p>
+                <label class="form-label">Data POST</label>
+                <input class="form-input" type="date" id="classePostData" style="margin-bottom:8px;">
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <button id="btnRispostePost" class="btn-ghost" style="font-size:11px;flex:1;display:none;justify-content:center;" onclick="apriRispostePerClasse('POST')">
+                        <i class="fas fa-clipboard-check" style="margin-right:4px;"></i>Inserisci Risposte POST
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- SCORE -->
+        <div id="scoreSection" style="display:none;margin-top:14px;">
             <label class="form-label">Punteggio medio classe (su 10)</label>
             <div class="score-group">
                 <div class="score-box"><label>PRE</label><input type="number" id="scorePre" min="0" max="10" step="0.1" placeholder="0.0"></div>
@@ -239,10 +253,10 @@
             </div>
         </div>
         <label class="form-label" style="margin-top:14px;">Note del biologo</label>
-        <textarea class="form-input" id="sessioneNote" rows="3" placeholder="Osservazioni, reazioni della classe, punti di forza o criticità..."></textarea>
+        <textarea class="form-input" id="classeNote" rows="2" placeholder="Osservazioni, reazioni della classe..."></textarea>
         <div style="display:flex;gap:10px;">
-            <button class="btn-ghost" onclick="closeModal('sessioneModal')">Annulla</button>
-            <button class="btn-primary" style="flex:1;" onclick="salvaSessione()"><i class="fas fa-save"></i><span id="sessioneSalvaLabel">Salva Sessione</span></button>
+            <button class="btn-ghost" onclick="closeModal('classeModal')">Annulla</button>
+            <button class="btn-primary" style="flex:1;" onclick="salvaClasse()"><i class="fas fa-save"></i><span id="classeSalvaLabel">Salva Classe</span></button>
         </div>
     </div>
 </div>
@@ -291,8 +305,8 @@
             <div class="nav-item" onclick="showSection('scuole',this)">
                 <i class="fas fa-school"></i><span class="label">Le Mie Scuole</span>
             </div>
-            <div class="nav-item" onclick="showSection('sessioni',this)">
-                <i class="fas fa-clipboard-list"></i><span class="label">Sessioni</span>
+            <div class="nav-item" onclick="showSection('classi',this)">
+                <i class="fas fa-users"></i><span class="label">Registro Classi</span>
             </div>
             <div class="nav-item" onclick="showSection('risposte',this)">
                 <i class="fas fa-pen-to-square"></i><span class="label">Inserisci Risposte</span>
@@ -343,11 +357,11 @@
                     <h2 id="dashGreeting" style="font-size:22px;font-weight:700;color:var(--dark);line-height:1.2;" class="dash-title"></h2>
                     <p id="dashDate" style="color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;"></p>
                 </div>
-                <button class="btn-primary no-print" onclick="openModal('sessioneModal')"><i class="fas fa-plus"></i>Nuova Sessione</button>
+                <button class="btn-primary no-print" onclick="openModal('classeModal')"><i class="fas fa-plus"></i>Nuova Classe</button>
             </div>
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;" class="kpi-grid">
                 <div class="kpi-card"><div class="kpi-val" id="kpiScuole">0</div><div class="kpi-lbl">Scuole</div></div>
-                <div class="kpi-card"><div class="kpi-val" id="kpiSessioni">0</div><div class="kpi-lbl">Sessioni</div></div>
+                <div class="kpi-card"><div class="kpi-val" id="kpiSessioni">0</div><div class="kpi-lbl">Classi</div></div>
                 <div class="kpi-card"><div class="kpi-val" id="kpiStudenti">0</div><div class="kpi-lbl">Studenti Est.</div></div>
                 <div class="kpi-card teal"><div class="kpi-val" id="kpiMiglioramento">—</div><div class="kpi-lbl">Miglioramento</div></div>
             </div>
@@ -375,10 +389,10 @@
             </div>
             <div class="card" style="margin-top:18px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-                    <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Ultime Sessioni</h4>
-                    <button class="btn-ghost no-print" onclick="showSection('sessioni',document.querySelector('[onclick*=sessioni]'))" style="font-size:11px;padding:7px 14px;">Vedi tutte</button>
+                    <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Ultime Classi</h4>
+                    <button class="btn-ghost no-print" onclick="showSection('classi',document.querySelector('[onclick*=classi]'))" style="font-size:11px;padding:7px 14px;">Vedi tutte</button>
                 </div>
-                <div id="dashSessioni"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna sessione ancora. <a href="#" onclick="openModal('sessioneModal')" style="color:var(--teal);font-weight:600;">Registra la prima</a></p></div>
+                <div id="dashSessioni"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna classe ancora. <a href="#" onclick="openModal('classeModal')" style="color:var(--teal);font-weight:600;">Registra la prima</a></p></div>
             </div>
             <!-- GRAFICO PRE/POST — card cliccabile -->
             <div class="card" style="margin-top:18px;cursor:pointer;" onclick="apriGrafico()" id="chartPreviewCard">
@@ -403,12 +417,12 @@
         </section>
 
         <!-- SESSIONI -->
-        <section id="sec-sessioni" class="section">
+        <section id="sec-classi" class="section">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
-                <div><h2 style="font-size:22px;font-weight:700;color:var(--dark);">Registro Sessioni</h2><p style="color:#94a3b8;font-size:12px;margin-top:3px;">Tutte le sessioni in classe</p></div>
-                <button class="btn-primary no-print" onclick="openModal('sessioneModal')"><i class="fas fa-plus"></i>Nuova Sessione</button>
+                <div><h2 style="font-size:22px;font-weight:700;color:var(--dark);">Registro Classi</h2><p style="color:#94a3b8;font-size:12px;margin-top:3px;">Tutte le classi e i percorsi in corso</p></div>
+                <button class="btn-primary no-print" onclick="openModal('classeModal')"><i class="fas fa-plus"></i>Nuova Classe</button>
             </div>
-            <div class="card"><div id="sessioniList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessuna sessione registrata.</p></div></div>
+            <div class="card"><div id="classiList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessuna classe registrata.</p></div></div>
         </section>
 
         <!-- INSERISCI RISPOSTE -->
@@ -421,10 +435,10 @@
             </div>
             <!-- Step 1 -->
             <div class="card" style="margin-bottom:20px;">
-                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:16px;"><span style="background:var(--teal);color:white;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;margin-right:8px;">1</span>Seleziona Sessione e Tipo</h4>
+                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:16px;"><span style="background:var(--teal);color:white;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;margin-right:8px;">1</span>Seleziona Classe e Tipo</h4>
                 <div style="display:grid;grid-template-columns:1fr 1fr 120px;gap:14px;align-items:end;">
                     <div>
-                        <label class="form-label">Sessione</label>
+                        <label class="form-label">Classe</label>
                         <select class="form-select" id="risposteSessione" style="margin-bottom:0;"></select>
                     </div>
                     <div>
@@ -481,7 +495,7 @@
         <div id="graficoKpi" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;"></div>
         <!-- Grafico grande -->
         <canvas id="chartPrePostBig" height="120"></canvas>
-        <!-- Lista sessioni con score -->
+        <!-- Lista classi con score -->
         <div id="graficoLista" style="margin-top:24px;"></div>
     </div>
 </div>
@@ -501,10 +515,9 @@ const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 // ============================================================
 // STATO
 // ============================================================
-let appState={utente:null,scuole:[],sessioni:[]};
-let currentChecks={pre:false,gioco:false,post:false};
-let _authMode = 'login'; // 'login' | 'signup'
-let _editSessId = null;
+let appState={utente:null,scuole:[],classi:[]};
+let _authMode = 'login';
+let _editClasseId = null;
 
 function toggleAuthMode(e){
     e.preventDefault();
@@ -539,7 +552,7 @@ async function doLogin(){
 }
 
 function doLogout(){
-    appState = {utente:null, scuole:[], sessioni:[]};
+    appState = {utente:null, scuole:[], classi:[]};
     document.getElementById('appShell').style.opacity='0';
     setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
     db.auth.signOut();
@@ -548,12 +561,12 @@ function doLogout(){
 async function caricaDati(){
     const {data:{user}}=await db.auth.getUser();
     if(!user) return;
-    const [{data:scuole},{data:sessioni}]=await Promise.all([
+    const [{data:scuole},{data:classi}]=await Promise.all([
         db.from('scuole').select('*').eq('biologo_id',user.id).order('created_at'),
-        db.from('sessioni').select('*').eq('biologo_id',user.id).order('data',{ascending:false})
+        db.from('classi').select('*').eq('biologo_id',user.id).order('created_at',{ascending:false})
     ]);
     appState.scuole=scuole||[];
-    appState.sessioni=sessioni||[];
+    appState.classi=classi||[];
 }
 
 async function inizializzaApp(user){
@@ -577,7 +590,7 @@ function showSection(id,el){
     if(el)el.classList.add('active');
     if(id==='dashboard'){aggiornaDashboard();aggiornaGrafico();}
     if(id==='scuole')aggiornaScuole();
-    if(id==='sessioni')aggiornaSessioni();
+    if(id==='classi')aggiornaClassi();
     if(id==='risposte')aggiornaRisposte();
     if(id==='report')aggiornaReport();
 }
@@ -594,16 +607,15 @@ function aggiornaUI(){
 }
 
 function aggiornaDashboard(){
-    const classiUniche=[...new Set(appState.sessioni.map(s=>s.scuola_id+'_'+s.classe))];
-    const studenti=classiUniche.length*22;
-    const sessConScore=appState.sessioni.filter(s=>s.score_pre&&s.score_post);
+    const studenti=appState.classi.reduce((a,c)=>a+(c.num_studenti||22),0);
+    const conScore=appState.classi.filter(c=>c.score_pre!=null&&c.score_post!=null);
     let migLabel='—';
-    if(sessConScore.length>0){
-        const m=sessConScore.reduce((a,s)=>a+(parseFloat(s.score_post)-parseFloat(s.score_pre)),0)/sessConScore.length;
-        migLabel='+'+m.toFixed(1);
+    if(conScore.length>0){
+        const m=conScore.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/conScore.length;
+        migLabel=(m>=0?'+':'')+m.toFixed(1);
     }
     document.getElementById('kpiScuole').textContent=appState.scuole.length;
-    document.getElementById('kpiSessioni').textContent=appState.sessioni.length;
+    document.getElementById('kpiSessioni').textContent=appState.classi.length;
     document.getElementById('kpiStudenti').textContent=studenti;
     document.getElementById('kpiMiglioramento').textContent=migLabel;
 
@@ -615,45 +627,56 @@ function aggiornaDashboard(){
     }
 
     const elS=document.getElementById('dashSessioni');
-    if(appState.sessioni.length===0){
-        elS.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna sessione ancora. <a href="#" onclick="openModal(\'sessioneModal\')" style="color:var(--teal);font-weight:600;">Registra la prima</a></p>';
+    if(appState.classi.length===0){
+        elS.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna classe ancora. <a href="#" onclick="openModal(\'classeModal\')" style="color:var(--teal);font-weight:600;">Registra la prima</a></p>';
     }else{
-        elS.innerHTML=appState.sessioni.slice(0,3).map(s=>renderSessioneRow(s)).join('');
+        elS.innerHTML=appState.classi.slice(0,3).map(c=>renderClasseRow(c)).join('');
     }
 }
 
+function oreClasse(c){return ['m1','m2','m3','m4','m5','m6'].reduce((a,m)=>a+(parseFloat(c[m+'_ore'])||0),0);}
+function moduliCompletati(c){return ['m1','m2','m3','m4','m5','m6'].filter(m=>c[m+'_data']).length;}
+function statoClasse(c){
+    const mod=moduliCompletati(c);
+    if(mod===0)return {label:'Da iniziare',bg:'#f1f5f9',col:'#94a3b8'};
+    if(mod===6&&c.post_data)return {label:'Completata',bg:'#d1fae5',col:'#065f46'};
+    return {label:mod+'/6 moduli',bg:'#fef3c7',col:'#92400e'};
+}
 function renderScuolaRow(s){
-    const sess=appState.sessioni.filter(se=>se.scuola_id===s.id);
-    const max=s.pacchetto==='base'?5:8;
-    const pct=Math.min(100,Math.round((sess.length/max)*100));
+    const cls=appState.classi.filter(c=>c.scuola_id===s.id);
+    const oreUsate=cls.reduce((a,c)=>a+oreClasse(c),0);
+    const oreTot=s.ore_totali||30;
+    const pct=Math.min(100,Math.round((oreUsate/oreTot)*100));
     return `<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #f1f5f9;">
         <div style="width:44px;height:44px;background:#f1f5f9;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:#94a3b8;font-size:16px;flex-shrink:0;">${s.nome.charAt(0)}</div>
         <div style="flex:1;min-width:0;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
                 <span style="font-weight:700;font-size:13px;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">${s.nome}</span>
-                <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--teal);flex-shrink:0;margin-left:8px;">${pct}%</span>
+                <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--teal);flex-shrink:0;margin-left:8px;">${oreUsate.toFixed(1)}/${oreTot}h</span>
             </div>
             <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-            <div style="font-size:10px;color:#94a3b8;margin-top:4px;">${s.comune} · ${sess.length} sessioni</div>
+            <div style="font-size:10px;color:#94a3b8;margin-top:4px;">${s.comune} · ${cls.length} classi · ${pct}%</div>
         </div>
     </div>`;
 }
 
-function renderSessioneRow(s){
-    const scuola=appState.scuole.find(sc=>sc.id===s.scuola_id);
+function renderClasseRow(c){
+    const scuola=appState.scuole.find(sc=>sc.id===c.scuola_id);
     const nome=scuola?scuola.nome:'—';
-    const haScore=s.score_pre&&s.score_post;
-    const mig=haScore?((parseFloat(s.score_post)-parseFloat(s.score_pre)).toFixed(1)):null;
-    const stepDone=[s.check_pre,s.check_gioco,s.check_post].filter(Boolean).length;
+    const haScore=c.score_pre!=null&&c.score_post!=null;
+    const mig=haScore?((parseFloat(c.score_post)-parseFloat(c.score_pre)).toFixed(1)):null;
+    const stato=statoClasse(c);
     return `<div style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid #f1f5f9;">
         <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--teal),var(--teal-light));border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="fas fa-clipboard-check" style="color:white;font-size:15px;"></i>
+            <i class="fas fa-users" style="color:white;font-size:13px;"></i>
         </div>
         <div style="flex:1;min-width:0;">
-            <div style="font-weight:700;font-size:13px;color:var(--dark);">${nome} — Classe ${s.classe}</div>
-            <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${s.data} · ${stepDone}/3 step</div>
+            <div style="font-weight:700;font-size:13px;color:var(--dark);">${nome} — ${c.nome_classe}</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
+                <span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;background:${stato.bg};color:${stato.col};text-transform:uppercase;">${stato.label}</span>
+                ${haScore?`<span class="impr-badge" style="font-size:10px;padding:2px 8px;">${mig>=0?'+':''}${mig}</span>`:''}
+            </div>
         </div>
-        ${mig?`<span class="impr-badge"><i class="fas fa-arrow-up" style="font-size:9px;"></i>${mig>0?'+':''}${mig}</span>`:''}
     </div>`;
 }
 
@@ -674,11 +697,11 @@ async function aggiungiScuola(){
 }
 
 async function eliminaScuola(scuolaId){
-    if(!confirm('Eliminare questa scuola e tutte le sessioni collegate?'))return;
+    if(!confirm('Eliminare questa scuola e tutte le classi collegate?'))return;
     const {error}=await db.from('scuole').delete().eq('id',scuolaId);
     if(error){showToast('Errore: '+error.message,'error');return;}
     appState.scuole=appState.scuole.filter(s=>s.id!==scuolaId);
-    appState.sessioni=appState.sessioni.filter(s=>s.scuola_id!==scuolaId);
+    appState.classi=appState.classi.filter(c=>c.scuola_id!==scuolaId);
     aggiornaScuole();aggiornaDashboard();showToast('Scuola eliminata');
 }
 
@@ -688,204 +711,244 @@ function aggiornaScuole(){
         grid.innerHTML='<p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Nessuna scuola ancora.</p>';return;
     }
     grid.innerHTML=appState.scuole.map(s=>{
-        const sess=appState.sessioni.filter(se=>se.scuola_id===s.id);
-        const max=s.pacchetto==='base'?5:8;
-        const pct=Math.min(100,Math.round((sess.length/max)*100));
+        const cls=appState.classi.filter(c=>c.scuola_id===s.id);
+        const oreUsate=cls.reduce((a,c)=>a+oreClasse(c),0);
+        const oreTot=s.ore_totali||30;
+        const pct=Math.min(100,Math.round((oreUsate/oreTot)*100));
         const bc=s.pacchetto==='premium'?'badge-blue':s.pacchetto==='standard'?'badge-green':'badge-yellow';
+        const anno=s.anno_scolastico?` · ${s.anno_scolastico}`:'';
+        const conScore=cls.filter(c=>c.score_pre!=null&&c.score_post!=null);
+        const migMedia=conScore.length>0?(conScore.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/conScore.length).toFixed(1):null;
+        const clsHtml=cls.length>0?cls.slice(0,3).map(c=>{const st=statoClasse(c);return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#f8fafc;border-radius:8px;margin-bottom:4px;font-size:11px;"><span style="font-weight:600;color:var(--dark);">${c.nome_classe}</span><span style="background:${st.bg};color:${st.col};padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;">${st.label}</span></div>`;}).join('')+(cls.length>3?`<p style="font-size:10px;color:#94a3b8;text-align:center;margin-top:4px;">+${cls.length-3} altre</p>`:'')
+        :'<p style="font-size:11px;color:#94a3b8;text-align:center;padding:6px;">Nessuna classe</p>';
         return `<div class="card" style="position:relative;">
-            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px;">
-                <div style="width:46px;height:46px;background:linear-gradient(135deg,var(--teal),var(--teal-light));border-radius:13px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:white;font-size:18px;">${s.nome.charAt(0)}</div>
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:46px;height:46px;background:linear-gradient(135deg,var(--teal),var(--teal-light));border-radius:13px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:white;font-size:18px;">${s.nome.charAt(0)}</div>
+                    <div><h4 style="font-weight:700;color:var(--dark);font-size:15px;margin:0 0 2px;">${s.nome}</h4>
+                    <p style="color:#64748b;font-size:11px;margin:0;">${s.comune}${anno}</p></div>
+                </div>
                 <button onclick="eliminaScuola('${s.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:12px;padding:4px;" class="no-print"><i class="fas fa-trash"></i></button>
             </div>
-            <h4 style="font-weight:700;color:var(--dark);font-size:15px;margin:0 0 3px;">${s.nome}</h4>
-            <p style="color:#64748b;font-size:12px;margin:0 0 14px;"><i class="fas fa-map-marker-alt" style="margin-right:3px;"></i>${s.comune}</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+                <span class="badge ${bc}">${s.pacchetto}</span>
+                ${migMedia?`<span class="badge badge-green">+${migMedia} media</span>`:''}
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
                 <div style="background:#f8fafc;border-radius:11px;padding:10px;text-align:center;">
-                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--dark);">${s.classi}</div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--dark);">${cls.length}</div>
                     <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Classi</div>
                 </div>
                 <div style="background:#f8fafc;border-radius:11px;padding:10px;text-align:center;">
-                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--teal);">${sess.length}</div>
-                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Sessioni</div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--teal);">${oreUsate.toFixed(1)}<span style="font-size:11px;">/${oreTot}h</span></div>
+                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Ore</div>
                 </div>
             </div>
             <div class="progress-bar" style="margin-bottom:10px;"><div class="progress-fill" style="width:${pct}%"></div></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-                <span class="badge ${bc}">${s.pacchetto}</span>
-                <button class="btn-ghost no-print" style="font-size:11px;padding:7px 13px;" onclick="apriSessionePerScuola('${s.id}')"><i class="fas fa-plus" style="margin-right:3px;"></i>Sessione</button>
+            <details style="margin-bottom:12px;">
+                <summary style="cursor:pointer;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;list-style:none;display:flex;align-items:center;gap:6px;padding:7px 10px;background:#f8fafc;border-radius:9px;">
+                    <i class="fas fa-chevron-right" style="font-size:9px;transition:transform 0.2s;"></i>Classi registrate
+                </summary>
+                <div style="margin-top:6px;">${clsHtml}</div>
+            </details>
+            <div style="display:flex;gap:8px;">
+                <button class="btn-ghost no-print" style="font-size:11px;padding:7px 13px;flex:1;justify-content:center;" onclick="apriNuovaClassePerScuola('${s.id}')"><i class="fas fa-plus" style="margin-right:3px;"></i>Nuova Classe</button>
+                <button class="btn-ghost no-print" style="font-size:11px;padding:7px 13px;" onclick="generaReport('${s.id}')"><i class="fas fa-file-pdf" style="margin-right:3px;color:var(--teal);"></i>Report</button>
             </div>
         </div>`;
     }).join('');
+    document.querySelectorAll('details').forEach(d=>{d.addEventListener('toggle',()=>{const ch=d.querySelector('.fa-chevron-right');if(ch)ch.style.transform=d.open?'rotate(90deg)':'';});});
 }
 
-function apriSessionePerScuola(scuolaId){
-    aggiornaSelectScuole(scuolaId);openModal('sessioneModal');
+function apriNuovaClassePerScuola(scuolaId){
+    aggiornaSelectClasseScuole(scuolaId);openModal('classeModal');
 }
 
-function aggiornaSelectScuole(preselect){
-    const sel=document.getElementById('sessioneScuola');
+function aggiornaSelectClasseScuole(preselect){
+    const sel=document.getElementById('classeScuola');
+    if(!sel)return;
     if(appState.scuole.length===0){sel.innerHTML='<option value="">— Prima aggiungi una scuola —</option>';return;}
     sel.innerHTML=appState.scuole.map(s=>`<option value="${s.id}" ${preselect===s.id?'selected':''}>${s.nome} (${s.comune})</option>`).join('');
 }
 
-function toggleCheck(el,tipo){
-    currentChecks[tipo]=!currentChecks[tipo];
-    el.classList.toggle('checked',currentChecks[tipo]);
-    el.querySelector('.check-box i').style.display=currentChecks[tipo]?'block':'none';
-    document.getElementById('scoreSection').style.display=(currentChecks.pre&&currentChecks.post)?'block':'none';
+function renderModuliGrid(){
+    let html='';
+    for(let i=1;i<=6;i++){
+        html+=`<div style="background:#f8fafc;border-radius:11px;padding:10px;">
+            <p style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">M${i}</p>
+            <input type="date" id="m${i}_data" class="form-input" style="margin-bottom:6px;font-size:12px;padding:7px 10px;" onchange="aggiornaPrePostUnlock()">
+            <input type="number" id="m${i}_ore" class="form-input" step="0.5" min="0" max="4" placeholder="ore" style="margin-bottom:0;font-size:12px;padding:7px 10px;">
+        </div>`;
+    }
+    const el=document.getElementById('moduliGrid');
+    if(el)el.innerHTML=html;
 }
 
-async function salvaSessione(){
-    const scuola_id=document.getElementById('sessioneScuola').value;
-    const classe=document.getElementById('sessioneClasse').value.trim();
-    const data=document.getElementById('sessioneData').value;
-    const note=document.getElementById('sessioneNote').value.trim();
+function aggiornaPrePostUnlock(){
+    const m1=document.getElementById('m1_data')?.value;
+    const m6=document.getElementById('m6_data')?.value;
+    const preBox=document.getElementById('preBox');
+    const postBox=document.getElementById('postBox');
+    const btnPre=document.getElementById('btnRispostePre');
+    const btnPost=document.getElementById('btnRispostePost');
+    if(preBox)preBox.style.opacity=m1?'1':'0.4';
+    if(postBox)postBox.style.opacity=m6?'1':'0.4';
+    const hasPre=document.getElementById('classePreData')?.value;
+    const hasPost=document.getElementById('classePostData')?.value;
+    if(btnPre)btnPre.style.display=(m1&&_editClasseId)?'flex':'none';
+    if(btnPost)btnPost.style.display=(m6&&_editClasseId)?'flex':'none';
+    const scoreSection=document.getElementById('scoreSection');
+    if(scoreSection)scoreSection.style.display=(hasPre&&hasPost)?'block':'none';
+}
+
+async function salvaClasse(){
+    const scuola_id=document.getElementById('classeScuola').value;
+    const nome_classe=document.getElementById('classeNome').value.trim();
+    const num_studenti=document.getElementById('classeStudenti').value;
+    const note=document.getElementById('classeNote').value.trim();
     const scorePre=document.getElementById('scorePre').value;
     const scorePost=document.getElementById('scorePost').value;
-    if(!scuola_id||!classe||!data){showToast('Compila scuola, classe e data','error');return;}
-    const payload={
-        scuola_id, classe, data, note,
-        check_pre:currentChecks.pre, check_gioco:currentChecks.gioco, check_post:currentChecks.post,
-        score_pre:scorePre?parseFloat(scorePre):null,
-        score_post:scorePost?parseFloat(scorePost):null
-    };
-    if(_editSessId){
-        const {data:updated,error}=await db.from('sessioni').update(payload).eq('id',_editSessId).select().single();
+    const pre_data=document.getElementById('classePreData').value||null;
+    const post_data=document.getElementById('classePostData').value||null;
+    if(!scuola_id||!nome_classe){showToast('Compila scuola e nome classe','error');return;}
+    const payload={scuola_id,nome_classe,num_studenti:num_studenti?parseInt(num_studenti):null,note,pre_data,post_data,
+        score_pre:scorePre?parseFloat(scorePre):null,score_post:scorePost?parseFloat(scorePost):null};
+    for(let i=1;i<=6;i++){
+        payload[`m${i}_data`]=document.getElementById(`m${i}_data`)?.value||null;
+        payload[`m${i}_ore`]=document.getElementById(`m${i}_ore`)?.value?parseFloat(document.getElementById(`m${i}_ore`).value):null;
+    }
+    if(_editClasseId){
+        const {data:updated,error}=await db.from('classi').update(payload).eq('id',_editClasseId).select().single();
         if(error){showToast('Errore: '+error.message,'error');return;}
-        const idx=appState.sessioni.findIndex(s=>s.id===_editSessId);
-        if(idx!==-1)appState.sessioni[idx]=updated;
-        closeModal('sessioneModal');
-        aggiornaSessioni();aggiornaDashboard();
-        showToast('Sessione aggiornata!');
+        const idx=appState.classi.findIndex(c=>c.id===_editClasseId);
+        if(idx!==-1)appState.classi[idx]=updated;
+        closeModal('classeModal');aggiornaClassi();aggiornaDashboard();
+        showToast('Classe aggiornata!');
     } else {
         const {data:{user}}=await db.auth.getUser();
-        const {data:newSess,error}=await db.from('sessioni').insert({biologo_id:user.id,...payload}).select().single();
+        const {data:nuova,error}=await db.from('classi').insert({biologo_id:user.id,...payload}).select().single();
         if(error){showToast('Errore: '+error.message,'error');return;}
-        appState.sessioni.unshift(newSess);
-        closeModal('sessioneModal');
-        aggiornaDashboard();
-        showToast('Sessione registrata!');
+        appState.classi.unshift(nuova);
+        closeModal('classeModal');aggiornaDashboard();
+        showToast('Classe registrata!');
     }
 }
 
-function resetSessioneModal(){
-    _editSessId=null;
-    aggiornaSelectScuole();
-    currentChecks={pre:false,gioco:false,post:false};
-    ['checkItemPre','checkItemGioco','checkItemPost'].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el){el.classList.remove('checked');el.querySelector('.check-box i').style.display='none';}
+function resetClasseModal(){
+    _editClasseId=null;
+    aggiornaSelectClasseScuole();
+    renderModuliGrid();
+    ['classeNome','classeStudenti','classeNote','classePreData','classePostData','scorePre','scorePost'].forEach(id=>{
+        const el=document.getElementById(id);if(el)el.value='';
     });
+    document.getElementById('classeModalTitle').textContent='Nuova Classe';
+    document.getElementById('classeSalvaLabel').textContent='Salva Classe';
+    const btnPre=document.getElementById('btnRispostePre');
+    const btnPost=document.getElementById('btnRispostePost');
+    if(btnPre)btnPre.style.display='none';
+    if(btnPost)btnPost.style.display='none';
+    const preBox=document.getElementById('preBox');
+    const postBox=document.getElementById('postBox');
+    if(preBox)preBox.style.opacity='0.4';
+    if(postBox)postBox.style.opacity='0.4';
     document.getElementById('scoreSection').style.display='none';
-    document.getElementById('sessioneAzioniRapide').style.display='none';
-    document.getElementById('btnRispostePre').style.display='none';
-    document.getElementById('btnRispostePost').style.display='none';
-    document.getElementById('sessioneModalTitle').textContent='Registra Sessione';
-    document.getElementById('sessioneSalvaLabel').textContent='Salva Sessione';
-    ['sessioneClasse','sessioneNote','scorePre','scorePost'].forEach(id=>document.getElementById(id).value='');
 }
 
-function apriModificaSessione(sessId){
-    const s=appState.sessioni.find(se=>se.id===sessId);
-    if(!s)return;
-    _editSessId=sessId;
-    aggiornaSelectScuole(s.scuola_id);
-    document.getElementById('sessioneClasse').value=s.classe||'';
-    document.getElementById('sessioneData').value=s.data||'';
-    document.getElementById('sessioneNote').value=s.note||'';
-    document.getElementById('scorePre').value=s.score_pre||'';
-    document.getElementById('scorePost').value=s.score_post||'';
-    currentChecks={pre:!!s.check_pre,gioco:!!s.check_gioco,post:!!s.check_post};
-    const map={pre:'checkItemPre',gioco:'checkItemGioco',post:'checkItemPost'};
-    Object.entries(map).forEach(([tipo,elId])=>{
-        const el=document.getElementById(elId);
-        if(!el)return;
-        el.classList.toggle('checked',currentChecks[tipo]);
-        el.querySelector('.check-box i').style.display=currentChecks[tipo]?'block':'none';
-    });
-    document.getElementById('scoreSection').style.display=(currentChecks.pre&&currentChecks.post)?'block':'none';
-    document.getElementById('sessioneModalTitle').textContent='Modifica Sessione';
-    document.getElementById('sessioneSalvaLabel').textContent='Aggiorna Sessione';
-    document.getElementById('sessioneAzioniRapide').style.display='block';
-    document.getElementById('btnRispostePre').style.display=s.check_pre?'inline-flex':'none';
-    document.getElementById('btnRispostePost').style.display=s.check_post?'inline-flex':'none';
-    document.getElementById('sessioneModal').classList.add('open');
+function apriModificaClasse(classeId){
+    const c=appState.classi.find(cl=>cl.id===classeId);
+    if(!c)return;
+    _editClasseId=classeId;
+    aggiornaSelectClasseScuole(c.scuola_id);
+    renderModuliGrid();
+    document.getElementById('classeNome').value=c.nome_classe||'';
+    document.getElementById('classeStudenti').value=c.num_studenti||'';
+    document.getElementById('classeNote').value=c.note||'';
+    document.getElementById('classePreData').value=c.pre_data||'';
+    document.getElementById('classePostData').value=c.post_data||'';
+    document.getElementById('scorePre').value=c.score_pre||'';
+    document.getElementById('scorePost').value=c.score_post||'';
+    for(let i=1;i<=6;i++){
+        const dEl=document.getElementById(`m${i}_data`);
+        const oEl=document.getElementById(`m${i}_ore`);
+        if(dEl)dEl.value=c[`m${i}_data`]||'';
+        if(oEl)oEl.value=c[`m${i}_ore`]||'';
+    }
+    document.getElementById('classeModalTitle').textContent='Modifica Classe';
+    document.getElementById('classeSalvaLabel').textContent='Aggiorna Classe';
+    aggiornaPrePostUnlock();
+    document.getElementById('classeModal').classList.add('open');
 }
 
-function apriRispostePerSessione(tipo){
-    closeModal('sessioneModal');
+function apriRispostePerClasse(tipo){
+    closeModal('classeModal');
     const navEl=document.querySelector('.nav-item[onclick*="risposte"]');
     showSection('risposte',navEl);
-    // Pre-seleziona sessione e tipo dopo che la sezione è visibile
     setTimeout(()=>{
         const sel=document.getElementById('risposteSessione');
-        if(sel&&_editSessId) sel.value=_editSessId;
+        if(sel&&_editClasseId)sel.value=_editClasseId;
         const tipoSel=document.getElementById('risposteTipo');
-        if(tipoSel) tipoSel.value=tipo;
+        if(tipoSel)tipoSel.value=tipo;
     },50);
 }
 
-function aggiornaSessioni(){
-    const list=document.getElementById('sessioniList');
-    if(appState.sessioni.length===0){list.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessuna sessione registrata.</p>';return;}
-    list.innerHTML=appState.sessioni.map((s,ri)=>{
-        const scuola=appState.scuole.find(sc=>sc.id===s.scuola_id);
+function aggiornaClassi(){
+    const list=document.getElementById('classiList');
+    if(!list)return;
+    if(appState.classi.length===0){list.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessuna classe registrata.</p>';return;}
+    list.innerHTML=appState.classi.map((c,ri)=>{
+        const scuola=appState.scuole.find(sc=>sc.id===c.scuola_id);
         const nome=scuola?scuola.nome:'—';
-        const haScore=s.score_pre&&s.score_post;
-        const migVal=haScore?(parseFloat(s.score_post)-parseFloat(s.score_pre)):null;
+        const stato=statoClasse(c);
+        const haScore=c.score_pre!=null&&c.score_post!=null;
+        const migVal=haScore?(parseFloat(c.score_post)-parseFloat(c.score_pre)):null;
         const migStr=migVal!==null?(migVal>=0?'+':'')+migVal.toFixed(1):null;
-        const steps=[{k:'check_pre',label:'Q.PRE'},{k:'check_gioco',label:'GIOCO'},{k:'check_post',label:'Q.POST'}];
-        const completo=s.check_pre&&s.check_gioco&&s.check_post;
-        const stepDone=steps.filter(st=>s[st.k]).length;
+        const oreT=oreClasse(c).toFixed(1);
+        const preOk=c.pre_data!=null; const postOk=c.post_data!=null;
         return `<div style="display:flex;align-items:start;gap:14px;padding:16px 0;border-bottom:1px solid #f1f5f9;">
-            <div style="width:42px;height:42px;background:${completo?'linear-gradient(135deg,var(--teal),var(--teal-light))':'#f1f5f9'};border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:700;color:${completo?'white':'#94a3b8'};font-size:13px;">${String(appState.sessioni.length-ri).padStart(2,'0')}</div>
+            <div style="width:42px;height:42px;background:${stato.col==='#065f46'?'linear-gradient(135deg,var(--teal),var(--teal-light))':'#f1f5f9'};border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:700;color:${stato.col==='#065f46'?'white':'#94a3b8'};font-size:13px;">${String(appState.classi.length-ri).padStart(2,'0')}</div>
             <div style="flex:1;min-width:0;">
                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                    <span style="font-weight:700;font-size:13px;color:var(--dark);">${nome} — Classe ${s.classe}</span>
-                    <span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;background:${completo?'#d1fae5':stepDone>0?'#fef3c7':'#f1f5f9'};color:${completo?'#065f46':stepDone>0?'#92400e':'#94a3b8'};text-transform:uppercase;letter-spacing:0.06em;">${completo?'Completa':stepDone+'/3'}</span>
+                    <span style="font-weight:700;font-size:13px;color:var(--dark);">${nome} — ${c.nome_classe}</span>
+                    <span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;background:${stato.bg};color:${stato.col};text-transform:uppercase;">${stato.label}</span>
+                    ${haScore?`<span style="font-size:10px;font-weight:700;color:#64748b;background:#f1f5f9;padding:2px 8px;border-radius:99px;">${c.score_pre}→${c.score_post} <span style="color:${migVal>=0?'#065f46':'#991b1b'}">${migStr}</span></span>`:''}
                 </div>
-                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${s.data}</div>
-                <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
-                    ${steps.map(st=>`<span style="padding:3px 8px;border-radius:7px;font-size:10px;font-weight:700;background:${s[st.k]?'#d1fae5':'#f1f5f9'};color:${s[st.k]?'#065f46':'#94a3b8'};">${st.label}${s[st.k]?' ✓':''}</span>`).join('')}
-                </div>
-                ${s.note?`<div style="font-size:11px;color:#64748b;margin-top:6px;font-style:italic;">${s.note.substring(0,80)}${s.note.length>80?'...':''}</div>`:''}
+                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${oreT}h · ${c.num_studenti||'—'} studenti</div>
+                ${c.note?`<div style="font-size:11px;color:#64748b;margin-top:5px;padding:5px 10px;background:#fafafa;border-left:3px solid var(--teal);border-radius:0 7px 7px 0;font-style:italic;">${c.note.substring(0,100)}${c.note.length>100?'...':''}</div>`:''}
                 <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;" class="no-print">
-                    <button onclick="apriModificaSessione('${s.id}')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid var(--teal);border-radius:8px;background:white;color:var(--teal);font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='var(--teal)';this.style.color='white'" onmouseout="this.style.background='white';this.style.color='var(--teal)'">
+                    <button onclick="apriModificaClasse('${c.id}')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid var(--teal);border-radius:8px;background:white;color:var(--teal);font-size:11px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='var(--teal)';this.style.color='white'" onmouseout="this.style.background='white';this.style.color='var(--teal)'">
                         <i class="fas fa-edit"></i>Modifica
                     </button>
-                    ${s.check_pre?`<button onclick="apriModificaSessione('${s.id}');setTimeout(()=>apriRispostePerSessione('PRE'),80)" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid #e2e8f0;border-radius:8px;background:white;color:#64748b;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'"><i class="fas fa-clipboard-list"></i>Risposte PRE</button>`:''}
-                    ${s.check_post?`<button onclick="apriModificaSessione('${s.id}');setTimeout(()=>apriRispostePerSessione('POST'),80)" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid #e2e8f0;border-radius:8px;background:white;color:#64748b;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'"><i class="fas fa-clipboard-check"></i>Risposte POST</button>`:''}
+                    ${c.pre_data?`<button onclick="apriModificaClasse('${c.id}');setTimeout(()=>apriRispostePerClasse('PRE'),80)" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid ${preOk?'#16a34a':'#e2e8f0'};border-radius:8px;background:${preOk?'#f0fdf9':'white'};color:${preOk?'#16a34a':'#64748b'};font-size:11px;font-weight:700;cursor:pointer;"><i class="fas fa-clipboard-list"></i>Risposte PRE${preOk?' ✓':''}</button>`:''}
+                    ${c.post_data?`<button onclick="apriModificaClasse('${c.id}');setTimeout(()=>apriRispostePerClasse('POST'),80)" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid ${postOk?'#16a34a':'#e2e8f0'};border-radius:8px;background:${postOk?'#f0fdf9':'white'};color:${postOk?'#16a34a':'#64748b'};font-size:11px;font-weight:700;cursor:pointer;"><i class="fas fa-clipboard-check"></i>Risposte POST${postOk?' ✓':''}</button>`:''}
                 </div>
             </div>
-            <div style="text-align:right;flex-shrink:0;">
-                ${haScore?`<div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">${s.score_pre}→${s.score_post}</div><div style="background:${migVal>=0?'#d1fae5':'#fee2e2'};color:${migVal>=0?'#065f46':'#991b1b'};padding:4px 8px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">${migStr}</div>`:''}
-                <button onclick="eliminaSessione('${s.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:11px;margin-top:8px;display:block;margin-left:auto;" class="no-print"><i class="fas fa-trash"></i></button>
-            </div>
+            <button onclick="eliminaClasse('${c.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:11px;" class="no-print"><i class="fas fa-trash"></i></button>
         </div>`;
     }).join('');
 }
 
-async function eliminaSessione(sessId){
-    if(!confirm('Eliminare questa sessione?'))return;
-    const {error}=await db.from('sessioni').delete().eq('id',sessId);
+async function eliminaClasse(classeId){
+    if(!confirm('Eliminare questa classe?'))return;
+    const {error}=await db.from('classi').delete().eq('id',classeId);
     if(error){showToast('Errore: '+error.message,'error');return;}
-    appState.sessioni=appState.sessioni.filter(s=>s.id!==sessId);
-    aggiornaSessioni();aggiornaDashboard();showToast('Sessione eliminata');
+    appState.classi=appState.classi.filter(c=>c.id!==classeId);
+    aggiornaClassi();aggiornaDashboard();showToast('Classe eliminata');
 }
 
 function aggiornaReport(){
     const grid=document.getElementById('reportGrid');
     if(appState.scuole.length===0){grid.innerHTML='<p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Aggiungi scuole per generare report.</p>';return;}
     grid.innerHTML=appState.scuole.map(s=>{
-        const sess=appState.sessioni.filter(se=>se.scuola_id===s.id);
-        const conScore=sess.filter(se=>se.score_pre&&se.score_post);
-        const mig=conScore.length>0?(conScore.reduce((a,se)=>a+(parseFloat(se.score_post)-parseFloat(se.score_pre)),0)/conScore.length).toFixed(1):null;
+        const cls=appState.classi.filter(c=>c.scuola_id===s.id);
+        const conScore=cls.filter(c=>c.score_pre!=null&&c.score_post!=null);
+        const mig=conScore.length>0?(conScore.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/conScore.length).toFixed(1):null;
+        const anno=s.anno_scolastico?` · ${s.anno_scolastico}`:'';
         return `<div class="card" style="text-align:center;">
-            <div style="width:52px;height:52px;background:var(--dark);border-radius:15px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:20px;">${s.nome.charAt(0)}</div>
-            <h4 style="font-weight:700;color:var(--dark);font-size:14px;margin:0 0 3px;">${s.nome}</h4>
-            <p style="color:#64748b;font-size:11px;margin:0 0 14px;">${s.comune}</p>
+            <div style="width:52px;height:52px;background:var(--dark);border-radius:15px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:20px;">${s.nome.charAt(0)}</div>
+            <h4 style="font-weight:700;color:var(--dark);font-size:14px;margin:0 0 2px;">${s.nome}</h4>
+            <p style="color:#64748b;font-size:11px;margin:0 0 10px;">${s.comune}${anno}</p>
             <div style="display:flex;justify-content:center;gap:16px;margin-bottom:14px;">
-                <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--dark);">${sess.length}</div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Sessioni</div></div>
+                <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--dark);">${cls.length}</div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Classi</div></div>
                 ${mig?`<div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--teal);">+${mig}</div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Miglioramento</div></div>`:''}
             </div>
             <button class="btn-dark no-print" style="width:100%;font-size:11px;justify-content:center;" onclick="generaReport('${s.id}')"><i class="fas fa-file-pdf"></i>Genera Report PDF</button>
@@ -905,21 +968,21 @@ async function generaReport(scuolaId) {
         </div>`;
     openModal('reportModal');
 
-    const sess = appState.sessioni.filter(se => se.scuola_id === scuolaId);
-    if (sess.length === 0) {
+    const cls = appState.classi.filter(c => c.scuola_id === scuolaId);
+    if (cls.length === 0) {
         document.getElementById('reportContent').innerHTML = `
-            <p style="text-align:center;padding:40px;color:#94a3b8;">Nessuna sessione registrata per questa scuola.</p>
+            <p style="text-align:center;padding:40px;color:#94a3b8;">Nessuna classe registrata per questa scuola.</p>
             <div style="display:flex;justify-content:center;">
                 <button class="btn-ghost" onclick="closeModal('reportModal')">Chiudi</button>
             </div>`;
         return;
     }
 
-    const sessIds = sess.map(se => se.id);
-    const { data: stats, error } = await db.from('sessioni_stats').select('*').in('sessione_id', sessIds);
+    const clsIds = cls.map(c => c.id);
+    const { data: stats, error } = await db.from('classi_stats').select('*').in('classe_id', clsIds);
     if (error) { showToast('Errore dati: ' + error.message, 'error'); return; }
 
-    // La view restituisce una riga per sessione_id con PRE e POST già uniti
+    // La view restituisce una riga per classe_id con PRE e POST già uniti
     const rows = stats || [];
     const oggi = new Date().toLocaleDateString('it-IT', {day:'numeric', month:'long', year:'numeric'});
 
@@ -1063,9 +1126,9 @@ async function generaReport(scuolaId) {
     </div>
     ${righe.map(renderRiga).join('')}
 
-    <!-- Registro sessioni -->
-    <h4 style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);margin:18px 0 10px;font-size:13px;">Registro Sessioni</h4>
-    ${sess.map(se => `
+    <!-- Registro classi -->
+    <h4 style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);margin:18px 0 10px;font-size:13px;">Registro Classi</h4>
+    ${cls.map(se => `
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f8fafc;border-radius:10px;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
         <div>
             <div style="font-weight:600;font-size:12px;color:var(--dark);">Classe ${se.classe}</div>
@@ -1117,9 +1180,8 @@ function generaCodice(){
 }
 
 function openModal(id){
-    if(id==='sessioneModal'){
-        resetSessioneModal();
-        document.getElementById('sessioneData').value=new Date().toISOString().split('T')[0];
+    if(id==='classeModal'){
+        resetClasseModal();
     }
     document.getElementById(id).classList.add('open');
 }
@@ -1140,13 +1202,13 @@ let chartInstance = null;
 let chartBigInstance = null;
 
 function buildChartData() {
-    const sess = appState.sessioni.filter(s => s.score_pre && s.score_post);
-    const labels = sess.map(s => {
-        const sc = appState.scuole.find(sc=>sc.id===s.scuola_id);
-        return (sc ? sc.nome.split(' ').slice(-1)[0] : '?') + ' ' + s.classe;
+    const sess = appState.classi.filter(c => c.score_pre != null && c.score_post != null);
+    const labels = sess.map(c => {
+        const sc = appState.scuole.find(sc=>sc.id===c.scuola_id);
+        return (sc ? sc.nome.split(' ').slice(-1)[0] : '?') + ' ' + c.nome_classe;
     });
-    const pre  = sess.map(s => parseFloat(s.score_pre));
-    const post = sess.map(s => parseFloat(s.score_post));
+    const pre  = sess.map(c => parseFloat(c.score_pre));
+    const post = sess.map(c => parseFloat(c.score_post));
     return { labels, pre, post, sess };
 }
 
@@ -1231,17 +1293,17 @@ function apriGrafico() {
         }
     });
 
-    // Lista sessioni
+    // Lista classi
     document.getElementById('graficoLista').innerHTML = `
-        <h4 style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--dark);margin:0 0 12px;">Dettaglio per Sessione</h4>
+        <h4 style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--dark);margin:0 0 12px;">Dettaglio per Classe</h4>
         ${sess.map(s => {
             const sc = appState.scuole.find(sc=>sc.id===s.scuola_id);
             const mig = (parseFloat(s.score_post) - parseFloat(s.score_pre)).toFixed(1);
             const migPos = parseFloat(mig) >= 0;
             return `<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#f8fafc;border-radius:12px;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
                 <div>
-                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${sc ? sc.nome : '—'} — Classe ${s.classe}</div>
-                    <div style="font-size:11px;color:#94a3b8;">${s.data}</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${sc ? sc.nome : '—'} — ${s.nome_classe||s.classe||''}</div>
+                    <div style="font-size:11px;color:#94a3b8;">${moduliCompletati(s)}/6 moduli</div>
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;">
                     <span style="font-size:13px;color:#94a3b8;">${s.score_pre} → ${s.score_post}</span>
@@ -1285,13 +1347,13 @@ const DOMANDE = {
 function aggiornaRisposte() {
     const sel = document.getElementById('risposteSessione');
     if (!sel) return;
-    if (appState.sessioni.length === 0) {
-        sel.innerHTML = '<option value="">— Nessuna sessione disponibile —</option>';
+    if (appState.classi.length === 0) {
+        sel.innerHTML = '<option value="">— Nessuna classe disponibile —</option>';
     } else {
-        sel.innerHTML = appState.sessioni.map(s => {
-            const sc = appState.scuole.find(sc => sc.id === s.scuola_id);
-            const label = (sc ? sc.nome : '?') + ' — Classe ' + s.classe + ' (' + s.data + ')';
-            return `<option value="${s.id}">${label}</option>`;
+        sel.innerHTML = appState.classi.map(c => {
+            const sc = appState.scuole.find(sc => sc.id === c.scuola_id);
+            const label = (sc ? sc.nome : '?') + ' — ' + c.nome_classe;
+            return `<option value="${c.id}">${label}</option>`;
         }).join('');
     }
     document.getElementById('risposteStudentiContainer').innerHTML = '';
@@ -1301,15 +1363,15 @@ function aggiornaRisposte() {
 async function generaFormStudenti() {
     const sessId = document.getElementById('risposteSessione').value;
     const tipo = document.getElementById('risposteTipo').value;
-    if (!sessId) { showToast('Seleziona una sessione', 'error'); return; }
+    if (!sessId) { showToast('Seleziona una classe', 'error'); return; }
 
     const container = document.getElementById('risposteStudentiContainer');
     container.innerHTML = `<div style="text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin" style="color:var(--teal);font-size:20px;"></i></div>`;
 
-    // Carica risposte già salvate per questa sessione+tipo
+    // Carica risposte già salvate per questa classe+tipo
     const { data: esistenti, error } = await db.from('risposte')
         .select('*')
-        .eq('sessione_id', sessId)
+        .eq('classe_id', sessId)
         .eq('tipo', tipo)
         .order('studente_num');
     if (error) { showToast('Errore caricamento: ' + error.message, 'error'); return; }
@@ -1323,8 +1385,8 @@ async function generaFormStudenti() {
     }
     if (!numStudenti || numStudenti < 1) { showToast('Inserisci il numero di studenti', 'error'); container.innerHTML = ''; return; }
 
-    const sessione = appState.sessioni.find(s => s.id === sessId);
-    const classeDefault = sessione ? sessione.classe : '';
+    const classeObj = appState.classi.find(c => c.id === sessId);
+    const classeDefault = classeObj ? classeObj.nome_classe : '';
     const esistentiMap = {};
     esistenti.forEach(r => { esistentiMap[r.studente_num] = r; });
 
@@ -1491,7 +1553,7 @@ async function salvaRisposte() {
         const versione = document.getElementById('versione_' + i).value;
         const classe_studente = document.getElementById('classe_' + i).value.trim();
         const sesso = document.getElementById('sesso_' + i).value;
-        const riga = { sessione_id: sessId, studente_num: i, tipo, versione, classe_studente, sesso };
+        const riga = { classe_id: sessId, studente_num: i, tipo, versione, classe_studente, sesso };
 
         let punti = 0;
         for (let d = 1; d <= 9; d++) {
@@ -1519,7 +1581,7 @@ async function salvaRisposte() {
     }
 
     const { error } = await db.from('risposte').upsert(righe, {
-        onConflict: 'sessione_id,studente_num,tipo',
+        onConflict: 'classe_id,studente_num,tipo',
         ignoreDuplicates: false
     });
     if (error) { showToast('Errore: ' + error.message, 'error'); return; }
@@ -1536,7 +1598,7 @@ db.auth.onAuthStateChange(async (event, session) => {
     if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session){
         await inizializzaApp(session.user);
     } else if(event === 'SIGNED_OUT'){
-        appState = {utente:null, scuole:[], sessioni:[]};
+        appState = {utente:null, scuole:[], classi:[]};
         document.getElementById('appShell').style.opacity='0';
         setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
     }
