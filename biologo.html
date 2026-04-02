@@ -979,54 +979,66 @@ async function generaReport(scuolaId) {
     }
 
     const clsIds = cls.map(c => c.id);
-    const { data: stats, error } = await db.from('classi_stats').select('*').in('classe_id', clsIds);
-    if (error) { showToast('Errore dati: ' + error.message, 'error'); return; }
 
-    // La view restituisce una riga per classe_id con PRE e POST già uniti
-    const rows = stats || [];
+    // Carica risposte direttamente dalla tabella risposte
+    const { data: risposte, error } = await db.from('risposte').select('*').in('classe_id', clsIds);
+    if (error) {
+        document.getElementById('reportContent').innerHTML = `
+            <p style="text-align:center;padding:40px;color:#ef4444;">Errore nel caricamento: ${error.message}</p>
+            <div style="display:flex;justify-content:center;">
+                <button class="btn-ghost" onclick="closeModal('reportModal')">Chiudi</button>
+            </div>`;
+        return;
+    }
+
+    const rows = risposte || [];
+    const rowsPre  = rows.filter(r => r.tipo === 'PRE');
+    const rowsPost = rows.filter(r => r.tipo === 'POST');
     const oggi = new Date().toLocaleDateString('it-IT', {day:'numeric', month:'long', year:'numeric'});
 
-    // Helper: media numerica di una colonna su tutte le righe
-    function media(campo) {
-        const vals = rows.map(r => parseFloat(r[campo])).filter(v => !isNaN(v));
-        return vals.length ? vals.reduce((a,b) => a+b, 0) / vals.length : null;
-    }
-    // Helper: media percentuale arrotondata (colonne d1_pre_pct, d1_post_pct …)
-    function avgPct(col) {
-        const vals = rows.map(r => parseFloat(r[col])).filter(v => !isNaN(v));
-        return vals.length ? Math.round(vals.reduce((a,b) => a+b, 0) / vals.length) : null;
+    // % risposte corrette per una domanda su un sottoinsieme
+    function pctCorretta(arr, campo) {
+        const rilevanti = arr.filter(r => r[campo] != null);
+        if (!rilevanti.length) return null;
+        const corrette = rilevanti.filter(r => r[campo] === RISPOSTE_CORRETTE[campo]).length;
+        return Math.round((corrette / rilevanti.length) * 100);
     }
 
-    // Studenti monitorati (somma pre + post, evita doppio conteggio usando il max)
-    const totStudenti = rows.reduce((a, r) => a + Math.max(r.studenti_pre || 0, r.studenti_post || 0), 0);
+    // Media punteggio
+    function mediaPunteggi(arr) {
+        if (!arr.length) return null;
+        const vals = arr.map(r => r.punteggio != null ? parseFloat(r.punteggio) : 0);
+        return vals.reduce((a,b) => a+b, 0) / vals.length;
+    }
 
-    // Score medi e miglioramento
-    const avgPre  = media('media_pre');
-    const avgPost = media('media_post');
-    const migVal  = media('miglioramento') ?? (avgPre !== null && avgPost !== null ? avgPost - avgPre : null);
+    const totStudenti = Math.max(rowsPre.length, rowsPost.length) || rows.length;
+    const avgPre  = mediaPunteggi(rowsPre);
+    const avgPost = mediaPunteggi(rowsPost);
+    const migVal  = avgPre !== null && avgPost !== null ? avgPost - avgPre : null;
     const migPct  = migVal !== null && avgPre ? Math.round((migVal / avgPre) * 100) : null;
 
-    // Determina versione massima in base alle colonne non-null
-    const haD12 = rows.some(r => r.d12_pre_pct != null || r.d12_post_pct != null);
-    const haD10 = rows.some(r => r.d10_pre_pct != null || r.d10_post_pct != null);
-    const maxVersione = haD12 ? 'C' : haD10 ? 'B' : 'A';
     const versioni = [...new Set(rows.map(r => r.versione).filter(Boolean))];
+    const haD12 = rows.some(r => r.d12 != null);
+    const haD10 = rows.some(r => r.d10 != null);
+    const maxVersione = haD12 ? 'C' : haD10 ? 'B' : 'A';
     const vLabel = versioni.length ? versioni.sort().join('/') : maxVersione;
 
-    // Costruisce lista domande rilevanti con colonne reali della view
     const campi = ['d1','d2','d3','d4','d5','d6','d7','d8','d9'];
-    if (maxVersione === 'B' || maxVersione === 'C') campi.push('d10','d11');
-    if (maxVersione === 'C') campi.push('d12','d13');
+    if (haD10) campi.push('d10','d11');
+    if (haD12) campi.push('d12','d13');
 
     const righe = campi.map(c => ({
         campo: c,
         testo: DOMANDE[c],
-        pre:   avgPct(c + '_pre_pct'),
-        post:  avgPct(c + '_post_pct')
+        pre:  pctCorretta(rowsPre, c),
+        post: pctCorretta(rowsPost, c)
     }));
 
-    // d_post: solo POST, colonna unica d_post_pct nella view
-    const dpostPct = avgPct('d_post_pct');
+    // d_post: % A o B (cambiamento positivo)
+    const dpostRows = rowsPost.filter(r => r.d_post != null);
+    const dpostPct = dpostRows.length
+        ? Math.round(dpostRows.filter(r => r.d_post === 'A' || r.d_post === 'B').length / dpostRows.length * 100)
+        : null;
 
     // Render riga domanda con doppia barra CSS
     function renderRiga(r) {
@@ -1128,18 +1140,23 @@ async function generaReport(scuolaId) {
 
     <!-- Registro classi -->
     <h4 style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);margin:18px 0 10px;font-size:13px;">Registro Classi</h4>
-    ${cls.map(se => `
+    ${cls.map(se => {
+        const clsRisp = rows.filter(r => r.classe_id === se.id);
+        const hasPre  = clsRisp.some(r => r.tipo === 'PRE');
+        const hasPost = clsRisp.some(r => r.tipo === 'POST');
+        const dataLabel = se.pre_data || se.post_data || '';
+        return `
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f8fafc;border-radius:10px;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
         <div>
-            <div style="font-weight:600;font-size:12px;color:var(--dark);">Classe ${se.classe}</div>
-            <div style="font-size:10px;color:#94a3b8;">${se.data}</div>
+            <div style="font-weight:600;font-size:12px;color:var(--dark);">${se.nome_classe || '—'}</div>
+            <div style="font-size:10px;color:#94a3b8;">${dataLabel} · ${se.num_studenti || clsRisp.length} studenti</div>
         </div>
         <div style="display:flex;gap:5px;flex-wrap:wrap;">
-            ${se.check_pre  ? '<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.PRE ✓</span>' : ''}
-            ${se.check_gioco? '<span style="background:#dbeafe;color:#1e40af;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">GIOCO ✓</span>' : ''}
-            ${se.check_post ? '<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.POST ✓</span>' : ''}
+            ${hasPre  ? '<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.PRE ✓</span>' : ''}
+            ${hasPost ? '<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.POST ✓</span>' : ''}
         </div>
-    </div>`).join('')}
+    </div>`;
+    }).join('')}
 
     <!-- Impatto sul comportamento -->
     ${dpostPct !== null ? `
@@ -1568,7 +1585,7 @@ async function salvaRisposte() {
         const versione = document.getElementById('versione_' + i).value;
         const classe_studente = document.getElementById('classe_' + i).value.trim();
         const sesso = document.getElementById('sesso_' + i).value;
-        const riga = { sessione_id: sessId, studente_num: i, tipo, versione, classe_studente, sesso };
+        const riga = { classe_id: sessId, studente_num: i, tipo, versione, classe_studente, sesso };
 
         let punti = 0;
         for (let d = 1; d <= 9; d++) {
@@ -1596,7 +1613,7 @@ async function salvaRisposte() {
     }
 
     const { error } = await db.from('risposte').upsert(righe, {
-        onConflict: 'sessione_id,studente_num,tipo',
+        onConflict: 'classe_id,studente_num,tipo',
         ignoreDuplicates: false
     });
     if (error) { showToast('Errore: ' + error.message, 'error'); return; }
