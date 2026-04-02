@@ -501,7 +501,9 @@
 
 <script>
 // Pulizia una-tantum del vecchio sistema di login localStorage
-if (localStorage.getItem('sane_v2') !== null) { localStorage.clear(); }
+if (localStorage.getItem('sane_v2') !== null) {
+    Object.keys(localStorage).filter(k => k.startsWith('sane_')).forEach(k => localStorage.removeItem(k));
+}
 
 // ============================================================
 // SUPABASE
@@ -551,12 +553,8 @@ async function doLogin(){
 }
 
 function doLogout(){
-    // Pulisci tutte le bozze localStorage
-    Object.keys(localStorage).filter(k=>k.startsWith('sane_')).forEach(k=>localStorage.removeItem(k));
-    appState = {utente:null, scuole:[], pacchetti:[], classi:[]};
     document.getElementById('appShell').style.opacity='0';
-    setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
-    db.auth.signOut();
+    db.auth.signOut(); // SIGNED_OUT handler gestisce reset e pulizia
 }
 
 async function caricaDati(){
@@ -582,6 +580,14 @@ async function inizializzaApp(user){
     }
     appState.utente={nome:profilo.nome||user.email.split('@')[0],email:user.email,id:user.id};
     await caricaDati();
+    // Rimuovi bozze di classi che non esistono più
+    const classiIdsAttivi = new Set(appState.classi.map(c => c.id));
+    Object.keys(localStorage)
+        .filter(k => k.startsWith('sane_bozza_'))
+        .forEach(k => {
+            const classeId = k.slice('sane_bozza_'.length, 'sane_bozza_'.length + 36);
+            if (!classiIdsAttivi.has(classeId)) localStorage.removeItem(k);
+        });
     document.getElementById('loginScreen').classList.add('hidden');
     setTimeout(()=>{document.getElementById('appShell').style.opacity='1';aggiornaUI();showToast('Bentornato, '+appState.utente.nome+'!');},400);
 }
@@ -923,14 +929,21 @@ async function aggiungiPacchetto(){
     const ore=parseInt(document.getElementById('pacchettoOre').value)||30;
     const anno=document.getElementById('pacchettoAnno').value.trim()||null;
     if(!scuolaId){showToast('Errore: scuola non trovata','error');return;}
-    const {data:{user}}=await db.auth.getUser();
+    const {data:authData}=await db.auth.getUser();
+    const user=authData?.user;
+    if(!user){showToast('Sessione scaduta, effettua il login','error');return;}
     const {data:nuovo,error}=await db.from('pacchetti').insert({
         scuola_id:scuolaId,biologo_id:user.id,tipo,data_acquisto:data,ore_totali:ore,anno_scolastico:anno
     }).select().single();
     if(error){showToast('Errore: '+error.message,'error');return;}
-    appState.pacchetti.push(nuovo);
+    // Se Supabase RLS non restituisce la riga, ricarica dal DB
+    if(nuovo){
+        appState.pacchetti.push(nuovo);
+    } else {
+        await caricaDati();
+    }
     closeModal('pacchettoModal');
-    aggiornaScuole();aggiornaDashboard();
+    aggiornaScuole();aggiornaDashboard();aggiornaReport();
     showToast('Pacchetto '+tipo+' aggiunto!');
 }
 
@@ -1118,6 +1131,7 @@ function aggiornaClassi(){
                 <button onclick="apriClasseDetail('${c.id}')" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border:none;border-radius:9px;background:var(--teal);color:white;font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:background 0.2s;" onmouseover="this.style.background='var(--teal-light)'" onmouseout="this.style.background='var(--teal)'">
                     <i class="fas fa-arrow-right"></i>Apri
                 </button>
+                <button onclick="generaReport(null,null,'${c.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:7px 10px;border:none;border-radius:9px;background:#f0fdf9;color:var(--teal);font-size:11px;font-weight:700;cursor:pointer;transition:background 0.2s;" title="Report classe" onmouseover="this.style.background='#d1fae5'" onmouseout="this.style.background='#f0fdf9'"><i class="fas fa-file-pdf"></i></button>
                 <button onclick="eliminaClasse('${c.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:11px;padding:4px;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#e2e8f0'"><i class="fas fa-trash"></i></button>
             </div>
         </div>`;
@@ -1167,6 +1181,7 @@ function aggiornaReport(){
                     <span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;background:${preOk?'#d1fae5':'#f1f5f9'};color:${preOk?'#065f46':'#94a3b8'};">PRE${preOk?' ✓':''}</span>
                     <span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;background:${postOk?'#d1fae5':'#f1f5f9'};color:${postOk?'#065f46':'#94a3b8'};">POST${postOk?' ✓':''}</span>
                     ${migC!==null?`<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:${migPos?'#d1fae5':'#fee2e2'};color:${migPos?'#065f46':'#991b1b'};">${migPos?'+':''}${migC}</span>`:''}
+                    <button onclick="generaReport(null,null,'${c.id}')" style="display:inline-flex;align-items:center;padding:3px 7px;border:none;border-radius:6px;background:#f0fdf9;color:var(--teal);font-size:9px;cursor:pointer;" title="Report classe"><i class="fas fa-file-pdf"></i></button>
                 </div>
             </div>`;
         }).join('')||'<p style="font-size:11px;color:#94a3b8;padding:6px 0;text-align:center;">Nessuna classe</p>';
@@ -1213,9 +1228,28 @@ function aggiornaReport(){
     }).join('');
 }
 
-async function generaReport(scuolaId, pacchettoId) {
-    const s = appState.scuole.find(sc => sc.id === scuolaId);
-    if (!s) return;
+async function generaReport(scuolaId, pacchettoId, classeId) {
+    // Determina scuola, classi e livello del report
+    let s, cls, sottotitolo;
+    if (classeId) {
+        const c = appState.classi.find(cl => cl.id === classeId);
+        if (!c) return;
+        s = appState.scuole.find(sc => sc.id === c.scuola_id);
+        if (!s) return;
+        cls = [c];
+        sottotitolo = 'Report Singola Classe';
+    } else if (pacchettoId) {
+        s = appState.scuole.find(sc => sc.id === scuolaId);
+        if (!s) return;
+        cls = appState.classi.filter(c => c.pacchetto_id === pacchettoId);
+        const pkTipo = appState.pacchetti.find(pk => pk.id === pacchettoId)?.tipo || '';
+        sottotitolo = 'Report Pacchetto' + (pkTipo ? ' · ' + pkTipo : '');
+    } else {
+        s = appState.scuole.find(sc => sc.id === scuolaId);
+        if (!s) return;
+        cls = appState.classi.filter(c => c.scuola_id === scuolaId);
+        sottotitolo = 'Report di Progetto';
+    }
 
     // Mostra loading e apre il modal subito
     document.getElementById('reportContent').innerHTML = `
@@ -1225,12 +1259,9 @@ async function generaReport(scuolaId, pacchettoId) {
         </div>`;
     openModal('reportModal');
 
-    const cls = pacchettoId
-        ? appState.classi.filter(c => c.pacchetto_id === pacchettoId)
-        : appState.classi.filter(c => c.scuola_id === scuolaId);
     if (cls.length === 0) {
         document.getElementById('reportContent').innerHTML = `
-            <p style="text-align:center;padding:40px;color:#94a3b8;">Nessuna classe registrata per questa scuola.</p>
+            <p style="text-align:center;padding:40px;color:#94a3b8;">Nessuna classe registrata.</p>
             <div style="display:flex;justify-content:center;">
                 <button class="btn-ghost" onclick="closeModal('reportModal')">Chiudi</button>
             </div>`;
@@ -1335,7 +1366,10 @@ async function generaReport(scuolaId, pacchettoId) {
         </div>`;
     }
 
-    document.getElementById('reportContent').innerHTML = `
+    const titoloHeader = classeId ? (cls[0].nome_classe || '—') : s.nome;
+    const scuolaSub    = classeId ? s.nome + ' · ' + s.comune : s.comune;
+
+    try { document.getElementById('reportContent').innerHTML = `
     <!-- Header -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
         <div style="display:flex;align-items:center;gap:10px;">
@@ -1353,14 +1387,14 @@ async function generaReport(scuolaId, pacchettoId) {
         </div>
     </div>
 
-    <!-- Intestazione scuola -->
+    <!-- Intestazione -->
     <div style="background:var(--dark);border-radius:18px;padding:20px;color:white;margin-bottom:20px;">
-        <div style="font-size:9px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:3px;">Report di Progetto</div>
-        <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin:0 0 7px;">${s.nome}</h2>
+        <div style="font-size:9px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:3px;">${sottotitolo}</div>
+        <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin:0 0 7px;">${titoloHeader}</h2>
         <div style="display:flex;gap:14px;flex-wrap:wrap;">
-            <span style="font-size:11px;color:rgba(255,255,255,0.45);">📍 ${s.comune}</span>
+            <span style="font-size:11px;color:rgba(255,255,255,0.45);">📍 ${scuolaSub}</span>
             <span style="font-size:11px;color:rgba(255,255,255,0.45);">📅 ${oggi}</span>
-            <span style="font-size:11px;color:rgba(255,255,255,0.45);">📋 Pacchetto ${s.pacchetto}</span>
+            ${!classeId ? `<span style="font-size:11px;color:rgba(255,255,255,0.45);">📋 Pacchetto ${s.pacchetto||'—'}</span>` : ''}
             <span style="font-size:11px;color:rgba(255,255,255,0.45);">👤 ${appState.utente?.nome||'—'}</span>
             <span style="font-size:11px;color:rgba(255,255,255,0.45);">📝 Versioni ${vLabel}</span>
         </div>
@@ -1397,19 +1431,19 @@ async function generaReport(scuolaId, pacchettoId) {
     </div>
     ${righe.map(renderRiga).join('')}
 
-    <!-- Dettaglio Pacchetto -->
+    ${!classeId ? `<!-- Dettaglio Pacchetto -->
     <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin:18px 0 14px;">
         <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px;">Pacchetto Acquistato</div>
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
             <div>
-                <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--dark);text-transform:capitalize;">${s.pacchetto}</span>
+                <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--dark);text-transform:capitalize;">${s.pacchetto||'—'}</span>
                 <span style="font-size:11px;color:#94a3b8;margin-left:8px;">· ${s.ore_totali||30}h totali</span>
             </div>
             <span style="font-size:11px;color:#64748b;">Acquistato il ${s.created_at?new Date(s.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'}):'—'}</span>
         </div>
-    </div>
+    </div>` : ''}
 
-    <!-- Registro classi con dettaglio score -->
+    ${cls.length > 1 ? `<!-- Dettaglio per Classe -->
     <h4 style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);margin:18px 0 10px;font-size:13px;">Dettaglio per Classe</h4>
     ${cls.map(se => {
         const clsRisp = rows.filter(r => r.classe_id === se.id);
@@ -1442,7 +1476,7 @@ async function generaReport(scuolaId, pacchettoId) {
             ${avgClsPost!==null?`<span style="font-size:11px;color:var(--teal);font-weight:600;">POST: <strong>${avgClsPost}/9</strong></span>`:''}
         </div>`:''}
     </div>`;
-    }).join('')}
+    }).join('')}` : ''}
 
     <!-- Impatto sul comportamento -->
     ${dpostPct !== null ? `
@@ -1462,7 +1496,7 @@ async function generaReport(scuolaId, pacchettoId) {
     <!-- Attestato -->
     <div style="margin-top:20px;padding:14px;background:#f0fdf9;border-radius:14px;border-left:4px solid var(--teal);">
         <p style="font-size:11px;color:#065f46;margin:0;line-height:1.5;">
-            <strong>Attestato:</strong> Il presente report certifica l'avvenuta implementazione del Programma "Mangiare Bene, Crescere Meglio" — Metodo Cardaci-Orlando — presso ${s.nome}. Dati raccolti e validati in conformità alle linee guida F.N.O.B.
+            <strong>Attestato:</strong> Il presente report certifica l'avvenuta implementazione del Programma "Mangiare Bene, Crescere Meglio" — Metodo Cardaci-Orlando — presso ${classeId ? (cls[0].nome_classe||'—')+' ('+s.nome+')' : s.nome}. Dati raccolti e validati in conformità alle linee guida F.N.O.B.
         </p>
     </div>
 
@@ -1473,6 +1507,13 @@ async function generaReport(scuolaId, pacchettoId) {
             <i class="fas fa-print"></i>Stampa / Salva PDF
         </button>
     </div>`;
+    } catch(err) {
+        document.getElementById('reportContent').innerHTML = `
+            <p style="text-align:center;padding:40px;color:#ef4444;"><i class="fas fa-exclamation-triangle"></i> Errore rendering: ${err.message}</p>
+            <div style="display:flex;justify-content:center;margin-top:12px;">
+                <button class="btn-ghost" onclick="closeModal('reportModal')">Chiudi</button>
+            </div>`;
+    }
 }
 
 function generaCodice(){
