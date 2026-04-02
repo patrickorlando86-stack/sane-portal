@@ -305,23 +305,11 @@
             <div class="nav-item" onclick="showSection('scuole',this)">
                 <i class="fas fa-school"></i><span class="label">Le Mie Scuole</span>
             </div>
-            <div class="nav-item" onclick="showSection('classi',this)">
-                <i class="fas fa-users"></i><span class="label">Registro Classi</span>
-            </div>
-            <div class="nav-item" onclick="showSection('risposte',this)">
-                <i class="fas fa-pen-to-square"></i><span class="label">Inserisci Risposte</span>
-            </div>
             <div class="nav-item" onclick="showSection('report',this)">
                 <i class="fas fa-file-medical"></i><span class="label">Report</span>
             </div>
             <div class="nav-item" onclick="apriGioco()">
                 <i class="fas fa-gamepad"></i><span class="label">Il Piatto Sano</span>
-            </div>
-            <div class="nav-item" onclick="window.open('questionario.html','_blank')" style="background:rgba(0,168,150,0.1);">
-                <i class="fas fa-print" style="color:var(--teal);"></i><span class="label" style="color:rgba(255,255,255,0.85);font-size:13px;">Stampa Questionari</span>
-            </div>
-            <div class="nav-item" onclick="window.location.href='admin.html'" style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.07);padding-top:10px;">
-                <i class="fas fa-shield-alt" style="color:var(--accent,#F4A261);"></i><span class="label" style="color:rgba(255,255,255,0.5);font-size:12px;">Pannello Admin</span>
             </div>
         </nav>
 
@@ -357,28 +345,11 @@
                     <h2 id="dashGreeting" style="font-size:22px;font-weight:700;color:var(--dark);line-height:1.2;" class="dash-title"></h2>
                     <p id="dashDate" style="color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;"></p>
                 </div>
-                <button class="btn-primary no-print" onclick="openModal('classeModal')"><i class="fas fa-plus"></i>Nuova Classe</button>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;" class="kpi-grid">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;" class="kpi-grid">
                 <div class="kpi-card"><div class="kpi-val" id="kpiScuole">0</div><div class="kpi-lbl">Scuole</div></div>
                 <div class="kpi-card"><div class="kpi-val" id="kpiSessioni">0</div><div class="kpi-lbl">Classi</div></div>
-                <div class="kpi-card"><div class="kpi-val" id="kpiStudenti">0</div><div class="kpi-lbl">Studenti Est.</div></div>
-                <div class="kpi-card teal"><div class="kpi-val" id="kpiMiglioramento">—</div><div class="kpi-lbl">Miglioramento</div></div>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-bottom:28px;" class="dash-codice-gioco">
-                <div class="card" style="background:var(--dark);color:white;position:relative;overflow:hidden;">
-                    <div style="position:absolute;right:-16px;bottom:-16px;font-size:90px;opacity:0.04;"><i class="fas fa-qrcode"></i></div>
-                    <p style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.35);margin-bottom:6px;">Codice Sessione Attiva</p>
-                    <div id="codiceProgetto" style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--teal);letter-spacing:0.05em;word-break:break-all;">—</div>
-                    <p id="codiceData" style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:5px;"></p>
-                    <p style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:10px;line-height:1.5;"><i class="fas fa-info-circle" style="margin-right:5px;color:var(--teal);"></i>Scrivi questo codice sui questionari cartacei prima di distribuirli in classe</p>
-                    <button onclick="generaCodice()" class="btn-primary no-print" style="margin-top:14px;font-size:10px;padding:9px 18px;"><i class="fas fa-sync-alt"></i>Nuovo Codice</button>
-                </div>
-                <div class="card" style="background:linear-gradient(135deg,var(--teal),var(--teal-light));color:white;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;min-height:120px;" onclick="apriGioco()">
-                    <i class="fas fa-gamepad" style="font-size:32px;margin-bottom:10px;opacity:0.9;"></i>
-                    <h4 style="font-weight:700;font-size:17px;margin:0;">Il Piatto Sano</h4>
-                    <p style="font-size:11px;opacity:0.75;margin-top:5px;">Apri il gioco in classe →</p>
-                </div>
+                <div class="kpi-card teal"><div class="kpi-val" id="kpiStudenti">0</div><div class="kpi-lbl">Studenti</div></div>
             </div>
             <div class="card">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
@@ -386,13 +357,6 @@
                     <button class="btn-ghost no-print" onclick="showSection('scuole',document.querySelector('[onclick*=scuole]'))" style="font-size:11px;padding:7px 14px;">Vedi tutte</button>
                 </div>
                 <div id="dashScuole"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola ancora. <a href="#" onclick="openModal('nuovaScuolaModal')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p></div>
-            </div>
-            <div class="card" style="margin-top:18px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-                    <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Ultime Classi</h4>
-                    <button class="btn-ghost no-print" onclick="showSection('classi',document.querySelector('[onclick*=classi]'))" style="font-size:11px;padding:7px 14px;">Vedi tutte</button>
-                </div>
-                <div id="dashSessioni"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna classe ancora. <a href="#" onclick="openModal('classeModal')" style="color:var(--teal);font-weight:600;">Registra la prima</a></p></div>
             </div>
             <!-- GRAFICO PRE/POST — card cliccabile -->
             <div class="card" style="margin-top:18px;cursor:pointer;" onclick="apriGrafico()" id="chartPreviewCard">
@@ -407,63 +371,89 @@
             </div>
         </section>
 
-        <!-- SCUOLE -->
+        <!-- LE MIE SCUOLE (con tab Registro Classi) -->
         <section id="sec-scuole" class="section">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
-                <div><h2 style="font-size:22px;font-weight:700;color:var(--dark);">Le Mie Scuole</h2><p style="color:#94a3b8;font-size:12px;margin-top:3px;">Gestisci gli istituti assegnati</p></div>
-                <button class="btn-primary no-print" onclick="openModal('nuovaScuolaModal')"><i class="fas fa-plus"></i>Aggiungi Scuola</button>
-            </div>
-            <div id="scuoleGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;"><p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Nessuna scuola ancora.</p></div>
-        </section>
-
-        <!-- SESSIONI -->
-        <section id="sec-classi" class="section">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
-                <div><h2 style="font-size:22px;font-weight:700;color:var(--dark);">Registro Classi</h2><p style="color:#94a3b8;font-size:12px;margin-top:3px;">Tutte le classi e i percorsi in corso</p></div>
-                <button class="btn-primary no-print" onclick="openModal('classeModal')"><i class="fas fa-plus"></i>Nuova Classe</button>
-            </div>
-            <div class="card"><div id="classiList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessuna classe registrata.</p></div></div>
-        </section>
-
-        <!-- INSERISCI RISPOSTE -->
-        <section id="sec-risposte" class="section">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:14px;">
                 <div>
-                    <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Inserisci Risposte</h2>
-                    <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Registra le risposte dei questionari PRE e POST studente per studente</p>
+                    <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Le Mie Scuole</h2>
+                    <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Gestisci istituti, pacchetti e classi</p>
                 </div>
+                <button class="btn-primary no-print" id="btnScuoleTabAction" onclick="openModal('nuovaScuolaModal')"><i class="fas fa-plus"></i>Aggiungi Scuola</button>
             </div>
-            <!-- Step 1 -->
-            <div class="card" style="margin-bottom:20px;">
-                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:16px;"><span style="background:var(--teal);color:white;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;margin-right:8px;">1</span>Seleziona Classe e Tipo</h4>
-                <div style="display:grid;grid-template-columns:1fr 1fr 120px;gap:14px;align-items:end;">
-                    <div>
-                        <label class="form-label">Classe</label>
-                        <select class="form-select" id="risposteSessione" style="margin-bottom:0;"></select>
-                    </div>
-                    <div>
-                        <label class="form-label">Tipo Questionario</label>
-                        <select class="form-select" id="risposteTipo" style="margin-bottom:0;">
-                            <option value="PRE">PRE — Prima della lezione</option>
-                            <option value="POST">POST — Dopo la lezione</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">N° Studenti</label>
-                        <input class="form-input" type="number" id="risposteNumStudenti" min="1" max="40" placeholder="es. 22" style="margin-bottom:0;">
-                    </div>
-                </div>
-                <button class="btn-primary" style="margin-top:16px;" onclick="generaFormStudenti()">
-                    <i class="fas fa-list-ul"></i>Genera Form Studenti
+            <!-- TABS -->
+            <div style="display:flex;gap:4px;margin-bottom:24px;background:#f1f5f9;border-radius:14px;padding:4px;">
+                <button id="tabScuole" onclick="showScuoleTab('scuole')" style="flex:1;padding:10px 14px;border:none;border-radius:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;background:white;color:var(--dark);box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 0.2s;">
+                    <i class="fas fa-school" style="margin-right:6px;color:var(--teal);"></i>Scuole
+                </button>
+                <button id="tabClassi" onclick="showScuoleTab('classi')" style="flex:1;padding:10px 14px;border:none;border-radius:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;background:transparent;color:#94a3b8;transition:all 0.2s;">
+                    <i class="fas fa-users" style="margin-right:6px;"></i>Registro Classi
                 </button>
             </div>
-            <!-- Form studenti generati dinamicamente -->
-            <div id="risposteStudentiContainer"></div>
-            <!-- Salva tutte -->
-            <div id="risposteSalvaContainer" style="display:none;margin-top:8px;">
-                <button class="btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:16px;" onclick="salvaRisposte()">
-                    <i class="fas fa-save"></i>Salva Tutte le Risposte
+            <!-- PANEL SCUOLE -->
+            <div id="panelScuole">
+                <div id="scuoleGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;">
+                    <p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Nessuna scuola ancora.</p>
+                </div>
+            </div>
+            <!-- PANEL REGISTRO CLASSI -->
+            <div id="panelClassi" style="display:none;">
+                <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+                    <button class="btn-primary no-print" onclick="openModal('classeModal')"><i class="fas fa-plus"></i>Nuova Classe</button>
+                </div>
+                <div class="card">
+                    <div id="classiList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessuna classe registrata.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGINA DEDICATA CLASSE -->
+        <section id="sec-classe-detail" class="section">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+                <button onclick="tornaAlRegistro()" style="background:#f1f5f9;border:none;cursor:pointer;width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:15px;flex-shrink:0;transition:background 0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
+                    <i class="fas fa-arrow-left"></i>
                 </button>
+                <div>
+                    <h2 id="detailClasseTitle" style="font-size:20px;font-weight:700;color:var(--dark);margin:0;"></h2>
+                    <p id="detailScuolaNome" style="color:#94a3b8;font-size:12px;margin-top:2px;"></p>
+                </div>
+            </div>
+            <div id="classeDetailContent"></div>
+
+            <!-- FORM RISPOSTE INLINE -->
+            <div id="inlineRisposteWrapper" style="display:none;margin-top:20px;">
+                <div class="card" style="border-top:3px solid var(--teal);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                        <h4 id="inlineRisposteTitolo" style="font-size:15px;font-weight:700;color:var(--dark);margin:0;"></h4>
+                        <button onclick="chiudiRisposteInline()" style="background:#f1f5f9;border:none;cursor:pointer;padding:7px 14px;border-radius:9px;font-size:12px;font-weight:600;color:#64748b;">
+                            <i class="fas fa-times" style="margin-right:4px;"></i>Chiudi
+                        </button>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 120px;gap:14px;align-items:end;margin-bottom:16px;">
+                        <div>
+                            <label class="form-label">N° Studenti</label>
+                            <input class="form-input" type="number" id="risposteNumStudenti" min="1" max="40" placeholder="es. 22" style="margin-bottom:0;">
+                        </div>
+                        <div>
+                            <button class="btn-primary" style="width:100%;justify-content:center;" onclick="generaFormStudenti()">
+                                <i class="fas fa-list-ul"></i>Genera
+                            </button>
+                        </div>
+                    </div>
+                    <!-- elementi nascosti per compatibilità JS -->
+                    <input type="hidden" id="risposteSessione">
+                    <input type="hidden" id="risposteTipo">
+                </div>
+                <!-- Form studenti generati dinamicamente -->
+                <div id="risposteStudentiContainer"></div>
+                <!-- Salva tutte -->
+                <div id="risposteSalvaContainer" style="display:none;margin-top:8px;">
+                    <div style="background:#fef3c7;border-radius:12px;padding:10px 16px;margin-bottom:10px;font-size:12px;color:#92400e;display:flex;align-items:center;gap:8px;">
+                        <i class="fas fa-info-circle"></i>Le risposte vengono salvate temporaneamente in memoria locale prima di essere inviate.
+                    </div>
+                    <button class="btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:16px;" onclick="salvaRisposte()">
+                        <i class="fas fa-save"></i>Salva Tutte le Risposte
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -586,13 +576,166 @@ async function inizializzaApp(user){
 function showSection(id,el){
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-    document.getElementById('sec-'+id).classList.add('active');
-    if(el)el.classList.add('active');
+    const sec=document.getElementById('sec-'+id);
+    if(sec) sec.classList.add('active');
+    if(el) el.classList.add('active');
     if(id==='dashboard'){aggiornaDashboard();aggiornaGrafico();}
-    if(id==='scuole')aggiornaScuole();
-    if(id==='classi')aggiornaClassi();
-    if(id==='risposte')aggiornaRisposte();
+    if(id==='scuole'){aggiornaScuole();aggiornaClassi();showScuoleTab(_currentScuoleTab||'scuole');}
     if(id==='report')aggiornaReport();
+}
+
+let _currentScuoleTab='scuole';
+
+function showScuoleTab(tab){
+    _currentScuoleTab=tab;
+    const pS=document.getElementById('panelScuole');
+    const pC=document.getElementById('panelClassi');
+    const tS=document.getElementById('tabScuole');
+    const tC=document.getElementById('tabClassi');
+    const btn=document.getElementById('btnScuoleTabAction');
+    if(!pS||!pC) return;
+    if(tab==='scuole'){
+        pS.style.display='block'; pC.style.display='none';
+        tS.style.cssText+='background:white;color:var(--dark);box-shadow:0 1px 4px rgba(0,0,0,0.08);';
+        tC.style.cssText+='background:transparent;color:#94a3b8;box-shadow:none;';
+        if(btn){btn.onclick=()=>openModal('nuovaScuolaModal');btn.innerHTML='<i class="fas fa-plus"></i>Aggiungi Scuola';}
+        aggiornaScuole();
+    } else {
+        pS.style.display='none'; pC.style.display='block';
+        tC.style.cssText+='background:white;color:var(--dark);box-shadow:0 1px 4px rgba(0,0,0,0.08);';
+        tS.style.cssText+='background:transparent;color:#94a3b8;box-shadow:none;';
+        if(btn){btn.onclick=()=>openModal('classeModal');btn.innerHTML='<i class="fas fa-plus"></i>Nuova Classe';}
+        aggiornaClassi();
+    }
+}
+
+let _detailClasseId=null;
+
+function apriClasseDetail(classeId){
+    const c=appState.classi.find(cl=>cl.id===classeId);
+    if(!c) return;
+    _detailClasseId=classeId;
+    const scuola=appState.scuole.find(s=>s.id===c.scuola_id);
+    document.getElementById('detailClasseTitle').textContent=c.nome_classe||'—';
+    document.getElementById('detailScuolaNome').textContent=scuola?scuola.nome+' · '+scuola.comune:'—';
+    renderClasseDetail(c,scuola);
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById('sec-classe-detail').classList.add('active');
+    const iRW=document.getElementById('inlineRisposteWrapper');
+    if(iRW) iRW.style.display='none';
+    window.scrollTo(0,0);
+}
+
+function tornaAlRegistro(){
+    _detailClasseId=null;
+    const navScuole=document.querySelector('.nav-item[onclick*="scuole"]');
+    showSection('scuole',navScuole);
+    showScuoleTab('classi');
+}
+
+function renderClasseDetail(c,scuola){
+    const stato=statoClasse(c);
+    const oreT=oreClasse(c).toFixed(1);
+    const preOk=!!c.pre_data;
+    const postOk=!!c.post_data;
+    const haScore=c.score_pre!=null&&c.score_post!=null;
+    const migVal=haScore?(parseFloat(c.score_post)-parseFloat(c.score_pre)).toFixed(1):null;
+    const moduli=[1,2,3,4,5,6].map(i=>{
+        const d=c['m'+i+'_data']; const o=c['m'+i+'_ore']; const done=!!d;
+        return `<div style="background:${done?'#f0fdf9':'#f8fafc'};border:1.5px solid ${done?'var(--teal)':'#e2e8f0'};border-radius:12px;padding:12px;text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:${done?'var(--teal)':'#94a3b8'};">M${i}</div>
+            ${done?`<div style="font-size:10px;color:#64748b;margin-top:3px;">${new Date(d).toLocaleDateString('it-IT')}</div><div style="font-size:10px;color:var(--teal);font-weight:600;">${o||0}h</div>`:`<div style="font-size:10px;color:#cbd5e1;margin-top:3px;">—</div>`}
+        </div>`;
+    }).join('');
+    document.getElementById('classeDetailContent').innerHTML=`
+    <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <span style="font-size:9px;font-weight:700;padding:3px 10px;border-radius:99px;background:${stato.bg};color:${stato.col};text-transform:uppercase;">${stato.label}</span>
+                ${haScore?`<span style="background:#d1fae5;color:#065f46;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;">${parseFloat(migVal)>=0?'+':''}${migVal} miglioramento</span>`:''}
+            </div>
+            <button onclick="apriModificaClasse('${c.id}')" class="btn-ghost no-print" style="font-size:11px;padding:7px 14px;"><i class="fas fa-edit" style="margin-right:4px;"></i>Modifica dati</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:${c.note?'14px':'0'};">
+            <div style="background:#f8fafc;border-radius:12px;padding:14px;text-align:center;">
+                <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">N° Studenti</div>
+                <div style="display:flex;align-items:center;gap:6px;justify-content:center;">
+                    <input type="number" id="inlineNumStudenti" value="${c.num_studenti||''}" min="1" max="40"
+                        style="width:58px;text-align:center;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px;font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--dark);outline:none;"
+                        onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='#e2e8f0'">
+                    <button onclick="salvaNumStudenti('${c.id}')" style="background:var(--teal);border:none;cursor:pointer;color:white;border-radius:8px;padding:8px 10px;font-size:11px;" title="Salva"><i class="fas fa-check"></i></button>
+                </div>
+            </div>
+            <div style="background:#f8fafc;border-radius:12px;padding:14px;text-align:center;">
+                <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Ore Erogate</div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:22px;color:var(--dark);">${oreT}h</div>
+            </div>
+            <div style="background:#f8fafc;border-radius:12px;padding:14px;text-align:center;">
+                <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Score Pre→Post</div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--dark);">${c.score_pre!=null?c.score_pre:'—'} → ${c.score_post!=null?c.score_post:'—'}</div>
+            </div>
+        </div>
+        ${c.note?`<div style="font-size:12px;color:#64748b;padding:10px 14px;background:#fafafa;border-left:3px solid var(--teal);border-radius:0 9px 9px 0;font-style:italic;">${c.note}</div>`:''}
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+        <h4 style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:14px;">Moduli Erogati</h4>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;">${moduli}</div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+        <h4 style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:14px;">Questionari</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div style="background:${preOk?'#f0fdf9':'#f8fafc'};border:2px solid ${preOk?'#16a34a':'#e2e8f0'};border-radius:14px;padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                    <i class="fas fa-clipboard-list" style="color:${preOk?'#16a34a':'#94a3b8'};font-size:16px;"></i>
+                    <span style="font-weight:700;font-size:14px;color:${preOk?'#16a34a':'#64748b'};">Q.PRE${preOk?' ✓':''}</span>
+                </div>
+                <div style="font-size:11px;color:#64748b;margin-bottom:10px;">${c.pre_data?'📅 '+new Date(c.pre_data).toLocaleDateString('it-IT'):'Nessuna data'}</div>
+                <button onclick="mostraRisposteInline('PRE')" style="width:100%;padding:9px;border:none;border-radius:10px;background:${preOk?'#16a34a':'var(--teal)'};color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                    <i class="fas fa-pen" style="margin-right:4px;"></i>${preOk?'Aggiorna Risposte PRE':'Inserisci Risposte PRE'}
+                </button>
+            </div>
+            <div style="background:${postOk?'#f0fdf9':'#f8fafc'};border:2px solid ${postOk?'#16a34a':'#e2e8f0'};border-radius:14px;padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                    <i class="fas fa-clipboard-check" style="color:${postOk?'#16a34a':'#94a3b8'};font-size:16px;"></i>
+                    <span style="font-weight:700;font-size:14px;color:${postOk?'#16a34a':'#64748b'};">Q.POST${postOk?' ✓':''}</span>
+                </div>
+                <div style="font-size:11px;color:#64748b;margin-bottom:10px;">${c.post_data?'📅 '+new Date(c.post_data).toLocaleDateString('it-IT'):'Nessuna data'}</div>
+                <button onclick="mostraRisposteInline('POST')" style="width:100%;padding:9px;border:none;border-radius:10px;background:${postOk?'#16a34a':'var(--teal)'};color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                    <i class="fas fa-pen" style="margin-right:4px;"></i>${postOk?'Aggiorna Risposte POST':'Inserisci Risposte POST'}
+                </button>
+            </div>
+        </div>
+    </div>`;
+}
+
+async function salvaNumStudenti(classeId){
+    const val=parseInt(document.getElementById('inlineNumStudenti').value);
+    if(!val||val<1){showToast('Numero non valido','error');return;}
+    const {data:updated,error}=await db.from('classi').update({num_studenti:val}).eq('id',classeId).select().single();
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    const idx=appState.classi.findIndex(c=>c.id===classeId);
+    if(idx!==-1) appState.classi[idx]=updated;
+    showToast('N° studenti aggiornato');
+}
+
+function mostraRisposteInline(tipo){
+    if(!_detailClasseId) return;
+    const c=appState.classi.find(cl=>cl.id===_detailClasseId);
+    if(!c) return;
+    document.getElementById('risposteSessione').value=_detailClasseId;
+    document.getElementById('risposteTipo').value=tipo;
+    if(c.num_studenti) document.getElementById('risposteNumStudenti').value=c.num_studenti;
+    document.getElementById('inlineRisposteTitolo').textContent='Inserisci Risposte '+tipo;
+    document.getElementById('inlineRisposteWrapper').style.display='block';
+    document.getElementById('risposteStudentiContainer').innerHTML='';
+    document.getElementById('risposteSalvaContainer').style.display='none';
+    setTimeout(()=>document.getElementById('inlineRisposteWrapper').scrollIntoView({behavior:'smooth',block:'start'}),50);
+}
+
+function chiudiRisposteInline(){
+    document.getElementById('inlineRisposteWrapper').style.display='none';
+    document.getElementById('risposteStudentiContainer').innerHTML='';
+    document.getElementById('risposteSalvaContainer').style.display='none';
 }
 
 function apriGioco(){window.open('https://ilpiattosano.netlify.app/','_blank');}
@@ -603,34 +746,20 @@ function aggiornaUI(){
     const saluto=ora<12?'Buongiorno':ora<18?'Buon pomeriggio':'Buonasera';
     document.getElementById('dashGreeting').textContent=saluto+', '+(appState.utente?.nome||'')+' 👋';
     document.getElementById('dashDate').textContent=new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    aggiornaDashboard();aggiornaGrafico();generaCodice();
+    aggiornaDashboard();aggiornaGrafico();
 }
 
 function aggiornaDashboard(){
     const studenti=appState.classi.reduce((a,c)=>a+(c.num_studenti||22),0);
-    const conScore=appState.classi.filter(c=>c.score_pre!=null&&c.score_post!=null);
-    let migLabel='—';
-    if(conScore.length>0){
-        const m=conScore.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/conScore.length;
-        migLabel=(m>=0?'+':'')+m.toFixed(1);
-    }
     document.getElementById('kpiScuole').textContent=appState.scuole.length;
     document.getElementById('kpiSessioni').textContent=appState.classi.length;
     document.getElementById('kpiStudenti').textContent=studenti;
-    document.getElementById('kpiMiglioramento').textContent=migLabel;
 
     const el=document.getElementById('dashScuole');
     if(appState.scuole.length===0){
         el.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola ancora. <a href="#" onclick="openModal(\'nuovaScuolaModal\')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p>';
     }else{
         el.innerHTML=appState.scuole.slice(0,3).map(s=>renderScuolaRow(s)).join('');
-    }
-
-    const elS=document.getElementById('dashSessioni');
-    if(appState.classi.length===0){
-        elS.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna classe ancora. <a href="#" onclick="openModal(\'classeModal\')" style="color:var(--teal);font-weight:600;">Registra la prima</a></p>';
-    }else{
-        elS.innerHTML=appState.classi.slice(0,3).map(c=>renderClasseRow(c)).join('');
     }
 }
 
@@ -707,6 +836,7 @@ async function eliminaScuola(scuolaId){
 
 function aggiornaScuole(){
     const grid=document.getElementById('scuoleGrid');
+    if(!grid) return;
     if(appState.scuole.length===0){
         grid.innerHTML='<p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Nessuna scuola ancora.</p>';return;
     }
@@ -719,45 +849,58 @@ function aggiornaScuole(){
         const anno=s.anno_scolastico?` · ${s.anno_scolastico}`:'';
         const conScore=cls.filter(c=>c.score_pre!=null&&c.score_post!=null);
         const migMedia=conScore.length>0?(conScore.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/conScore.length).toFixed(1):null;
-        const clsHtml=cls.length>0?cls.slice(0,3).map(c=>{const st=statoClasse(c);return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#f8fafc;border-radius:8px;margin-bottom:4px;font-size:11px;"><span style="font-weight:600;color:var(--dark);">${c.nome_classe}</span><span style="background:${st.bg};color:${st.col};padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;">${st.label}</span></div>`;}).join('')+(cls.length>3?`<p style="font-size:10px;color:#94a3b8;text-align:center;margin-top:4px;">+${cls.length-3} altre</p>`:'')
-        :'<p style="font-size:11px;color:#94a3b8;text-align:center;padding:6px;">Nessuna classe</p>';
+        const dataAcquisto=s.created_at?new Date(s.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'}):'—';
+        // Classi a cascata sotto il pacchetto
+        const clsCascata=cls.map(c=>{
+            const preOk=!!c.pre_data; const postOk=!!c.post_data;
+            const st=statoClasse(c);
+            return `<div onclick="apriClasseDetail('${c.id}')" style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:white;border:1.5px solid #e2e8f0;border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--teal)';this.style.background='#f0fdf9'" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='white'">
+                <div>
+                    <div style="font-weight:700;font-size:12px;color:var(--dark);">${c.nome_classe}</div>
+                    <div style="font-size:10px;color:#94a3b8;margin-top:1px;">${c.num_studenti||'—'} studenti</div>
+                </div>
+                <div style="display:flex;gap:5px;align-items:center;">
+                    <span style="padding:2px 7px;border-radius:6px;font-size:9px;font-weight:700;background:${preOk?'#d1fae5':'#f1f5f9'};color:${preOk?'#065f46':'#94a3b8'};">PRE${preOk?' ✓':''}</span>
+                    <span style="padding:2px 7px;border-radius:6px;font-size:9px;font-weight:700;background:${postOk?'#d1fae5':'#f1f5f9'};color:${postOk?'#065f46':'#94a3b8'};">POST${postOk?' ✓':''}</span>
+                    <i class="fas fa-chevron-right" style="font-size:9px;color:#94a3b8;"></i>
+                </div>
+            </div>`;
+        }).join('') || '<p style="font-size:11px;color:#94a3b8;padding:8px 0;">Nessuna classe ancora</p>';
         return `<div class="card" style="position:relative;">
-            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="width:46px;height:46px;background:linear-gradient(135deg,var(--teal),var(--teal-light));border-radius:13px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:white;font-size:18px;">${s.nome.charAt(0)}</div>
-                    <div><h4 style="font-weight:700;color:var(--dark);font-size:15px;margin:0 0 2px;">${s.nome}</h4>
-                    <p style="color:#64748b;font-size:11px;margin:0;">${s.comune}${anno}</p></div>
+                    <div>
+                        <h4 style="font-weight:700;color:var(--dark);font-size:15px;margin:0 0 2px;">${s.nome}</h4>
+                        <p style="color:#64748b;font-size:11px;margin:0;">${s.comune}${anno}</p>
+                    </div>
                 </div>
                 <button onclick="eliminaScuola('${s.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:12px;padding:4px;" class="no-print"><i class="fas fa-trash"></i></button>
             </div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
-                <span class="badge ${bc}">${s.pacchetto}</span>
-                ${migMedia?`<span class="badge badge-green">+${migMedia} media</span>`:''}
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-                <div style="background:#f8fafc;border-radius:11px;padding:10px;text-align:center;">
-                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--dark);">${cls.length}</div>
-                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Classi</div>
+            <!-- Pacchetto acquistato con data -->
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px;margin-bottom:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-box" style="color:var(--teal);font-size:11px;"></i>
+                        <span style="font-size:11px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:0.06em;">Pacchetto ${s.pacchetto}</span>
+                    </div>
+                    <span class="badge ${bc}">${s.pacchetto}</span>
                 </div>
-                <div style="background:#f8fafc;border-radius:11px;padding:10px;text-align:center;">
-                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--teal);">${oreUsate.toFixed(1)}<span style="font-size:11px;">/${oreTot}h</span></div>
-                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Ore</div>
+                <div style="font-size:10px;color:#94a3b8;">Acquistato il ${dataAcquisto}${migMedia?` · Media +${migMedia}`:''}</div>
+                <!-- Classi a cascata -->
+                <div style="margin-top:10px;border-top:1px solid #e2e8f0;padding-top:10px;">
+                    <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Classi (${cls.length})</div>
+                    ${clsCascata}
                 </div>
             </div>
             <div class="progress-bar" style="margin-bottom:10px;"><div class="progress-fill" style="width:${pct}%"></div></div>
-            <details style="margin-bottom:12px;">
-                <summary style="cursor:pointer;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;list-style:none;display:flex;align-items:center;gap:6px;padding:7px 10px;background:#f8fafc;border-radius:9px;">
-                    <i class="fas fa-chevron-right" style="font-size:9px;transition:transform 0.2s;"></i>Classi registrate
-                </summary>
-                <div style="margin-top:6px;">${clsHtml}</div>
-            </details>
+            <div style="font-size:10px;color:#94a3b8;margin-bottom:12px;">${oreUsate.toFixed(1)}/${oreTot}h · ${pct}%</div>
             <div style="display:flex;gap:8px;">
                 <button class="btn-ghost no-print" style="font-size:11px;padding:7px 13px;flex:1;justify-content:center;" onclick="apriNuovaClassePerScuola('${s.id}')"><i class="fas fa-plus" style="margin-right:3px;"></i>Nuova Classe</button>
                 <button class="btn-ghost no-print" style="font-size:11px;padding:7px 13px;" onclick="generaReport('${s.id}')"><i class="fas fa-file-pdf" style="margin-right:3px;color:var(--teal);"></i>Report</button>
             </div>
         </div>`;
     }).join('');
-    document.querySelectorAll('details').forEach(d=>{d.addEventListener('toggle',()=>{const ch=d.querySelector('.fa-chevron-right');if(ch)ch.style.transform=d.open?'rotate(90deg)':'';});});
 }
 
 function apriNuovaClassePerScuola(scuolaId){
@@ -880,20 +1023,15 @@ function apriModificaClasse(classeId){
 }
 
 function apriRispostePerClasse(tipo){
-    const classeId = _editClasseId;
+    const classeId=_editClasseId;
     closeModal('classeModal');
-    const navEl=document.querySelector('.nav-item[onclick*="risposte"]');
-    showSection('risposte',navEl);
-    setTimeout(()=>{
-        aggiornaRisposte(classeId);
-        const tipoSel=document.getElementById('risposteTipo');
-        if(tipoSel)tipoSel.value=tipo;
-    },50);
+    apriClasseDetail(classeId);
+    setTimeout(()=>mostraRisposteInline(tipo),100);
 }
 
 function aggiornaClassi(){
     const list=document.getElementById('classiList');
-    if(!list)return;
+    if(!list) return;
     if(appState.classi.length===0){list.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessuna classe registrata.</p>';return;}
     list.innerHTML=appState.classi.map((c,ri)=>{
         const scuola=appState.scuole.find(sc=>sc.id===c.scuola_id);
@@ -903,26 +1041,27 @@ function aggiornaClassi(){
         const migVal=haScore?(parseFloat(c.score_post)-parseFloat(c.score_pre)):null;
         const migStr=migVal!==null?(migVal>=0?'+':'')+migVal.toFixed(1):null;
         const oreT=oreClasse(c).toFixed(1);
-        const preOk=c.pre_data!=null; const postOk=c.post_data!=null;
-        return `<div style="display:flex;align-items:start;gap:14px;padding:16px 0;border-bottom:1px solid #f1f5f9;">
-            <div style="width:42px;height:42px;background:${stato.col==='#065f46'?'linear-gradient(135deg,var(--teal),var(--teal-light))':'#f1f5f9'};border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:700;color:${stato.col==='#065f46'?'white':'#94a3b8'};font-size:13px;">${String(appState.classi.length-ri).padStart(2,'0')}</div>
+        const preOk=!!c.pre_data; const postOk=!!c.post_data;
+        return `<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #f1f5f9;">
+            <div style="width:40px;height:40px;background:${stato.col==='#065f46'?'linear-gradient(135deg,var(--teal),var(--teal-light))':'#f1f5f9'};border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:700;color:${stato.col==='#065f46'?'white':'#94a3b8'};font-size:12px;">${String(appState.classi.length-ri).padStart(2,'0')}</div>
             <div style="flex:1;min-width:0;">
-                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
                     <span style="font-weight:700;font-size:13px;color:var(--dark);">${nome} — ${c.nome_classe}</span>
-                    <span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;background:${stato.bg};color:${stato.col};text-transform:uppercase;">${stato.label}</span>
-                    ${haScore?`<span style="font-size:10px;font-weight:700;color:#64748b;background:#f1f5f9;padding:2px 8px;border-radius:99px;">${c.score_pre}→${c.score_post} <span style="color:${migVal>=0?'#065f46':'#991b1b'}">${migStr}</span></span>`:''}
+                    <span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;background:${stato.bg};color:${stato.col};text-transform:uppercase;">${stato.label}</span>
+                    ${haScore?`<span style="font-size:10px;font-weight:700;color:${migVal>=0?'#065f46':'#991b1b'};background:${migVal>=0?'#d1fae5':'#fee2e2'};padding:2px 7px;border-radius:99px;">${migStr}</span>`:''}
                 </div>
-                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${oreT}h · ${c.num_studenti||'—'} studenti</div>
-                ${c.note?`<div style="font-size:11px;color:#64748b;margin-top:5px;padding:5px 10px;background:#fafafa;border-left:3px solid var(--teal);border-radius:0 7px 7px 0;font-style:italic;">${c.note.substring(0,100)}${c.note.length>100?'...':''}</div>`:''}
-                <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;" class="no-print">
-                    <button onclick="apriModificaClasse('${c.id}')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid var(--teal);border-radius:8px;background:white;color:var(--teal);font-size:11px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='var(--teal)';this.style.color='white'" onmouseout="this.style.background='white';this.style.color='var(--teal)'">
-                        <i class="fas fa-edit"></i>Modifica
-                    </button>
-                    ${c.pre_data?`<button onclick="_editClasseId='${c.id}';apriRispostePerClasse('PRE')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid ${preOk?'#16a34a':'#e2e8f0'};border-radius:8px;background:${preOk?'#f0fdf9':'white'};color:${preOk?'#16a34a':'#64748b'};font-size:11px;font-weight:700;cursor:pointer;"><i class="fas fa-clipboard-list"></i>Risposte PRE${preOk?' ✓':''}</button>`:''}
-                    ${c.post_data?`<button onclick="_editClasseId='${c.id}';apriRispostePerClasse('POST')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid ${postOk?'#16a34a':'#e2e8f0'};border-radius:8px;background:${postOk?'#f0fdf9':'white'};color:${postOk?'#16a34a':'#64748b'};font-size:11px;font-weight:700;cursor:pointer;"><i class="fas fa-clipboard-check"></i>Risposte POST${postOk?' ✓':''}</button>`:''}
+                <div style="display:flex;align-items:center;gap:10px;margin-top:4px;flex-wrap:wrap;">
+                    <span style="font-size:11px;color:#94a3b8;">${oreT}h · ${c.num_studenti||'—'} studenti</span>
+                    <span style="padding:2px 8px;border-radius:6px;font-size:9px;font-weight:700;background:${preOk?'#d1fae5':'#f1f5f9'};color:${preOk?'#065f46':'#94a3b8'};">Q.PRE${preOk?' ✓':''}</span>
+                    <span style="padding:2px 8px;border-radius:6px;font-size:9px;font-weight:700;background:${postOk?'#d1fae5':'#f1f5f9'};color:${postOk?'#065f46':'#94a3b8'};">Q.POST${postOk?' ✓':''}</span>
                 </div>
             </div>
-            <button onclick="eliminaClasse('${c.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:11px;" class="no-print"><i class="fas fa-trash"></i></button>
+            <div style="display:flex;gap:6px;" class="no-print">
+                <button onclick="apriClasseDetail('${c.id}')" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border:none;border-radius:9px;background:var(--teal);color:white;font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:background 0.2s;" onmouseover="this.style.background='var(--teal-light)'" onmouseout="this.style.background='var(--teal)'">
+                    <i class="fas fa-arrow-right"></i>Apri
+                </button>
+                <button onclick="eliminaClasse('${c.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:11px;padding:4px;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#e2e8f0'"><i class="fas fa-trash"></i></button>
+            </div>
         </div>`;
     }).join('');
 }
@@ -937,19 +1076,77 @@ async function eliminaClasse(classeId){
 
 function aggiornaReport(){
     const grid=document.getElementById('reportGrid');
+    if(!grid) return;
     if(appState.scuole.length===0){grid.innerHTML='<p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Aggiungi scuole per generare report.</p>';return;}
     grid.innerHTML=appState.scuole.map(s=>{
         const cls=appState.classi.filter(c=>c.scuola_id===s.id);
         const conScore=cls.filter(c=>c.score_pre!=null&&c.score_post!=null);
         const mig=conScore.length>0?(conScore.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/conScore.length).toFixed(1):null;
         const anno=s.anno_scolastico?` · ${s.anno_scolastico}`:'';
-        return `<div class="card" style="text-align:center;">
-            <div style="width:52px;height:52px;background:var(--dark);border-radius:15px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:20px;">${s.nome.charAt(0)}</div>
-            <h4 style="font-weight:700;color:var(--dark);font-size:14px;margin:0 0 2px;">${s.nome}</h4>
-            <p style="color:#64748b;font-size:11px;margin:0 0 10px;">${s.comune}${anno}</p>
-            <div style="display:flex;justify-content:center;gap:16px;margin-bottom:14px;">
-                <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--dark);">${cls.length}</div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Classi</div></div>
-                ${mig?`<div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--teal);">+${mig}</div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Miglioramento</div></div>`:''}
+        const dataAcquisto=s.created_at?new Date(s.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'}):'—';
+        const bc=s.pacchetto==='premium'?'badge-blue':s.pacchetto==='standard'?'badge-green':'badge-yellow';
+        const oreUsate=cls.reduce((a,c)=>a+oreClasse(c),0);
+        const oreTot=s.ore_totali||30;
+        const pct=Math.min(100,Math.round((oreUsate/oreTot)*100));
+
+        // Dettaglio per classe
+        const classiRows=cls.map(c=>{
+            const preOk=!!c.pre_data; const postOk=!!c.post_data;
+            const haS=c.score_pre!=null&&c.score_post!=null;
+            const migC=haS?(parseFloat(c.score_post)-parseFloat(c.score_pre)).toFixed(1):null;
+            const migPos=migC!==null&&parseFloat(migC)>=0;
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#f8fafc;border-radius:9px;margin-bottom:5px;">
+                <div>
+                    <div style="font-weight:700;font-size:12px;color:var(--dark);">${c.nome_classe}</div>
+                    <div style="font-size:10px;color:#94a3b8;margin-top:1px;">${c.num_studenti||'—'} studenti · ${oreClasse(c).toFixed(1)}h</div>
+                </div>
+                <div style="display:flex;gap:4px;align-items:center;">
+                    <span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;background:${preOk?'#d1fae5':'#f1f5f9'};color:${preOk?'#065f46':'#94a3b8'};">PRE${preOk?' ✓':''}</span>
+                    <span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;background:${postOk?'#d1fae5':'#f1f5f9'};color:${postOk?'#065f46':'#94a3b8'};">POST${postOk?' ✓':''}</span>
+                    ${migC!==null?`<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:${migPos?'#d1fae5':'#fee2e2'};color:${migPos?'#065f46':'#991b1b'};">${migPos?'+':''}${migC}</span>`:''}
+                </div>
+            </div>`;
+        }).join('')||'<p style="font-size:11px;color:#94a3b8;padding:6px 0;text-align:center;">Nessuna classe</p>';
+
+        return `<div class="card">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                <div style="width:46px;height:46px;background:var(--dark);border-radius:13px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:18px;flex-shrink:0;">${s.nome.charAt(0)}</div>
+                <div>
+                    <h4 style="font-weight:700;color:var(--dark);font-size:14px;margin:0 0 2px;">${s.nome}</h4>
+                    <p style="color:#64748b;font-size:11px;margin:0;">${s.comune}${anno}</p>
+                </div>
+            </div>
+            <!-- Pacchetto con data -->
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:11px;padding:10px 12px;margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-box" style="color:var(--teal);font-size:10px;"></i>
+                        <span style="font-size:11px;font-weight:700;color:var(--dark);">Pacchetto ${s.pacchetto}</span>
+                    </div>
+                    <span class="badge ${bc}">${s.pacchetto}</span>
+                </div>
+                <div style="font-size:10px;color:#94a3b8;">Acquistato il ${dataAcquisto} · ${oreUsate.toFixed(1)}/${oreTot}h (${pct}%)</div>
+                <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${pct}%"></div></div>
+            </div>
+            <!-- KPI -->
+            <div style="display:grid;grid-template-columns:1fr 1fr${mig?' 1fr':''};gap:8px;margin-bottom:12px;">
+                <div style="background:#f8fafc;border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--dark);">${cls.length}</div>
+                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Classi</div>
+                </div>
+                <div style="background:#f8fafc;border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--dark);">${cls.reduce((a,c)=>a+(c.num_studenti||0),0)}</div>
+                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Studenti</div>
+                </div>
+                ${mig?`<div style="background:#f0fdf9;border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--teal);">+${mig}</div>
+                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Media</div>
+                </div>`:''}
+            </div>
+            <!-- Dettaglio classi -->
+            <div style="margin-bottom:12px;">
+                <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Dettaglio Classi</div>
+                ${classiRows}
             </div>
             <button class="btn-dark no-print" style="width:100%;font-size:11px;justify-content:center;" onclick="generaReport('${s.id}')"><i class="fas fa-file-pdf"></i>Genera Report PDF</button>
         </div>`;
@@ -1138,23 +1335,50 @@ async function generaReport(scuolaId) {
     </div>
     ${righe.map(renderRiga).join('')}
 
-    <!-- Registro classi -->
-    <h4 style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);margin:18px 0 10px;font-size:13px;">Registro Classi</h4>
+    <!-- Dettaglio Pacchetto -->
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin:18px 0 14px;">
+        <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px;">Pacchetto Acquistato</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div>
+                <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--dark);text-transform:capitalize;">${s.pacchetto}</span>
+                <span style="font-size:11px;color:#94a3b8;margin-left:8px;">· ${s.ore_totali||30}h totali</span>
+            </div>
+            <span style="font-size:11px;color:#64748b;">Acquistato il ${s.created_at?new Date(s.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'}):'—'}</span>
+        </div>
+    </div>
+
+    <!-- Registro classi con dettaglio score -->
+    <h4 style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);margin:18px 0 10px;font-size:13px;">Dettaglio per Classe</h4>
     ${cls.map(se => {
         const clsRisp = rows.filter(r => r.classe_id === se.id);
-        const hasPre  = clsRisp.some(r => r.tipo === 'PRE');
-        const hasPost = clsRisp.some(r => r.tipo === 'POST');
-        const dataLabel = se.pre_data || se.post_data || '';
+        const clsPre  = clsRisp.filter(r => r.tipo === 'PRE');
+        const clsPost = clsRisp.filter(r => r.tipo === 'POST');
+        const hasPre  = clsPre.length > 0;
+        const hasPost = clsPost.length > 0;
+        const avgClsPre  = hasPre  ? (clsPre.reduce((a,r)=>a+(r.punteggio||0),0)/clsPre.length).toFixed(1)  : null;
+        const avgClsPost = hasPost ? (clsPost.reduce((a,r)=>a+(r.punteggio||0),0)/clsPost.length).toFixed(1) : null;
+        const migCls = avgClsPre!==null&&avgClsPost!==null ? (parseFloat(avgClsPost)-parseFloat(avgClsPre)).toFixed(1) : null;
+        const migPos = migCls!==null && parseFloat(migCls)>=0;
+        const oreC = oreClasse(se).toFixed(1);
         return `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f8fafc;border-radius:10px;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
-        <div>
-            <div style="font-weight:600;font-size:12px;color:var(--dark);">${se.nome_classe || '—'}</div>
-            <div style="font-size:10px;color:#94a3b8;">${dataLabel} · ${se.num_studenti || clsRisp.length} studenti</div>
+    <div style="background:#f8fafc;border-radius:12px;margin-bottom:8px;overflow:hidden;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;flex-wrap:wrap;gap:8px;">
+            <div>
+                <div style="font-weight:700;font-size:12px;color:var(--dark);">${se.nome_classe || '—'}</div>
+                <div style="font-size:10px;color:#94a3b8;margin-top:1px;">${oreC}h · ${se.num_studenti||clsRisp.length} studenti</div>
+            </div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;">
+                ${hasPre  ? `<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.PRE ✓</span>` : '<span style="background:#f1f5f9;color:#94a3b8;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.PRE —</span>'}
+                ${hasPost ? `<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.POST ✓</span>` : '<span style="background:#f1f5f9;color:#94a3b8;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.POST —</span>'}
+                ${migCls!==null?`<span style="background:${migPos?'#d1fae5':'#fee2e2'};color:${migPos?'#065f46':'#991b1b'};padding:3px 9px;border-radius:6px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;">${migPos?'+':''}${migCls}</span>`:''}
+            </div>
         </div>
-        <div style="display:flex;gap:5px;flex-wrap:wrap;">
-            ${hasPre  ? '<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.PRE ✓</span>' : ''}
-            ${hasPost ? '<span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;">Q.POST ✓</span>' : ''}
-        </div>
+        ${(avgClsPre!==null||avgClsPost!==null)?`
+        <div style="padding:0 14px 10px;display:flex;gap:10px;align-items:center;">
+            ${avgClsPre!==null?`<span style="font-size:11px;color:#64748b;">PRE: <strong>${avgClsPre}/9</strong></span>`:''}
+            ${avgClsPre!==null&&avgClsPost!==null?'<i class="fas fa-arrow-right" style="font-size:9px;color:#94a3b8;"></i>':''}
+            ${avgClsPost!==null?`<span style="font-size:11px;color:var(--teal);font-weight:600;">POST: <strong>${avgClsPost}/9</strong></span>`:''}
+        </div>`:''}
     </div>`;
     }).join('')}
 
@@ -1362,26 +1586,12 @@ const DOMANDE = {
 };
 
 function aggiornaRisposte(preselClasseId) {
-    const sel = document.getElementById('risposteSessione');
-    if (!sel) return;
-    if (appState.classi.length === 0) {
-        sel.innerHTML = '<option value="">— Nessuna classe disponibile —</option>';
-    } else {
-        sel.innerHTML = appState.classi.map(c => {
-            const sc = appState.scuole.find(sc => sc.id === c.scuola_id);
-            const label = (sc ? sc.nome : '?') + ' — ' + c.nome_classe;
-            return `<option value="${c.id}" ${preselClasseId===c.id?'selected':''}>${label}</option>`;
-        }).join('');
-    }
-    // Precompila num studenti dalla classe selezionata
-    const classeSelId = sel.value;
-    const classeSelObj = appState.classi.find(c => c.id === classeSelId);
-    const inputNum = document.getElementById('risposteNumStudenti');
-    if (inputNum && classeSelObj && classeSelObj.num_studenti) {
-        inputNum.value = classeSelObj.num_studenti;
-    }
-    document.getElementById('risposteStudentiContainer').innerHTML = '';
-    document.getElementById('risposteSalvaContainer').style.display = 'none';
+    // Le risposte ora si gestiscono dalla pagina dedicata della classe
+    // Questa funzione è mantenuta per compatibilità
+    const container = document.getElementById('risposteStudentiContainer');
+    const salva = document.getElementById('risposteSalvaContainer');
+    if (container) container.innerHTML = '';
+    if (salva) salva.style.display = 'none';
 }
 
 async function generaFormStudenti() {
@@ -1433,10 +1643,40 @@ async function generaFormStudenti() {
     container.innerHTML = html;
     document.getElementById('risposteSalvaContainer').style.display = 'block';
 
-    // Precompila i form degli studenti con dati esistenti
+    // Ripristina da localStorage (bozza) se più recente dei dati DB
+    const bozzaKey='sane_bozza_'+sessId+'_'+tipo;
+    const bozzaJson=localStorage.getItem(bozzaKey);
+    const bozza=bozzaJson?JSON.parse(bozzaJson):null;
+
     for (let i = 1; i <= numStudenti; i++) {
-        if (esistentiMap[i]) precompileStudente(i, esistentiMap[i]);
+        if (esistentiMap[i]) {
+            precompileStudente(i, esistentiMap[i]);
+            // Se la bozza è più recente dell'ultimo salvataggio DB, sovrascrive
+            if(bozza&&bozza.risposte&&bozza.risposte[i]&&bozza.ts){
+                precompileDaBozza(i, bozza.risposte[i]);
+            }
+        } else if(bozza&&bozza.risposte&&bozza.risposte[i]){
+            precompileDaBozza(i, bozza.risposte[i]);
+        }
     }
+    if(bozza){
+        showToast('Bozza locale ripristinata — controlla e salva');
+    }
+}
+
+function precompileDaBozza(num, dati){
+    if(!dati) return;
+    if(dati.versione){
+        const verEl=document.getElementById('versione_'+num);
+        if(verEl){verEl.value=dati.versione;aggiornaVersioneStudente(num);}
+    }
+    const campi=['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11','d12','d13','d_post'];
+    campi.forEach(campo=>{
+        if(!dati[campo]) return;
+        const group='s'+num+'_'+campo;
+        const btn=document.querySelector(`[data-group="${group}"][data-val="${dati[campo]}"]`);
+        if(btn) selectAnswer(btn,group,dati[campo],num);
+    });
 }
 
 function precompileStudente(num, riga) {
@@ -1461,8 +1701,11 @@ function precompileStudente(num, riga) {
 function renderDomandeGruppo(lista, studenteNum) {
     return lista.map(d => {
         const group = 's' + studenteNum + '_' + d;
-        return `<div style="margin-bottom:12px;">
-            <label class="form-label">${d.toUpperCase()}</label>
+        const testoCompleto = DOMANDE[d] || d.toUpperCase();
+        return `<div style="margin-bottom:14px;">
+            <label class="form-label" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--dark);font-weight:600;margin-bottom:8px;">
+                <span style="color:var(--teal);font-family:'Syne',sans-serif;font-weight:700;margin-right:6px;">${d.toUpperCase()}</span>${testoCompleto}
+            </label>
             <div style="display:flex;gap:7px;">
                 ${['A','B','C','D'].map(op => `
                     <button type="button"
@@ -1542,13 +1785,35 @@ function selectAnswer(btn, group, val, studenteNum) {
         b.style.background = 'white';
         b.style.color = 'var(--dark)';
         b.style.borderColor = '#e2e8f0';
+        b.style.boxShadow = 'none';
         b.removeAttribute('data-selected');
     });
-    btn.style.background = 'var(--teal)';
-    btn.style.color = 'white';
-    btn.style.borderColor = 'var(--teal)';
+    btn.style.background = '#f0fdf9';
+    btn.style.color = '#16a34a';
+    btn.style.borderColor = '#16a34a';
+    btn.style.boxShadow = '0 0 0 3px rgba(22,163,74,0.15)';
     btn.setAttribute('data-selected', 'true');
     aggiornaScoreStudente(studenteNum);
+    salvaBozzaLocalStorage();
+}
+
+function salvaBozzaLocalStorage(){
+    const sessId=document.getElementById('risposteSessione')?.value;
+    const tipo=document.getElementById('risposteTipo')?.value;
+    if(!sessId||!tipo) return;
+    const numStudenti=parseInt(document.getElementById('risposteNumStudenti')?.value)||0;
+    const bozza={sessId,tipo,numStudenti,ts:Date.now(),risposte:{}};
+    for(let i=1;i<=numStudenti;i++){
+        const campi=['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11','d12','d13','d_post'];
+        bozza.risposte[i]={};
+        campi.forEach(c=>{
+            const v=getSelectedAnswer('s'+i+'_'+c);
+            if(v) bozza.risposte[i][c]=v;
+        });
+        const verEl=document.getElementById('versione_'+i);
+        if(verEl) bozza.risposte[i].versione=verEl.value;
+    }
+    localStorage.setItem('sane_bozza_'+sessId+'_'+tipo, JSON.stringify(bozza));
 }
 
 function getSelectedAnswer(group) {
@@ -1612,15 +1877,32 @@ async function salvaRisposte() {
         righe.push(riga);
     }
 
+    // Salva prima in localStorage come backup
+    const bozzaKey='sane_bozza_'+sessId+'_'+tipo;
+    localStorage.setItem(bozzaKey+'_pending', JSON.stringify({righe,ts:Date.now()}));
+
     const { error } = await db.from('risposte').upsert(righe, {
         onConflict: 'classe_id,studente_num,tipo',
         ignoreDuplicates: false
     });
-    if (error) { showToast('Errore: ' + error.message, 'error'); return; }
+    if (error) {
+        showToast('Errore connessione — dati salvati localmente, riprova.', 'error');
+        return;
+    }
+    // Pulizia localStorage dopo invio riuscito
+    localStorage.removeItem(bozzaKey);
+    localStorage.removeItem(bozzaKey+'_pending');
     showToast('Risposte salvate con successo!');
     document.getElementById('risposteStudentiContainer').innerHTML = '';
     document.getElementById('risposteSalvaContainer').style.display = 'none';
     document.getElementById('risposteNumStudenti').value = '';
+    // Aggiorna la pagina classe se siamo nel detail
+    if(_detailClasseId){
+        await caricaDati();
+        const c=appState.classi.find(cl=>cl.id===_detailClasseId);
+        const sc=appState.scuole.find(s=>s&&c&&s.id===c.scuola_id);
+        if(c) renderClasseDetail(c,sc);
+    }
 }
 
 // ============================================================
