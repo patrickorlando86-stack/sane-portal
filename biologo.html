@@ -197,7 +197,7 @@
 <div class="modal-overlay" id="sessioneModal">
     <div class="modal-box">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-            <h3 style="font-size:20px;font-weight:700;color:var(--dark);">Registra Sessione</h3>
+            <h3 id="sessioneModalTitle" style="font-size:20px;font-weight:700;color:var(--dark);">Registra Sessione</h3>
             <button onclick="closeModal('sessioneModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
         </div>
         <label class="form-label">Scuola</label>
@@ -207,17 +207,29 @@
         <label class="form-label">Data sessione</label>
         <input class="form-input" type="date" id="sessioneData">
         <label class="form-label" style="margin-bottom:12px;">Cosa hai fatto oggi?</label>
-        <div class="check-item" onclick="toggleCheck(this,'pre')">
+        <div class="check-item" id="checkItemPre" onclick="toggleCheck(this,'pre')">
             <div class="check-box"><i class="fas fa-check" style="color:white;font-size:11px;display:none;"></i></div>
             <div><div class="check-label">📋 Questionario PRE</div><div class="check-sub">Somministrato prima della lezione (carta A4)</div></div>
         </div>
-        <div class="check-item" onclick="toggleCheck(this,'gioco')">
+        <div class="check-item" id="checkItemGioco" onclick="toggleCheck(this,'gioco')">
             <div class="check-box"><i class="fas fa-check" style="color:white;font-size:11px;display:none;"></i></div>
             <div><div class="check-label">🎮 Gioco LIM — Il Piatto Sano</div><div class="check-sub">Sessione interattiva in classe</div></div>
         </div>
-        <div class="check-item" onclick="toggleCheck(this,'post')">
+        <div class="check-item" id="checkItemPost" onclick="toggleCheck(this,'post')">
             <div class="check-box"><i class="fas fa-check" style="color:white;font-size:11px;display:none;"></i></div>
             <div><div class="check-label">📋 Questionario POST</div><div class="check-sub">Somministrato dopo la lezione (carta A4)</div></div>
+        </div>
+        <!-- Azioni rapide risposte — visibili solo in modalità modifica -->
+        <div id="sessioneAzioniRapide" style="display:none;margin-top:14px;padding:14px;background:#f0fdf9;border-radius:14px;border:1.5px dashed var(--teal);">
+            <p style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.1em;margin:0 0 10px;"><i class="fas fa-bolt" style="margin-right:5px;"></i>Inserimento Risposte</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button id="btnRispostePre" class="btn-ghost" style="font-size:11px;display:none;align-items:center;gap:6px;" onclick="apriRispostePerSessione('PRE')">
+                    <i class="fas fa-clipboard-list"></i>Risposte PRE
+                </button>
+                <button id="btnRispostePost" class="btn-ghost" style="font-size:11px;display:none;align-items:center;gap:6px;" onclick="apriRispostePerSessione('POST')">
+                    <i class="fas fa-clipboard-check"></i>Risposte POST
+                </button>
+            </div>
         </div>
         <div id="scoreSection" style="display:none;margin-top:16px;">
             <label class="form-label">Punteggio medio classe (su 10)</label>
@@ -226,11 +238,11 @@
                 <div class="score-box"><label>POST</label><input type="number" id="scorePost" min="0" max="10" step="0.1" placeholder="0.0"></div>
             </div>
         </div>
-        <label class="form-label" style="margin-top:4px;">Note del biologo</label>
+        <label class="form-label" style="margin-top:14px;">Note del biologo</label>
         <textarea class="form-input" id="sessioneNote" rows="3" placeholder="Osservazioni, reazioni della classe, punti di forza o criticità..."></textarea>
         <div style="display:flex;gap:10px;">
             <button class="btn-ghost" onclick="closeModal('sessioneModal')">Annulla</button>
-            <button class="btn-primary" style="flex:1;" onclick="salvaSessione()"><i class="fas fa-save"></i>Salva Sessione</button>
+            <button class="btn-primary" style="flex:1;" onclick="salvaSessione()"><i class="fas fa-save"></i><span id="sessioneSalvaLabel">Salva Sessione</span></button>
         </div>
     </div>
 </div>
@@ -489,6 +501,7 @@ const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 let appState={utente:null,scuole:[],sessioni:[]};
 let currentChecks={pre:false,gioco:false,post:false};
 let _authMode = 'login'; // 'login' | 'signup'
+let _editSessId = null;
 
 function toggleAuthMode(e){
     e.preventDefault();
@@ -727,22 +740,86 @@ async function salvaSessione(){
     const scorePre=document.getElementById('scorePre').value;
     const scorePost=document.getElementById('scorePost').value;
     if(!scuola_id||!classe||!data){showToast('Compila scuola, classe e data','error');return;}
-    const {data:{user}}=await db.auth.getUser();
-    const {data:newSess,error}=await db.from('sessioni').insert({
-        biologo_id:user.id, scuola_id, classe, data, note,
+    const payload={
+        scuola_id, classe, data, note,
         check_pre:currentChecks.pre, check_gioco:currentChecks.gioco, check_post:currentChecks.post,
         score_pre:scorePre?parseFloat(scorePre):null,
         score_post:scorePost?parseFloat(scorePost):null
-    }).select().single();
-    if(error){showToast('Errore: '+error.message,'error');return;}
-    appState.sessioni.unshift(newSess);
+    };
+    if(_editSessId){
+        const {data:updated,error}=await db.from('sessioni').update(payload).eq('id',_editSessId).select().single();
+        if(error){showToast('Errore: '+error.message,'error');return;}
+        const idx=appState.sessioni.findIndex(s=>s.id===_editSessId);
+        if(idx!==-1)appState.sessioni[idx]=updated;
+        closeModal('sessioneModal');
+        aggiornaSessioni();aggiornaDashboard();
+        showToast('Sessione aggiornata!');
+    } else {
+        const {data:{user}}=await db.auth.getUser();
+        const {data:newSess,error}=await db.from('sessioni').insert({biologo_id:user.id,...payload}).select().single();
+        if(error){showToast('Errore: '+error.message,'error');return;}
+        appState.sessioni.unshift(newSess);
+        closeModal('sessioneModal');
+        aggiornaDashboard();
+        showToast('Sessione registrata!');
+    }
+}
+
+function resetSessioneModal(){
+    _editSessId=null;
+    aggiornaSelectScuole();
     currentChecks={pre:false,gioco:false,post:false};
-    document.querySelectorAll('.check-item').forEach(el=>el.classList.remove('checked'));
-    document.querySelectorAll('.check-box i').forEach(i=>i.style.display='none');
+    ['checkItemPre','checkItemGioco','checkItemPost'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){el.classList.remove('checked');el.querySelector('.check-box i').style.display='none';}
+    });
     document.getElementById('scoreSection').style.display='none';
+    document.getElementById('sessioneAzioniRapide').style.display='none';
+    document.getElementById('btnRispostePre').style.display='none';
+    document.getElementById('btnRispostePost').style.display='none';
+    document.getElementById('sessioneModalTitle').textContent='Registra Sessione';
+    document.getElementById('sessioneSalvaLabel').textContent='Salva Sessione';
     ['sessioneClasse','sessioneNote','scorePre','scorePost'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('sessioneData').value='';
-    closeModal('sessioneModal');aggiornaDashboard();showToast('Sessione registrata!');
+}
+
+function apriModificaSessione(sessId){
+    const s=appState.sessioni.find(se=>se.id===sessId);
+    if(!s)return;
+    _editSessId=sessId;
+    aggiornaSelectScuole(s.scuola_id);
+    document.getElementById('sessioneClasse').value=s.classe||'';
+    document.getElementById('sessioneData').value=s.data||'';
+    document.getElementById('sessioneNote').value=s.note||'';
+    document.getElementById('scorePre').value=s.score_pre||'';
+    document.getElementById('scorePost').value=s.score_post||'';
+    currentChecks={pre:!!s.check_pre,gioco:!!s.check_gioco,post:!!s.check_post};
+    const map={pre:'checkItemPre',gioco:'checkItemGioco',post:'checkItemPost'};
+    Object.entries(map).forEach(([tipo,elId])=>{
+        const el=document.getElementById(elId);
+        if(!el)return;
+        el.classList.toggle('checked',currentChecks[tipo]);
+        el.querySelector('.check-box i').style.display=currentChecks[tipo]?'block':'none';
+    });
+    document.getElementById('scoreSection').style.display=(currentChecks.pre&&currentChecks.post)?'block':'none';
+    document.getElementById('sessioneModalTitle').textContent='Modifica Sessione';
+    document.getElementById('sessioneSalvaLabel').textContent='Aggiorna Sessione';
+    document.getElementById('sessioneAzioniRapide').style.display='block';
+    document.getElementById('btnRispostePre').style.display=s.check_pre?'inline-flex':'none';
+    document.getElementById('btnRispostePost').style.display=s.check_post?'inline-flex':'none';
+    document.getElementById('sessioneModal').classList.add('open');
+}
+
+function apriRispostePerSessione(tipo){
+    closeModal('sessioneModal');
+    const navEl=document.querySelector('.nav-item[onclick*="risposte"]');
+    showSection('risposte',navEl);
+    // Pre-seleziona sessione e tipo dopo che la sezione è visibile
+    setTimeout(()=>{
+        const sel=document.getElementById('risposteSessione');
+        if(sel&&_editSessId) sel.value=_editSessId;
+        const tipoSel=document.getElementById('risposteTipo');
+        if(tipoSel) tipoSel.value=tipo;
+    },50);
 }
 
 function aggiornaSessioni(){
@@ -755,19 +832,31 @@ function aggiornaSessioni(){
         const migVal=haScore?(parseFloat(s.score_post)-parseFloat(s.score_pre)):null;
         const migStr=migVal!==null?(migVal>=0?'+':'')+migVal.toFixed(1):null;
         const steps=[{k:'check_pre',label:'Q.PRE'},{k:'check_gioco',label:'GIOCO'},{k:'check_post',label:'Q.POST'}];
+        const completo=s.check_pre&&s.check_gioco&&s.check_post;
+        const stepDone=steps.filter(st=>s[st.k]).length;
         return `<div style="display:flex;align-items:start;gap:14px;padding:16px 0;border-bottom:1px solid #f1f5f9;">
-            <div style="width:42px;height:42px;background:#f1f5f9;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:700;color:#94a3b8;font-size:13px;">${String(appState.sessioni.length-ri).padStart(2,'0')}</div>
+            <div style="width:42px;height:42px;background:${completo?'linear-gradient(135deg,var(--teal),var(--teal-light))':'#f1f5f9'};border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:700;color:${completo?'white':'#94a3b8'};font-size:13px;">${String(appState.sessioni.length-ri).padStart(2,'0')}</div>
             <div style="flex:1;min-width:0;">
-                <div style="font-weight:700;font-size:13px;color:var(--dark);">${nome} — Classe ${s.classe}</div>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span style="font-weight:700;font-size:13px;color:var(--dark);">${nome} — Classe ${s.classe}</span>
+                    <span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;background:${completo?'#d1fae5':stepDone>0?'#fef3c7':'#f1f5f9'};color:${completo?'#065f46':stepDone>0?'#92400e':'#94a3b8'};text-transform:uppercase;letter-spacing:0.06em;">${completo?'Completa':stepDone+'/3'}</span>
+                </div>
                 <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${s.data}</div>
                 <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
                     ${steps.map(st=>`<span style="padding:3px 8px;border-radius:7px;font-size:10px;font-weight:700;background:${s[st.k]?'#d1fae5':'#f1f5f9'};color:${s[st.k]?'#065f46':'#94a3b8'};">${st.label}${s[st.k]?' ✓':''}</span>`).join('')}
                 </div>
                 ${s.note?`<div style="font-size:11px;color:#64748b;margin-top:6px;font-style:italic;">${s.note.substring(0,80)}${s.note.length>80?'...':''}</div>`:''}
+                <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;" class="no-print">
+                    <button onclick="apriModificaSessione('${s.id}')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid var(--teal);border-radius:8px;background:white;color:var(--teal);font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='var(--teal)';this.style.color='white'" onmouseout="this.style.background='white';this.style.color='var(--teal)'">
+                        <i class="fas fa-edit"></i>Modifica
+                    </button>
+                    ${s.check_pre?`<button onclick="apriModificaSessione('${s.id}');setTimeout(()=>apriRispostePerSessione('PRE'),80)" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid #e2e8f0;border-radius:8px;background:white;color:#64748b;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'"><i class="fas fa-clipboard-list"></i>Risposte PRE</button>`:''}
+                    ${s.check_post?`<button onclick="apriModificaSessione('${s.id}');setTimeout(()=>apriRispostePerSessione('POST'),80)" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid #e2e8f0;border-radius:8px;background:white;color:#64748b;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#e2e8f0'"><i class="fas fa-clipboard-check"></i>Risposte POST</button>`:''}
+                </div>
             </div>
             <div style="text-align:right;flex-shrink:0;">
-                ${haScore?`<div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">${s.score_pre}→${s.score_post}</div><div style="background:${migVal>=0?'#d1fae5':'#fee2e2'};color:${migVal>=0?'#065f46':'#991b1b'};padding:4px 8px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">${migStr}</div>`:'<div style="font-size:10px;color:#cbd5e1;">—</div>'}
-                <button onclick="eliminaSessione('${s.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:11px;margin-top:6px;display:block;margin-left:auto;" class="no-print"><i class="fas fa-trash"></i></button>
+                ${haScore?`<div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">${s.score_pre}→${s.score_post}</div><div style="background:${migVal>=0?'#d1fae5':'#fee2e2'};color:${migVal>=0?'#065f46':'#991b1b'};padding:4px 8px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">${migStr}</div>`:''}
+                <button onclick="eliminaSessione('${s.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:11px;margin-top:8px;display:block;margin-left:auto;" class="no-print"><i class="fas fa-trash"></i></button>
             </div>
         </div>`;
     }).join('');
@@ -1026,11 +1115,7 @@ function generaCodice(){
 
 function openModal(id){
     if(id==='sessioneModal'){
-        aggiornaSelectScuole();
-        currentChecks={pre:false,gioco:false,post:false};
-        document.querySelectorAll('.check-item').forEach(el=>el.classList.remove('checked'));
-        document.querySelectorAll('.check-box i').forEach(i=>i.style.display='none');
-        document.getElementById('scoreSection').style.display='none';
+        resetSessioneModal();
         document.getElementById('sessioneData').value=new Date().toISOString().split('T')[0];
     }
     document.getElementById(id).classList.add('open');
