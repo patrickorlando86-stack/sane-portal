@@ -108,8 +108,21 @@
 </head>
 <body>
 
+<!-- INIT LOADER -->
+<div id="initLoader" style="position:fixed;inset:0;z-index:250;background:#0A2647;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;transition:opacity 0.4s;">
+    <div style="width:52px;height:52px;background:var(--accent);border-radius:16px;display:flex;align-items:center;justify-content:center;">
+        <i class="fas fa-shield-alt" style="color:white;font-size:22px;"></i>
+    </div>
+    <div style="color:white;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">S.A.N.E. Admin</div>
+    <div style="color:rgba(255,255,255,0.5);font-size:12px;display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round" style="animation:spin 1s linear infinite;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        <span id="initLoaderMsg">Verifica sessione...</span>
+    </div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
 <!-- LOGIN -->
-<div id="loginScreen">
+<div id="loginScreen" class="hidden">
     <div class="login-card">
         <div style="text-align:center;margin-bottom:32px;">
             <div style="width:56px;height:56px;background:var(--accent);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
@@ -798,13 +811,27 @@ function showToast(msg, tipo){
 // ============================================================
 // AVVIO — getSession immediato (affidabile su F5 e file locali)
 // ============================================================
+function hideInitLoader(){
+    const el=document.getElementById('initLoader');
+    if(!el) return;
+    el.style.opacity='0';
+    setTimeout(()=>{ el.style.display='none'; },400);
+}
+
+function showLoginScreen(){
+    hideInitLoader();
+    document.getElementById('loginScreen').classList.remove('hidden');
+}
+
 async function avviaAdmin(user){
     const { data: profilo } = await db.from('profiles').select('role,stato').eq('id', user.id).single();
     if(!profilo || profilo.role !== 'admin'){
         document.getElementById('loginMsg').textContent = 'Accesso non autorizzato.';
         await db.auth.signOut();
+        showLoginScreen();
         return;
     }
+    hideInitLoader();
     document.getElementById('loginScreen').classList.add('hidden');
     setTimeout(async ()=>{
         document.getElementById('appShell').style.opacity='1';
@@ -813,15 +840,51 @@ async function avviaAdmin(user){
 }
 
 (async()=>{
-    try{
-        const sessionResult = await Promise.race([
-            db.auth.getSession(),
-            new Promise(resolve=>setTimeout(()=>resolve({data:{session:null}}),5000))
+    const msgEl = document.getElementById('initLoaderMsg');
+    function setMsg(txt){ if(msgEl) msgEl.textContent = txt; }
+
+    async function tentaConnessione(user){
+        return Promise.race([
+            avviaAdmin(user),
+            new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),10000))
         ]);
-        const session = sessionResult.data?.session;
-        if(session) await avviaAdmin(session.user);
-        // se no session, loginScreen già visibile di default
-    } catch(err){ console.error('Session check error:',err); }
+    }
+
+    function avviaCountdown(secondi, onDone){
+        let s = secondi;
+        setMsg(`Server in avvio — riprovo tra ${s}s`);
+        const iv = setInterval(()=>{
+            s--;
+            if(s <= 0){ clearInterval(iv); onDone(); }
+            else setMsg(`Server in avvio — riprovo tra ${s}s`);
+        }, 1000);
+        return iv;
+    }
+
+    try{
+        const {data:{session}} = await db.auth.getSession();
+        if(!session){ showLoginScreen(); return; }
+
+        setMsg('Verifica sessione...');
+        try{ await tentaConnessione(session.user); return; }
+        catch(e){ console.warn('[SANE admin] Primo tentativo fallito:', e.message); }
+
+        await new Promise(resolve => avviaCountdown(15, resolve));
+        setMsg('Riconnessione in corso...');
+        try{ await tentaConnessione(session.user); return; }
+        catch(e){ console.warn('[SANE admin] Secondo tentativo fallito:', e.message); }
+
+        await new Promise(resolve => avviaCountdown(20, resolve));
+        setMsg('Ultimo tentativo...');
+        try{ await tentaConnessione(session.user); return; }
+        catch(e){
+            console.warn('[SANE admin] Terzo tentativo fallito:', e.message);
+            showLoginScreen();
+        }
+    } catch(err){
+        console.error('Session check error:',err);
+        showLoginScreen();
+    }
 })();
 
 // Gestisce solo nuovi login e logout

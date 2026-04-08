@@ -137,7 +137,7 @@
     <div style="color:white;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">S.A.N.E. Italia</div>
     <div style="color:rgba(255,255,255,0.5);font-size:12px;display:flex;align-items:center;gap:8px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round" style="animation:spin 1s linear infinite;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-        Verifica sessione...
+        <span id="initLoaderMsg">Verifica sessione...</span>
     </div>
 </div>
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
@@ -2505,30 +2505,77 @@ function hideInitLoader(){
     setTimeout(()=>{ el.style.display='none'; }, 400);
 }
 
-// Controlla sessione al caricamento — con timeout globale di 8s
+// Controlla sessione al caricamento con retry automatico
 (async()=>{
-    // Fallback: se dopo 8s siamo ancora sul loader, mostra login
-    const fallback = setTimeout(()=>{
-        if(document.getElementById('initLoader')?.style?.display === 'none') return;
-        console.warn('Init timeout');
-        hideInitLoader();
-        document.getElementById('loginScreen').classList.remove('hidden');
-    }, 8000);
+    const msgEl = document.getElementById('initLoaderMsg');
+
+    function setMsg(txt){ if(msgEl) msgEl.textContent = txt; }
+
+    // Tenta di caricare il profilo con timeout di 10s
+    async function tentaConnessione(user){
+        return Promise.race([
+            inizializzaApp(user),
+            new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),10000))
+        ]);
+    }
+
+    // Countdown visivo prima del retry
+    function avviaCountdown(secondi, onDone){
+        let s = secondi;
+        setMsg(`Server in avvio — riprovo tra ${s}s`);
+        const iv = setInterval(()=>{
+            s--;
+            if(s <= 0){ clearInterval(iv); onDone(); }
+            else setMsg(`Server in avvio — riprovo tra ${s}s`);
+        }, 1000);
+        return iv;
+    }
 
     try{
         const {data:{session}} = await db.auth.getSession();
-        if(session && !appState.utente){
-            await inizializzaApp(session.user);
-        } else if(!session){
+        if(!session){
             hideInitLoader();
             document.getElementById('loginScreen').classList.remove('hidden');
+            return;
         }
+
+        // Primo tentativo
+        setMsg('Verifica sessione...');
+        try{
+            await tentaConnessione(session.user);
+            return; // successo
+        } catch(e){
+            console.warn('[SANE] Primo tentativo fallito:', e.message);
+        }
+
+        // Secondo tentativo dopo countdown 15s
+        await new Promise(resolve => avviaCountdown(15, resolve));
+        setMsg('Riconnessione in corso...');
+        try{
+            await tentaConnessione(session.user);
+            return;
+        } catch(e){
+            console.warn('[SANE] Secondo tentativo fallito:', e.message);
+        }
+
+        // Terzo tentativo dopo countdown 20s
+        await new Promise(resolve => avviaCountdown(20, resolve));
+        setMsg('Ultimo tentativo...');
+        try{
+            await tentaConnessione(session.user);
+            return;
+        } catch(e){
+            console.warn('[SANE] Terzo tentativo fallito:', e.message);
+            // Tutti falliti — mostra login
+            hideInitLoader();
+            document.getElementById('loginScreen').classList.remove('hidden');
+            showToast('Server non raggiungibile — effettua il login','error');
+        }
+
     } catch(err){
         console.error('Session check error:',err);
         hideInitLoader();
         document.getElementById('loginScreen').classList.remove('hidden');
-    } finally {
-        clearTimeout(fallback);
     }
 })();
 
