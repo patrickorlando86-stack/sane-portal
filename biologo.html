@@ -735,6 +735,7 @@ async function inizializzaApp(user){
             const classeId = k.slice('sane_bozza_'.length, 'sane_bozza_'.length + 36);
             if (!classiIdsAttivi.has(classeId)) localStorage.removeItem(k);
         });
+    hideInitLoader();
     document.getElementById('loginScreen').classList.add('hidden');
     setTimeout(()=>{document.getElementById('appShell').style.opacity='1';aggiornaUI();showToast('Bentornato, '+appState.utente.nome+'!');},400);
 }
@@ -2486,13 +2487,31 @@ function generaCertificatoAutovalutazione(autovId){
     cert.document.close();
 }
 
+function hideInitLoader(){
+    const el=document.getElementById('initLoader');
+    if(!el) return;
+    el.style.opacity='0';
+    setTimeout(()=>{ el.style.display='none'; }, 400);
+}
+
 db.auth.onAuthStateChange(async (event, session) => {
     if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session){
-        if(appState.utente) return; // già inizializzato, evita doppia chiamata
-        try { await inizializzaApp(session.user); }
-        catch(err){ console.error('Init error:', err); showToast('Errore caricamento — ricarica la pagina','error'); }
+        if(appState.utente){ hideInitLoader(); return; } // già inizializzato
+        try {
+            await inizializzaApp(session.user);
+        } catch(err){
+            console.error('Init error:', err);
+            hideInitLoader();
+            document.getElementById('loginScreen').classList.remove('hidden');
+            showToast('Errore caricamento — riprova','error');
+        }
+    } else if(event === 'INITIAL_SESSION' && !session){
+        // Nessuna sessione attiva → mostra login
+        hideInitLoader();
+        document.getElementById('loginScreen').classList.remove('hidden');
     } else if(event === 'SIGNED_OUT'){
         Object.keys(localStorage).filter(k=>k.startsWith('sane_')).forEach(k=>localStorage.removeItem(k));
+        hideInitLoader();
         window.location.href='index.html';
     }
 });
