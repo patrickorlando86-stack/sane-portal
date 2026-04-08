@@ -661,14 +661,19 @@ function handleStatoBtn(btn){
 
 async function cambiaStato(id, nuovoStato){
     const b = adminState.biologi.find(x=>x.id===id);
-    if(!b) return;
+    if(!b){ showToast('Biologo non trovato in memoria (id: '+id+')','error'); return; }
     const update = { stato: nuovoStato };
     if(nuovoStato==='active' && !b.scadenza){
         const sc = new Date(); sc.setFullYear(sc.getFullYear()+1);
         update.scadenza = sc.toISOString().split('T')[0];
     }
-    const { error } = await db.from('profiles').update(update).eq('id', id);
-    if(error){ showToast('Errore: '+error.message,'error'); return; }
+    const { data: updated, error } = await db.from('profiles').update(update).eq('id', id).select();
+    if(error){ showToast('Errore DB: '+error.message,'error'); return; }
+    if(!updated || updated.length === 0){
+        showToast('Aggiornamento bloccato — aggiungi policy RLS su Supabase (vedi console)','error');
+        console.warn('RLS block: nessuna riga aggiornata per id='+id+', stato='+nuovoStato);
+        return;
+    }
     Object.assign(b, update);
     aggiornaLicenze(); aggiornaDashboard();
     const labels = {active:'Licenza attivata ✓', suspended:'Biologo sospeso', expired:'Licenza scaduta'};
