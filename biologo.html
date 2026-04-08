@@ -2494,25 +2494,34 @@ function hideInitLoader(){
     setTimeout(()=>{ el.style.display='none'; }, 400);
 }
 
-db.auth.onAuthStateChange(async (event, session) => {
-    if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session){
-        if(appState.utente){ hideInitLoader(); return; } // già inizializzato
-        try {
+// Controlla sessione immediatamente al caricamento (affidabile su F5 e file locali)
+(async()=>{
+    try{
+        const {data:{session}}=await db.auth.getSession();
+        if(session && !appState.utente){
             await inizializzaApp(session.user);
-        } catch(err){
-            console.error('Init error:', err);
+        } else if(!session){
             hideInitLoader();
             document.getElementById('loginScreen').classList.remove('hidden');
-            showToast('Errore caricamento — riprova','error');
         }
-    } else if(event === 'INITIAL_SESSION' && !session){
-        // Nessuna sessione attiva → mostra login
+    } catch(err){
+        console.error('Session check error:',err);
         hideInitLoader();
         document.getElementById('loginScreen').classList.remove('hidden');
+    }
+})();
+
+// Gestisce solo login successivi e logout
+db.auth.onAuthStateChange(async (event, session) => {
+    if(event === 'SIGNED_IN' && session && !appState.utente){
+        try { await inizializzaApp(session.user); }
+        catch(err){ console.error('Init error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
     } else if(event === 'SIGNED_OUT'){
         Object.keys(localStorage).filter(k=>k.startsWith('sane_')).forEach(k=>localStorage.removeItem(k));
+        appState={utente:null,scuole:[],pacchetti:[],classi:[]};
         hideInitLoader();
-        window.location.href='index.html';
+        document.getElementById('appShell').style.opacity='0';
+        setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'),300);
     }
 });
 </script>
