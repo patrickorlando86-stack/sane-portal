@@ -34,16 +34,100 @@
             .btn-esci{padding:10px 0 !important;justify-content:center;}
         }
         @media(max-width:640px){
-            .sidebar{width:56px;}
-            .main-content{margin-left:56px;padding:14px 12px;}
+            /* Sidebar diventa bottom nav bar */
+            .sidebar{
+                width:100% !important;
+                height:60px;
+                top:auto;
+                bottom:0;
+                left:0;
+                flex-direction:row;
+                overflow:visible;
+                border-top:1px solid rgba(255,255,255,0.1);
+                box-shadow:0 -4px 20px rgba(0,0,0,0.3);
+                z-index:100;
+            }
+            /* Nascondi logo e blocco utente */
+            .sidebar > div:first-child,
+            .sidebar > div:nth-child(2){ display:none !important; }
+            /* Nav orizzontale */
+            .sidebar nav{
+                flex:1;
+                display:flex !important;
+                flex-direction:row;
+                padding:0;
+                overflow-x:auto;
+                scrollbar-width:none;
+            }
+            .sidebar nav::-webkit-scrollbar{display:none;}
+            .nav-item{
+                flex:1;
+                flex-direction:column;
+                padding:6px 2px;
+                margin:0;
+                border-radius:0;
+                gap:3px;
+                min-width:48px;
+                justify-content:center;
+                align-items:center;
+            }
+            .nav-item .label{
+                display:block !important;
+                font-size:8px;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+                max-width:52px;
+                text-align:center;
+            }
+            .nav-item i{font-size:15px;}
+            /* Footer sidebar: solo il pulsante Esci */
+            .sidebar > div:last-child{
+                padding:6px 8px;
+                border-top:none;
+                display:flex !important;
+                align-items:center;
+                justify-content:center;
+                flex-shrink:0;
+            }
+            .sidebar > div:last-child .label{display:none !important;}
+            /* Nascondi FNOB nel footer */
+            .sidebar > div:last-child > div{display:none !important;}
+            .btn-esci{
+                width:44px !important;
+                height:44px !important;
+                padding:0 !important;
+                border-radius:10px !important;
+                justify-content:center;
+            }
+            /* Main content sale sopra la bottom nav */
+            .main-content{
+                margin-left:0 !important;
+                padding:14px 12px 76px 12px !important;
+            }
+            /* Cards e layout */
             .kpi-grid{grid-template-columns:repeat(2,1fr) !important;}
             .kpi-val{font-size:26px;}
-            .card{border-radius:18px;padding:18px;}
+            .card{border-radius:18px;padding:16px;}
             .dash-codice-gioco{grid-template-columns:1fr !important;}
-            h2.dash-title{font-size:18px !important;}
+            h2{font-size:18px !important;}
             .dash-header{flex-direction:column;align-items:flex-start !important;}
             .btn-primary{font-size:11px;padding:11px 18px;}
-            .mobile-only{display:block !important;}
+            /* Modal full screen su mobile */
+            .modal-box{
+                border-radius:20px 20px 0 0 !important;
+                max-width:100% !important;
+                width:100% !important;
+                margin:0 !important;
+                position:fixed;
+                bottom:0;
+                left:0;
+                right:0;
+                max-height:85vh !important;
+            }
+            .modal-overlay{align-items:flex-end !important;}
+            /* Toast più basso per non sovrapporsi alla bottom nav */
+            #toast{bottom:72px !important;right:12px !important;left:12px;text-align:center;}
         }
 
         /* NAV */

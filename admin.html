@@ -26,8 +26,90 @@
         /* LAYOUT */
         .sidebar{width:256px;background:var(--dark);height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:10;overflow-y:auto;}
         .main-content{margin-left:256px;min-height:100vh;padding:36px 40px;}
-        @media(max-width:1024px){.sidebar{width:68px;}.sidebar .label{display:none;}.main-content{margin-left:68px;padding:24px 20px;}}
-        @media(max-width:640px){.sidebar{width:56px;}.main-content{margin-left:56px;padding:14px 12px;}}
+        @media(max-width:1024px){
+            .sidebar{width:68px;}
+            .sidebar .label{display:none;}
+            .main-content{margin-left:68px;padding:24px 20px;}
+        }
+        @media(max-width:640px){
+            .sidebar{
+                width:100% !important;
+                height:60px;
+                top:auto;
+                bottom:0;
+                left:0;
+                flex-direction:row;
+                overflow:visible;
+                border-top:1px solid rgba(255,255,255,0.1);
+                box-shadow:0 -4px 20px rgba(0,0,0,0.3);
+                z-index:100;
+            }
+            .sidebar > div:first-child,
+            .sidebar > div:nth-child(2){display:none !important;}
+            .sidebar nav{
+                flex:1;
+                display:flex !important;
+                flex-direction:row;
+                padding:0;
+                overflow-x:auto;
+                scrollbar-width:none;
+            }
+            .sidebar nav::-webkit-scrollbar{display:none;}
+            .nav-item{
+                flex:1;
+                flex-direction:column;
+                padding:6px 2px;
+                margin:0;
+                border-radius:0;
+                gap:3px;
+                min-width:48px;
+                justify-content:center;
+                align-items:center;
+            }
+            .nav-item .label{
+                display:block !important;
+                font-size:8px;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+                max-width:52px;
+                text-align:center;
+            }
+            .nav-item i{font-size:15px;}
+            .sidebar > div:last-child{
+                padding:6px 8px;
+                border-top:none;
+                display:flex !important;
+                align-items:center;
+                justify-content:center;
+                flex-shrink:0;
+            }
+            .sidebar > div:last-child .label{display:none !important;}
+            .sidebar > div:last-child > div{display:none !important;}
+            .btn-esci{width:44px !important;height:44px !important;padding:0 !important;border-radius:10px !important;justify-content:center;}
+            .main-content{margin-left:0 !important;padding:14px 12px 76px 12px !important;}
+            .kpi-val{font-size:26px;}
+            .kpi-grid{grid-template-columns:repeat(2,1fr) !important;}
+            .two-col-grid{grid-template-columns:1fr !important;}
+            .bio-row{flex-wrap:wrap;gap:10px;}
+            .bio-row > div:last-child{width:100%;text-align:left !important;}
+            .bio-row > div:last-child > div:first-child{display:none;}
+            .bio-row > div:last-child > div:last-child{justify-content:flex-start !important;}
+            .card{border-radius:18px;padding:16px;}
+            h2{font-size:18px !important;}
+            .modal-box{
+                border-radius:20px 20px 0 0 !important;
+                max-width:100% !important;
+                width:100% !important;
+                position:fixed;
+                bottom:0;
+                left:0;
+                right:0;
+                max-height:85vh !important;
+            }
+            .modal-overlay{align-items:flex-end !important;}
+            #toast{bottom:72px !important;right:12px !important;left:12px;text-align:center;}
+        }
 
         /* NAV */
         .nav-item{display:flex;align-items:center;gap:12px;padding:13px 16px;margin:2px 10px;border-radius:14px;cursor:pointer;transition:all 0.2s;color:rgba(255,255,255,0.45);font-size:13px;font-weight:600;}
@@ -242,7 +324,7 @@
                 <div style="color:#94a3b8;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;font-weight:700;">Partner Scientifico</div>
                 <img src="immagini/logo/fnob.webp" alt="FNOB" style="height:32px;margin:0 auto;display:block;">
             </div>
-            <button onclick="doLogout()" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;cursor:pointer;padding:10px 8px;border-radius:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;"
+            <button onclick="doLogout()" class="btn-esci" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;cursor:pointer;padding:10px 8px;border-radius:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;"
                 onmouseover="this.style.background='rgba(239,68,68,0.2)';this.style.color='#fca5a5'"
                 onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='rgba(255,255,255,0.7)'">
                 <i class="fas fa-sign-out-alt"></i><span class="label">Esci</span>
@@ -266,7 +348,7 @@
             </div>
 
             <!-- KPI LICENZE -->
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;">
+            <div class="kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;">
                 <div class="kpi-card teal"><div class="kpi-val" id="kpiAttive">0</div><div class="kpi-lbl">Licenze Attive</div></div>
                 <div class="kpi-card orange"><div class="kpi-val" id="kpiPending">0</div><div class="kpi-lbl">In Attesa</div></div>
                 <div class="kpi-card"><div class="kpi-val" id="kpiScadute">0</div><div class="kpi-lbl">Scadute</div></div>
@@ -274,7 +356,7 @@
             </div>
 
             <!-- KPI NAZIONALI -->
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;">
+            <div class="kpi-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;">
                 <div class="card" style="text-align:center;">
                     <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:var(--dark);" id="kpiScuoleNaz">0</div>
                     <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;">Scuole Totali</div>
@@ -290,7 +372,7 @@
             </div>
 
             <!-- LICENZE IN SCADENZA + ULTIMI ISCRITTI -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+            <div class="two-col-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
                 <div class="card">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
                         <h4 style="font-size:15px;font-weight:700;color:var(--dark);">⚠️ Licenze in Scadenza</h4>
@@ -312,7 +394,7 @@
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
                     <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Distribuzione Licenze</h4>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;">
+                <div class="two-col-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;">
                     <canvas id="chartLicenze" height="200"></canvas>
                     <div id="chartLicenzeLegend" style="padding:10px;"></div>
                 </div>
