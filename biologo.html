@@ -2532,38 +2532,48 @@ function hideInitLoader(){
         });
     }
 
+    // Legge la sessione: prima prova getSession(), se non risponde in 5s usa localStorage
+    function getSessionSafe(){
+        return new Promise(resolve=>{
+            // Fallback immediato da localStorage
+            const lsKey = Object.keys(localStorage).find(k=>k.includes('auth-token')||k.includes('supabase.auth'));
+            let lsSession = null;
+            if(lsKey){ try{ lsSession = JSON.parse(localStorage.getItem(lsKey)); }catch(e){} }
+            // Prova getSession con timeout 5s
+            const timer = setTimeout(()=>{
+                console.warn('[SANE] getSession timeout — uso localStorage');
+                resolve(lsSession?.session || lsSession || null);
+            }, 5000);
+            db.auth.getSession()
+                .then(r=>{ clearTimeout(timer); resolve(r?.data?.session||null); })
+                .catch(()=>{ clearTimeout(timer); resolve(lsSession?.session||lsSession||null); });
+        });
+    }
+
     try{
         setMsg('Verifica sessione...');
-        const {data:{session}} = await db.auth.getSession();
-        if(!session){
+        const session = await getSessionSafe();
+        console.log('[SANE] session:', session?.user?.email||'null');
+        if(!session || !session.user){
             hideInitLoader();
             document.getElementById('loginScreen').classList.remove('hidden');
             return;
         }
 
         const userId = session.user.id;
-        let tentativi = 0;
-        const maxTentativi = 4;
-        const attese = [0, 15, 20, 25]; // secondi di countdown prima di ogni tentativo
 
-        while(tentativi < maxTentativi){
-            if(attese[tentativi] > 0) await countdown(attese[tentativi]);
-            setMsg(tentativi === 0 ? 'Connessione al server...' : `Tentativo ${tentativi+1}...`);
-            console.log(`[SANE] ping tentativo ${tentativi+1}`);
-            const ok = await pingDB(userId);
-            console.log(`[SANE] ping risultato:`, ok);
-            if(ok){
-                setMsg('Connesso — caricamento...');
-                await inizializzaApp(session.user);
-                return;
-            }
-            tentativi++;
+        setMsg('Connessione al server...');
+        const ok = await pingDB(userId);
+        if(ok){
+            setMsg('Connesso — caricamento...');
+            await inizializzaApp(session.user);
+            return;
         }
 
-        // Tutti i tentativi falliti
+        // Fallito → login (la chiamata auth sveglierà Supabase)
         hideInitLoader();
         document.getElementById('loginScreen').classList.remove('hidden');
-        showToast('Server non raggiungibile — effettua il login','error');
+        showToast('Server in avvio — effettua il login per procedere','error');
 
     } catch(err){
         console.error('[SANE] Session check error:',err);

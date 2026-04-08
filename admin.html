@@ -864,32 +864,40 @@ async function avviaAdmin(user){
         });
     }
 
+    function getSessionSafe(){
+        return new Promise(resolve=>{
+            const lsKey = Object.keys(localStorage).find(k=>k.includes('auth-token')||k.includes('supabase.auth'));
+            let lsSession = null;
+            if(lsKey){ try{ lsSession = JSON.parse(localStorage.getItem(lsKey)); }catch(e){} }
+            const timer = setTimeout(()=>{ resolve(lsSession?.session||lsSession||null); }, 5000);
+            db.auth.getSession()
+                .then(r=>{ clearTimeout(timer); resolve(r?.data?.session||null); })
+                .catch(()=>{ clearTimeout(timer); resolve(lsSession?.session||lsSession||null); });
+        });
+    }
+
     try{
         setMsg('Verifica sessione...');
-        const {data:{session}} = await db.auth.getSession();
-        if(!session){ showLoginScreen(); return; }
+        const session = await getSessionSafe();
+        if(!session||!session.user){ showLoginScreen(); return; }
 
         const userId = session.user.id;
-        const attese = [0, 15, 20, 25];
-
-        for(let i = 0; i < attese.length; i++){
-            if(attese[i] > 0) await countdown(attese[i]);
-            setMsg(i === 0 ? 'Connessione al server...' : `Tentativo ${i+1}...`);
-            console.log(`[SANE admin] ping tentativo ${i+1}`);
-            const profilo = await pingDB(userId);
-            console.log(`[SANE admin] ping risultato:`, profilo);
-            if(profilo){
-                if(profilo.role !== 'admin'){
-                    document.getElementById('loginMsg').textContent='Accesso non autorizzato.';
-                    await db.auth.signOut();
-                    showLoginScreen(); return;
-                }
-                setMsg('Connesso — caricamento...');
-                await avviaAdmin(session.user);
-                return;
+        setMsg('Connessione al server...');
+        const profilo = await pingDB(userId);
+        if(profilo){
+            if(profilo.role !== 'admin'){
+                document.getElementById('loginMsg').textContent='Accesso non autorizzato.';
+                await db.auth.signOut();
+                showLoginScreen(); return;
             }
+            setMsg('Connesso — caricamento...');
+            await avviaAdmin(session.user);
+            return;
         }
+
         showLoginScreen();
+        const lm = document.getElementById('loginMsg');
+        if(lm) lm.textContent = 'Server in avvio — effettua il login per procedere.';
     } catch(err){
         console.error('[SANE admin] Session check error:',err);
         showLoginScreen();
