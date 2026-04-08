@@ -2505,78 +2505,33 @@ function hideInitLoader(){
     setTimeout(()=>{ el.style.display='none'; }, 400);
 }
 
-// Controlla sessione al caricamento con retry automatico
+// Forza login dopo 10s qualunque cosa succeda
+const _forceLogin = setTimeout(()=>{
+    if(document.getElementById('initLoader')?.style?.display==='none') return;
+    console.warn('[SANE] force login after 10s');
+    hideInitLoader();
+    document.getElementById('loginScreen').classList.remove('hidden');
+}, 10000);
+
 (async()=>{
     const msgEl = document.getElementById('initLoaderMsg');
     function setMsg(txt){ if(msgEl) msgEl.textContent = txt; }
 
-    function countdown(secondi){
-        return new Promise(resolve=>{
-            let s = secondi;
-            setMsg(`Server in avvio — riprovo tra ${s}s`);
-            const iv = setInterval(()=>{
-                s--;
-                if(s <= 0){ clearInterval(iv); resolve(); }
-                else setMsg(`Server in avvio — riprovo tra ${s}s`);
-            }, 1000);
-        });
-    }
-
-    // Ping leggero con timeout esplicito — resolve(false) dopo 8s se il DB non risponde
-    function pingDB(userId){
-        return new Promise(resolve=>{
-            const timer = setTimeout(()=>resolve(false), 8000);
-            db.from('profiles').select('id').eq('id',userId).single()
-                .then(({data})=>{ clearTimeout(timer); resolve(!!data); })
-                .catch(()=>{ clearTimeout(timer); resolve(false); });
-        });
-    }
-
-    // Legge la sessione: prima prova getSession(), se non risponde in 5s usa localStorage
-    function getSessionSafe(){
-        return new Promise(resolve=>{
-            // Fallback immediato da localStorage
-            const lsKey = Object.keys(localStorage).find(k=>k.includes('auth-token')||k.includes('supabase.auth'));
-            let lsSession = null;
-            if(lsKey){ try{ lsSession = JSON.parse(localStorage.getItem(lsKey)); }catch(e){} }
-            // Prova getSession con timeout 5s
-            const timer = setTimeout(()=>{
-                console.warn('[SANE] getSession timeout — uso localStorage');
-                resolve(lsSession?.session || lsSession || null);
-            }, 5000);
-            db.auth.getSession()
-                .then(r=>{ clearTimeout(timer); resolve(r?.data?.session||null); })
-                .catch(()=>{ clearTimeout(timer); resolve(lsSession?.session||lsSession||null); });
-        });
-    }
-
     try{
         setMsg('Verifica sessione...');
-        const session = await getSessionSafe();
-        console.log('[SANE] session:', session?.user?.email||'null');
+        const {data:{session}} = await db.auth.getSession();
         if(!session || !session.user){
+            clearTimeout(_forceLogin);
             hideInitLoader();
             document.getElementById('loginScreen').classList.remove('hidden');
             return;
         }
-
-        const userId = session.user.id;
-
-        setMsg('Connessione al server...');
-        const ok = await pingDB(userId);
-        if(ok){
-            setMsg('Connesso — caricamento...');
-            await inizializzaApp(session.user);
-            return;
-        }
-
-        // Fallito → login (la chiamata auth sveglierà Supabase)
-        hideInitLoader();
-        document.getElementById('loginScreen').classList.remove('hidden');
-        showToast('Server in avvio — effettua il login per procedere','error');
-
+        clearTimeout(_forceLogin);
+        setMsg('Connesso — caricamento...');
+        await inizializzaApp(session.user);
     } catch(err){
         console.error('[SANE] Session check error:',err);
+        clearTimeout(_forceLogin);
         hideInitLoader();
         document.getElementById('loginScreen').classList.remove('hidden');
     }
