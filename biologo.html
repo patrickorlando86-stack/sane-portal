@@ -131,7 +131,17 @@
 <body>
 
 <!-- LOGIN -->
-<div id="loginScreen">
+<!-- INIT LOADER — mostrato mentre si verifica la sessione -->
+<div id="initLoader" style="position:fixed;inset:0;z-index:250;background:var(--dark);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;transition:opacity 0.4s;">
+    <img src="immagini/logo/logo2.webp" alt="SANE" style="height:50px;background:white;border-radius:12px;padding:8px;" onerror="this.style.display='none'">
+    <div style="color:white;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">S.A.N.E. Italia</div>
+    <div style="color:rgba(255,255,255,0.5);font-size:12px;display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round" style="animation:spin 1s linear infinite;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        Verifica sessione...
+    </div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<div id="loginScreen" class="hidden">
     <div class="login-card">
         <div style="text-align:center;margin-bottom:32px;">
             <img src="immagini/logo/logo2.webp" alt="SANE" style="height:64px;margin:0 auto 16px;display:block;">
@@ -688,6 +698,7 @@ async function doLogin(){
 }
 
 async function doLogout(){
+    Object.keys(localStorage).filter(k=>k.startsWith('sane_')).forEach(k=>localStorage.removeItem(k));
     document.getElementById('appShell').style.opacity='0';
     await db.auth.signOut();
     window.location.href='index.html';
