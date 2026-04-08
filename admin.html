@@ -843,46 +843,55 @@ async function avviaAdmin(user){
     const msgEl = document.getElementById('initLoaderMsg');
     function setMsg(txt){ if(msgEl) msgEl.textContent = txt; }
 
-    async function tentaConnessione(user){
-        return Promise.race([
-            avviaAdmin(user),
-            new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),10000))
-        ]);
+    function countdown(secondi){
+        return new Promise(resolve=>{
+            let s = secondi;
+            setMsg(`Server in avvio — riprovo tra ${s}s`);
+            const iv = setInterval(()=>{
+                s--;
+                if(s <= 0){ clearInterval(iv); resolve(); }
+                else setMsg(`Server in avvio — riprovo tra ${s}s`);
+            }, 1000);
+        });
     }
 
-    function avviaCountdown(secondi, onDone){
-        let s = secondi;
-        setMsg(`Server in avvio — riprovo tra ${s}s`);
-        const iv = setInterval(()=>{
-            s--;
-            if(s <= 0){ clearInterval(iv); onDone(); }
-            else setMsg(`Server in avvio — riprovo tra ${s}s`);
-        }, 1000);
-        return iv;
+    function pingDB(userId){
+        return new Promise(resolve=>{
+            const timer = setTimeout(()=>resolve(false), 8000);
+            db.from('profiles').select('id,role').eq('id',userId).single()
+                .then(({data})=>{ clearTimeout(timer); resolve(data||false); })
+                .catch(()=>{ clearTimeout(timer); resolve(false); });
+        });
     }
 
     try{
+        setMsg('Verifica sessione...');
         const {data:{session}} = await db.auth.getSession();
         if(!session){ showLoginScreen(); return; }
 
-        setMsg('Verifica sessione...');
-        try{ await tentaConnessione(session.user); return; }
-        catch(e){ console.warn('[SANE admin] Primo tentativo fallito:', e.message); }
+        const userId = session.user.id;
+        const attese = [0, 15, 20, 25];
 
-        await new Promise(resolve => avviaCountdown(15, resolve));
-        setMsg('Riconnessione in corso...');
-        try{ await tentaConnessione(session.user); return; }
-        catch(e){ console.warn('[SANE admin] Secondo tentativo fallito:', e.message); }
-
-        await new Promise(resolve => avviaCountdown(20, resolve));
-        setMsg('Ultimo tentativo...');
-        try{ await tentaConnessione(session.user); return; }
-        catch(e){
-            console.warn('[SANE admin] Terzo tentativo fallito:', e.message);
-            showLoginScreen();
+        for(let i = 0; i < attese.length; i++){
+            if(attese[i] > 0) await countdown(attese[i]);
+            setMsg(i === 0 ? 'Connessione al server...' : `Tentativo ${i+1}...`);
+            console.log(`[SANE admin] ping tentativo ${i+1}`);
+            const profilo = await pingDB(userId);
+            console.log(`[SANE admin] ping risultato:`, profilo);
+            if(profilo){
+                if(profilo.role !== 'admin'){
+                    document.getElementById('loginMsg').textContent='Accesso non autorizzato.';
+                    await db.auth.signOut();
+                    showLoginScreen(); return;
+                }
+                setMsg('Connesso — caricamento...');
+                await avviaAdmin(session.user);
+                return;
+            }
         }
+        showLoginScreen();
     } catch(err){
-        console.error('Session check error:',err);
+        console.error('[SANE admin] Session check error:',err);
         showLoginScreen();
     }
 })();
