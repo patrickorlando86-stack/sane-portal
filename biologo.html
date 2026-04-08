@@ -718,7 +718,9 @@ async function caricaDati(){
 }
 
 async function inizializzaApp(user){
-    const {data:profilo}=await db.from('profiles').select('*').eq('id',user.id).single();
+    console.log('[SANE] 1. inizializzaApp start', user?.email);
+    const {data:profilo, error:errP}=await db.from('profiles').select('*').eq('id',user.id).single();
+    console.log('[SANE] 2. profilo caricato', profilo?.stato, errP?.message);
     if(!profilo){showToast('Profilo non trovato. Contatta l\'amministratore.','error');await db.auth.signOut();return;}
     if(profilo.stato!=='active'){
         const msg=profilo.stato==='pending'?'Licenza in attesa di approvazione.':'Licenza sospesa o scaduta.';
@@ -726,8 +728,9 @@ async function inizializzaApp(user){
         await db.auth.signOut();return;
     }
     appState.utente={nome:profilo.nome||user.email.split('@')[0],email:user.email,id:user.id};
+    console.log('[SANE] 3. caricaDati start');
     await caricaDati();
-    // Rimuovi bozze di classi che non esistono più
+    console.log('[SANE] 4. caricaDati done — scuole:',appState.scuole.length,'pacchetti:',appState.pacchetti.length,'classi:',appState.classi.length);
     const classiIdsAttivi = new Set(appState.classi.map(c => c.id));
     Object.keys(localStorage)
         .filter(k => k.startsWith('sane_bozza_'))
@@ -735,9 +738,17 @@ async function inizializzaApp(user){
             const classeId = k.slice('sane_bozza_'.length, 'sane_bozza_'.length + 36);
             if (!classiIdsAttivi.has(classeId)) localStorage.removeItem(k);
         });
+    console.log('[SANE] 5. hideInitLoader');
     hideInitLoader();
     document.getElementById('loginScreen').classList.add('hidden');
-    setTimeout(()=>{document.getElementById('appShell').style.opacity='1';aggiornaUI();showToast('Bentornato, '+appState.utente.nome+'!');},400);
+    setTimeout(()=>{
+        try{
+            document.getElementById('appShell').style.opacity='1';
+            aggiornaUI();
+            showToast('Bentornato, '+appState.utente.nome+'!');
+            console.log('[SANE] 6. aggiornaUI OK');
+        } catch(e){ console.error('[SANE] aggiornaUI error:',e); }
+    },400);
 }
 
 function showSection(id,el){
