@@ -814,7 +814,11 @@ async function avviaAdmin(user){
 
 (async()=>{
     try{
-        const {data:{session}}=await db.auth.getSession();
+        const sessionResult = await Promise.race([
+            db.auth.getSession(),
+            new Promise(resolve=>setTimeout(()=>resolve({data:{session:null}}),5000))
+        ]);
+        const session = sessionResult.data?.session;
         if(session) await avviaAdmin(session.user);
         // se no session, loginScreen già visibile di default
     } catch(err){ console.error('Session check error:',err); }

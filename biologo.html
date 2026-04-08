@@ -2494,10 +2494,18 @@ function hideInitLoader(){
     setTimeout(()=>{ el.style.display='none'; }, 400);
 }
 
-// Controlla sessione immediatamente al caricamento (affidabile su F5 e file locali)
+// Controlla sessione al caricamento — con timeout globale di 8s
 (async()=>{
+    // Fallback: se dopo 8s siamo ancora sul loader, mostra login
+    const fallback = setTimeout(()=>{
+        if(document.getElementById('initLoader')?.style?.display === 'none') return;
+        console.warn('Init timeout');
+        hideInitLoader();
+        document.getElementById('loginScreen').classList.remove('hidden');
+    }, 8000);
+
     try{
-        const {data:{session}}=await db.auth.getSession();
+        const {data:{session}} = await db.auth.getSession();
         if(session && !appState.utente){
             await inizializzaApp(session.user);
         } else if(!session){
@@ -2508,6 +2516,8 @@ function hideInitLoader(){
         console.error('Session check error:',err);
         hideInitLoader();
         document.getElementById('loginScreen').classList.remove('hidden');
+    } finally {
+        clearTimeout(fallback);
     }
 })();
 
