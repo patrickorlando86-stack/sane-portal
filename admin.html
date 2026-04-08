@@ -445,9 +445,7 @@ async function doLogin(){
 
 function doLogout(){
     adminState = { biologi:[] };
-    document.getElementById('appShell').style.opacity='0';
-    setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
-    db.auth.signOut();
+    db.auth.signOut().then(()=>{ window.location.href='index.html'; });
 }
 
 async function caricaDati(){
@@ -798,26 +796,36 @@ function showToast(msg, tipo){
 }
 
 // ============================================================
-// AVVIO — Auth state listener
+// AVVIO — getSession immediato (affidabile su F5 e file locali)
 // ============================================================
+async function avviaAdmin(user){
+    const { data: profilo } = await db.from('profiles').select('role,stato').eq('id', user.id).single();
+    if(!profilo || profilo.role !== 'admin'){
+        document.getElementById('loginMsg').textContent = 'Accesso non autorizzato.';
+        await db.auth.signOut();
+        return;
+    }
+    document.getElementById('loginScreen').classList.add('hidden');
+    setTimeout(async ()=>{
+        document.getElementById('appShell').style.opacity='1';
+        await inizializzaApp();
+    }, 400);
+}
+
+(async()=>{
+    try{
+        const {data:{session}}=await db.auth.getSession();
+        if(session) await avviaAdmin(session.user);
+        // se no session, loginScreen già visibile di default
+    } catch(err){ console.error('Session check error:',err); }
+})();
+
+// Gestisce solo nuovi login e logout
 db.auth.onAuthStateChange(async (event, session) => {
-    if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session){
-        // Verifica che sia admin
-        const { data: profilo } = await db.from('profiles').select('role,stato').eq('id', session.user.id).single();
-        if(!profilo || profilo.role !== 'admin'){
-            document.getElementById('loginMsg').textContent = 'Accesso non autorizzato.';
-            await db.auth.signOut();
-            return;
-        }
-        document.getElementById('loginScreen').classList.add('hidden');
-        setTimeout(async ()=>{
-            document.getElementById('appShell').style.opacity='1';
-            await inizializzaApp();
-        }, 400);
+    if(event === 'SIGNED_IN' && session){
+        await avviaAdmin(session.user);
     } else if(event === 'SIGNED_OUT'){
-        adminState = { biologi:[] };
-        document.getElementById('appShell').style.opacity='0';
-        setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'), 300);
+        window.location.href='index.html';
     }
 });
 </script>
