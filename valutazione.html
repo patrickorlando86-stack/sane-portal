@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.A.N.E. Italia | Autovalutazione Scuola</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root{--dark:#0A2647;--teal:#00A896;--teal-light:#00C9B1;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:#f0f4f8;min-height:100vh;color:var(--dark);}
+        h1,h2,h3,h4{font-family:'Syne',sans-serif;}
+        .container{max-width:760px;margin:0 auto;padding:32px 20px;}
+        .card{background:white;border-radius:20px;padding:24px;box-shadow:0 2px 16px rgba(10,38,71,0.06);margin-bottom:20px;}
+        .header-bar{background:var(--dark);padding:16px 24px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:10;}
+        .score-bar{position:sticky;top:57px;z-index:9;background:white;border-bottom:2px solid #e2e8f0;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(10,38,71,0.06);}
+        .progress-bar{height:7px;background:#e2e8f0;border-radius:99px;overflow:hidden;flex:1;margin:0 16px;}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-light));border-radius:99px;transition:width 0.4s ease;}
+        .area-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+        .area-num{width:28px;height:28px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;flex-shrink:0;}
+        .domanda{margin-bottom:18px;}
+        .domanda-testo{font-size:13px;font-weight:500;color:var(--dark);margin-bottom:10px;line-height:1.5;}
+        .opzioni{display:flex;gap:8px;flex-wrap:wrap;}
+        .opz-btn{border:2px solid #e2e8f0;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;background:white;color:#64748b;transition:all 0.15s;font-family:'Inter',sans-serif;}
+        .opz-btn:hover{border-color:var(--teal);color:var(--teal);}
+        .opz-btn.sel-0{border-color:#ef4444;background:#fee2e2;color:#b91c1c;}
+        .opz-btn.sel-1{border-color:#f59e0b;background:#fef3c7;color:#92400e;}
+        .opz-btn.sel-2{border-color:var(--teal);background:#d1fae5;color:#065f46;}
+        .opz-btn.sel-na{border-color:#94a3b8;background:#f1f5f9;color:#64748b;}
+        .btn-primary{background:var(--teal);color:white;border:none;border-radius:12px;padding:14px 28px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;}
+        .btn-primary:hover{background:var(--teal-light);}
+        .btn-primary:disabled{background:#cbd5e1;cursor:not-allowed;}
+        #loadingScreen{position:fixed;inset:0;background:var(--dark);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:100;}
+        #errorScreen{display:none;position:fixed;inset:0;background:var(--dark);align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:100;text-align:center;padding:20px;}
+        #risultatoFinale{display:none;}
+        .score-final{font-family:'Syne',sans-serif;font-size:80px;font-weight:700;color:var(--teal);line-height:1;}
+        @media(max-width:640px){.opzioni{flex-wrap:nowrap;}.opz-btn{padding:8px 10px;font-size:11px;flex:1;justify-content:center;text-align:center;}}
+    </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingScreen">
+    <img src="immagini/logo/logo2.webp" alt="SANE" style="height:50px;background:white;border-radius:12px;padding:8px;" onerror="this.style.display='none'">
+    <div style="color:white;font-family:'Syne',sans-serif;font-size:18px;font-weight:700;">S.A.N.E. Italia</div>
+    <div style="color:rgba(255,255,255,0.5);font-size:13px;"><i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i>Caricamento questionario...</div>
+</div>
+
+<!-- ERROR -->
+<div id="errorScreen">
+    <i class="fas fa-exclamation-triangle" style="color:#ef4444;font-size:40px;"></i>
+    <div style="color:white;font-family:'Syne',sans-serif;font-size:20px;font-weight:700;">Link non valido</div>
+    <div id="errorMsg" style="color:rgba(255,255,255,0.6);font-size:13px;max-width:400px;">Il link che hai seguito non è valido o è già stato utilizzato.</div>
+</div>
+
+<!-- HEADER -->
+<div class="header-bar">
+    <img src="immagini/logo/logo2.webp" alt="SANE" style="height:30px;background:white;border-radius:8px;padding:3px;" onerror="this.style.display='none'">
+    <div>
+        <div style="color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;">S.A.N.E. Italia</div>
+        <div style="color:rgba(255,255,255,0.4);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Autovalutazione Qualità Alimentare</div>
+    </div>
+</div>
+
+<!-- SCORE BAR -->
+<div class="score-bar">
+    <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap;">Progresso</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
+    <div style="font-size:13px;font-weight:700;color:var(--teal);white-space:nowrap;" id="scoreDisplay">0 / 50</div>
+</div>
+
+<!-- QUESTIONARIO -->
+<div class="container">
+    <div id="intestazione" style="margin-bottom:24px;"></div>
+    <div id="questionario"></div>
+
+    <!-- RISULTATO FINALE -->
+    <div id="risultatoFinale" class="card" style="text-align:center;padding:40px;">
+        <i class="fas fa-check-circle" style="font-size:40px;color:var(--teal);margin-bottom:16px;display:block;"></i>
+        <div class="score-final" id="scoreFinalVal">—</div>
+        <div style="font-size:13px;color:#94a3b8;margin:8px 0 4px;">punti su 50</div>
+        <div style="font-size:20px;font-weight:700;color:var(--dark);margin-bottom:24px;" id="livelloLabel">—</div>
+        <button class="btn-primary" style="margin:0 auto;" onclick="inviaRisposte()"><i class="fas fa-paper-plane"></i>Invia Questionario</button>
+        <p style="font-size:11px;color:#94a3b8;margin-top:14px;">Verifica le risposte prima di inviare. Non sarà possibile modificarle dopo l'invio.</p>
+    </div>
+
+    <!-- RINGRAZIAMENTO -->
+    <div id="ringraziamento" class="card" style="display:none;text-align:center;padding:48px;">
+        <i class="fas fa-award" style="font-size:48px;color:var(--teal);margin-bottom:16px;display:block;"></i>
+        <h2 style="font-size:26px;color:var(--dark);margin-bottom:10px;">Grazie!</h2>
+        <p style="color:#64748b;font-size:14px;margin-bottom:6px;">Il questionario è stato inviato con successo.</p>
+        <p style="color:#94a3b8;font-size:12px;">Il biologo responsabile analizzerà i risultati e vi contatterà.</p>
+    </div>
+</div>
+
+<script>
+const SUPABASE_URL='https://hjfosliokfskftmoukxa.supabase.co';
+const SUPABASE_KEY='sb_publishable_VxN-7lIjR3lgcG1Kv_nMrg_c0xJpY0n';
+const {createClient}=supabase;
+const db=createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const DOMANDE=[
+    {area:1,testo:'La scuola dispone di un servizio mensa interno o convenzionato'},
+    {area:1,testo:'I menù sono approvati da un dietista o nutrizionista'},
+    {area:1,testo:'Sono previsti menù alternativi per allergie e intolleranze'},
+    {area:1,testo:'Viene comunicato il menù settimanale alle famiglie'},
+    {area:1,testo:'Esiste un protocollo scritto per la gestione delle allergie gravi'},
+    {area:2,testo:'Vengono svolte attività di educazione alimentare durante l\'anno'},
+    {area:2,testo:'Gli insegnanti hanno ricevuto formazione specifica sull\'alimentazione'},
+    {area:2,testo:'La scuola utilizza strumenti digitali per l\'educazione alimentare'},
+    {area:2,testo:'Sono coinvolte le famiglie nelle attività di educazione alimentare'},
+    {area:2,testo:'Esiste un progetto strutturato pluriennale sull\'alimentazione'},
+    {area:3,testo:'Sono disponibili distributori di acqua potabile'},
+    {area:3,testo:'Gli spazi per la consumazione dei pasti sono adeguati'},
+    {area:3,testo:'È garantito un tempo sufficiente per il pasto'},
+    {area:3,testo:'L\'ambiente mensa è pulito e confortevole'},
+    {area:3,testo:'Sono presenti aree verdi o orti scolastici'},
+    {area:4,testo:'Il personale di cucina è formato sulla sicurezza alimentare'},
+    {area:4,testo:'Esiste un piano HACCP aggiornato'},
+    {area:4,testo:'Vengono effettuati controlli periodici sulle forniture'},
+    {area:4,testo:'Il personale conosce i 14 allergeni principali'},
+    {area:4,testo:'Esiste un registro aggiornato degli alunni con allergie certificate'},
+    {area:5,testo:'Sono previste almeno 2 ore di educazione fisica settimanale'},
+    {area:5,testo:'Vengono promosse attività motorie durante le pause'},
+    {area:5,testo:'Esiste una collaborazione con associazioni sportive del territorio'},
+    {area:5,testo:'Viene monitorato il benessere psicofisico degli studenti'},
+    {area:5,testo:'La scuola partecipa a progetti regionali o nazionali sulla salute'},
+];
+const AREE=['Mensa e Refezione','Educazione Alimentare','Ambiente e Spazi','Sicurezza Alimentare','Attività Fisica e Benessere'];
+
+let _autovId=null;
+let _risposte={}; // index -> punteggio (0,1,2) or null for N/A
+
+function mostraErrore(msg){
+    document.getElementById('loadingScreen').style.display='none';
+    const es=document.getElementById('errorScreen');
+    es.style.display='flex';
+    if(msg) document.getElementById('errorMsg').textContent=msg;
+}
+
+async function init(){
+    const params=new URLSearchParams(window.location.search);
+    const token=params.get('token');
+    if(!token){mostraErrore('Nessun token trovato nel link.');return;}
+
+    const {data:autov,error}=await db.from('autovalutazioni').select('*').eq('token',token).single();
+    if(error||!autov){mostraErrore('Link non valido o scaduto.');return;}
+    if(autov.stato!=='attesa'){mostraErrore('Questo questionario è già stato compilato. Grazie!');return;}
+
+    _autovId=autov.id;
+
+    // Carica nome scuola
+    const {data:scuola}=await db.from('scuole').select('nome,comune').eq('id',autov.scuola_id).single();
+    const nomeScuola=scuola?scuola.nome:'Scuola';
+    const comune=scuola&&scuola.comune?' · '+scuola.comune:'';
+
+    document.getElementById('intestazione').innerHTML=`
+        <div style="background:var(--dark);border-radius:16px;padding:20px 24px;color:white;margin-bottom:4px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px;">Questionario per</div>
+            <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;">${nomeScuola}${comune}</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">Anno Scolastico ${autov.anno_scolastico||'—'} · 25 domande · 5 aree</div>
+        </div>
+    `;
+
+    renderQuestionario();
+    document.getElementById('loadingScreen').style.display='none';
+}
+
+function renderQuestionario(){
+    const el=document.getElementById('questionario');
+    let html='';
+    for(let a=1;a<=5;a++){
+        const domArea=DOMANDE.filter(d=>d.area===a);
+        html+=`<div class="card">
+            <div class="area-title">
+                <div class="area-num">${a}</div>
+                ${AREE[a-1]}
+            </div>`;
+        domArea.forEach((dom,idx)=>{
+            const gIdx=DOMANDE.indexOf(dom);
+            html+=`<div class="domanda" id="dom-${gIdx}">
+                <div class="domanda-testo">${idx+1}. ${dom.testo}</div>
+                <div class="opzioni">
+                    <button class="opz-btn" onclick="seleziona(${gIdx},0)" id="btn-${gIdx}-0"><i class="fas fa-times-circle" style="margin-right:5px;"></i>Mai</button>
+                    <button class="opz-btn" onclick="seleziona(${gIdx},1)" id="btn-${gIdx}-1"><i class="fas fa-adjust" style="margin-right:5px;"></i>A volte</button>
+                    <button class="opz-btn" onclick="seleziona(${gIdx},2)" id="btn-${gIdx}-2"><i class="fas fa-check-circle" style="margin-right:5px;"></i>Sempre</button>
+                    <button class="opz-btn" onclick="seleziona(${gIdx},null)" id="btn-${gIdx}-na">N/A</button>
+                </div>
+            </div>`;
+        });
+        html+=`</div>`;
+    }
+    el.innerHTML=html;
+}
+
+function seleziona(idx,val){
+    _risposte[idx]=val;
+    // Reset tutti i bottoni per questa domanda
+    [0,1,2,'na'].forEach(v=>{
+        const btn=document.getElementById(`btn-${idx}-${v}`);
+        if(btn){btn.className='opz-btn';}
+    });
+    // Evidenzia selezionato
+    const key=val===null?'na':val;
+    const selBtn=document.getElementById(`btn-${idx}-${key}`);
+    if(selBtn) selBtn.className=`opz-btn sel-${key}`;
+
+    aggiornaScore();
+    verificaCompletamento();
+}
+
+function aggiornaScore(){
+    const pts=Object.values(_risposte).reduce((s,v)=>s+(v===null?0:(v||0)),0);
+    const risposte=Object.keys(_risposte).length;
+    const pct=Math.round((pts/50)*100);
+    document.getElementById('scoreDisplay').textContent=pts+' / 50';
+    document.getElementById('progressFill').style.width=pct+'%';
+}
+
+function verificaCompletamento(){
+    if(Object.keys(_risposte).length<25) return;
+    const pts=Object.values(_risposte).reduce((s,v)=>s+(v===null?0:(v||0)),0);
+    document.getElementById('scoreFinalVal').textContent=pts;
+    const lv=pts>=40?'Livello Avanzato':pts>=30?'Livello Intermedio':pts>=20?'Livello Base':'Livello Insufficiente';
+    document.getElementById('livelloLabel').textContent=lv;
+    document.getElementById('risultatoFinale').style.display='block';
+    document.getElementById('risultatoFinale').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+async function inviaRisposte(){
+    if(Object.keys(_risposte).length<25){alert('Compila tutte le 25 domande prima di inviare.');return;}
+    const btn=document.querySelector('#risultatoFinale .btn-primary');
+    btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>Invio in corso...';
+
+    const pts=Object.values(_risposte).reduce((s,v)=>s+(v===null?0:(v||0)),0);
+
+    // Prepara le righe per risposte_autovalutazione
+    const righe=DOMANDE.map((dom,idx)=>({
+        autovalutazione_id:_autovId,
+        area:dom.area,
+        domanda_index:idx%5,
+        punteggio:_risposte[idx]===null?null:(_risposte[idx]!==undefined?_risposte[idx]:null)
+    }));
+
+    const {error:errR}=await db.from('risposte_autovalutazione').insert(righe);
+    if(errR){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore durante il salvataggio. Riprova.');return;}
+
+    const {error:errA}=await db.from('autovalutazioni').update({
+        stato:'completata',
+        punteggio_totale:pts,
+        compilata_il:new Date().toISOString()
+    }).eq('id',_autovId);
+    if(errA){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore durante il salvataggio. Riprova.');return;}
+
+    document.getElementById('questionario').style.display='none';
+    document.getElementById('risultatoFinale').style.display='none';
+    document.getElementById('intestazione').style.display='none';
+    document.getElementById('ringraziamento').style.display='block';
+    document.getElementById('ringraziamento').scrollIntoView({behavior:'smooth'});
+}
+
+init();
+</script>
+</body>
+</html>

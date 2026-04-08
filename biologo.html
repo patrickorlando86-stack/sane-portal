@@ -341,6 +341,12 @@
             <div class="nav-item" onclick="apriGioco()">
                 <i class="fas fa-gamepad"></i><span class="label">Il Piatto Sano</span>
             </div>
+            <div class="nav-item" onclick="showSection('autovalutazione',this)">
+                <i class="fas fa-clipboard-check"></i><span class="label">Autovalutazione Scuola</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='mailto:info@saneitalia.it'" title="Contatta S.A.N.E.">
+                <i class="fas fa-envelope"></i><span class="label">Contatta S.A.N.E.</span>
+            </div>
         </nav>
 
         <!-- FOOTER SIDEBAR — sempre visibile anche su mobile -->
@@ -370,26 +376,65 @@
 
         <!-- DASHBOARD -->
         <section id="sec-dashboard" class="section active">
+            <!-- SALUTO -->
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;" class="dash-header">
                 <div>
                     <h2 id="dashGreeting" style="font-size:22px;font-weight:700;color:var(--dark);line-height:1.2;" class="dash-title"></h2>
                     <p id="dashDate" style="color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;"></p>
                 </div>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;" class="kpi-grid">
-                <div class="kpi-card"><div class="kpi-val" id="kpiScuole">0</div><div class="kpi-lbl">Scuole</div></div>
-                <div class="kpi-card"><div class="kpi-val" id="kpiSessioni">0</div><div class="kpi-lbl">Classi</div></div>
-                <div class="kpi-card teal"><div class="kpi-val" id="kpiStudenti">0</div><div class="kpi-lbl">Studenti</div></div>
+            <!-- 4 KPI -->
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;" class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiPacchetti">0</div>
+                    <div class="kpi-lbl" id="kpiPacchettiLbl">Pacchetti</div>
+                    <div id="kpiPacchettiSub" style="font-size:9px;color:#94a3b8;margin-top:4px;font-weight:400;letter-spacing:0.01em;"></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiClassi">0</div>
+                    <div class="kpi-lbl" id="kpiClassiLbl">Classi</div>
+                </div>
+                <div class="kpi-card teal">
+                    <div class="kpi-val" id="kpiStudenti">0</div>
+                    <div class="kpi-lbl" id="kpiStudentiLbl">Studenti</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiMiglioramento">—</div>
+                    <div class="kpi-lbl">Migliorm. PRE→POST</div>
+                </div>
             </div>
-            <div class="card">
+            <!-- PIATTO SANO + DOCUMENTI -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;" class="dash-codice-gioco">
+                <div class="card" style="cursor:pointer;background:linear-gradient(135deg,var(--dark) 0%,#1a4070 100%);" onclick="apriGioco()">
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        <div style="width:48px;height:48px;background:var(--teal);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-utensils" style="font-size:20px;color:white;"></i>
+                        </div>
+                        <div>
+                            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:white;">Il Piatto Sano</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Apri il gioco interattivo</div>
+                        </div>
+                        <i class="fas fa-external-link-alt" style="margin-left:auto;color:rgba(255,255,255,0.3);font-size:12px;flex-shrink:0;"></i>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4 style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:14px;"><i class="fas fa-file-download" style="color:var(--teal);margin-right:7px;"></i>Materiali Didattici</h4>
+                    <div id="dashDocumenti"></div>
+                </div>
+            </div>
+            <!-- AVANZAMENTO PACCHETTI -->
+            <div class="card" style="margin-bottom:18px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-                    <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Avanzamento Progetti</h4>
+                    <div>
+                        <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Avanzamento Pacchetti</h4>
+                        <p id="dashAnnoLabel" style="font-size:10px;color:#94a3b8;margin-top:2px;text-transform:uppercase;letter-spacing:0.1em;"></p>
+                    </div>
                     <button class="btn-ghost no-print" onclick="showSection('scuole',document.querySelector('[onclick*=scuole]'))" style="font-size:11px;padding:7px 14px;">Vedi tutte</button>
                 </div>
                 <div id="dashScuole"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola ancora. <a href="#" onclick="openModal('nuovaScuolaModal')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p></div>
             </div>
-            <!-- GRAFICO PRE/POST — card cliccabile -->
-            <div class="card" style="margin-top:18px;cursor:pointer;" onclick="apriGrafico()" id="chartPreviewCard">
+            <!-- GRAFICO PRE/POST -->
+            <div class="card" style="cursor:pointer;" onclick="apriGrafico()" id="chartPreviewCard">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                     <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Miglioramento Pre → Post</h4>
                     <span style="background:#f0fdf9;color:var(--teal);font-size:10px;font-weight:700;padding:5px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:0.08em;display:flex;align-items:center;gap:5px;">
@@ -475,6 +520,20 @@
             <div id="reportGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;"><p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Aggiungi scuole per generare report.</p></div>
         </section>
 
+        <!-- AUTOVALUTAZIONE SCUOLA -->
+        <section id="sec-autovalutazione" class="section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:14px;">
+                <div>
+                    <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Autovalutazione Scuola</h2>
+                    <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Invia il questionario di qualità alimentare alle scuole</p>
+                </div>
+                <button class="btn-primary no-print" onclick="apriNuovaAutovalutazione()"><i class="fas fa-plus"></i>Genera Link</button>
+            </div>
+            <div id="autovalutazioneList">
+                <p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessuna autovalutazione ancora. Clicca <strong>Genera Link</strong> per iniziare.</p>
+            </div>
+        </section>
+
     </main>
 </div>
 
@@ -496,6 +555,69 @@
         <canvas id="chartPrePostBig" height="120"></canvas>
         <!-- Lista classi con score -->
         <div id="graficoLista" style="margin-top:24px;"></div>
+    </div>
+</div>
+
+<!-- MODAL NUOVA AUTOVALUTAZIONE -->
+<div class="modal-overlay" id="nuovaAutovalutazioneModal">
+    <div class="modal-box" style="max-width:480px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <h3 style="font-size:20px;font-weight:700;color:var(--dark);">Nuova Autovalutazione</h3>
+            <button onclick="closeModal('nuovaAutovalutazioneModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
+        </div>
+        <div>
+            <label class="form-label">Scuola</label>
+            <select class="form-select" id="autovScuolaSelect"></select>
+            <label class="form-label">Anno Scolastico</label>
+            <input class="form-input" id="autovAnno" readonly style="background:#f8fafc;color:#64748b;">
+            <div style="background:#f0fdf9;border-radius:12px;padding:14px;border:1px solid #a7f3d0;margin-bottom:16px;">
+                <p style="font-size:12px;color:#065f46;margin:0;"><i class="fas fa-info-circle" style="margin-right:6px;"></i>Verrà generato un link univoco da condividere con il referente della scuola. Il questionario è compilabile senza login.</p>
+            </div>
+            <button class="btn-primary" style="width:100%;justify-content:center;" onclick="creaAutovalutazione()"><i class="fas fa-link"></i>Genera Link</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL LINK AUTOVALUTAZIONE -->
+<div class="modal-overlay" id="linkAutovalutazioneModal">
+    <div class="modal-box" style="max-width:520px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3 style="font-size:18px;font-weight:700;color:var(--dark);">Link Generato</h3>
+            <button onclick="closeModal('linkAutovalutazioneModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
+        </div>
+        <div style="background:#f0fdf9;border-radius:14px;padding:16px;margin-bottom:18px;">
+            <p style="font-size:12px;color:#065f46;font-weight:600;margin-bottom:10px;"><i class="fas fa-check-circle" style="margin-right:6px;"></i>Link creato con successo! Condividilo con il referente della scuola.</p>
+            <div style="display:flex;gap:8px;">
+                <input class="form-input" id="linkAutovalutazioneUrl" readonly style="margin-bottom:0;font-size:12px;background:white;">
+                <button class="btn-primary" onclick="copiaLinkAutovalutazione()" style="white-space:nowrap;padding:11px 18px;"><i class="fas fa-copy"></i>Copia</button>
+            </div>
+        </div>
+        <p style="font-size:11px;color:#94a3b8;text-align:center;">Il questionario è anonimo e compilabile dal referente scolastico senza login.</p>
+    </div>
+</div>
+
+<!-- MODAL RISULTATI AUTOVALUTAZIONE -->
+<div class="modal-overlay" id="risultatiAutovalutazioneModal">
+    <div class="modal-box" style="max-width:640px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <div>
+                <h3 id="risultatiTitolo" style="font-size:18px;font-weight:700;color:var(--dark);margin:0;"></h3>
+                <p id="risultatiAnno" style="font-size:11px;color:#94a3b8;margin-top:3px;"></p>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div style="text-align:right;">
+                    <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--teal);" id="risultatiPunteggio">—</div>
+                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Punteggio</div>
+                </div>
+                <button onclick="closeModal('risultatiAutovalutazioneModal')" style="background:#f1f5f9;border:none;cursor:pointer;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#64748b;"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div id="risultatiDettaglio" style="max-height:350px;overflow-y:auto;margin-bottom:18px;"></div>
+        <div style="border-top:1px solid #f1f5f9;padding-top:16px;">
+            <label class="form-label">Note del Biologo</label>
+            <textarea class="form-input" id="noteBiologo" rows="3" placeholder="Aggiungi note o osservazioni..." style="resize:vertical;"></textarea>
+            <button class="btn-primary" style="width:100%;justify-content:center;" onclick="salvaNoteBiologo()"><i class="fas fa-save"></i>Salva Note</button>
+        </div>
     </div>
 </div>
 
@@ -521,6 +643,8 @@ let _authMode = 'login';
 let _editClasseId = null;
 let _openScuole = new Set();
 let _openPacchetti = new Set();
+let _autovalutazioni = [];
+let _autovCorrente = null;
 
 function toggleScuola(id){
     if(_openScuole.has(id)) _openScuole.delete(id); else _openScuole.add(id);
@@ -613,6 +737,7 @@ function showSection(id,el){
     if(id==='dashboard'){aggiornaDashboard();aggiornaGrafico();}
     if(id==='scuole') aggiornaScuole();
     if(id==='report') aggiornaReport();
+    if(id==='autovalutazione') aggiornaAutovalutazione();
 }
 
 
@@ -756,19 +881,100 @@ function aggiornaUI(){
 }
 
 function aggiornaDashboard(){
-    const studenti=appState.classi.reduce((a,c)=>a+(c.num_studenti||22),0);
-    document.getElementById('kpiScuole').textContent=appState.scuole.length;
-    document.getElementById('kpiSessioni').textContent=appState.classi.length;
-    document.getElementById('kpiStudenti').textContent=studenti;
+    const anno=annoScolasticoCorrente();
+    const annoYear=anno.split('-')[0];
+    const annoShort=annoYear+'-'+anno.slice(7); // "2025-26"
 
-    const el=document.getElementById('dashScuole');
-    if(appState.scuole.length===0){
-        el.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola ancora. <a href="#" onclick="openModal(\'nuovaScuolaModal\')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p>';
+    // Pacchetti e classi dell'anno scolastico corrente
+    const pAnno=appState.pacchetti.filter(p=>p.anno_scolastico&&String(p.anno_scolastico).split('-')[0]===annoYear);
+    const pAnnoIds=new Set(pAnno.map(p=>p.id));
+    const cAnno=appState.classi.filter(c=>pAnnoIds.has(c.pacchetto_id));
+
+    // KPI 1: pacchetti attivi / completati
+    const pCompletati=pAnno.filter(p=>{
+        const cls=appState.classi.filter(c=>c.pacchetto_id===p.id);
+        return cls.length>0&&cls.every(c=>statoClasse(c).label==='Completata');
+    }).length;
+    const pAttivi=pAnno.length-pCompletati;
+    document.getElementById('kpiPacchetti').textContent=pAnno.length;
+    document.getElementById('kpiPacchettiLbl').textContent='Pacchetti '+annoShort;
+    document.getElementById('kpiPacchettiSub').textContent=pAttivi+' attivi · '+pCompletati+' completati';
+
+    // KPI 2: classi anno corrente
+    document.getElementById('kpiClassi').textContent=cAnno.length;
+    document.getElementById('kpiClassiLbl').textContent='Classi '+annoShort;
+
+    // KPI 3: studenti anno corrente
+    const studenti=cAnno.reduce((a,c)=>a+(c.num_studenti||0),0);
+    document.getElementById('kpiStudenti').textContent=studenti;
+    document.getElementById('kpiStudentiLbl').textContent='Studenti '+annoShort;
+
+    // KPI 4: miglioramento medio PRE→POST
+    const conScore=cAnno.filter(c=>c.score_pre!=null&&c.score_post!=null);
+    const migMedia=conScore.length>0
+        ?(conScore.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/conScore.length).toFixed(1)
+        :null;
+    document.getElementById('kpiMiglioramento').textContent=migMedia!==null?(parseFloat(migMedia)>0?'+':'')+migMedia:'—';
+
+    // Label anno per sezione avanzamento
+    document.getElementById('dashAnnoLabel').textContent='Anno scolastico '+anno;
+
+    // Documenti scaricabili (link placeholder)
+    const docs=[
+        {nome:'Guida al Programma SANE',icon:'fa-book'},
+        {nome:'Schema Moduli 1-6',icon:'fa-table'},
+        {nome:'Modello Verbale Classe',icon:'fa-file-alt'},
+        {nome:'Scheda Valutazione PRE/POST',icon:'fa-clipboard-check'},
+    ];
+    document.getElementById('dashDocumenti').innerHTML=docs.map((d,i)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i<docs.length-1?'border-bottom:1px solid #f1f5f9;':''}">
+            <i class="fas ${d.icon}" style="color:var(--teal);font-size:13px;width:18px;text-align:center;flex-shrink:0;"></i>
+            <span style="flex:1;font-size:12px;color:var(--dark);font-weight:500;">${d.nome}</span>
+            <a href="#" onclick="return false;" style="color:var(--teal);font-size:10px;font-weight:700;text-decoration:none;padding:4px 10px;border:1.5px solid var(--teal);border-radius:8px;white-space:nowrap;"><i class="fas fa-download" style="margin-right:3px;"></i>Scarica</a>
+        </div>
+    `).join('');
+
+    // Avanzamento pacchetti per scuola (anno corrente)
+    const elScuole=document.getElementById('dashScuole');
+    const scuoleAnno=appState.scuole.filter(s=>pAnno.some(p=>p.scuola_id===s.id));
+    if(scuoleAnno.length===0){
+        elScuole.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola per l\'anno scolastico corrente. <a href="#" onclick="openModal(\'nuovaScuolaModal\')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p>';
     }else{
-        el.innerHTML=appState.scuole.slice(0,3).map(s=>renderScuolaRow(s)).join('');
+        elScuole.innerHTML=scuoleAnno.map(s=>{
+            const pSc=pAnno.filter(p=>p.scuola_id===s.id);
+            const clsSc=cAnno.filter(c=>pSc.some(p=>p.id===c.pacchetto_id));
+            const oreUsate=clsSc.reduce((a,c)=>a+oreClasse(c),0);
+            const oreTot=pSc.reduce((a,p)=>a+(p.ore_totali||30),0);
+            const pct=oreTot>0?Math.min(100,Math.round((oreUsate/oreTot)*100)):0;
+            const clsFinite=clsSc.filter(c=>statoClasse(c).label==='Completata').length;
+            const isCompleto=clsSc.length>0&&clsFinite===clsSc.length;
+            const badge=isCompleto
+                ?'<span class="badge badge-green">Completato</span>'
+                :'<span class="badge badge-yellow">Attivo</span>';
+            return `<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #f1f5f9;">
+                <div style="width:40px;height:40px;background:#f1f5f9;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);font-size:16px;flex-shrink:0;">${s.nome.charAt(0)}</div>
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">
+                        <span style="font-size:13px;font-weight:700;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.nome}</span>
+                        ${badge}
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;"></div></div>
+                    <div style="display:flex;justify-content:space-between;margin-top:4px;">
+                        <span style="font-size:9px;color:#94a3b8;">${oreUsate.toFixed(1)}/${oreTot}h · ${pct}%</span>
+                        <span style="font-size:9px;color:#94a3b8;">${clsFinite}/${clsSc.length} classi finite</span>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
     }
 }
 
+function annoScolasticoCorrente(){
+    const oggi=new Date();
+    const anno=oggi.getFullYear();
+    const mese=oggi.getMonth()+1;
+    return mese>=9?`${anno}-${anno+1}`:`${anno-1}-${anno}`;
+}
 function oreClasse(c){return ['m1','m2','m3','m4','m5','m6'].reduce((a,m)=>a+(parseFloat(c[m+'_ore'])||0),0);}
 function moduliCompletati(c){return ['m1','m2','m3','m4','m5','m6'].filter(m=>c[m+'_data']).length;}
 function statoClasse(c){
@@ -2046,6 +2252,229 @@ async function salvaRisposte() {
 // ============================================================
 // AVVIO — Auth state listener
 // ============================================================
+// ============================================================
+// AUTOVALUTAZIONE SCUOLA
+// ============================================================
+
+const DOMANDE_AUTOV = [
+    {area:1,testo:'La scuola dispone di un servizio mensa interno o convenzionato'},
+    {area:1,testo:'I menù sono approvati da un dietista o nutrizionista'},
+    {area:1,testo:'Sono previsti menù alternativi per allergie e intolleranze'},
+    {area:1,testo:'Viene comunicato il menù settimanale alle famiglie'},
+    {area:1,testo:'Esiste un protocollo scritto per la gestione delle allergie gravi'},
+    {area:2,testo:'Vengono svolte attività di educazione alimentare durante l\'anno'},
+    {area:2,testo:'Gli insegnanti hanno ricevuto formazione specifica sull\'alimentazione'},
+    {area:2,testo:'La scuola utilizza strumenti digitali per l\'educazione alimentare'},
+    {area:2,testo:'Sono coinvolte le famiglie nelle attività di educazione alimentare'},
+    {area:2,testo:'Esiste un progetto strutturato pluriennale sull\'alimentazione'},
+    {area:3,testo:'Sono disponibili distributori di acqua potabile'},
+    {area:3,testo:'Gli spazi per la consumazione dei pasti sono adeguati'},
+    {area:3,testo:'È garantito un tempo sufficiente per il pasto'},
+    {area:3,testo:'L\'ambiente mensa è pulito e confortevole'},
+    {area:3,testo:'Sono presenti aree verdi o orti scolastici'},
+    {area:4,testo:'Il personale di cucina è formato sulla sicurezza alimentare'},
+    {area:4,testo:'Esiste un piano HACCP aggiornato'},
+    {area:4,testo:'Vengono effettuati controlli periodici sulle forniture'},
+    {area:4,testo:'Il personale conosce i 14 allergeni principali'},
+    {area:4,testo:'Esiste un registro aggiornato degli alunni con allergie certificate'},
+    {area:5,testo:'Sono previste almeno 2 ore di educazione fisica settimanale'},
+    {area:5,testo:'Vengono promosse attività motorie durante le pause'},
+    {area:5,testo:'Esiste una collaborazione con associazioni sportive del territorio'},
+    {area:5,testo:'Viene monitorato il benessere psicofisico degli studenti'},
+    {area:5,testo:'La scuola partecipa a progetti regionali o nazionali sulla salute'},
+];
+
+const AREE_AUTOV = ['Mensa e Refezione','Educazione Alimentare','Ambiente e Spazi','Sicurezza Alimentare','Attività Fisica e Benessere'];
+
+async function aggiornaAutovalutazione(){
+    const el=document.getElementById('autovalutazioneList');
+    if(!el)return;
+    if(!appState.utente){el.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px;">Accesso richiesto.</p>';return;}
+    el.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px;"><i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i>Caricamento...</p>';
+    const {data,error}=await db.from('autovalutazioni').select('*').eq('biologo_id',appState.utente.id).order('created_at',{ascending:false});
+    if(error){showToast('Errore caricamento autovalutazioni','error');el.innerHTML='';return;}
+    _autovalutazioni=data||[];
+    renderAutovalutazioni();
+}
+
+function renderAutovalutazioni(){
+    const el=document.getElementById('autovalutazioneList');
+    if(!el)return;
+    if(_autovalutazioni.length===0){
+        el.innerHTML='<div class="card" style="text-align:center;padding:40px;"><i class="fas fa-clipboard-check" style="font-size:32px;color:#e2e8f0;margin-bottom:12px;display:block;"></i><p style="color:#94a3b8;font-size:13px;">Nessuna autovalutazione ancora.<br>Clicca <strong>Genera Link</strong> per iniziare.</p></div>';
+        return;
+    }
+    const statiCfg={attesa:{label:'In attesa',bg:'#fef3c7',col:'#92400e'},completata:{label:'Completata',bg:'#dbeafe',col:'#1e40af'},certificata:{label:'Certificata',bg:'#d1fae5',col:'#065f46'}};
+    el.innerHTML=_autovalutazioni.map(a=>{
+        const sc=appState.scuole.find(s=>s.id===a.scuola_id);
+        const nome=sc?sc.nome:'Scuola sconosciuta';
+        const st=statiCfg[a.stato]||statiCfg.attesa;
+        const sufficiente=a.punteggio_totale>=35;
+        return `<div class="card" style="margin-bottom:14px;padding:18px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
+                        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--dark);">${nome}</span>
+                        <span style="padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;background:${st.bg};color:${st.col};">${st.label}</span>
+                    </div>
+                    <div style="font-size:12px;color:#64748b;">A.S. ${a.anno_scolastico||'—'}${a.punteggio_totale!=null?' · Punteggio: <strong>'+a.punteggio_totale+'/50</strong>':''}</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                    <button class="btn-ghost" onclick="mostraLinkAutovalutazione('${a.token}')" style="font-size:11px;padding:7px 14px;"><i class="fas fa-link" style="margin-right:5px;"></i>Link</button>
+                    ${(a.stato==='completata'||a.stato==='certificata')?`<button class="btn-ghost" onclick="vediRisultatiAutovalutazione('${a.id}')" style="font-size:11px;padding:7px 14px;"><i class="fas fa-chart-bar" style="margin-right:5px;"></i>Risultati</button>`:''}
+                    ${(a.stato==='completata'||a.stato==='certificata')&&sufficiente?`<button class="btn-primary" onclick="generaCertificatoAutovalutazione('${a.id}')" style="font-size:11px;padding:8px 14px;"><i class="fas fa-award" style="margin-right:5px;"></i>Certificato</button>`:''}
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function apriNuovaAutovalutazione(){
+    const sel=document.getElementById('autovScuolaSelect');
+    sel.innerHTML=appState.scuole.length===0
+        ?'<option value="">— Aggiungi prima una scuola —</option>'
+        :appState.scuole.map(s=>`<option value="${s.id}">${s.nome}${s.comune?' · '+s.comune:''}</option>`).join('');
+    document.getElementById('autovAnno').value=annoScolasticoCorrente();
+    openModal('nuovaAutovalutazioneModal');
+}
+
+async function creaAutovalutazione(){
+    const scuolaId=document.getElementById('autovScuolaSelect').value;
+    if(!scuolaId){showToast('Seleziona una scuola','error');return;}
+    const anno=document.getElementById('autovAnno').value||annoScolasticoCorrente();
+    const token=crypto.randomUUID();
+    const {data,error}=await db.from('autovalutazioni').insert({
+        scuola_id:scuolaId,biologo_id:appState.utente.id,anno_scolastico:anno,stato:'attesa',token
+    }).select().single();
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    closeModal('nuovaAutovalutazioneModal');
+    await aggiornaAutovalutazione();
+    mostraLinkAutovalutazione(data?data.token:token);
+}
+
+function mostraLinkAutovalutazione(token){
+    const base=window.location.href.replace(/biologo\.html.*$/,'');
+    document.getElementById('linkAutovalutazioneUrl').value=base+'valutazione.html?token='+token;
+    document.getElementById('linkAutovalutazioneModal').classList.add('open');
+}
+
+function copiaLinkAutovalutazione(){
+    const inp=document.getElementById('linkAutovalutazioneUrl');
+    inp.select();
+    navigator.clipboard.writeText(inp.value).then(()=>showToast('Link copiato negli appunti!'));
+}
+
+async function vediRisultatiAutovalutazione(autovId){
+    const autov=_autovalutazioni.find(a=>a.id===autovId);
+    if(!autov)return;
+    _autovCorrente=autov;
+    const sc=appState.scuole.find(s=>s.id===autov.scuola_id);
+    document.getElementById('risultatiTitolo').textContent=sc?sc.nome:'—';
+    document.getElementById('risultatiAnno').textContent='A.S. '+(autov.anno_scolastico||'—');
+    document.getElementById('risultatiPunteggio').textContent=(autov.punteggio_totale!=null?autov.punteggio_totale:'—')+'/50';
+    document.getElementById('noteBiologo').value=autov.note_biologo||'';
+    document.getElementById('risultatiDettaglio').innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px;"><i class="fas fa-spinner fa-spin"></i></p>';
+    document.getElementById('risultatiAutovalutazioneModal').classList.add('open');
+    const {data:risposte}=await db.from('risposte_autovalutazione').select('*').eq('autovalutazione_id',autovId).order('area').order('domanda_index');
+    renderRisultatiDettaglio(risposte||[]);
+}
+
+function renderRisultatiDettaglio(risposte){
+    let html='';
+    for(let a=1;a<=5;a++){
+        const rArea=risposte.filter(r=>r.area===a);
+        const pts=rArea.reduce((s,r)=>s+(r.punteggio||0),0);
+        const pct=Math.round((pts/10)*100);
+        const domArea=DOMANDE_AUTOV.filter(d=>d.area===a);
+        html+=`<div style="margin-bottom:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-weight:700;font-size:13px;color:var(--dark);">${a}. ${AREE_AUTOV[a-1]}</span>
+                <span style="font-size:12px;font-weight:700;color:var(--teal);">${pts}/10</span>
+            </div>
+            <div class="progress-bar" style="margin-bottom:10px;"><div class="progress-fill" style="width:${pct}%;"></div></div>
+            <div style="display:flex;flex-direction:column;gap:5px;">`;
+        domArea.forEach((dom,idx)=>{
+            const r=rArea.find(x=>x.domanda_index===idx);
+            const p=r?r.punteggio:null;
+            const lbl=p===null?'N/A':p===0?'Mai':p===1?'A volte':'Sempre';
+            const col=p===2?'#065f46':p===1?'#92400e':p===0?'#b91c1c':'#94a3b8';
+            const bg=p===2?'#d1fae5':p===1?'#fef3c7':p===0?'#fee2e2':'#f1f5f9';
+            html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#f8fafc;border-radius:8px;gap:10px;">
+                <span style="font-size:11px;color:#64748b;flex:1;">${dom.testo}</span>
+                <span style="padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;background:${bg};color:${col};white-space:nowrap;">${lbl}</span>
+            </div>`;
+        });
+        html+=`</div></div>`;
+    }
+    document.getElementById('risultatiDettaglio').innerHTML=html;
+}
+
+async function salvaNoteBiologo(){
+    if(!_autovCorrente)return;
+    const note=document.getElementById('noteBiologo').value;
+    const {error}=await db.from('autovalutazioni').update({note_biologo:note}).eq('id',_autovCorrente.id);
+    if(error){showToast('Errore salvataggio note','error');return;}
+    _autovCorrente.note_biologo=note;
+    const idx=_autovalutazioni.findIndex(a=>a.id===_autovCorrente.id);
+    if(idx!==-1)_autovalutazioni[idx].note_biologo=note;
+    showToast('Note salvate!');
+}
+
+function generaCertificatoAutovalutazione(autovId){
+    const autov=_autovalutazioni.find(a=>a.id===autovId);
+    if(!autov)return;
+    const sc=appState.scuole.find(s=>s.id===autov.scuola_id);
+    const pts=autov.punteggio_totale;
+    const livello=pts>=40?'Avanzato':pts>=30?'Intermedio':'Base';
+    const dataStr=autov.compilata_il?new Date(autov.compilata_il).toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'}):new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+    const cert=window.open('','_blank');
+    cert.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Certificato SANE — ${sc?sc.nome:''}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:#f0f4f8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px;}
+        .cert{background:white;max-width:700px;width:100%;border:3px solid #00A896;border-radius:20px;padding:54px;text-align:center;box-shadow:0 8px 40px rgba(10,38,71,0.12);}
+        h1,h2,h3{font-family:'Syne',sans-serif;}
+        .header-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:44px;text-align:left;}
+        .score-big{font-family:'Syne',sans-serif;font-size:72px;font-weight:700;color:#00A896;line-height:1;}
+        .divider{border:none;border-top:1px solid #e2e8f0;margin:44px 0;}
+        .firma-row{display:flex;justify-content:space-between;text-align:left;}
+        @media print{body{background:white;padding:0;}.cert{box-shadow:none;border-radius:0;}}
+    </style></head><body>
+    <div class="cert">
+        <div class="header-row">
+            <div>
+                <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#0A2647;">S.A.N.E. Italia</div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:3px;">Sistema di Alimentazione Naturale ed Educativa</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px;">Partner Scientifico</div>
+                <div style="font-size:16px;font-weight:700;color:#0A2647;">F.N.O.B.</div>
+            </div>
+        </div>
+        <div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.18em;margin-bottom:14px;">Certificato di Qualità Alimentare Scolastica</div>
+        <h2 style="font-size:30px;color:#0A2647;margin-bottom:6px;">${sc?sc.nome:''}</h2>
+        <p style="color:#64748b;font-size:14px;margin-bottom:40px;">Anno Scolastico ${autov.anno_scolastico||'—'}${sc&&sc.comune?' &middot; '+sc.comune:''}</p>
+        <div class="score-big">${pts}/50</div>
+        <div style="font-size:22px;font-weight:700;color:#0A2647;margin:12px 0 20px;">Livello <span style="color:#00A896;">${livello}</span></div>
+        <div style="display:inline-block;background:#00A896;color:white;padding:8px 28px;border-radius:99px;font-weight:700;font-size:14px;letter-spacing:0.05em;">★ Scuola Certificata SANE Italia</div>
+        <hr class="divider">
+        <div class="firma-row">
+            <div>
+                <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Biologo Responsabile</div>
+                <div style="font-size:16px;font-weight:700;color:#0A2647;">${appState.utente?appState.utente.nome:''}</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Data Certificazione</div>
+                <div style="font-size:16px;font-weight:700;color:#0A2647;">${dataStr}</div>
+            </div>
+        </div>
+    </div>
+    <script>window.onload=function(){window.print();}<\/script>
+    </body></html>`);
+    cert.document.close();
+}
+
 db.auth.onAuthStateChange(async (event, session) => {
     if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session){
         if(appState.utente) return; // già inizializzato, evita doppia chiamata
