@@ -546,8 +546,8 @@ function aggiornaDashboard(){
                     <div style="font-size:11px;color:#94a3b8;">${x.regione} · ${x.dataIscrizione}</div>
                 </div>
                 <div style="display:flex;gap:6px;">
-                    <button class="btn-success" onclick="cambiaStato('${x.id}','active')"><i class="fas fa-check"></i></button>
-                    <button class="btn-danger" onclick="cambiaStato('${x.id}','suspended')"><i class="fas fa-times"></i></button>
+                    <button class="btn-success" data-id="${x.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check"></i></button>
+                    <button class="btn-danger" data-id="${x.id}" data-action="suspended" onclick="handleStatoBtn(this)"><i class="fas fa-times"></i></button>
                 </div>
             </div>`).join('');
     }
@@ -629,11 +629,11 @@ function aggiornaLicenze(){
                 <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">Scadenza</div>
                 <div style="font-weight:700;font-size:13px;color:var(--dark);margin-bottom:10px;">${scad}</div>
                 <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;">
-                    ${b.stato==='pending' ? `<button class="btn-success" onclick="cambiaStato('${b.id}','active')"><i class="fas fa-check" style="margin-right:4px;"></i>Approva</button>` : ''}
-                    ${b.stato==='active' ? `<button class="btn-warn" onclick="rinnovaLicenza('${b.id}')"><i class="fas fa-redo" style="margin-right:4px;"></i>Rinnova</button>` : ''}
-                    ${b.stato==='active'||b.stato==='pending' ? `<button class="btn-danger" onclick="cambiaStato('${b.id}','suspended')"><i class="fas fa-ban" style="margin-right:4px;"></i>Sospendi</button>` : ''}
-                    ${b.stato==='suspended'||b.stato==='expired' ? `<button class="btn-success" onclick="cambiaStato('${b.id}','active')"><i class="fas fa-check" style="margin-right:4px;"></i>Riattiva</button>` : ''}
-                    <button class="btn-ghost" onclick="eliminaBiologo('${b.id}')" style="font-size:10px;padding:7px 10px;"><i class="fas fa-trash"></i></button>
+                    ${b.stato==='pending' ? `<button class="btn-success" data-id="${b.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check" style="margin-right:4px;"></i>Approva</button>` : ''}
+                    ${b.stato==='active' ? `<button class="btn-warn" data-id="${b.id}" data-action="rinnova" onclick="handleStatoBtn(this)"><i class="fas fa-redo" style="margin-right:4px;"></i>Rinnova</button>` : ''}
+                    ${b.stato==='active'||b.stato==='pending' ? `<button class="btn-danger" data-id="${b.id}" data-action="suspended" onclick="handleStatoBtn(this)"><i class="fas fa-ban" style="margin-right:4px;"></i>Sospendi</button>` : ''}
+                    ${b.stato==='suspended'||b.stato==='expired' ? `<button class="btn-success" data-id="${b.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check" style="margin-right:4px;"></i>Riattiva</button>` : ''}
+                    <button class="btn-ghost" data-id="${b.id}" data-action="elimina" onclick="handleStatoBtn(this)" style="font-size:10px;padding:7px 10px;"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
         </div>`;
@@ -649,6 +649,14 @@ function badgeHtml(stato){
     };
     const [cls,icon,label] = map[stato]||['badge-suspended','question','Sconosciuto'];
     return `<span class="badge ${cls}"><i class="fas fa-${icon}"></i>${label}</span>`;
+}
+
+function handleStatoBtn(btn){
+    const id = btn.getAttribute('data-id');
+    const action = btn.getAttribute('data-action');
+    if(action === 'elimina') eliminaBiologo(id);
+    else if(action === 'rinnova') rinnovaLicenza(id);
+    else cambiaStato(id, action);
 }
 
 async function cambiaStato(id, nuovoStato){
