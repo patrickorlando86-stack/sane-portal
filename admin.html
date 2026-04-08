@@ -429,6 +429,7 @@ if (localStorage.getItem('sane_v2') !== null) { localStorage.clear(); }
 // ============================================================
 // SUPABASE
 // ============================================================
+Object.keys(localStorage).filter(k=>k.includes('sb-')||k.includes('supabase')).forEach(k=>localStorage.removeItem(k));
 const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_VxN-7lIjR3lgcG1Kv_nMrg_c0xJpY0n';
 const { createClient } = supabase;
@@ -839,35 +840,18 @@ async function avviaAdmin(user){
     }, 400);
 }
 
-// Forza login dopo 10s qualunque cosa succeda
-const _forceLogin = setTimeout(()=>{
-    if(document.getElementById('initLoader')?.style?.display==='none') return;
-    console.warn('[SANE admin] force login after 10s');
-    showLoginScreen();
-}, 10000);
-
-(async()=>{
-    const msgEl = document.getElementById('initLoaderMsg');
-    function setMsg(txt){ if(msgEl) msgEl.textContent = txt; }
-
-    try{
-        setMsg('Verifica sessione...');
-        const {data:{session}} = await db.auth.getSession();
-        if(!session||!session.user){ clearTimeout(_forceLogin); showLoginScreen(); return; }
-
-        clearTimeout(_forceLogin);
-        setMsg('Connesso — caricamento...');
-        await avviaAdmin(session.user);
-    } catch(err){
-        console.error('[SANE admin] Session check error:',err);
-        clearTimeout(_forceLogin);
-        showLoginScreen();
-    }
-})();
+// Nessuna sessione salvata → mostra login subito
+showLoginScreen();
 
 // Gestisce solo nuovi login e logout
 db.auth.onAuthStateChange(async (event, session) => {
     if(event === 'SIGNED_IN' && session){
+        // Mostra loader con messaggio mentre il DB si sveglia
+        document.getElementById('loginScreen').classList.add('hidden');
+        const el = document.getElementById('initLoader');
+        if(el){ el.style.display='flex'; el.style.opacity='1'; }
+        const msgEl = document.getElementById('initLoaderMsg');
+        if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
         await avviaAdmin(session.user);
     } else if(event === 'SIGNED_OUT'){
         window.location.href='index.html';

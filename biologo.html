@@ -640,6 +640,8 @@ if (localStorage.getItem('sane_v2') !== null) {
 // ============================================================
 // SUPABASE
 // ============================================================
+// Cancella token sessione ad ogni caricamento → login sempre richiesto (evita hang su DB paused)
+Object.keys(localStorage).filter(k=>k.includes('sb-')||k.includes('supabase')).forEach(k=>localStorage.removeItem(k));
 const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_VxN-7lIjR3lgcG1Kv_nMrg_c0xJpY0n';
 const { createClient } = supabase;
@@ -2505,41 +2507,19 @@ function hideInitLoader(){
     setTimeout(()=>{ el.style.display='none'; }, 400);
 }
 
-// Forza login dopo 10s qualunque cosa succeda
-const _forceLogin = setTimeout(()=>{
-    if(document.getElementById('initLoader')?.style?.display==='none') return;
-    console.warn('[SANE] force login after 10s');
-    hideInitLoader();
-    document.getElementById('loginScreen').classList.remove('hidden');
-}, 10000);
-
-(async()=>{
-    const msgEl = document.getElementById('initLoaderMsg');
-    function setMsg(txt){ if(msgEl) msgEl.textContent = txt; }
-
-    try{
-        setMsg('Verifica sessione...');
-        const {data:{session}} = await db.auth.getSession();
-        if(!session || !session.user){
-            clearTimeout(_forceLogin);
-            hideInitLoader();
-            document.getElementById('loginScreen').classList.remove('hidden');
-            return;
-        }
-        clearTimeout(_forceLogin);
-        setMsg('Connesso — caricamento...');
-        await inizializzaApp(session.user);
-    } catch(err){
-        console.error('[SANE] Session check error:',err);
-        clearTimeout(_forceLogin);
-        hideInitLoader();
-        document.getElementById('loginScreen').classList.remove('hidden');
-    }
-})();
+// Nessuna sessione salvata → mostra login subito
+hideInitLoader();
+document.getElementById('loginScreen').classList.remove('hidden');
 
 // Gestisce solo login successivi e logout
 db.auth.onAuthStateChange(async (event, session) => {
     if(event === 'SIGNED_IN' && session && !appState.utente){
+        // Mostra loader con messaggio di attesa mentre il DB si sveglia
+        document.getElementById('loginScreen').classList.add('hidden');
+        const el = document.getElementById('initLoader');
+        if(el){ el.style.display='flex'; el.style.opacity='1'; }
+        const msgEl = document.getElementById('initLoaderMsg');
+        if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
         try { await inizializzaApp(session.user); }
         catch(err){ console.error('Init error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
     } else if(event === 'SIGNED_OUT'){
