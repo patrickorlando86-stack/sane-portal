@@ -301,6 +301,14 @@
                 <label class="form-label">N° Studenti</label>
                 <input class="form-input" type="number" id="classeStudenti" placeholder="es. 22" min="1" max="40" style="margin-bottom:0;">
             </div>
+            <div>
+                <label class="form-label">Prof. Referente</label>
+                <input class="form-input" id="classeReferente" placeholder="es. Prof. Rossi Mario" style="margin-bottom:0;">
+            </div>
+            <div>
+                <label class="form-label">Materia / Area</label>
+                <input class="form-input" id="classeMateria" placeholder="es. Scienze" style="margin-bottom:0;">
+            </div>
         </div>
         <!-- 6 MODULI -->
         <div style="margin-top:18px;">
@@ -429,8 +437,9 @@
             <div class="nav-item" onclick="apriGioco()">
                 <i class="fas fa-gamepad"></i><span class="label">Il Piatto Sano</span>
             </div>
-            <div class="nav-item" onclick="showSection('autovalutazione',this)">
+            <div class="nav-item" onclick="showSection('autovalutazione',this)" style="position:relative;">
                 <i class="fas fa-clipboard-check"></i><span class="label">Autovalutazione Scuola</span>
+                <span id="navBadgeAutov" style="display:none;position:absolute;top:7px;right:7px;background:#ef4444;color:white;font-size:7px;font-weight:700;min-width:15px;height:15px;border-radius:99px;align-items:center;justify-content:center;padding:0 3px;line-height:1;"></span>
             </div>
             <div class="nav-item" onclick="window.location.href='mailto:info@saneitalia.it'" title="Contatta S.A.N.E.">
                 <i class="fas fa-envelope"></i><span class="label">Contatta S.A.N.E.</span>
@@ -709,6 +718,118 @@
     </div>
 </div>
 
+<!-- ONBOARDING WIZARD -->
+<div class="modal-overlay" id="onboardingModal" style="z-index:160;">
+    <div class="modal-box" style="max-width:520px;">
+
+        <!-- STEP 1: WELCOME -->
+        <div id="onbStep1">
+            <div style="text-align:center;margin-bottom:28px;">
+                <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="SANE" style="height:52px;margin:0 auto 14px;display:block;">
+                <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--dark);margin:0 0 10px;">Benvenuto in S.A.N.E. Italia 🎉</h2>
+                <p style="color:#64748b;font-size:13px;line-height:1.6;">Il tuo portale per gestire il programma di<br><strong style="color:var(--dark);">educazione alimentare nelle scuole</strong> con F.N.O.B.</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:28px;">
+                <div style="background:#f0fdf9;border-radius:14px;padding:14px;text-align:center;">
+                    <i class="fas fa-school" style="font-size:22px;color:var(--teal);margin-bottom:8px;display:block;"></i>
+                    <div style="font-size:11px;font-weight:700;color:var(--dark);">Gestisci Scuole</div>
+                    <div style="font-size:10px;color:#94a3b8;margin-top:3px;">Pacchetti e classi</div>
+                </div>
+                <div style="background:#f0fdf9;border-radius:14px;padding:14px;text-align:center;">
+                    <i class="fas fa-file-pdf" style="font-size:22px;color:var(--teal);margin-bottom:8px;display:block;"></i>
+                    <div style="font-size:11px;font-weight:700;color:var(--dark);">Report PDF</div>
+                    <div style="font-size:10px;color:#94a3b8;margin-top:3px;">Con bollino FNOB</div>
+                </div>
+                <div style="background:#f0fdf9;border-radius:14px;padding:14px;text-align:center;">
+                    <i class="fas fa-clipboard-check" style="font-size:22px;color:var(--teal);margin-bottom:8px;display:block;"></i>
+                    <div style="font-size:11px;font-weight:700;color:var(--dark);">Autovalutazione</div>
+                    <div style="font-size:10px;color:#94a3b8;margin-top:3px;">Qualità scolastica</div>
+                </div>
+            </div>
+            <div style="background:#f8fafc;border-radius:14px;padding:14px;margin-bottom:24px;border-left:3px solid var(--teal);">
+                <p style="font-size:11px;color:#64748b;margin:0;line-height:1.6;"><i class="fas fa-info-circle" style="color:var(--teal);margin-right:6px;"></i>Questo wizard ti guiderà in <strong>2 minuti</strong> per configurare il portale e aggiungere la prima scuola.</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <button onclick="onbStep(2)" class="btn-primary" style="width:100%;justify-content:center;padding:15px;font-size:13px;">
+                    <i class="fas fa-arrow-right"></i>Inizia — aggiungi la prima scuola
+                </button>
+                <button onclick="saltaOnboarding()" style="background:none;border:none;color:#94a3b8;font-size:12px;cursor:pointer;padding:6px;text-align:center;transition:color 0.2s;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#94a3b8'">
+                    Salta — conosco già il portale
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 2: AGGIUNGI SCUOLA -->
+        <div id="onbStep2" style="display:none;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <div style="background:#f1f5f9;border-radius:8px;height:4px;flex:1;overflow:hidden;"><div style="height:100%;width:50%;background:var(--teal);border-radius:8px;"></div></div>
+                <span style="font-size:10px;color:#94a3b8;white-space:nowrap;">Passo 1 di 2</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px;margin-top:18px;">
+                <div style="width:36px;height:36px;background:var(--teal);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:white;font-size:15px;flex-shrink:0;">1</div>
+                <div>
+                    <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--dark);margin:0;">Aggiungi la Prima Scuola</h3>
+                    <p style="font-size:11px;color:#94a3b8;margin:0;">Potrai aggiungerne altre in qualsiasi momento</p>
+                </div>
+            </div>
+            <label class="form-label">Nome Istituto *</label>
+            <input class="form-input" id="onbScuolaNome" placeholder="es. I.C. Carducci-Fattori">
+            <label class="form-label">Comune *</label>
+            <input class="form-input" id="onbScuolaComune" placeholder="es. Roma">
+            <label class="form-label">N° Classi previste</label>
+            <input class="form-input" type="number" id="onbScuolaClassi" placeholder="es. 5" min="1" max="30" value="3">
+            <div style="display:flex;gap:10px;margin-top:4px;">
+                <button onclick="onbStep(1)" class="btn-ghost" style="flex-shrink:0;"><i class="fas fa-arrow-left"></i></button>
+                <button onclick="onbAggiungiScuola()" class="btn-primary" style="flex:1;justify-content:center;">
+                    <i class="fas fa-plus"></i>Aggiungi Scuola
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: PROSSIMI PASSI -->
+        <div id="onbStep3" style="display:none;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <div style="background:#f1f5f9;border-radius:8px;height:4px;flex:1;overflow:hidden;"><div style="height:100%;width:100%;background:var(--teal);border-radius:8px;"></div></div>
+                <span style="font-size:10px;color:#94a3b8;white-space:nowrap;">Completato!</span>
+            </div>
+            <div style="text-align:center;margin:22px 0 24px;">
+                <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--teal),var(--teal-light));border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                    <i class="fas fa-check" style="color:white;font-size:26px;"></i>
+                </div>
+                <h3 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--dark);margin:0 0 6px;">Scuola aggiunta ✓</h3>
+                <p style="color:#64748b;font-size:12px;">Prossimi passi per iniziare subito a lavorare</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:#f8fafc;border-radius:12px;">
+                    <div style="width:28px;height:28px;background:var(--dark);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;color:var(--teal);font-size:11px;">1</div>
+                    <div>
+                        <div style="font-weight:700;font-size:12px;color:var(--dark);">Aggiungi un Pacchetto alla scuola</div>
+                        <div style="font-size:10px;color:#94a3b8;">Sezione "Le Mie Scuole" → espandi la scuola → + Pacchetto</div>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:#f8fafc;border-radius:12px;">
+                    <div style="width:28px;height:28px;background:var(--dark);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;color:var(--teal);font-size:11px;">2</div>
+                    <div>
+                        <div style="font-weight:700;font-size:12px;color:var(--dark);">Registra le classi e i moduli</div>
+                        <div style="font-size:10px;color:#94a3b8;">Espandi il pacchetto → Nuova Classe → registra date e ore</div>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:#f8fafc;border-radius:12px;">
+                    <div style="width:28px;height:28px;background:var(--dark);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;color:var(--teal);font-size:11px;">3</div>
+                    <div>
+                        <div style="font-weight:700;font-size:12px;color:var(--dark);">Invia l'autovalutazione alla scuola</div>
+                        <div style="font-size:10px;color:#94a3b8;">Sezione "Autovalutazione Scuola" → Genera Link → Invia Email</div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="saltaOnboarding()" class="btn-primary" style="width:100%;justify-content:center;padding:15px;font-size:13px;">
+                <i class="fas fa-rocket"></i>Inizia a lavorare →
+            </button>
+        </div>
+
+    </div>
+</div>
+
 <script>
 // Pulizia una-tantum del vecchio sistema di login localStorage
 if (localStorage.getItem('sane_v2') !== null) {
@@ -838,6 +959,8 @@ async function inizializzaApp(user){
             aggiornaUI();
             showToast('Bentornato, '+appState.utente.nome+'!');
             console.log('[SANE] 6. aggiornaUI OK');
+            // Onboarding per nuovi utenti
+            setTimeout(()=>mostraOnboarding(user.id), 1000);
         } catch(e){ console.error('[SANE] aggiornaUI error:',e); }
     },400);
 }
@@ -901,7 +1024,7 @@ function renderClasseDetail(c,scuola){
             </div>
             <button onclick="apriModificaClasse('${c.id}')" class="btn-ghost no-print" style="font-size:11px;padding:7px 14px;"><i class="fas fa-edit" style="margin-right:4px;"></i>Modifica dati</button>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:${c.note?'14px':'0'};">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:${(c.note||c.referente||c.materia)?'14px':'0'};">
             <div style="background:#f8fafc;border-radius:12px;padding:14px;text-align:center;">
                 <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">N° Studenti</div>
                 <div style="display:flex;align-items:center;gap:6px;justify-content:center;">
@@ -921,6 +1044,10 @@ function renderClasseDetail(c,scuola){
             </div>
         </div>
         ${c.note?`<div style="font-size:12px;color:#64748b;padding:10px 14px;background:#fafafa;border-left:3px solid var(--teal);border-radius:0 9px 9px 0;font-style:italic;">${c.note}</div>`:''}
+        ${(c.referente||c.materia)?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;${c.note?'padding-top:10px;border-top:1px solid #f1f5f9;':''}">
+            ${c.referente?`<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-user-tie" style="font-size:9px;color:var(--teal);"></i>${c.referente}</span>`:''}
+            ${c.materia?`<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-book" style="font-size:9px;color:var(--teal);"></i>${c.materia}</span>`:''}
+        </div>`:''}
     </div>
     <div class="card" style="margin-bottom:16px;">
         <h4 style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:14px;">Moduli Erogati</h4>
@@ -1466,9 +1593,12 @@ async function salvaClasse(){
     const scorePost=document.getElementById('scorePost').value;
     const pre_data=document.getElementById('classePreData').value||null;
     const post_data=document.getElementById('classePostData').value||null;
+    const referente=document.getElementById('classeReferente')?.value.trim()||null;
+    const materia=document.getElementById('classeMateria')?.value.trim()||null;
     if(!pacchetto_id||!nome_classe){showToast('Seleziona un pacchetto e inserisci il nome classe','error');return;}
     const payload={scuola_id,pacchetto_id,nome_classe,num_studenti:num_studenti?parseInt(num_studenti):null,note,pre_data,post_data,
-        score_pre:scorePre?parseFloat(scorePre):null,score_post:scorePost?parseFloat(scorePost):null};
+        score_pre:scorePre?parseFloat(scorePre):null,score_post:scorePost?parseFloat(scorePost):null,
+        referente,materia};
     for(let i=1;i<=6;i++){
         payload[`m${i}_data`]=document.getElementById(`m${i}_data`)?.value||null;
         payload[`m${i}_ore`]=document.getElementById(`m${i}_ore`)?.value?parseFloat(document.getElementById(`m${i}_ore`).value):null;
@@ -1504,7 +1634,7 @@ function resetClasseModal(){
     _editClasseId=null;
     aggiornaSelectPacchetti();
     renderModuliGrid();
-    ['classeNome','classeStudenti','classeNote','classePreData','classePostData','scorePre','scorePost'].forEach(id=>{
+    ['classeNome','classeStudenti','classeReferente','classeMateria','classeNote','classePreData','classePostData','scorePre','scorePost'].forEach(id=>{
         const el=document.getElementById(id);if(el)el.value='';
     });
     document.getElementById('classeModalTitle').textContent='Nuova Classe';
@@ -1529,6 +1659,8 @@ function apriModificaClasse(classeId){
     document.getElementById('classeNome').value=c.nome_classe||'';
     document.getElementById('classeStudenti').value=c.num_studenti||'';
     document.getElementById('classeNote').value=c.note||'';
+    document.getElementById('classeReferente').value=c.referente||'';
+    document.getElementById('classeMateria').value=c.materia||'';
     document.getElementById('classePreData').value=c.pre_data||'';
     document.getElementById('classePostData').value=c.post_data||'';
     document.getElementById('scorePre').value=c.score_pre||'';
@@ -1744,9 +1876,27 @@ async function generaReport(scuolaId, pacchettoId, classeId) {
 
     if (cls.length === 0) {
         document.getElementById('reportContent').innerHTML = `
-            <p style="text-align:center;padding:40px;color:#94a3b8;">Nessuna classe registrata.</p>
-            <div style="display:flex;justify-content:center;">
+            <div style="text-align:center;padding:40px;">
+                <i class="fas fa-inbox" style="font-size:32px;color:#e2e8f0;margin-bottom:12px;display:block;"></i>
+                <p style="color:#94a3b8;margin-bottom:16px;">Nessuna classe registrata per questa selezione.</p>
                 <button class="btn-ghost" onclick="closeModal('reportModal')">Chiudi</button>
+            </div>`;
+        return;
+    }
+    // Validazione: almeno una classe con dati (moduli o questionari)
+    const clsConDati = cls.filter(c => moduliCompletati(c) > 0 || c.pre_data || c.post_data);
+    if (clsConDati.length === 0) {
+        document.getElementById('reportContent').innerHTML = `
+            <div style="text-align:center;padding:40px;">
+                <i class="fas fa-exclamation-triangle" style="font-size:32px;color:#f59e0b;margin-bottom:12px;display:block;"></i>
+                <p style="color:#64748b;font-weight:700;margin-bottom:8px;">Nessun dato disponibile</p>
+                <p style="color:#94a3b8;font-size:12px;line-height:1.5;margin-bottom:20px;">Registra almeno un modulo o questionario nelle classi<br>prima di generare il report.</p>
+                <div style="display:flex;gap:10px;justify-content:center;">
+                    <button class="btn-ghost" onclick="closeModal('reportModal')">Chiudi</button>
+                    <button class="btn-primary" onclick="closeModal('reportModal');showSection('scuole',document.querySelector('[onclick*=scuole]'))">
+                        <i class="fas fa-school"></i>Vai alle Scuole
+                    </button>
+                </div>
             </div>`;
         return;
     }
@@ -2533,9 +2683,21 @@ async function aggiornaAutovalutazione(){
     if(!el)return;
     if(!appState.utente){el.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px;">Accesso richiesto.</p>';return;}
     el.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px;"><i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i>Caricamento...</p>';
+    // Salva stati precedenti per rilevare nuove completate
+    const vecchiStati={};
+    _autovalutazioni.forEach(a=>{vecchiStati[a.id]=a.stato;});
     const {data,error}=await db.from('autovalutazioni').select('*').eq('biologo_id',appState.utente.id).order('created_at',{ascending:false});
     if(error){showToast('Errore caricamento autovalutazioni','error');el.innerHTML='';return;}
     _autovalutazioni=data||[];
+    // Notifica nuove completate (solo se avevo già dati precedenti)
+    if(Object.keys(vecchiStati).length>0){
+        _autovalutazioni.forEach(a=>{
+            if(vecchiStati[a.id]==='attesa'&&a.stato==='completata'){
+                const sc=appState.scuole.find(s=>s.id===a.scuola_id);
+                setTimeout(()=>showToast('🎉 '+(sc?.nome||'La scuola')+' ha completato l\'autovalutazione!'),300);
+            }
+        });
+    }
     renderAutovalutazioni();
 }
 
@@ -2551,6 +2713,8 @@ function renderAutovalutazioni(){
         completata: {label:'Completata',  bg:'#dbeafe', col:'#1e40af',icon:'fa-check-circle'},
         certificata:{label:'Certificata', bg:'#d1fae5', col:'#065f46',icon:'fa-award'}
     };
+    // Prima aggiorna i badge della nav
+    setTimeout(aggiornaBadgeNav, 0);
     el.innerHTML=_autovalutazioni.map(a=>{
         const sc=appState.scuole.find(s=>s.id===a.scuola_id);
         const nome=sc?sc.nome:'Scuola sconosciuta';
@@ -2592,7 +2756,8 @@ function renderAutovalutazioni(){
                 </div>
                 <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
                     <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-                        <button onclick="mostraLinkAutovalutazione('${a.token}')" style="background:#f8fafc;border:1.5px solid #e2e8f0;color:#475569;border-radius:8px;font-size:11px;font-weight:600;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;"><i class="fas fa-link"></i>Link</button>
+                        <button onclick="mostraLinkAutovalutazione('${a.token}')" style="background:#f8fafc;border:1.5px solid #e2e8f0;color:#475569;border-radius:8px;font-size:11px;font-weight:600;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;" title="Copia link da condividere"><i class="fas fa-link"></i>Link</button>
+                        <button onclick="inviaEmailScuola('${a.id}')" style="background:#f8fafc;border:1.5px solid #e2e8f0;color:#475569;border-radius:8px;font-size:11px;font-weight:600;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;" title="Prepara email da inviare alla scuola"><i class="fas fa-envelope"></i>Email</button>
                         ${(a.stato==='completata'||a.stato==='certificata')?`<button onclick="vediRisultatiAutovalutazione('${a.id}')" style="background:#f8fafc;border:1.5px solid #e2e8f0;color:#475569;border-radius:8px;font-size:11px;font-weight:600;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;"><i class="fas fa-chart-bar"></i>Risultati</button>`:''}
                         ${(a.stato==='completata'||a.stato==='certificata')&&sufficiente?`<button onclick="generaCertificatoAutovalutazione('${a.id}')" style="background:var(--teal);border:none;color:white;border-radius:8px;font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;"><i class="fas fa-award"></i>Certificato</button>`:''}
                     </div>
@@ -2664,6 +2829,39 @@ async function eliminaAutovalutazione(id){
     _autovalutazioni=_autovalutazioni.filter(x=>x.id!==id);
     renderAutovalutazioni();
     showToast('Autovalutazione eliminata');
+}
+
+function inviaEmailScuola(autovId){
+    const autov=_autovalutazioni.find(a=>a.id===autovId);
+    if(!autov)return;
+    const sc=appState.scuole.find(s=>s.id===autov.scuola_id);
+    const base=window.location.href.replace(/biologo\.html.*$/,'');
+    const link=base+'valutazione.html?token='+autov.token;
+    const nomeScuola=sc?sc.nome:'la vostra scuola';
+    const nomeBiologo=appState.utente?.nome||'Il Biologo Responsabile';
+    const anno=autov.anno_scolastico||annoScolasticoCorrente();
+    const subject=`Autovalutazione Alimentare S.A.N.E. — ${nomeScuola} — A.S. ${anno}`;
+    const body=`Gentile referente scolastico,\n\n`+
+        `sono ${nomeBiologo}, biologo nutrizionista certificato F.N.O.B. responsabile del programma S.A.N.E. Italia presso la vostra scuola.\n\n`+
+        `Le invio il link per completare il questionario di autovalutazione alimentare per l'Anno Scolastico ${anno}.\n\n`+
+        `Il questionario richiede circa 10 minuti ed è compilabile senza registrazione.\n\n`+
+        `🔗 Link autovalutazione:\n${link}\n\n`+
+        `I risultati saranno analizzati e le sarà trasmesso un report dettagliato con eventuali raccomandazioni per migliorare la qualità alimentare scolastica.\n\n`+
+        `Per qualsiasi informazione rimango a disposizione.\n\n`+
+        `Cordiali saluti,\n${nomeBiologo}\nBiologo Nutrizionista certificato F.N.O.B. — Programma S.A.N.E. Italia`;
+    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+}
+
+function aggiornaBadgeNav(){
+    const badge=document.getElementById('navBadgeAutov');
+    if(!badge) return;
+    const inAttesa=_autovalutazioni.filter(a=>a.stato==='attesa').length;
+    if(inAttesa>0){
+        badge.textContent=inAttesa>9?'9+':String(inAttesa);
+        badge.style.display='flex';
+    } else {
+        badge.style.display='none';
+    }
 }
 
 function mostraLinkAutovalutazione(token){
@@ -2787,6 +2985,44 @@ function generaCertificatoAutovalutazione(autovId){
     <script>window.onload=function(){window.print();}<\/script>
     </body></html>`);
     cert.document.close();
+}
+
+// ============================================================
+// ONBOARDING WIZARD
+// ============================================================
+function mostraOnboarding(userId){
+    const key='sane_onboarded_'+userId;
+    if(localStorage.getItem(key)) return; // Già visto
+    if(appState.scuole.length>0) return;  // Ha già scuole
+    onbStep(1);
+    document.getElementById('onboardingModal').classList.add('open');
+}
+
+function onbStep(n){
+    [1,2,3].forEach(i=>{
+        const el=document.getElementById('onbStep'+i);
+        if(el) el.style.display=(n===i)?'block':'none';
+    });
+}
+
+function saltaOnboarding(){
+    if(appState.utente?.id) localStorage.setItem('sane_onboarded_'+appState.utente.id,'1');
+    closeModal('onboardingModal');
+    // Vai direttamente alle scuole se step 1 o 2
+    if(appState.scuole.length===0) showSection('scuole',document.querySelector('.nav-item[onclick*="scuole"]'));
+}
+
+async function onbAggiungiScuola(){
+    const nome=document.getElementById('onbScuolaNome')?.value.trim();
+    const comune=document.getElementById('onbScuolaComune')?.value.trim();
+    const classi=parseInt(document.getElementById('onbScuolaClassi')?.value)||3;
+    if(!nome||!comune){showToast('Compila nome e comune della scuola','error');return;}
+    const {data:{user}}=await db.auth.getUser();
+    const {data,error}=await db.from('scuole').insert({biologo_id:user.id,nome,comune,classi}).select().single();
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    appState.scuole.push(data);
+    aggiornaScuole();aggiornaDashboard();
+    onbStep(3);
 }
 
 function hideInitLoader(){
