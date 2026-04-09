@@ -650,7 +650,12 @@
             <label class="form-label">Scuola</label>
             <select class="form-select" id="autovScuolaSelect"></select>
             <label class="form-label">Anno Scolastico</label>
-            <input class="form-input" id="autovAnno" readonly style="background:#f8fafc;color:#64748b;">
+            <input class="form-input" id="autovAnno" placeholder="es. 2025/2026">
+            <!-- warning duplicato -->
+            <div id="autovDuplicatoWarn" style="display:none;background:#fef3c7;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#92400e;align-items:center;gap:8px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Esiste già un'autovalutazione per questa scuola in questo anno. Puoi comunque crearne una nuova.</span>
+            </div>
             <div style="background:#f0fdf9;border-radius:12px;padding:14px;border:1px solid #a7f3d0;margin-bottom:16px;">
                 <p style="font-size:12px;color:#065f46;margin:0;"><i class="fas fa-info-circle" style="margin-right:6px;"></i>Verrà generato un link univoco da condividere con il referente della scuola. Il questionario è compilabile senza login.</p>
             </div>
@@ -2433,28 +2438,60 @@ function renderAutovalutazioni(){
     const el=document.getElementById('autovalutazioneList');
     if(!el)return;
     if(_autovalutazioni.length===0){
-        el.innerHTML='<div class="card" style="text-align:center;padding:40px;"><i class="fas fa-clipboard-check" style="font-size:32px;color:#e2e8f0;margin-bottom:12px;display:block;"></i><p style="color:#94a3b8;font-size:13px;">Nessuna autovalutazione ancora.<br>Clicca <strong>Genera Link</strong> per iniziare.</p></div>';
+        el.innerHTML='<div class="card" style="text-align:center;padding:40px;"><i class="fas fa-clipboard-check" style="font-size:32px;color:#e2e8f0;margin-bottom:12px;display:block;"></i><p style="color:#94a3b8;font-size:13px;">Nessuna autovalutazione ancora.<br>Clicca <strong>+ Genera Link</strong> per iniziare.</p></div>';
         return;
     }
-    const statiCfg={attesa:{label:'In attesa',bg:'#fef3c7',col:'#92400e'},completata:{label:'Completata',bg:'#dbeafe',col:'#1e40af'},certificata:{label:'Certificata',bg:'#d1fae5',col:'#065f46'}};
+    const statiCfg={
+        attesa:     {label:'In attesa',   bg:'#fef3c7',col:'#92400e',icon:'fa-clock'},
+        completata: {label:'Completata',  bg:'#dbeafe', col:'#1e40af',icon:'fa-check-circle'},
+        certificata:{label:'Certificata', bg:'#d1fae5', col:'#065f46',icon:'fa-award'}
+    };
     el.innerHTML=_autovalutazioni.map(a=>{
         const sc=appState.scuole.find(s=>s.id===a.scuola_id);
         const nome=sc?sc.nome:'Scuola sconosciuta';
+        const comune=sc&&sc.comune?` · ${sc.comune}`:'';
         const st=statiCfg[a.stato]||statiCfg.attesa;
         const sufficiente=a.punteggio_totale>=35;
-        return `<div class="card" style="margin-bottom:14px;padding:18px;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
-                <div style="flex:1;min-width:0;">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
-                        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--dark);">${nome}</span>
-                        <span style="padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;background:${st.bg};color:${st.col};">${st.label}</span>
-                    </div>
-                    <div style="font-size:12px;color:#64748b;">A.S. ${a.anno_scolastico||'—'}${a.punteggio_totale!=null?' · Punteggio: <strong>'+a.punteggio_totale+'/50</strong>':''}</div>
+        const hasPunteggio=a.punteggio_totale!=null;
+        const pct=hasPunteggio?Math.round((a.punteggio_totale/50)*100):null;
+        const dataComp=a.compilata_il?new Date(a.compilata_il).toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'}):null;
+        const punteggioBar=hasPunteggio?`
+            <div style="margin-top:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                    <span style="font-size:11px;color:#64748b;">Punteggio</span>
+                    <span style="font-size:13px;font-weight:800;color:${sufficiente?'var(--teal)':'#f59e0b'};font-family:'Syne',sans-serif;">${a.punteggio_totale}<span style="font-size:10px;font-weight:400;color:#94a3b8;">/50</span></span>
                 </div>
-                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                    <button class="btn-ghost" onclick="mostraLinkAutovalutazione('${a.token}')" style="font-size:11px;padding:7px 14px;"><i class="fas fa-link" style="margin-right:5px;"></i>Link</button>
-                    ${(a.stato==='completata'||a.stato==='certificata')?`<button class="btn-ghost" onclick="vediRisultatiAutovalutazione('${a.id}')" style="font-size:11px;padding:7px 14px;"><i class="fas fa-chart-bar" style="margin-right:5px;"></i>Risultati</button>`:''}
-                    ${(a.stato==='completata'||a.stato==='certificata')&&sufficiente?`<button class="btn-primary" onclick="generaCertificatoAutovalutazione('${a.id}')" style="font-size:11px;padding:8px 14px;"><i class="fas fa-award" style="margin-right:5px;"></i>Certificato</button>`:''}
+                <div style="height:6px;background:#e2e8f0;border-radius:99px;overflow:hidden;">
+                    <div style="height:100%;width:${pct}%;background:${sufficiente?'var(--teal)':'#f59e0b'};border-radius:99px;transition:width 0.6s;"></div>
+                </div>
+                ${dataComp?`<div style="font-size:10px;color:#94a3b8;margin-top:4px;"><i class="fas fa-calendar-check" style="margin-right:3px;"></i>Compilata il ${dataComp}</div>`:''}
+            </div>`:'';
+        const attesaInfo=a.stato==='attesa'?`
+            <div style="margin-top:8px;font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:5px;">
+                <i class="fas fa-share-alt" style="color:#cbd5e1;"></i>
+                <span>Link inviato — in attesa di compilazione da parte della scuola</span>
+            </div>`:'';
+        return `<div class="card" style="margin-bottom:14px;padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+                        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--dark);">${nome}</span>
+                        <span style="font-size:10px;color:#94a3b8;">${comune}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                        <span style="background:#f1f5f9;color:#475569;border-radius:7px;padding:2px 9px;font-size:11px;font-weight:700;">A.S. ${a.anno_scolastico||'—'}</span>
+                        <span style="padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;background:${st.bg};color:${st.col};display:flex;align-items:center;gap:4px;"><i class="fas ${st.icon}" style="font-size:9px;"></i>${st.label}</span>
+                    </div>
+                    ${punteggioBar}
+                    ${attesaInfo}
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+                        <button onclick="mostraLinkAutovalutazione('${a.token}')" style="background:#f8fafc;border:1.5px solid #e2e8f0;color:#475569;border-radius:8px;font-size:11px;font-weight:600;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;"><i class="fas fa-link"></i>Link</button>
+                        ${(a.stato==='completata'||a.stato==='certificata')?`<button onclick="vediRisultatiAutovalutazione('${a.id}')" style="background:#f8fafc;border:1.5px solid #e2e8f0;color:#475569;border-radius:8px;font-size:11px;font-weight:600;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;"><i class="fas fa-chart-bar"></i>Risultati</button>`:''}
+                        ${(a.stato==='completata'||a.stato==='certificata')&&sufficiente?`<button onclick="generaCertificatoAutovalutazione('${a.id}')" style="background:var(--teal);border:none;color:white;border-radius:8px;font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;"><i class="fas fa-award"></i>Certificato</button>`:''}
+                    </div>
+                    <button onclick="eliminaAutovalutazione('${a.id}')" style="background:none;border:none;color:#fca5a5;font-size:11px;font-weight:600;cursor:pointer;padding:4px 6px;display:flex;align-items:center;gap:4px;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#fca5a5'"><i class="fas fa-trash-alt"></i> Elimina</button>
                 </div>
             </div>
         </div>`;
@@ -2463,17 +2500,44 @@ function renderAutovalutazioni(){
 
 function apriNuovaAutovalutazione(){
     const sel=document.getElementById('autovScuolaSelect');
-    sel.innerHTML=appState.scuole.length===0
-        ?'<option value="">— Aggiungi prima una scuola —</option>'
-        :appState.scuole.map(s=>`<option value="${s.id}">${s.nome}${s.comune?' · '+s.comune:''}</option>`).join('');
-    document.getElementById('autovAnno').value=annoScolasticoCorrente();
+    if(appState.scuole.length===0){
+        sel.innerHTML='<option value="">— Aggiungi prima una scuola —</option>';
+    } else {
+        const anno=annoScolasticoCorrente();
+        // evidenzia scuole che hanno già autovalutazione per l'anno corrente
+        sel.innerHTML=appState.scuole.map(s=>{
+            const hasDup=_autovalutazioni.some(a=>a.scuola_id===s.id&&a.anno_scolastico===anno);
+            return `<option value="${s.id}" ${hasDup?'style="color:#f59e0b;"':''}>${s.nome}${s.comune?' · '+s.comune:''}${hasDup?' (già presente)':''}</option>`;
+        }).join('');
+    }
+    const annoEl=document.getElementById('autovAnno');
+    annoEl.value=annoScolasticoCorrente();
+    annoEl.removeAttribute('readonly');
+    annoEl.style.background='';
+    annoEl.style.color='';
+    document.getElementById('autovDuplicatoWarn').style.display='none';
+    sel.onchange=()=>controllaAutovDuplicato();
+    annoEl.oninput=()=>controllaAutovDuplicato();
     openModal('nuovaAutovalutazioneModal');
+}
+
+function controllaAutovDuplicato(){
+    const scuolaId=document.getElementById('autovScuolaSelect').value;
+    const anno=document.getElementById('autovAnno').value;
+    const warn=document.getElementById('autovDuplicatoWarn');
+    const dup=_autovalutazioni.find(a=>a.scuola_id===scuolaId&&a.anno_scolastico===anno);
+    warn.style.display=dup?'flex':'none';
 }
 
 async function creaAutovalutazione(){
     const scuolaId=document.getElementById('autovScuolaSelect').value;
     if(!scuolaId){showToast('Seleziona una scuola','error');return;}
     const anno=document.getElementById('autovAnno').value||annoScolasticoCorrente();
+    // Controllo duplicato
+    const dup=_autovalutazioni.find(a=>a.scuola_id===scuolaId&&a.anno_scolastico===anno);
+    if(dup){
+        if(!confirm(`Esiste già un'autovalutazione per questa scuola nell'A.S. ${anno}.\nCrearne una nuova comunque?`)) return;
+    }
     const token=crypto.randomUUID();
     const {data,error}=await db.from('autovalutazioni').insert({
         scuola_id:scuolaId,biologo_id:appState.utente.id,anno_scolastico:anno,stato:'attesa',token
@@ -2482,6 +2546,19 @@ async function creaAutovalutazione(){
     closeModal('nuovaAutovalutazioneModal');
     await aggiornaAutovalutazione();
     mostraLinkAutovalutazione(data?data.token:token);
+}
+
+async function eliminaAutovalutazione(id){
+    const a=_autovalutazioni.find(x=>x.id===id);
+    if(!a)return;
+    const sc=appState.scuole.find(s=>s.id===a.scuola_id);
+    const nome=sc?sc.nome:'questa autovalutazione';
+    if(!confirm(`Eliminare l'autovalutazione di "${nome}" (A.S. ${a.anno_scolastico||'—'})?\nI dati non potranno essere recuperati.`))return;
+    const {error}=await db.from('autovalutazioni').delete().eq('id',id);
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    _autovalutazioni=_autovalutazioni.filter(x=>x.id!==id);
+    renderAutovalutazioni();
+    showToast('Autovalutazione eliminata');
 }
 
 function mostraLinkAutovalutazione(token){
