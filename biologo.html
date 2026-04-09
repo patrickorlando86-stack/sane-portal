@@ -1514,93 +1514,111 @@ async function eliminaClasse(classeId){
 function aggiornaReport(){
     const grid=document.getElementById('reportGrid');
     if(!grid) return;
-    if(appState.pacchetti.length===0){
+    // Filtra scuole che hanno almeno un pacchetto
+    const scuoleConPacchetti=appState.scuole.filter(s=>appState.pacchetti.some(p=>p.scuola_id===s.id));
+    if(scuoleConPacchetti.length===0){
         grid.innerHTML='<p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Aggiungi pacchetti alle scuole per generare report.</p>';
         return;
     }
-    grid.innerHTML=appState.pacchetti.map(p=>{
-        const s=appState.scuole.find(sc=>sc.id===p.scuola_id)||{nome:'?',comune:''};
-        const cls=appState.classi.filter(c=>c.pacchetto_id===p.id||(c.scuola_id===p.scuola_id&&!c.pacchetto_id));
-        const conScore=cls.filter(c=>c.score_pre!=null&&c.score_post!=null);
-        const mig=conScore.length>0?(conScore.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/conScore.length).toFixed(1):null;
-        const anno=p.anno_scolastico?` · ${p.anno_scolastico}`:'';
-        const dataAcquisto=p.data_acquisto?new Date(p.data_acquisto).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'}):
-            p.created_at?new Date(p.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'}):'—';
-        const tipo=p.tipo||'pagamento';
-        const isGrat=tipo==='gratuito';
-        const tipoLabel=isGrat?'Gratuito':'A Pagamento';
-        const bc=isGrat?'badge-green':'badge-blue';
-        const oreUsate=cls.reduce((a,c)=>a+oreClasse(c),0);
-        const oreTot=p.ore_totali||0;
-        const pct=oreTot>0?Math.min(100,Math.round((oreUsate/oreTot)*100)):0;
+    grid.innerHTML=scuoleConPacchetti.map(s=>{
+        const pacchetti=appState.pacchetti.filter(p=>p.scuola_id===s.id);
+        const tutteClassi=appState.classi.filter(c=>c.scuola_id===s.id);
+        const totStudenti=tutteClassi.reduce((a,c)=>a+(c.num_studenti||0),0);
+        const conScore=tutteClassi.filter(c=>c.score_pre!=null&&c.score_post!=null);
+        const migScuola=conScore.length>0?(conScore.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/conScore.length).toFixed(1):null;
 
-        const isOpenDett = _openReportDettagli.has(p.id);
-        const classiRows=cls.map(c=>{
-            const preOk=!!c.pre_data; const postOk=!!c.post_data;
-            const haS=c.score_pre!=null&&c.score_post!=null;
-            const migC=haS?(parseFloat(c.score_post)-parseFloat(c.score_pre)).toFixed(1):null;
-            const migPos=migC!==null&&parseFloat(migC)>=0;
-            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 11px;background:#f8fafc;border-radius:10px;margin-bottom:6px;gap:8px;">
-                <div style="min-width:0;flex:1;">
-                    <div style="font-weight:700;font-size:12px;color:var(--dark);">${c.nome_classe}</div>
-                    <div style="font-size:10px;color:#94a3b8;margin-top:1px;">${c.num_studenti||'—'} studenti · ${oreClasse(c).toFixed(1)}h</div>
+        // --- Pacchetti espandibili ---
+        const pacchettiHtml=pacchetti.map(p=>{
+            const isOpen=_openReportDettagli.has(p.id);
+            const cls=appState.classi.filter(c=>c.pacchetto_id===p.id||(c.scuola_id===s.id&&!c.pacchetto_id&&pacchetti.length===1));
+            const isGrat=(p.tipo||'pagamento')==='gratuito';
+            const tipoLabel=isGrat?'Gratuito':'A Pagamento';
+            const oreUsate=cls.reduce((a,c)=>a+oreClasse(c),0);
+            const oreTot=p.ore_totali||0;
+            const pct=oreTot>0?Math.min(100,Math.round((oreUsate/oreTot)*100)):0;
+            const anno=p.anno_scolastico?p.anno_scolastico:'';
+
+            const classiRows=cls.length===0
+                ?'<p style="font-size:11px;color:#94a3b8;padding:8px 4px;text-align:center;">Nessuna classe associata</p>'
+                :cls.map(c=>{
+                    const preOk=!!c.pre_data; const postOk=!!c.post_data;
+                    const haS=c.score_pre!=null&&c.score_post!=null;
+                    const migC=haS?(parseFloat(c.score_post)-parseFloat(c.score_pre)).toFixed(1):null;
+                    const migPos=migC!==null&&parseFloat(migC)>=0;
+                    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:white;border:1px solid #f1f5f9;border-radius:9px;margin-bottom:5px;gap:8px;">
+                        <div style="min-width:0;flex:1;">
+                            <div style="font-weight:700;font-size:12px;color:var(--dark);">${c.nome_classe}</div>
+                            <div style="font-size:10px;color:#94a3b8;margin-top:1px;">${c.num_studenti||'—'} studenti · ${oreClasse(c).toFixed(1)}h</div>
+                        </div>
+                        <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;">
+                            <span style="font-size:8px;font-weight:700;padding:2px 5px;border-radius:5px;background:${preOk?'#d1fae5':'#f1f5f9'};color:${preOk?'#065f46':'#94a3b8'};">PRE${preOk?' ✓':''}</span>
+                            <span style="font-size:8px;font-weight:700;padding:2px 5px;border-radius:5px;background:${postOk?'#d1fae5':'#f1f5f9'};color:${postOk?'#065f46':'#94a3b8'};">POST${postOk?' ✓':''}</span>
+                            ${migC!==null?`<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;background:${migPos?'#d1fae5':'#fee2e2'};color:${migPos?'#065f46':'#991b1b'};">${migPos?'+':''}${migC}</span>`:''}
+                            <button onclick="generaReport(null,null,'${c.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border:none;border-radius:7px;background:var(--teal);color:white;font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;" title="Report classe">
+                                <i class="fas fa-file-pdf"></i><span>PDF</span>
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+
+            return `<div style="border:1.5px solid ${isOpen?'var(--teal)':'#e2e8f0'};border-radius:12px;margin-bottom:8px;overflow:hidden;">
+                <!-- Header pacchetto — cliccabile -->
+                <div onclick="toggleReportDettaglio('${p.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:${isOpen?'#f0fdf9':'#f8fafc'};cursor:pointer;touch-action:manipulation;user-select:none;gap:10px;">
+                    <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
+                        <i class="fas ${isGrat?'fa-gift':'fa-handshake'}" style="color:${isOpen?'var(--teal)':'#94a3b8'};font-size:11px;flex-shrink:0;"></i>
+                        <span style="font-size:12px;font-weight:700;color:var(--dark);">${tipoLabel}${p.prezzo&&!isGrat?' · €'+p.prezzo.toLocaleString('it-IT'):''}</span>
+                        ${anno?`<span style="font-size:10px;color:#94a3b8;">${anno}</span>`:''}
+                        ${oreTot>0?`<span style="font-size:10px;color:#94a3b8;">${oreUsate.toFixed(1)}/${oreTot}h (${pct}%)</span>`:''}
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+                        <span style="font-size:10px;color:#64748b;background:#e2e8f0;border-radius:6px;padding:2px 8px;font-weight:700;">${cls.length} cl.</span>
+                        <button onclick="event.stopPropagation();generaReport('${s.id}','${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border:none;border-radius:7px;background:var(--teal);color:white;font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <i class="fas fa-chevron-down" style="font-size:10px;color:#94a3b8;transition:transform 0.2s;transform:${isOpen?'rotate(180deg)':'rotate(0)'}"></i>
+                    </div>
                 </div>
-                <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;">
-                    <span style="font-size:8px;font-weight:700;padding:3px 6px;border-radius:5px;background:${preOk?'#d1fae5':'#f1f5f9'};color:${preOk?'#065f46':'#94a3b8'};">PRE${preOk?' ✓':''}</span>
-                    <span style="font-size:8px;font-weight:700;padding:3px 6px;border-radius:5px;background:${postOk?'#d1fae5':'#f1f5f9'};color:${postOk?'#065f46':'#94a3b8'};">POST${postOk?' ✓':''}</span>
-                    ${migC!==null?`<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:${migPos?'#d1fae5':'#fee2e2'};color:${migPos?'#065f46':'#991b1b'};">${migPos?'+':''}${migC}</span>`:''}
-                    <button onclick="generaReport(null,null,'${c.id}')" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:none;border-radius:8px;background:var(--teal);color:white;font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;" title="Report classe">
-                        <i class="fas fa-file-pdf"></i><span>PDF</span>
-                    </button>
-                </div>
+                <!-- Barra progresso ore -->
+                ${oreTot>0?`<div style="height:3px;background:#e2e8f0;"><div style="height:100%;width:${pct}%;background:var(--teal);transition:width 0.4s;"></div></div>`:''}
+                <!-- Classi (espanse) -->
+                ${isOpen?`<div style="padding:10px 12px;background:white;">${classiRows}</div>`:''}
             </div>`;
-        }).join('')||'<p style="font-size:11px;color:#94a3b8;padding:6px 0;text-align:center;">Nessuna classe</p>';
+        }).join('');
 
-        return `<div class="card">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        return `<div class="card" style="grid-column: span 1;">
+            <!-- HEADER SCUOLA -->
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
                 <div style="width:46px;height:46px;background:var(--dark);border-radius:13px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:18px;flex-shrink:0;">${s.nome.charAt(0)}</div>
                 <div>
                     <h4 style="font-weight:700;color:var(--dark);font-size:14px;margin:0 0 2px;">${s.nome}</h4>
-                    <p style="color:#64748b;font-size:11px;margin:0;">${s.comune||''}${anno}</p>
+                    <p style="color:#64748b;font-size:11px;margin:0;">${s.comune||''}</p>
                 </div>
             </div>
-            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:11px;padding:10px 12px;margin-bottom:12px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <i class="fas fa-box" style="color:var(--teal);font-size:10px;"></i>
-                        <span style="font-size:11px;font-weight:700;color:var(--dark);">Pacchetto ${tipoLabel}${p.prezzo&&!isGrat?' · €'+p.prezzo.toLocaleString('it-IT'):''}</span>
-                    </div>
-                    <span class="badge ${bc}">${tipoLabel}</span>
-                </div>
-                <div style="font-size:10px;color:#94a3b8;">${dataAcquisto}${oreTot>0?' · '+oreUsate.toFixed(1)+'/'+oreTot+'h ('+pct+'%)':''}</div>
-                ${oreTot>0?`<div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${pct}%"></div></div>`:''}
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr${mig?' 1fr':''};gap:8px;margin-bottom:12px;">
+            <!-- KPI scuola -->
+            <div style="display:grid;grid-template-columns:repeat(${migScuola?4:3},1fr);gap:8px;margin-bottom:16px;">
                 <div style="background:#f8fafc;border-radius:10px;padding:10px;text-align:center;">
-                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--dark);">${cls.length}</div>
-                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Classi</div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--dark);">${pacchetti.length}</div>
+                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.07em;">Pacchetti</div>
                 </div>
                 <div style="background:#f8fafc;border-radius:10px;padding:10px;text-align:center;">
-                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--dark);">${cls.reduce((a,c)=>a+(c.num_studenti||0),0)}</div>
-                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Studenti</div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--dark);">${tutteClassi.length}</div>
+                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.07em;">Classi</div>
                 </div>
-                ${mig?`<div style="background:#f0fdf9;border-radius:10px;padding:10px;text-align:center;">
-                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--teal);">+${mig}</div>
-                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Media</div>
+                <div style="background:#f8fafc;border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--dark);">${totStudenti}</div>
+                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.07em;">Studenti</div>
+                </div>
+                ${migScuola?`<div style="background:#f0fdf9;border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--teal);">+${migScuola}</div>
+                    <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.07em;">Media</div>
                 </div>`:''}
             </div>
-            <div style="margin-bottom:12px;">
-                <div onclick="toggleReportDettaglio('${p.id}')" style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:${isOpenDett?'#f0fdf9':'#f8fafc'};border:1.5px solid ${isOpenDett?'var(--teal)':'#e2e8f0'};border-radius:10px;cursor:pointer;touch-action:manipulation;user-select:none;margin-bottom:${isOpenDett?'8px':'0'};">
-                    <div style="display:flex;align-items:center;gap:7px;">
-                        <i class="fas fa-list" style="color:${isOpenDett?'var(--teal)':'#94a3b8'};font-size:11px;"></i>
-                        <span style="font-size:11px;font-weight:700;color:${isOpenDett?'var(--teal)':'#64748b'};text-transform:uppercase;letter-spacing:0.08em;">Dettaglio Classi</span>
-                        <span style="font-size:10px;color:#94a3b8;font-weight:400;">(${cls.length})</span>
-                    </div>
-                    <i class="fas fa-chevron-down" style="font-size:10px;color:#94a3b8;transition:transform 0.2s;transform:${isOpenDett?'rotate(180deg)':'rotate(0deg)'}"></i>
-                </div>
-                ${isOpenDett?classiRows:''}
-            </div>
-            <button class="btn-dark no-print" style="width:100%;font-size:11px;justify-content:center;" onclick="generaReport('${p.scuola_id}','${p.id}')"><i class="fas fa-file-pdf"></i>Genera Report PDF</button>
+            <!-- PACCHETTI ESPANDIBILI -->
+            <div style="margin-bottom:14px;">${pacchettiHtml}</div>
+            <!-- REPORT SCUOLA COMPLETO -->
+            <button class="btn-dark no-print" style="width:100%;font-size:11px;justify-content:center;" onclick="generaReport('${s.id}')">
+                <i class="fas fa-file-pdf"></i>Report Completo Scuola
+            </button>
         </div>`;
     }).join('');
 }
