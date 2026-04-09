@@ -112,7 +112,7 @@
         }
 
         /* NAV */
-        .nav-item{display:flex;align-items:center;gap:12px;padding:13px 16px;margin:2px 10px;border-radius:14px;cursor:pointer;transition:all 0.2s;color:rgba(255,255,255,0.45);font-size:13px;font-weight:600;}
+        .nav-item{display:flex;align-items:center;gap:12px;padding:13px 16px;margin:2px 10px;border-radius:14px;cursor:pointer;transition:background 0.15s,color 0.15s;color:rgba(255,255,255,0.45);font-size:13px;font-weight:600;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;}
         .nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
         .nav-item.active{background:var(--teal);color:white;}
         .nav-item i{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
@@ -299,9 +299,6 @@
         </div>
 
         <nav style="flex:1;padding:6px 0;">
-            <div class="nav-item" onclick="window.location.href='index.html'" title="Torna alla Home">
-                <i class="fas fa-home"></i><span class="label">Home</span>
-            </div>
             <div class="nav-item active" onclick="showSection('dashboard',this)">
                 <i class="fas fa-chart-line"></i><span class="label">Dashboard</span>
             </div>
@@ -342,7 +339,7 @@
                     <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Panoramica Nazionale</h2>
                     <p id="dashDate" style="color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;"></p>
                 </div>
-                <button class="btn-primary no-print" onclick="showSection('licenze',document.querySelector('[onclick*=licenze]'))">
+                <button class="btn-primary no-print" onclick="showSection('licenze',document.querySelector('.nav-item[onclick*=licenze]'))">
                     <i class="fas fa-id-card"></i>Gestisci Licenze
                 </button>
             </div>
@@ -383,22 +380,12 @@
                 <div class="card">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
                         <h4 style="font-size:15px;font-weight:700;color:var(--dark);">🕐 In Attesa di Approvazione</h4>
-                        <button class="btn-ghost no-print" style="font-size:10px;padding:6px 12px;" onclick="showSection('licenze',document.querySelector('[onclick*=licenze]'))">Vedi tutte</button>
+                        <button class="btn-ghost no-print" style="font-size:10px;padding:6px 12px;" onclick="showSection('licenze',document.querySelector('.nav-item[onclick*=licenze]'))">Vedi tutte</button>
                     </div>
                     <div id="biologiPending"></div>
                 </div>
             </div>
 
-            <!-- GRAFICO ATTIVITA' -->
-            <div class="card" style="margin-top:18px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-                    <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Distribuzione Licenze</h4>
-                </div>
-                <div class="two-col-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;">
-                    <canvas id="chartLicenze" height="200"></canvas>
-                    <div id="chartLicenzeLegend" style="padding:10px;"></div>
-                </div>
-            </div>
         </section>
 
         <!-- LICENZE BIOLOGI -->
@@ -522,7 +509,6 @@ const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 // ============================================================
 let adminState = { biologi: [] };
 let filtroAttivo = 'tutti';
-let chartLicenzeInstance = null;
 
 // ============================================================
 // AUTH
@@ -545,11 +531,20 @@ function doLogout(){
 }
 
 async function caricaDati(){
-    const [{ data: profiles }, { data: scuoleRaw }, { data: sessioniRaw }] = await Promise.all([
+    const [{ data: profiles }, { data: scuoleRaw }, { data: sessioniRaw }, { data: pacchettiRaw }] = await Promise.all([
         db.from('profiles').select('*').eq('role','biologo').order('data_iscrizione',{ascending:false}),
         db.from('scuole').select('biologo_id'),
-        db.from('sessioni').select('biologo_id, score_pre, score_post')
+        db.from('sessioni').select('biologo_id, score_pre, score_post'),
+        db.from('pacchetti').select('biologo_id, tipo, ore_totali, prezzo')
     ]);
+    // Aggrega pacchetti per biologo
+    const pMap = {};
+    (pacchettiRaw||[]).forEach(p=>{
+        if(!pMap[p.biologo_id]) pMap[p.biologo_id]={count:0,ore:0,valore:0};
+        pMap[p.biologo_id].count++;
+        pMap[p.biologo_id].ore += p.ore_totali||0;
+        pMap[p.biologo_id].valore += p.prezzo||0;
+    });
     adminState.biologi = (profiles||[]).map(p => {
         const sc  = (scuoleRaw||[]).filter(s=>s.biologo_id===p.id);
         const se  = (sessioniRaw||[]).filter(s=>s.biologo_id===p.id);
@@ -557,9 +552,11 @@ async function caricaDati(){
         const mig = seS.length>0
             ? Math.round((seS.reduce((a,s)=>a+(parseFloat(s.score_post)-parseFloat(s.score_pre)),0)/seS.length)*10)/10
             : null;
+        const pk = pMap[p.id]||{count:0,ore:0,valore:0};
         return { id:p.id, nome:p.nome||p.email, email:p.email, regione:p.regione||'—',
                  ordine:p.ordine||'—', stato:p.stato, scadenza:p.scadenza,
-                 dataIscrizione:p.data_iscrizione, scuole:sc.length, sessioni:se.length, miglioramento:mig };
+                 dataIscrizione:p.data_iscrizione, scuole:sc.length, sessioni:se.length, miglioramento:mig,
+                 numPacchetti:pk.count, oreContratte:pk.ore, valoreContratto:pk.valore };
     });
 }
 
@@ -646,35 +643,6 @@ function aggiornaDashboard(){
             </div>`).join('');
     }
 
-    // Grafico ciambella
-    aggiornaGraficoCiambella(attive, pending, scadute, sospese);
-}
-
-function aggiornaGraficoCiambella(attive, pending, scadute, sospese){
-    const canvas = document.getElementById('chartLicenze');
-    if(!canvas) return;
-    if(chartLicenzeInstance) chartLicenzeInstance.destroy();
-    chartLicenzeInstance = new Chart(canvas, {
-        type: 'doughnut',
-        data: {
-            labels: ['Attive','In Attesa','Scadute','Sospese'],
-            datasets:[{ data:[attive,pending,scadute,sospese], backgroundColor:['#00A896','#F4A261','#ef4444','#94a3b8'], borderWidth:0, hoverOffset:6 }]
-        },
-        options:{ responsive:true, cutout:'65%', plugins:{ legend:{ display:false } } }
-    });
-    const tot = attive+pending+scadute+sospese;
-    document.getElementById('chartLicenzeLegend').innerHTML = [
-        {label:'Attive',val:attive,color:'#00A896'},
-        {label:'In Attesa',val:pending,color:'#F4A261'},
-        {label:'Scadute',val:scadute,color:'#ef4444'},
-        {label:'Sospese',val:sospese,color:'#94a3b8'}
-    ].map(l=>`
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-            <div style="width:12px;height:12px;border-radius:4px;background:${l.color};flex-shrink:0;"></div>
-            <div style="flex:1;font-size:13px;font-weight:600;color:var(--dark);">${l.label}</div>
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--dark);">${l.val}</div>
-            <div style="font-size:11px;color:#94a3b8;width:32px;text-align:right;">${tot>0?Math.round(l.val/tot*100):0}%</div>
-        </div>`).join('');
 }
 
 // ============================================================
@@ -707,16 +675,18 @@ function aggiornaLicenze(){
         const color = colors[i % colors.length];
         const badge = badgeHtml(b.stato);
         const scad = b.scadenza ? new Date(b.scadenza).toLocaleDateString('it-IT') : '—';
+        const valFmt = b.valoreContratto>0 ? '€'+b.valoreContratto.toLocaleString('it-IT') : '—';
         return `<div class="bio-row">
             <div class="bio-avatar" style="background:${color};">${b.nome.charAt(0)}</div>
             <div style="flex:1;min-width:0;">
                 <div style="font-weight:700;font-size:14px;color:var(--dark);">${b.nome}</div>
-                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${b.email} · ${b.regione} · Ordine: ${b.ordine}</div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${b.email} · ${b.regione}</div>
                 <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
                     ${badge}
                     <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.scuole} scuole</span>
                     <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.sessioni} sessioni</span>
-                    ${b.miglioramento ? `<span style="font-size:10px;color:#065f46;background:#d1fae5;padding:2px 8px;border-radius:6px;">+${b.miglioramento} miglioramento</span>` : ''}
+                    ${b.numPacchetti>0 ? `<span style="font-size:10px;color:#1e40af;background:#dbeafe;padding:2px 8px;border-radius:6px;font-weight:700;">${b.numPacchetti} pkgs · ${b.oreContratte}h · ${valFmt}</span>` : ''}
+                    ${b.miglioramento ? `<span style="font-size:10px;color:#065f46;background:#d1fae5;padding:2px 8px;border-radius:6px;">+${b.miglioramento} mig.</span>` : ''}
                 </div>
             </div>
             <div style="text-align:right;flex-shrink:0;">
@@ -727,7 +697,7 @@ function aggiornaLicenze(){
                     ${b.stato==='active' ? `<button class="btn-warn" data-id="${b.id}" data-action="rinnova" onclick="handleStatoBtn(this)"><i class="fas fa-redo" style="margin-right:4px;"></i>Rinnova</button>` : ''}
                     ${b.stato==='active'||b.stato==='pending' ? `<button class="btn-danger" data-id="${b.id}" data-action="suspended" onclick="handleStatoBtn(this)"><i class="fas fa-ban" style="margin-right:4px;"></i>Sospendi</button>` : ''}
                     ${b.stato==='suspended'||b.stato==='expired' ? `<button class="btn-success" data-id="${b.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check" style="margin-right:4px;"></i>Riattiva</button>` : ''}
-                    <button class="btn-ghost" data-id="${b.id}" data-action="elimina" onclick="handleStatoBtn(this)" style="font-size:10px;padding:7px 10px;"><i class="fas fa-trash"></i></button>
+                    <button class="btn-ghost" data-id="${b.id}" data-action="elimina" onclick="handleStatoBtn(this)" style="font-size:10px;padding:7px 10px;" title="Elimina"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
         </div>`;
@@ -786,8 +756,14 @@ async function rinnovaLicenza(id){
 }
 
 async function eliminaBiologo(id){
-    if(!confirm('Sospendere questo biologo? (non può essere rimosso dal portale senza accesso al backend)')) return;
-    await cambiaStato(id, 'suspended');
+    const b = adminState.biologi.find(x=>x.id===id);
+    if(!b) return;
+    if(!confirm('Eliminare definitivamente '+b.nome+'?\nQuesta azione rimuove il profilo e non può essere annullata.')) return;
+    const { error } = await db.from('profiles').delete().eq('id', id);
+    if(error){ showToast('Errore eliminazione: '+error.message,'error'); return; }
+    adminState.biologi = adminState.biologi.filter(x=>x.id!==id);
+    aggiornaLicenze(); aggiornaDashboard();
+    showToast(b.nome+' eliminato');
 }
 
 async function aggiungiBiologo(){

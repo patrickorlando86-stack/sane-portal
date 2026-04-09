@@ -131,7 +131,7 @@
         }
 
         /* NAV */
-        .nav-item{display:flex;align-items:center;gap:12px;padding:13px 16px;margin:2px 10px;border-radius:14px;cursor:pointer;transition:all 0.2s;color:rgba(255,255,255,0.45);font-size:13px;font-weight:600;}
+        .nav-item{display:flex;align-items:center;gap:12px;padding:13px 16px;margin:2px 10px;border-radius:14px;cursor:pointer;transition:background 0.15s,color 0.15s;color:rgba(255,255,255,0.45);font-size:13px;font-weight:600;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;}
         .nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
         .nav-item.active{background:var(--teal);color:white;}
         .nav-item i{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
@@ -274,12 +274,6 @@
         <input class="form-input" id="scuolaComune" placeholder="es. Rosignano Marittimo">
         <label class="form-label">Numero Classi</label>
         <input class="form-input" type="number" id="scuolaClassi" placeholder="es. 5" min="1" max="30">
-        <label class="form-label">Pacchetto</label>
-        <select class="form-select" id="scuolaPacchetto">
-            <option value="base">Base — 15 ore (€ 2.100)</option>
-            <option value="standard" selected>Standard — 30 ore (€ 4.500)</option>
-            <option value="premium">Premium — 30 ore + Genitori (€ 5.800)</option>
-        </select>
         <div style="display:flex;gap:10px;margin-top:4px;">
             <button class="btn-ghost" onclick="closeModal('nuovaScuolaModal')">Annulla</button>
             <button class="btn-primary" style="flex:1;" onclick="aggiungiScuola()"><i class="fas fa-plus"></i>Aggiungi</button>
@@ -371,16 +365,19 @@
             <button onclick="closeModal('pacchettoModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
         </div>
         <input type="hidden" id="pacchettoScuolaId">
-        <label class="form-label">Tipo Pacchetto</label>
-        <select class="form-select" id="pacchettoTipo">
-            <option value="base">Base — 15 ore (€ 2.100)</option>
-            <option value="standard" selected>Standard — 30 ore (€ 4.500)</option>
-            <option value="premium">Premium — 30 ore + Genitori (€ 5.800)</option>
+        <label class="form-label">Tipo</label>
+        <select class="form-select" id="pacchettoTipo" onchange="aggiornaPacchettoForm()">
+            <option value="pagamento" selected>A Pagamento</option>
+            <option value="gratuito">Gratuito</option>
         </select>
-        <label class="form-label">Data Acquisto</label>
+        <div id="pacchettoPrezzoCont">
+            <label class="form-label">Valore Accordato (€)</label>
+            <input class="form-input" type="number" id="pacchettoPrezzo" placeholder="es. 2500" min="0" step="50">
+        </div>
+        <label class="form-label">Ore Previste</label>
+        <input class="form-input" type="number" id="pacchettoOre" placeholder="es. 30" value="30" min="0" max="500">
+        <label class="form-label">Data Inizio</label>
         <input class="form-input" type="date" id="pacchettoData">
-        <label class="form-label">Ore Totali</label>
-        <input class="form-input" type="number" id="pacchettoOre" placeholder="es. 30" value="30" min="1" max="100">
         <label class="form-label">Anno Scolastico</label>
         <input class="form-input" id="pacchettoAnno" placeholder="es. 2024/2025">
         <div style="display:flex;gap:10px;margin-top:4px;">
@@ -420,9 +417,6 @@
 
         <!-- NAV -->
         <nav style="flex:1;padding:6px 0;">
-            <div class="nav-item" onclick="window.location.href='index.html'" title="Torna alla Home">
-                <i class="fas fa-home"></i><span class="label">Home</span>
-            </div>
             <div class="nav-item active" onclick="showSection('dashboard',this)">
                 <i class="fas fa-chart-pie"></i><span class="label">Dashboard</span>
             </div>
@@ -1134,10 +1128,9 @@ async function aggiungiScuola(){
     const nome=document.getElementById('scuolaNome').value.trim();
     const comune=document.getElementById('scuolaComune').value.trim();
     const classi=document.getElementById('scuolaClassi').value;
-    const pacchetto=document.getElementById('scuolaPacchetto').value;
     if(!nome||!comune||!classi){showToast('Compila tutti i campi','error');return;}
     const {data:{user}}=await db.auth.getUser();
-    const {data,error}=await db.from('scuole').insert({biologo_id:user.id,nome,comune,classi:parseInt(classi),pacchetto}).select().single();
+    const {data,error}=await db.from('scuole').insert({biologo_id:user.id,nome,comune,classi:parseInt(classi)}).select().single();
     if(error){showToast('Errore: '+error.message,'error');return;}
     appState.scuole.push(data);
     ['scuolaNome','scuolaComune','scuolaClassi'].forEach(id=>document.getElementById(id).value='');
@@ -1176,13 +1169,16 @@ function aggiornaScuole(){
                </div>`
             :pacchetti.map(p=>{
                 const isOpenP=_openPacchetti.has(p.id);
-                const bc=p.tipo==='premium'?'badge-blue':p.tipo==='standard'?'badge-green':'badge-yellow';
+                const isGratuito=p.tipo==='gratuito';
+                const bc=isGratuito?'badge-green':'badge-blue';
+                const tipoLabel=isGratuito?'Gratuito':'A Pagamento';
+                const prezzolabel=(!isGratuito&&p.prezzo)?(' · €'+p.prezzo.toLocaleString('it-IT')):'';
                 const dataP=p.data_acquisto?new Date(p.data_acquisto).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'})
                     :new Date(p.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'});
                 const clsPac=appState.classi.filter(c=>c.pacchetto_id===p.id||(c.scuola_id===s.id&&!c.pacchetto_id&&pacchetti.indexOf(p)===0));
                 const oreUsate=clsPac.reduce((a,c)=>a+oreClasse(c),0);
-                const oreTot=p.ore_totali||30;
-                const pct=Math.min(100,Math.round((oreUsate/oreTot)*100));
+                const oreTot=p.ore_totali||0;
+                const pct=oreTot>0?Math.min(100,Math.round((oreUsate/oreTot)*100)):0;
                 const clsHtml=isOpenP?(clsPac.map(c=>{
                     const preOk=!!c.pre_data;const postOk=!!c.post_data;
                     return `<div onclick="apriClasseDetail('${c.id}')" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:white;border:1.5px solid #e2e8f0;border-radius:9px;margin-bottom:5px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--teal)';this.style.background='#f0fdf9'" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='white'">
@@ -1198,25 +1194,26 @@ function aggiornaScuole(){
                     </div>`;
                 }).join('')||'<p style="font-size:11px;color:#94a3b8;padding:4px 0 6px;">Nessuna classe</p>'):'';
                 return `<div style="border:1.5px solid #e2e8f0;border-radius:12px;margin-bottom:8px;overflow:hidden;">
-                    <div onclick="togglePacchetto('${p.id}')" style="cursor:pointer;padding:10px 13px;display:flex;justify-content:space-between;align-items:center;background:${isOpenP?'#f8fafc':'white'};user-select:none;transition:background 0.15s;">
-                        <div style="display:flex;align-items:center;gap:7px;">
+                    <div onclick="togglePacchetto('${p.id}')" style="cursor:pointer;padding:10px 13px;display:flex;justify-content:space-between;align-items:center;background:${isOpenP?'#f8fafc':'white'};user-select:none;touch-action:manipulation;">
+                        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
                             <i class="fas fa-box" style="color:var(--teal);font-size:11px;"></i>
-                            <span style="font-weight:700;font-size:12px;color:var(--dark);text-transform:capitalize;">${p.tipo}</span>
-                            <span class="badge ${bc}" style="font-size:8px;">${p.tipo}</span>
-                            ${p.anno_scolastico?`<span style="font-size:10px;color:#64748b;">· ${p.anno_scolastico}</span>`:''}
+                            <span style="font-weight:700;font-size:12px;color:var(--dark);">${tipoLabel}</span>
+                            <span class="badge ${bc}" style="font-size:8px;">${tipoLabel}</span>
+                            ${oreTot>0?`<span style="font-size:10px;color:#64748b;">${oreTot}h</span>`:''}
+                            ${prezzolabel?`<span style="font-size:10px;font-weight:700;color:#065f46;">${prezzolabel}</span>`:''}
+                            ${p.anno_scolastico?`<span style="font-size:10px;color:#94a3b8;">· ${p.anno_scolastico}</span>`:''}
                         </div>
-                        <div style="display:flex;align-items:center;gap:6px;">
-                            <span style="font-size:10px;color:#94a3b8;">${dataP}</span>
+                        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                             <span style="font-size:10px;color:#94a3b8;">${clsPac.length} cl.</span>
                             <button onclick="event.stopPropagation();eliminaPacchetto('${p.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:10px;padding:2px;" class="no-print" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#e2e8f0'"><i class="fas fa-trash"></i></button>
                             <i class="fas fa-chevron-down" style="font-size:10px;color:#94a3b8;transition:transform 0.2s;transform:${isOpenP?'rotate(180deg)':'rotate(0deg)'}"></i>
                         </div>
                     </div>
                     ${isOpenP?`<div style="padding:0 13px 13px;border-top:1px solid #f1f5f9;">
-                        <div class="progress-bar" style="margin:8px 0 3px;"><div class="progress-fill" style="width:${pct}%"></div></div>
-                        <div style="font-size:9px;color:#94a3b8;margin-bottom:8px;">${oreUsate.toFixed(1)}/${oreTot}h · ${pct}%</div>
+                        ${oreTot>0?`<div class="progress-bar" style="margin:8px 0 3px;"><div class="progress-fill" style="width:${pct}%"></div></div>
+                        <div style="font-size:9px;color:#94a3b8;margin-bottom:8px;">${oreUsate.toFixed(1)}/${oreTot}h · ${pct}%</div>`:''}
                         ${clsHtml}
-                        <button onclick="apriNuovaClassePerPacchetto('${s.id}','${p.id}')" style="margin-top:4px;width:100%;padding:7px;border:1.5px dashed #cbd5e1;border-radius:8px;background:transparent;color:#94a3b8;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='#cbd5e1';this.style.color='#94a3b8'">
+                        <button onclick="apriNuovaClassePerPacchetto('${s.id}','${p.id}')" style="margin-top:4px;width:100%;padding:7px;border:1.5px dashed #cbd5e1;border-radius:8px;background:transparent;color:#94a3b8;font-size:11px;font-weight:600;cursor:pointer;touch-action:manipulation;" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='#cbd5e1';this.style.color='#94a3b8'">
                             <i class="fas fa-plus" style="margin-right:4px;"></i>Nuova Classe
                         </button>
                     </div>`:''}
@@ -1253,32 +1250,47 @@ function apriNuovoPacchetto(scuolaId, scuolaNome){
     document.getElementById('pacchettoScuolaId').value=scuolaId;
     document.getElementById('pacchettoModalScuolaNome').textContent=scuolaNome;
     document.getElementById('pacchettoData').value=new Date().toISOString().split('T')[0];
+    document.getElementById('pacchettoTipo').value='pagamento';
+    document.getElementById('pacchettoOre').value='30';
+    const prezzoEl=document.getElementById('pacchettoPrezzo');
+    if(prezzoEl) prezzoEl.value='';
+    document.getElementById('pacchettoPrezzoCont').style.display='block';
     openModal('pacchettoModal');
+}
+
+function aggiornaPacchettoForm(){
+    const tipo=document.getElementById('pacchettoTipo').value;
+    const prezzoCont=document.getElementById('pacchettoPrezzoCont');
+    const oreEl=document.getElementById('pacchettoOre');
+    if(tipo==='gratuito'){
+        prezzoCont.style.display='none';
+        if(!oreEl.value||oreEl.value==='30') oreEl.value='0';
+    } else {
+        prezzoCont.style.display='block';
+        if(oreEl.value==='0') oreEl.value='30';
+    }
 }
 
 async function aggiungiPacchetto(){
     const scuolaId=document.getElementById('pacchettoScuolaId').value;
     const tipo=document.getElementById('pacchettoTipo').value;
     const data=document.getElementById('pacchettoData').value||null;
-    const ore=parseInt(document.getElementById('pacchettoOre').value)||30;
+    const ore=parseInt(document.getElementById('pacchettoOre').value)||0;
     const anno=document.getElementById('pacchettoAnno').value.trim()||null;
+    const prezzoRaw=document.getElementById('pacchettoPrezzo')?.value;
+    const prezzo=tipo==='gratuito'?0:(parseFloat(prezzoRaw)||0);
     if(!scuolaId){showToast('Errore: scuola non trovata','error');return;}
     const {data:authData}=await db.auth.getUser();
     const user=authData?.user;
     if(!user){showToast('Sessione scaduta, effettua il login','error');return;}
     const {data:nuovo,error}=await db.from('pacchetti').insert({
-        scuola_id:scuolaId,biologo_id:user.id,tipo,data_acquisto:data,ore_totali:ore,anno_scolastico:anno
+        scuola_id:scuolaId,biologo_id:user.id,tipo,data_acquisto:data,ore_totali:ore,anno_scolastico:anno,prezzo
     }).select().single();
     if(error){showToast('Errore: '+error.message,'error');return;}
-    // Se Supabase RLS non restituisce la riga, ricarica dal DB
-    if(nuovo){
-        appState.pacchetti.push(nuovo);
-    } else {
-        await caricaDati();
-    }
+    if(nuovo){ appState.pacchetti.push(nuovo); } else { await caricaDati(); }
     closeModal('pacchettoModal');
     aggiornaScuole();aggiornaDashboard();aggiornaReport();
-    showToast('Pacchetto '+tipo+' aggiunto!');
+    showToast(tipo==='gratuito'?'Pacchetto gratuito aggiunto!':'Pacchetto aggiunto (€'+prezzo.toLocaleString('it-IT')+')');
 }
 
 async function eliminaPacchetto(pacchettoId){
@@ -1311,7 +1323,9 @@ function aggiornaSelectPacchetti(preScuolaId, prePacchettoId){
     }
     sel.innerHTML=appState.pacchetti.map(p=>{
         const s=appState.scuole.find(sc=>sc.id===p.scuola_id);
-        const label=`${s?s.nome:'?'} · ${p.tipo.charAt(0).toUpperCase()+p.tipo.slice(1)}${p.anno_scolastico?' '+p.anno_scolastico:''}`;
+        const tipoLabel=p.tipo==='gratuito'?'Gratuito':'A Pagamento';
+        const oreLabel=p.ore_totali>0?' · '+p.ore_totali+'h':'';
+        const label=`${s?s.nome:'?'} · ${tipoLabel}${oreLabel}${p.anno_scolastico?' '+p.anno_scolastico:''}`;
         return `<option value="${p.id}" data-scuola="${p.scuola_id}">${label}</option>`;
     }).join('');
     // Forza la selezione tramite .value (l'attributo HTML selected non è affidabile su innerHTML dinamico)
@@ -1511,11 +1525,13 @@ function aggiornaReport(){
         const anno=p.anno_scolastico?` · ${p.anno_scolastico}`:'';
         const dataAcquisto=p.data_acquisto?new Date(p.data_acquisto).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'}):
             p.created_at?new Date(p.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'}):'—';
-        const tipo=p.tipo||'base';
-        const bc=tipo==='premium'?'badge-blue':tipo==='standard'?'badge-green':'badge-yellow';
+        const tipo=p.tipo||'pagamento';
+        const isGrat=tipo==='gratuito';
+        const tipoLabel=isGrat?'Gratuito':'A Pagamento';
+        const bc=isGrat?'badge-green':'badge-blue';
         const oreUsate=cls.reduce((a,c)=>a+oreClasse(c),0);
-        const oreTot=p.ore_totali||30;
-        const pct=Math.min(100,Math.round((oreUsate/oreTot)*100));
+        const oreTot=p.ore_totali||0;
+        const pct=oreTot>0?Math.min(100,Math.round((oreUsate/oreTot)*100)):0;
 
         const classiRows=cls.map(c=>{
             const preOk=!!c.pre_data; const postOk=!!c.post_data;
@@ -1548,12 +1564,12 @@ function aggiornaReport(){
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
                     <div style="display:flex;align-items:center;gap:6px;">
                         <i class="fas fa-box" style="color:var(--teal);font-size:10px;"></i>
-                        <span style="font-size:11px;font-weight:700;color:var(--dark);">Pacchetto ${tipo.charAt(0).toUpperCase()+tipo.slice(1)}</span>
+                        <span style="font-size:11px;font-weight:700;color:var(--dark);">Pacchetto ${tipoLabel}${p.prezzo&&!isGrat?' · €'+p.prezzo.toLocaleString('it-IT'):''}</span>
                     </div>
-                    <span class="badge ${bc}">${tipo}</span>
+                    <span class="badge ${bc}">${tipoLabel}</span>
                 </div>
-                <div style="font-size:10px;color:#94a3b8;">Acquistato il ${dataAcquisto} · ${oreUsate.toFixed(1)}/${oreTot}h (${pct}%)</div>
-                <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${pct}%"></div></div>
+                <div style="font-size:10px;color:#94a3b8;">${dataAcquisto}${oreTot>0?' · '+oreUsate.toFixed(1)+'/'+oreTot+'h ('+pct+'%)':''}</div>
+                ${oreTot>0?`<div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${pct}%"></div></div>`:''}
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr${mig?' 1fr':''};gap:8px;margin-bottom:12px;">
                 <div style="background:#f8fafc;border-radius:10px;padding:10px;text-align:center;">
@@ -1592,8 +1608,9 @@ async function generaReport(scuolaId, pacchettoId, classeId) {
         s = appState.scuole.find(sc => sc.id === scuolaId);
         if (!s) return;
         cls = appState.classi.filter(c => c.pacchetto_id === pacchettoId);
-        const pkTipo = appState.pacchetti.find(pk => pk.id === pacchettoId)?.tipo || '';
-        sottotitolo = 'Report Pacchetto' + (pkTipo ? ' · ' + pkTipo : '');
+        const pk = appState.pacchetti.find(pk => pk.id === pacchettoId);
+        const pkLabel = pk?.tipo==='gratuito'?'Gratuito':'A Pagamento';
+        sottotitolo = 'Report Pacchetto' + (pk ? ' · ' + pkLabel : '');
     } else {
         s = appState.scuole.find(sc => sc.id === scuolaId);
         if (!s) return;
