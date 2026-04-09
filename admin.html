@@ -267,8 +267,8 @@
 </div>
 
 <!-- MODAL DETTAGLIO BIOLOGO -->
-<div class="modal-overlay" id="dettaglioBiologoModal">
-    <div class="modal-box" id="dettaglioBiologoContent"></div>
+<div class="modal-overlay" id="dettaglioBiologoModal" onclick="if(event.target===this)closeModal('dettaglioBiologoModal')">
+    <div class="modal-box" id="dettaglioBiologoContent" style="max-width:680px;width:100%;"></div>
 </div>
 
 <!-- APP -->
@@ -662,6 +662,7 @@ function aggiornaLicenze(){
                 <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">Scadenza</div>
                 <div style="font-weight:700;font-size:13px;color:var(--dark);margin-bottom:10px;">${scad}</div>
                 <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;">
+                    <button onclick="mostraDettaglioBiologo('${b.id}')" style="background:#f0fdf9;border:1.5px solid var(--teal);color:var(--teal);border-radius:8px;font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;"><i class="fas fa-eye"></i> Dettaglio</button>
                     ${b.stato==='pending' ? `<button class="btn-success" data-id="${b.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check" style="margin-right:4px;"></i>Approva</button>` : ''}
                     ${b.stato==='active' ? `<button class="btn-warn" data-id="${b.id}" data-action="rinnova" onclick="handleStatoBtn(this)"><i class="fas fa-redo" style="margin-right:4px;"></i>Rinnova</button>` : ''}
                     ${b.stato==='active'||b.stato==='pending' ? `<button class="btn-danger" data-id="${b.id}" data-action="suspended" onclick="handleStatoBtn(this)"><i class="fas fa-ban" style="margin-right:4px;"></i>Sospendi</button>` : ''}
@@ -671,6 +672,153 @@ function aggiornaLicenze(){
             </div>
         </div>`;
     }).join('');
+}
+
+async function mostraDettaglioBiologo(id){
+    const b = adminState.biologi.find(x=>x.id===id);
+    if(!b) return;
+    const box = document.getElementById('dettaglioBiologoContent');
+    box.innerHTML = `<div style="text-align:center;padding:40px;color:#94a3b8;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i><p style="margin-top:12px;font-size:13px;">Caricamento dati...</p></div>`;
+    document.getElementById('dettaglioBiologoModal').classList.add('open');
+
+    // Fetch dati live
+    const [scuoleRes, pacchettiRes, classiRes, sessioniRes] = await Promise.all([
+        db.from('scuole').select('id, nome, comune').eq('biologo_id', id),
+        db.from('pacchetti').select('id, tipo, ore_totali, prezzo, anno_scolastico, data_inizio').eq('biologo_id', id).order('data_inizio', {ascending:false}),
+        db.from('classi').select('id, nome, num_studenti, scuola_id, stato').eq('biologo_id', id),
+        db.from('sessioni').select('id, tipo, data, score_pre, score_post, note, scuola_id').eq('biologo_id', id).order('data', {ascending:false})
+    ]);
+
+    const scuole   = scuoleRes.data   || [];
+    const pacchetti= pacchettiRes.data || [];
+    const classi   = classiRes.data   || [];
+    const sessioni = sessioniRes.data  || [];
+
+    // Calcola KPI
+    const totStudenti = classi.reduce((a,c)=>a+(c.num_studenti||0),0);
+    const classiComplete = classi.filter(c=>c.stato==='completata'||c.stato==='certificata').length;
+    const sessCon = sessioni.filter(s=>s.score_pre&&s.score_post);
+    const migMedia = sessCon.length>0
+        ? (sessCon.reduce((a,s)=>a+(parseFloat(s.score_post)-parseFloat(s.score_pre)),0)/sessCon.length).toFixed(1)
+        : null;
+
+    const scad = b.scadenza ? new Date(b.scadenza).toLocaleDateString('it-IT') : '—';
+    const iscr = b.dataIscrizione ? new Date(b.dataIscrizione).toLocaleDateString('it-IT') : '—';
+    const valFmt = b.valoreContratto>0 ? '€'+b.valoreContratto.toLocaleString('it-IT') : '—';
+    const statoCol = {active:'#16a34a',pending:'#d97706',expired:'#dc2626',suspended:'#6b7280'}[b.stato]||'#6b7280';
+    const statoLabel = {active:'Attiva',pending:'In Attesa',expired:'Scaduta',suspended:'Sospesa'}[b.stato]||b.stato;
+
+    // HTML scuole
+    const scuoleHtml = scuole.length===0
+        ? '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:16px;">Nessuna scuola registrata</p>'
+        : scuole.map(s=>{
+            const cl = classi.filter(c=>c.scuola_id===s.id);
+            const stu = cl.reduce((a,c)=>a+(c.num_studenti||0),0);
+            const clComp = cl.filter(c=>c.stato==='completata'||c.stato==='certificata').length;
+            return `<div style="border:1.5px solid #e2e8f0;border-radius:14px;padding:14px 16px;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                    <div>
+                        <div style="font-weight:700;font-size:14px;color:var(--dark);">${s.nome||'—'}</div>
+                        <div style="font-size:11px;color:#64748b;margin-top:2px;"><i class="fas fa-map-marker-alt" style="margin-right:4px;color:var(--teal);"></i>${s.comune||'—'}</div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <span style="background:#f0fdf9;color:#065f46;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;">${cl.length} classi</span>
+                        <span style="background:#f8fafc;color:#64748b;border-radius:8px;padding:3px 10px;font-size:11px;">${stu} studenti</span>
+                        ${clComp>0?`<span style="background:#dcfce7;color:#16a34a;border-radius:8px;padding:3px 10px;font-size:11px;">${clComp} completate</span>`:''}
+                    </div>
+                </div>
+                ${cl.length>0 ? `<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;">${cl.map(c=>`
+                    <span style="background:#f1f5f9;color:#475569;border-radius:7px;padding:3px 9px;font-size:11px;">
+                        ${c.nome||'—'} <span style="color:#94a3b8;">(${c.num_studenti||0} stud.)</span>
+                    </span>`).join('')}</div>` : ''}
+            </div>`;
+        }).join('');
+
+    // HTML pacchetti
+    const pacchettiHtml = pacchetti.length===0
+        ? '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:16px;">Nessun pacchetto</p>'
+        : pacchetti.map(p=>{
+            const isGrat = p.tipo==='gratuito';
+            const prz = p.prezzo>0 ? '€'+p.prezzo.toLocaleString('it-IT') : '—';
+            return `<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:#f8fafc;border-radius:12px;margin-bottom:8px;flex-wrap:wrap;">
+                <div style="width:36px;height:36px;border-radius:10px;background:${isGrat?'#dcfce7':'#dbeafe'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas ${isGrat?'fa-gift':'fa-handshake'}" style="color:${isGrat?'#16a34a':'#1e40af'};font-size:14px;"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${isGrat?'Gratuito':'A Pagamento'}</div>
+                    <div style="font-size:11px;color:#64748b;margin-top:1px;">${p.anno_scolastico||'—'}</div>
+                </div>
+                <div style="text-align:right;flex-shrink:0;">
+                    <div style="font-weight:700;font-size:14px;color:var(--dark);">${isGrat?'—':prz}</div>
+                    <div style="font-size:11px;color:#94a3b8;">${p.ore_totali||0}h previste</div>
+                </div>
+            </div>`;
+        }).join('');
+
+    box.innerHTML = `
+        <!-- HEADER -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:12px;">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <div style="width:52px;height:52px;background:var(--teal);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <span style="color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:22px;">${b.nome.charAt(0)}</span>
+                </div>
+                <div>
+                    <h3 style="font-size:20px;font-weight:800;color:var(--dark);margin:0;">${b.nome}</h3>
+                    <div style="font-size:12px;color:#64748b;margin-top:3px;">${b.email}</div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;">
+                        <span style="background:${statoCol};color:white;border-radius:7px;padding:2px 10px;font-size:11px;font-weight:700;">${statoLabel}</span>
+                        <span style="font-size:11px;color:#64748b;">Regione: <b>${b.regione}</b></span>
+                        <span style="font-size:11px;color:#64748b;">Ordine: <b>${b.ordine}</b></span>
+                    </div>
+                </div>
+            </div>
+            <button onclick="closeModal('dettaglioBiologoModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:20px;flex-shrink:0;"><i class="fas fa-times"></i></button>
+        </div>
+
+        <!-- KPI strip -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;">
+            <div style="background:#f0fdf9;border-radius:14px;padding:12px;text-align:center;">
+                <div style="font-size:22px;font-weight:800;color:var(--teal);font-family:'Syne',sans-serif;">${scuole.length}</div>
+                <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Scuole</div>
+            </div>
+            <div style="background:#f8fafc;border-radius:14px;padding:12px;text-align:center;">
+                <div style="font-size:22px;font-weight:800;color:var(--dark);font-family:'Syne',sans-serif;">${classi.length}</div>
+                <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Classi</div>
+            </div>
+            <div style="background:#f8fafc;border-radius:14px;padding:12px;text-align:center;">
+                <div style="font-size:22px;font-weight:800;color:var(--dark);font-family:'Syne',sans-serif;">${totStudenti}</div>
+                <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Studenti</div>
+            </div>
+            <div style="background:${migMedia?'#f0fdf9':'#f8fafc'};border-radius:14px;padding:12px;text-align:center;">
+                <div style="font-size:22px;font-weight:800;color:${migMedia?'var(--teal)':'#cbd5e1'};font-family:'Syne',sans-serif;">${migMedia?'+'+migMedia:'—'}</div>
+                <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Miglioramento</div>
+            </div>
+        </div>
+
+        <!-- Info licenza -->
+        <div style="background:#f8fafc;border-radius:14px;padding:14px 16px;margin-bottom:20px;display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:#64748b;">
+            <span><i class="fas fa-calendar-alt" style="color:var(--teal);margin-right:5px;"></i>Iscritto: <b style="color:var(--dark);">${iscr}</b></span>
+            <span><i class="fas fa-hourglass-end" style="color:var(--teal);margin-right:5px;"></i>Scadenza: <b style="color:var(--dark);">${scad}</b></span>
+            ${b.valoreContratto>0?`<span><i class="fas fa-euro-sign" style="color:var(--teal);margin-right:5px;"></i>Valore contratti: <b style="color:var(--dark);">${valFmt}</b></span>`:''}
+            ${b.oreContratte>0?`<span><i class="fas fa-clock" style="color:var(--teal);margin-right:5px;"></i>Ore contratte: <b style="color:var(--dark);">${b.oreContratte}h</b></span>`:''}
+        </div>
+
+        <!-- SCUOLE -->
+        <div style="margin-bottom:20px;">
+            <h4 style="font-size:13px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+                <i class="fas fa-school" style="color:var(--teal);"></i> Scuole (${scuole.length})
+            </h4>
+            ${scuoleHtml}
+        </div>
+
+        <!-- PACCHETTI -->
+        <div>
+            <h4 style="font-size:13px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+                <i class="fas fa-box-open" style="color:var(--teal);"></i> Pacchetti (${pacchetti.length})
+            </h4>
+            ${pacchettiHtml}
+        </div>
+    `;
 }
 
 function badgeHtml(stato){
