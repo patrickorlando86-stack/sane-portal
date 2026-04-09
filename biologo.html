@@ -359,7 +359,7 @@
     <div class="modal-box" style="max-width:480px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
             <div>
-                <h3 style="font-size:20px;font-weight:700;color:var(--dark);margin:0;">Nuovo Pacchetto</h3>
+                <h3 id="pacchettoModalTitolo" style="font-size:20px;font-weight:700;color:var(--dark);margin:0;">Nuovo Pacchetto</h3>
                 <p id="pacchettoModalScuolaNome" style="font-size:13px;font-weight:700;color:var(--teal);margin-top:5px;display:flex;align-items:center;gap:5px;"></p>
             </div>
             <button onclick="closeModal('pacchettoModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
@@ -382,7 +382,7 @@
         <input class="form-input" id="pacchettoAnno" placeholder="es. 2024/2025">
         <div style="display:flex;gap:10px;margin-top:4px;">
             <button class="btn-ghost" onclick="closeModal('pacchettoModal')">Annulla</button>
-            <button class="btn-primary" style="flex:1;" onclick="aggiungiPacchetto()"><i class="fas fa-plus"></i>Aggiungi Pacchetto</button>
+            <button class="btn-primary" id="pacchettoModalBtn" style="flex:1;" onclick="aggiungiPacchetto()"><i class="fas fa-plus"></i>Aggiungi Pacchetto</button>
         </div>
     </div>
 </div>
@@ -510,8 +510,7 @@
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
                         <div>
                             <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Avanzamento Pacchetti</h4>
-                            <p id="dashAnnoLabel" style="font-size:10px;color:#94a3b8;margin-top:2px;text-transform:uppercase;letter-spacing:0.1em;"></p>
-                        </div>
+                            </div>
                         <button class="btn-ghost no-print" onclick="showSection('scuole',document.querySelector('[onclick*=scuole]'))" style="font-size:11px;padding:7px 14px;">Vedi tutte</button>
                     </div>
                     <div id="dashScuole"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola ancora. <a href="#" onclick="openModal('nuovaScuolaModal')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p></div>
@@ -539,7 +538,7 @@
                 </div>
                 <button class="btn-primary no-print" onclick="openModal('nuovaScuolaModal')"><i class="fas fa-plus"></i>Aggiungi Scuola</button>
             </div>
-            <div id="scuoleGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;">
+            <div id="scuoleGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;align-items:start;">
                 <p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Nessuna scuola ancora.</p>
             </div>
         </section>
@@ -732,6 +731,7 @@ const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 let appState={utente:null,scuole:[],pacchetti:[],classi:[]};
 let _authMode = 'login';
 let _editClasseId = null;
+let _editPacchettoId = null;
 let _openScuole = new Set();
 let _openPacchetti = new Set();
 let _openDashScuole = new Set();
@@ -1030,8 +1030,7 @@ function aggiornaDashboard(){
         :null;
     document.getElementById('kpiMiglioramento').textContent=migMedia!==null?(parseFloat(migMedia)>0?'+':'')+migMedia:'—';
 
-    // Label anno per sezione avanzamento
-    document.getElementById('dashAnnoLabel').textContent='Anno scolastico '+anno;
+    document.getElementById('dashAnnoLabel').textContent='';
 
     // Documenti scaricabili (link placeholder)
     const docs=[
@@ -1046,16 +1045,24 @@ function aggiornaDashboard(){
         </div>
     `).join('');
 
-    // Avanzamento pacchetti per scuola (anno corrente) — fisarmonica scuola → pacchetti
+    // Avanzamento pacchetti — tutti i pacchetti attivi (non completati), max 10, raggruppati per scuola
     const elScuole=document.getElementById('dashScuole');
-    const scuoleAnno=appState.scuole.filter(s=>pAnno.some(p=>p.scuola_id===s.id));
+    // Un pacchetto è "attivo" se non ha TUTTE le classi completate
+    const pAttivi10=appState.pacchetti
+        .filter(p=>{
+            const cls=appState.classi.filter(c=>c.pacchetto_id===p.id);
+            return !(cls.length>0&&cls.every(c=>statoClasse(c).label==='Completata'));
+        })
+        .sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0))
+        .slice(0,10);
+    const scuoleAnno=appState.scuole.filter(s=>pAttivi10.some(p=>p.scuola_id===s.id));
     if(scuoleAnno.length===0){
         elScuole.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola per l\'anno scolastico corrente. <a href="#" onclick="openModal(\'nuovaScuolaModal\')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p>';
     }else{
         elScuole.innerHTML=scuoleAnno.map((s,idx)=>{
             const isOpen=_openDashScuole.has(s.id);
-            const pSc=pAnno.filter(p=>p.scuola_id===s.id);
-            const clsSc=cAnno.filter(c=>pSc.some(p=>p.id===c.pacchetto_id));
+            const pSc=pAttivi10.filter(p=>p.scuola_id===s.id);
+            const clsSc=appState.classi.filter(c=>pSc.some(p=>p.id===c.pacchetto_id));
             const oreUsateTot=clsSc.reduce((a,c)=>a+oreClasse(c),0);
             const oreTotTot=pSc.reduce((a,p)=>a+(p.ore_totali||0),0);
             const pctTot=oreTotTot>0?Math.min(100,Math.round((oreUsateTot/oreTotTot)*100)):0;
@@ -1069,7 +1076,7 @@ function aggiornaDashboard(){
             const pacchettiHtml=pSc.map(p=>{
                 const isGrat=(p.tipo||'pagamento')==='gratuito';
                 const tipoLabel=isGrat?'Gratuito':'A Pagamento';
-                const clsP=cAnno.filter(c=>c.pacchetto_id===p.id);
+                const clsP=appState.classi.filter(c=>c.pacchetto_id===p.id);
                 const oreUsate=clsP.reduce((a,c)=>a+oreClasse(c),0);
                 const oreTot=p.ore_totali||0;
                 const pct=oreTot>0?Math.min(100,Math.round((oreUsate/oreTot)*100)):0;
@@ -1233,15 +1240,16 @@ function aggiornaScuole(){
                 return `<div style="border:1.5px solid #e2e8f0;border-radius:12px;margin-bottom:8px;overflow:hidden;">
                     <div onclick="togglePacchetto('${p.id}')" style="cursor:pointer;padding:10px 13px;display:flex;justify-content:space-between;align-items:center;background:${isOpenP?'#f8fafc':'white'};user-select:none;touch-action:manipulation;">
                         <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
-                            <i class="fas fa-box" style="color:var(--teal);font-size:11px;"></i>
+                            <i class="fas ${isGratuito?'fa-gift':'fa-handshake'}" style="color:var(--teal);font-size:11px;"></i>
                             <span style="font-weight:700;font-size:12px;color:var(--dark);">${tipoLabel}</span>
                             <span class="badge ${bc}" style="font-size:8px;">${tipoLabel}</span>
                             ${oreTot>0?`<span style="font-size:10px;color:#64748b;">${oreTot}h</span>`:''}
-                            ${prezzolabel?`<span style="font-size:10px;font-weight:700;color:#065f46;">${prezzolabel}</span>`:''}
                             ${p.anno_scolastico?`<span style="font-size:10px;color:#94a3b8;">· ${p.anno_scolastico}</span>`:''}
+                            ${prezzolabel?`<span style="font-size:10px;font-weight:700;color:#065f46;">${prezzolabel}</span>`:''}
                         </div>
                         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                             <span style="font-size:10px;color:#94a3b8;">${clsPac.length} cl.</span>
+                            <button onclick="event.stopPropagation();modificaPacchetto('${p.id}')" style="background:none;border:none;cursor:pointer;color:#cbd5e1;font-size:10px;padding:2px;" class="no-print" title="Modifica" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='#cbd5e1'"><i class="fas fa-pen"></i></button>
                             <button onclick="event.stopPropagation();eliminaPacchetto('${p.id}')" style="background:none;border:none;cursor:pointer;color:#e2e8f0;font-size:10px;padding:2px;" class="no-print" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#e2e8f0'"><i class="fas fa-trash"></i></button>
                             <i class="fas fa-chevron-down" style="font-size:10px;color:#94a3b8;transition:transform 0.2s;transform:${isOpenP?'rotate(180deg)':'rotate(0deg)'}"></i>
                         </div>
@@ -1284,14 +1292,37 @@ function aggiornaScuole(){
 }
 
 function apriNuovoPacchetto(scuolaId, scuolaNome){
+    _editPacchettoId=null;
+    document.getElementById('pacchettoModalTitolo').textContent='Nuovo Pacchetto';
+    document.getElementById('pacchettoModalBtn').innerHTML='<i class="fas fa-plus"></i>Aggiungi Pacchetto';
     document.getElementById('pacchettoScuolaId').value=scuolaId;
     document.getElementById('pacchettoModalScuolaNome').innerHTML='<i class="fas fa-school" style="font-size:11px;opacity:0.7;"></i> '+scuolaNome;
     document.getElementById('pacchettoData').value=new Date().toISOString().split('T')[0];
     document.getElementById('pacchettoTipo').value='pagamento';
     document.getElementById('pacchettoOre').value='30';
+    document.getElementById('pacchettoAnno').value='';
     const prezzoEl=document.getElementById('pacchettoPrezzo');
     if(prezzoEl) prezzoEl.value='';
     document.getElementById('pacchettoPrezzoCont').style.display='block';
+    openModal('pacchettoModal');
+}
+
+function modificaPacchetto(id){
+    const p=appState.pacchetti.find(x=>x.id===id);
+    if(!p) return;
+    const s=appState.scuole.find(x=>x.id===p.scuola_id)||{nome:''};
+    _editPacchettoId=id;
+    document.getElementById('pacchettoModalTitolo').textContent='Modifica Pacchetto';
+    document.getElementById('pacchettoModalBtn').innerHTML='<i class="fas fa-save"></i>Salva Modifiche';
+    document.getElementById('pacchettoScuolaId').value=p.scuola_id;
+    document.getElementById('pacchettoModalScuolaNome').innerHTML='<i class="fas fa-school" style="font-size:11px;opacity:0.7;"></i> '+s.nome;
+    document.getElementById('pacchettoTipo').value=p.tipo||'pagamento';
+    document.getElementById('pacchettoOre').value=p.ore_totali||0;
+    document.getElementById('pacchettoAnno').value=p.anno_scolastico||'';
+    document.getElementById('pacchettoData').value=p.data_acquisto||'';
+    const prezzoEl=document.getElementById('pacchettoPrezzo');
+    if(prezzoEl) prezzoEl.value=p.prezzo||'';
+    aggiornaPacchettoForm();
     openModal('pacchettoModal');
 }
 
@@ -1317,6 +1348,23 @@ async function aggiungiPacchetto(){
     const prezzoRaw=document.getElementById('pacchettoPrezzo')?.value;
     const prezzo=tipo==='gratuito'?0:(parseFloat(prezzoRaw)||0);
     if(!scuolaId){showToast('Errore: scuola non trovata','error');return;}
+
+    // MODIFICA pacchetto esistente
+    if(_editPacchettoId){
+        const {data:updated,error}=await db.from('pacchetti')
+            .update({tipo,data_acquisto:data,ore_totali:ore,anno_scolastico:anno,prezzo})
+            .eq('id',_editPacchettoId).select().single();
+        if(error){showToast('Errore: '+error.message,'error');return;}
+        const idx=appState.pacchetti.findIndex(x=>x.id===_editPacchettoId);
+        if(idx!==-1&&updated) appState.pacchetti[idx]=updated;
+        _editPacchettoId=null;
+        closeModal('pacchettoModal');
+        aggiornaScuole();aggiornaDashboard();aggiornaReport();
+        showToast('Pacchetto aggiornato ✓');
+        return;
+    }
+
+    // NUOVO pacchetto
     const {data:authData}=await db.auth.getUser();
     const user=authData?.user;
     if(!user){showToast('Sessione scaduta, effettua il login','error');return;}
