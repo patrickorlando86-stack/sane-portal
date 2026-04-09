@@ -1045,24 +1045,27 @@ function aggiornaDashboard(){
         </div>
     `).join('');
 
-    // Avanzamento pacchetti — tutti i pacchetti attivi (non completati), max 10, raggruppati per scuola
+    // Avanzamento pacchetti — scuole con almeno un pacchetto, max 10 pacchetti attivi
     const elScuole=document.getElementById('dashScuole');
-    // Un pacchetto è "attivo" se non ha TUTTE le classi completate
-    const pAttivi10=appState.pacchetti
+    const tuttiPacchetti=appState.pacchetti.slice();
+    const scuoleAnno=appState.scuole.filter(s=>tuttiPacchetti.some(p=>p.scuola_id===s.id));
+    // Per ogni scuola, prendi i pacchetti non completati (o tutti se nessuno è completato)
+    const pAttivi10=tuttiPacchetti
         .filter(p=>{
             const cls=appState.classi.filter(c=>c.pacchetto_id===p.id);
-            return !(cls.length>0&&cls.every(c=>statoClasse(c).label==='Completata'));
+            // attivo = 0 classi, oppure non tutte completate
+            return cls.length===0||!cls.every(c=>statoClasse(c).label==='Completata');
         })
         .sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0))
         .slice(0,10);
-    const scuoleAnno=appState.scuole.filter(s=>pAttivi10.some(p=>p.scuola_id===s.id));
     if(scuoleAnno.length===0){
         elScuole.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola per l\'anno scolastico corrente. <a href="#" onclick="openModal(\'nuovaScuolaModal\')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p>';
     }else{
         elScuole.innerHTML=scuoleAnno.map((s,idx)=>{
             const isOpen=_openDashScuole.has(s.id);
-            const pSc=pAttivi10.filter(p=>p.scuola_id===s.id);
-            const clsSc=appState.classi.filter(c=>pSc.some(p=>p.id===c.pacchetto_id));
+            // usa tutti i pacchetti della scuola (non solo quelli nel top-10 attivi)
+            const pSc=tuttiPacchetti.filter(p=>p.scuola_id===s.id);
+            const clsSc=appState.classi.filter(c=>c.scuola_id===s.id);
             const oreUsateTot=clsSc.reduce((a,c)=>a+oreClasse(c),0);
             const oreTotTot=pSc.reduce((a,p)=>a+(p.ore_totali||0),0);
             const pctTot=oreTotTot>0?Math.min(100,Math.round((oreUsateTot/oreTotTot)*100)):0;
