@@ -486,12 +486,24 @@ function doLogout(){
 }
 
 async function caricaDati(){
-    const [{ data: profiles }, { data: scuoleRaw }, { data: sessioniRaw }, { data: pacchettiRaw }] = await Promise.all([
-        db.from('profiles').select('*').or('role.eq.biologo,role2.eq.biologo').order('data_iscrizione',{ascending:false}),
+    // Prova query con role2 (richiede ALTER TABLE), fallback a solo role=biologo
+    let profilesRes = await db.from('profiles').select('*')
+        .or('role.eq.biologo,role2.eq.biologo')
+        .neq('stato','eliminato')
+        .order('data_iscrizione',{ascending:false});
+    if(profilesRes.error){
+        // role2 non esiste ancora nel DB — usa query semplice
+        profilesRes = await db.from('profiles').select('*')
+            .eq('role','biologo')
+            .neq('stato','eliminato')
+            .order('data_iscrizione',{ascending:false});
+    }
+    const [{ data: scuoleRaw }, { data: sessioniRaw }, { data: pacchettiRaw }] = await Promise.all([
         db.from('scuole').select('biologo_id'),
         db.from('sessioni').select('biologo_id, score_pre, score_post'),
         db.from('pacchetti').select('biologo_id, tipo, ore_totali, prezzo')
     ]);
+    const profiles = profilesRes.data;
     // Aggrega pacchetti per biologo
     const pMap = {};
     (pacchettiRaw||[]).forEach(p=>{
@@ -717,12 +729,13 @@ async function rinnovaLicenza(id){
 async function eliminaBiologo(id){
     const b = adminState.biologi.find(x=>x.id===id);
     if(!b) return;
-    if(!confirm('Eliminare definitivamente '+b.nome+'?\nQuesta azione rimuove il profilo e non può essere annullata.')) return;
-    const { error } = await db.from('profiles').delete().eq('id', id);
-    if(error){ showToast('Errore eliminazione: '+error.message,'error'); return; }
+    if(!confirm('Rimuovere '+b.nome+' dalla lista?\nIl profilo verrà disattivato definitivamente.')) return;
+    const { data: updated, error } = await db.from('profiles').update({ stato:'eliminato' }).eq('id', id).select();
+    if(error){ showToast('Errore: '+error.message,'error'); return; }
+    if(!updated || updated.length===0){ showToast('Operazione bloccata — verifica policy RLS su Supabase','error'); return; }
     adminState.biologi = adminState.biologi.filter(x=>x.id!==id);
     aggiornaLicenze(); aggiornaDashboard();
-    showToast(b.nome+' eliminato');
+    showToast(b.nome+' rimosso ✓');
 }
 
 async function aggiungiBiologo(){
