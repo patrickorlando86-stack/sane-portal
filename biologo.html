@@ -733,6 +733,7 @@ let _authMode = 'login';
 let _editClasseId = null;
 let _openScuole = new Set();
 let _openPacchetti = new Set();
+let _openReportDettagli = new Set();
 let _autovalutazioni = [];
 let _autovCorrente = null;
 
@@ -743,6 +744,10 @@ function toggleScuola(id){
 function togglePacchetto(id){
     if(_openPacchetti.has(id)) _openPacchetti.delete(id); else _openPacchetti.add(id);
     aggiornaScuole();
+}
+function toggleReportDettaglio(id){
+    if(_openReportDettagli.has(id)) _openReportDettagli.delete(id); else _openReportDettagli.add(id);
+    aggiornaReport();
 }
 
 function toggleAuthMode(e){
@@ -1533,21 +1538,24 @@ function aggiornaReport(){
         const oreTot=p.ore_totali||0;
         const pct=oreTot>0?Math.min(100,Math.round((oreUsate/oreTot)*100)):0;
 
+        const isOpenDett = _openReportDettagli.has(p.id);
         const classiRows=cls.map(c=>{
             const preOk=!!c.pre_data; const postOk=!!c.post_data;
             const haS=c.score_pre!=null&&c.score_post!=null;
             const migC=haS?(parseFloat(c.score_post)-parseFloat(c.score_pre)).toFixed(1):null;
             const migPos=migC!==null&&parseFloat(migC)>=0;
-            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#f8fafc;border-radius:9px;margin-bottom:5px;">
-                <div>
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 11px;background:#f8fafc;border-radius:10px;margin-bottom:6px;gap:8px;">
+                <div style="min-width:0;flex:1;">
                     <div style="font-weight:700;font-size:12px;color:var(--dark);">${c.nome_classe}</div>
                     <div style="font-size:10px;color:#94a3b8;margin-top:1px;">${c.num_studenti||'—'} studenti · ${oreClasse(c).toFixed(1)}h</div>
                 </div>
-                <div style="display:flex;gap:4px;align-items:center;">
-                    <span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;background:${preOk?'#d1fae5':'#f1f5f9'};color:${preOk?'#065f46':'#94a3b8'};">PRE${preOk?' ✓':''}</span>
-                    <span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:5px;background:${postOk?'#d1fae5':'#f1f5f9'};color:${postOk?'#065f46':'#94a3b8'};">POST${postOk?' ✓':''}</span>
+                <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;">
+                    <span style="font-size:8px;font-weight:700;padding:3px 6px;border-radius:5px;background:${preOk?'#d1fae5':'#f1f5f9'};color:${preOk?'#065f46':'#94a3b8'};">PRE${preOk?' ✓':''}</span>
+                    <span style="font-size:8px;font-weight:700;padding:3px 6px;border-radius:5px;background:${postOk?'#d1fae5':'#f1f5f9'};color:${postOk?'#065f46':'#94a3b8'};">POST${postOk?' ✓':''}</span>
                     ${migC!==null?`<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:${migPos?'#d1fae5':'#fee2e2'};color:${migPos?'#065f46':'#991b1b'};">${migPos?'+':''}${migC}</span>`:''}
-                    <button onclick="generaReport(null,null,'${c.id}')" style="display:inline-flex;align-items:center;padding:3px 7px;border:none;border-radius:6px;background:#f0fdf9;color:var(--teal);font-size:9px;cursor:pointer;" title="Report classe"><i class="fas fa-file-pdf"></i></button>
+                    <button onclick="generaReport(null,null,'${c.id}')" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:none;border-radius:8px;background:var(--teal);color:white;font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;" title="Report classe">
+                        <i class="fas fa-file-pdf"></i><span>PDF</span>
+                    </button>
                 </div>
             </div>`;
         }).join('')||'<p style="font-size:11px;color:#94a3b8;padding:6px 0;text-align:center;">Nessuna classe</p>';
@@ -1586,8 +1594,15 @@ function aggiornaReport(){
                 </div>`:''}
             </div>
             <div style="margin-bottom:12px;">
-                <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Dettaglio Classi</div>
-                ${classiRows}
+                <div onclick="toggleReportDettaglio('${p.id}')" style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:${isOpenDett?'#f0fdf9':'#f8fafc'};border:1.5px solid ${isOpenDett?'var(--teal)':'#e2e8f0'};border-radius:10px;cursor:pointer;touch-action:manipulation;user-select:none;margin-bottom:${isOpenDett?'8px':'0'};">
+                    <div style="display:flex;align-items:center;gap:7px;">
+                        <i class="fas fa-list" style="color:${isOpenDett?'var(--teal)':'#94a3b8'};font-size:11px;"></i>
+                        <span style="font-size:11px;font-weight:700;color:${isOpenDett?'var(--teal)':'#64748b'};text-transform:uppercase;letter-spacing:0.08em;">Dettaglio Classi</span>
+                        <span style="font-size:10px;color:#94a3b8;font-weight:400;">(${cls.length})</span>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size:10px;color:#94a3b8;transition:transform 0.2s;transform:${isOpenDett?'rotate(180deg)':'rotate(0deg)'}"></i>
+                </div>
+                ${isOpenDett?classiRows:''}
             </div>
             <button class="btn-dark no-print" style="width:100%;font-size:11px;justify-content:center;" onclick="generaReport('${p.scuola_id}','${p.id}')"><i class="fas fa-file-pdf"></i>Genera Report PDF</button>
         </div>`;
