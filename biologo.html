@@ -503,27 +503,30 @@
                     <div id="dashDocumenti"></div>
                 </div>
             </div>
-            <!-- AVANZAMENTO PACCHETTI -->
-            <div class="card" style="margin-bottom:18px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-                    <div>
-                        <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Avanzamento Pacchetti</h4>
-                        <p id="dashAnnoLabel" style="font-size:10px;color:#94a3b8;margin-top:2px;text-transform:uppercase;letter-spacing:0.1em;"></p>
+            <!-- AVANZAMENTO PACCHETTI + GRAFICO -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;align-items:start;" class="dash-codice-gioco">
+                <!-- AVANZAMENTO PACCHETTI -->
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                        <div>
+                            <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Avanzamento Pacchetti</h4>
+                            <p id="dashAnnoLabel" style="font-size:10px;color:#94a3b8;margin-top:2px;text-transform:uppercase;letter-spacing:0.1em;"></p>
+                        </div>
+                        <button class="btn-ghost no-print" onclick="showSection('scuole',document.querySelector('[onclick*=scuole]'))" style="font-size:11px;padding:7px 14px;">Vedi tutte</button>
                     </div>
-                    <button class="btn-ghost no-print" onclick="showSection('scuole',document.querySelector('[onclick*=scuole]'))" style="font-size:11px;padding:7px 14px;">Vedi tutte</button>
+                    <div id="dashScuole"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola ancora. <a href="#" onclick="openModal('nuovaScuolaModal')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p></div>
                 </div>
-                <div id="dashScuole"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola ancora. <a href="#" onclick="openModal('nuovaScuolaModal')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p></div>
-            </div>
-            <!-- GRAFICO PRE/POST -->
-            <div class="card" style="cursor:pointer;" onclick="apriGrafico()" id="chartPreviewCard">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                    <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Miglioramento Pre → Post</h4>
-                    <span style="background:#f0fdf9;color:var(--teal);font-size:10px;font-weight:700;padding:5px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:0.08em;display:flex;align-items:center;gap:5px;">
-                        <i class="fas fa-expand"></i>Espandi
-                    </span>
+                <!-- GRAFICO PRE/POST -->
+                <div class="card" style="cursor:pointer;" onclick="apriGrafico()" id="chartPreviewCard">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                        <h4 style="font-size:15px;font-weight:700;color:var(--dark);">Miglioramento Pre → Post</h4>
+                        <span style="background:#f0fdf9;color:var(--teal);font-size:10px;font-weight:700;padding:5px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:0.08em;display:flex;align-items:center;gap:5px;">
+                            <i class="fas fa-expand"></i>Espandi
+                        </span>
+                    </div>
+                    <canvas id="chartPrePost" height="90"></canvas>
+                    <p style="font-size:10px;color:#94a3b8;text-align:center;margin-top:12px;">Tocca per vedere il grafico completo</p>
                 </div>
-                <canvas id="chartPrePost" height="90"></canvas>
-                <p style="font-size:10px;color:#94a3b8;text-align:center;margin-top:12px;">Tocca per vedere il grafico completo</p>
             </div>
         </section>
 
@@ -1088,21 +1091,15 @@ function aggiornaDashboard(){
 
             return `<div style="${idx>0?'border-top:1px solid #f1f5f9;':''}">
                 <!-- HEADER scuola — cliccabile -->
-                <div onclick="toggleDashScuola('${s.id}')" style="display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;user-select:none;touch-action:manipulation;">
-                    <div style="width:38px;height:38px;background:${isOpen?'var(--dark)':'#f1f5f9'};border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:${isOpen?'var(--teal)':'var(--dark)'};font-size:15px;flex-shrink:0;transition:background 0.2s;">${s.nome.charAt(0)}</div>
+                <div onclick="toggleDashScuola('${s.id}')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;margin:4px 0;border-radius:12px;background:${isOpen?'#f0fdf9':'#f8fafc'};border:1.5px solid ${isOpen?'var(--teal)':'#e2e8f0'};cursor:pointer;user-select:none;touch-action:manipulation;transition:all 0.15s;">
+                    <div style="width:34px;height:34px;background:${isOpen?'var(--dark)':'white'};border-radius:9px;border:1.5px solid ${isOpen?'var(--teal)':'#e2e8f0'};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:${isOpen?'var(--teal)':'var(--dark)'};font-size:14px;flex-shrink:0;">${s.nome.charAt(0)}</div>
                     <div style="flex:1;min-width:0;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:${isOpen?'0':'5px'};">
-                            <span style="font-size:13px;font-weight:700;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.nome}</span>
-                            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-                                ${badge}
-                                <i class="fas fa-chevron-down" style="font-size:9px;color:#94a3b8;transition:transform 0.2s;transform:${isOpen?'rotate(180deg)':'rotate(0)'}"></i>
-                            </div>
-                        </div>
-                        ${!isOpen?`<div class="progress-bar" style="height:4px;"><div class="progress-fill" style="width:${pctTot}%;"></div></div>
-                        <div style="display:flex;justify-content:space-between;margin-top:3px;">
-                            <span style="font-size:9px;color:#94a3b8;">${oreUsateTot.toFixed(1)}/${oreTotTot}h · ${pctTot}%</span>
-                            <span style="font-size:9px;color:#94a3b8;">${clsFiniteTot}/${clsSc.length} classi</span>
-                        </div>`:''}
+                        <span style="font-size:13px;font-weight:700;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">${s.nome}</span>
+                        <span style="font-size:10px;color:#94a3b8;">${pSc.length} pacchett${pSc.length===1?'o':'i'} · ${clsSc.length} class${clsSc.length===1?'e':'i'}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                        ${badge}
+                        <i class="fas fa-chevron-down" style="font-size:10px;color:${isOpen?'var(--teal)':'#94a3b8'};transition:transform 0.2s;transform:${isOpen?'rotate(180deg)':'rotate(0)'}"></i>
                     </div>
                 </div>
                 <!-- PACCHETTI espansi -->
