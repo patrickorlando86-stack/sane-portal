@@ -308,9 +308,6 @@
             <div class="nav-item" onclick="showSection('nazionale',this)">
                 <i class="fas fa-map-marked-alt"></i><span class="label">Dati Nazionali</span>
             </div>
-            <div class="nav-item" onclick="showSection('impostazioni',this)">
-                <i class="fas fa-cog"></i><span class="label">Impostazioni</span>
-            </div>
             <div class="nav-item" onclick="window.location.href='biologo.html'" style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.07);padding-top:10px;">
                 <i class="fas fa-user" style="color:var(--teal);"></i><span class="label" style="color:rgba(255,255,255,0.5);font-size:12px;">Portale Biologo</span>
             </div>
@@ -445,48 +442,6 @@
             </div>
         </section>
 
-        <!-- IMPOSTAZIONI -->
-        <section id="sec-impostazioni" class="section">
-            <div style="margin-bottom:28px;">
-                <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Impostazioni</h2>
-                <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Configurazione del sistema S.A.N.E.</p>
-            </div>
-            <div class="card" style="margin-bottom:18px;">
-                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:18px;">Prezzi Pacchetti</h4>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-                    <div>
-                        <label class="form-label">Pacchetto Base</label>
-                        <input class="form-input" value="€ 2.100" readonly style="background:#f8fafc;">
-                    </div>
-                    <div>
-                        <label class="form-label">Pacchetto Standard</label>
-                        <input class="form-input" value="€ 4.500" readonly style="background:#f8fafc;">
-                    </div>
-                    <div>
-                        <label class="form-label">Pacchetto Premium</label>
-                        <input class="form-input" value="€ 5.800" readonly style="background:#f8fafc;">
-                    </div>
-                </div>
-            </div>
-            <div class="card" style="margin-bottom:18px;">
-                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:18px;">Licenza Biologi</h4>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-                    <div>
-                        <label class="form-label">Canone Annuale</label>
-                        <input class="form-input" value="€ 420 + IVA" readonly style="background:#f8fafc;">
-                    </div>
-                    <div>
-                        <label class="form-label">Durata Licenza</label>
-                        <input class="form-input" value="12 mesi" readonly style="background:#f8fafc;">
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:6px;">Reset Dati Demo</h4>
-                <p style="font-size:13px;color:#64748b;margin-bottom:18px;">Rimuove tutti i dati e ricarica i dati demo iniziali</p>
-                <button class="btn-danger no-print" onclick="resetDemo()"><i class="fas fa-redo" style="margin-right:6px;"></i>Reset Demo</button>
-            </div>
-        </section>
 
     </main>
 </div>
