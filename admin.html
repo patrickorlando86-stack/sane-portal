@@ -487,7 +487,7 @@ function doLogout(){
 
 async function caricaDati(){
     const [{ data: profiles }, { data: scuoleRaw }, { data: sessioniRaw }, { data: pacchettiRaw }] = await Promise.all([
-        db.from('profiles').select('*').eq('role','biologo').order('data_iscrizione',{ascending:false}),
+        db.from('profiles').select('*').or('role.eq.biologo,role2.eq.biologo').order('data_iscrizione',{ascending:false}),
         db.from('scuole').select('biologo_id'),
         db.from('sessioni').select('biologo_id, score_pre, score_post'),
         db.from('pacchetti').select('biologo_id, tipo, ore_totali, prezzo')
@@ -511,7 +511,8 @@ async function caricaDati(){
         return { id:p.id, nome:p.nome||p.email, email:p.email, regione:p.regione||'—',
                  ordine:p.ordine||'—', stato:p.stato, scadenza:p.scadenza,
                  dataIscrizione:p.data_iscrizione, scuole:sc.length, sessioni:se.length, miglioramento:mig,
-                 numPacchetti:pk.count, oreContratte:pk.ore, valoreContratto:pk.valore };
+                 numPacchetti:pk.count, oreContratte:pk.ore, valoreContratto:pk.valore,
+                 isAdmin: p.role==='admin' };
     });
 }
 
@@ -634,7 +635,10 @@ function aggiornaLicenze(){
         return `<div class="bio-row">
             <div class="bio-avatar" style="background:${color};">${b.nome.charAt(0)}</div>
             <div style="flex:1;min-width:0;">
-                <div style="font-weight:700;font-size:14px;color:var(--dark);">${b.nome}</div>
+                <div style="display:flex;align-items:center;gap:7px;">
+                    <span style="font-weight:700;font-size:14px;color:var(--dark);">${b.nome}</span>
+                    ${b.isAdmin?'<span style="font-size:9px;font-weight:700;background:#0A2647;color:white;padding:2px 7px;border-radius:5px;letter-spacing:0.06em;">ADMIN</span>':''}
+                </div>
                 <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${b.email} · ${b.regione}</div>
                 <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
                     ${badge}
