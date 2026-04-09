@@ -1030,7 +1030,7 @@ function aggiornaDashboard(){
         :null;
     document.getElementById('kpiMiglioramento').textContent=migMedia!==null?(parseFloat(migMedia)>0?'+':'')+migMedia:'—';
 
-    document.getElementById('dashAnnoLabel').textContent='';
+    const _annoLbl=document.getElementById('dashAnnoLabel'); if(_annoLbl) _annoLbl.textContent='';
 
     // Documenti scaricabili (link placeholder)
     const docs=[
