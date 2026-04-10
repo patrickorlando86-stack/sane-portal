@@ -716,75 +716,82 @@ async function mostraDettaglioBiologo(id){
     box.innerHTML = `<div style="text-align:center;padding:40px;color:#94a3b8;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i><p style="margin-top:12px;font-size:13px;">Caricamento dati...</p></div>`;
     document.getElementById('dettaglioBiologoModal').classList.add('open');
 
-    // Fetch dati live
     const [scuoleRes, classiRes] = await Promise.all([
-        db.from('scuole').select('id, nome, comune, pacchetto, ore_totali, prezzo, anno_scolastico').eq('biologo_id', id),
-        db.from('classi').select('id, nome_classe, num_studenti, scuola_id, stato, score_pre, score_post').eq('biologo_id', id)
+        db.from('scuole').select('*').eq('biologo_id', id),
+        db.from('classi').select('*').eq('biologo_id', id)
     ]);
 
     const scuole = scuoleRes.data || [];
     const classi = classiRes.data || [];
 
-    // Calcola KPI
+    // KPI
     const totStudenti = classi.reduce((a,c)=>a+(c.num_studenti||0),0);
-    const classiComplete = classi.filter(c=>c.stato==='completata'||c.stato==='certificata').length;
-    const classiConMig = classi.filter(c=>c.score_pre&&c.score_post);
+    const classiConMig = classi.filter(c=>c.score_pre!=null&&c.score_post!=null);
     const migMedia = classiConMig.length>0
         ? (classiConMig.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/classiConMig.length).toFixed(1)
         : null;
 
     const scad = b.scadenza ? new Date(b.scadenza).toLocaleDateString('it-IT') : '—';
     const iscr = b.dataIscrizione ? new Date(b.dataIscrizione).toLocaleDateString('it-IT') : '—';
-    const valFmt = b.valoreContratto>0 ? '€'+b.valoreContratto.toLocaleString('it-IT') : '—';
     const statoCol = {active:'#16a34a',pending:'#d97706',expired:'#dc2626',suspended:'#6b7280'}[b.stato]||'#6b7280';
     const statoLabel = {active:'Attiva',pending:'In Attesa',expired:'Scaduta',suspended:'Sospesa'}[b.stato]||b.stato;
 
-    // HTML scuole
-    const scuoleHtml = scuole.length===0
-        ? '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:16px;">Nessuna scuola registrata</p>'
+    // Badge pacchetto con colori distinti per tipo
+    function pkBadge(pk){
+        if(!pk) return '';
+        const map = {
+            gratuito: ['#dcfce7','#16a34a'],
+            base:     ['#dbeafe','#1e40af'],
+            standard: ['#ede9fe','#6d28d9'],
+            premium:  ['#fef3c7','#b45309']
+        };
+        const [bg,col] = map[pk.toLowerCase()]||['#f1f5f9','#475569'];
+        return `<span style="background:${bg};color:${col};border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;text-transform:capitalize;">${pk}</span>`;
+    }
+
+    // Pacchetti Attivi — una card per scuola
+    const pacchettiHtml = scuole.length===0
+        ? '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">Nessuna scuola registrata</p>'
         : scuole.map(s=>{
             const cl = classi.filter(c=>c.scuola_id===s.id);
-            const stu = cl.reduce((a,c)=>a+(c.num_studenti||0),0);
-            const clComp = cl.filter(c=>c.stato==='completata'||c.stato==='certificata').length;
-            return `<div style="border:1.5px solid #e2e8f0;border-radius:14px;padding:14px 16px;margin-bottom:10px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+            const clComplete = cl.filter(c=>c.post_data!=null);
+            const oreUsate = cl.reduce((a,c)=>a+(
+                (c.m1_ore||0)+(c.m2_ore||0)+(c.m3_ore||0)+
+                (c.m4_ore||0)+(c.m5_ore||0)+(c.m6_ore||0)
+            ),0);
+            const oreTot = s.ore_totali||0;
+            const pct = oreTot>0 ? Math.min(100,Math.round(oreUsate/oreTot*100)) : 0;
+            const barCol = pct>=100?'#dc2626':pct>=70?'#d97706':'var(--teal)';
+            return `<div style="border:1.5px solid #e2e8f0;border-radius:16px;padding:16px 18px;margin-bottom:12px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
                     <div>
                         <div style="font-weight:700;font-size:14px;color:var(--dark);">${s.nome||'—'}</div>
-                        <div style="font-size:11px;color:#64748b;margin-top:2px;"><i class="fas fa-map-marker-alt" style="margin-right:4px;color:var(--teal);"></i>${s.comune||'—'}</div>
+                        <div style="font-size:11px;color:#64748b;margin-top:3px;"><i class="fas fa-map-marker-alt" style="margin-right:4px;color:var(--teal);"></i>${s.comune||'—'}</div>
                     </div>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                        <span style="background:#f0fdf9;color:#065f46;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;">${cl.length} classi</span>
-                        <span style="background:#f8fafc;color:#64748b;border-radius:8px;padding:3px 10px;font-size:11px;">${stu} studenti</span>
-                        ${clComp>0?`<span style="background:#dcfce7;color:#16a34a;border-radius:8px;padding:3px 10px;font-size:11px;">${clComp} completate</span>`:''}
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                        ${pkBadge(s.pacchetto)}
+                        ${s.anno_scolastico?`<span style="background:#f1f5f9;color:#475569;border-radius:8px;padding:3px 9px;font-size:11px;">A.S. ${s.anno_scolastico}</span>`:''}
                     </div>
                 </div>
-                ${cl.length>0 ? `<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;">${cl.map(c=>`
-                    <span style="background:#f1f5f9;color:#475569;border-radius:7px;padding:3px 9px;font-size:11px;">
-                        ${c.nome_classe||'—'} <span style="color:#94a3b8;">(${c.num_studenti||0} stud.)</span>
-                    </span>`).join('')}</div>` : ''}
-            </div>`;
-        }).join('');
-
-    // HTML contratti per scuola (pacchetto/ore/prezzo ora sono sulla tabella scuole)
-    const scuoleConContratto = scuole.filter(s=>s.pacchetto||s.ore_totali||s.prezzo);
-    const contrattiHtml = scuoleConContratto.length===0
-        ? '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:16px;">Nessun contratto registrato</p>'
-        : scuoleConContratto.map(s=>{
-            const isGrat = s.pacchetto==='gratuito';
-            const prz = s.prezzo>0 ? '€'+s.prezzo.toLocaleString('it-IT') : '—';
-            const pkLabel = s.pacchetto ? (s.pacchetto.charAt(0).toUpperCase()+s.pacchetto.slice(1)) : '—';
-            return `<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:#f8fafc;border-radius:12px;margin-bottom:8px;flex-wrap:wrap;">
-                <div style="width:36px;height:36px;border-radius:10px;background:${isGrat?'#dcfce7':'#dbeafe'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class="fas ${isGrat?'fa-gift':'fa-handshake'}" style="color:${isGrat?'#16a34a':'#1e40af'};font-size:14px;"></i>
+                ${oreTot>0?`
+                <div style="margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;font-size:11px;color:#64748b;margin-bottom:5px;">
+                        <span>Ore utilizzate</span>
+                        <span style="font-weight:700;color:var(--dark);">${oreUsate} / ${oreTot}h (${pct}%)</span>
+                    </div>
+                    <div style="background:#e2e8f0;border-radius:99px;height:7px;overflow:hidden;">
+                        <div style="width:${pct}%;height:100%;background:${barCol};border-radius:99px;transition:width 0.4s;"></div>
+                    </div>
+                </div>`:''}
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:${cl.length>0?'10px':'0'};">
+                    <span style="font-size:11px;color:#64748b;">Classi completate:</span>
+                    <span style="font-size:12px;font-weight:700;color:${clComplete.length===cl.length&&cl.length>0?'#16a34a':'var(--dark)'};">${clComplete.length} / ${cl.length}</span>
                 </div>
-                <div style="flex:1;min-width:0;">
-                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${s.nome||'—'}</div>
-                    <div style="font-size:11px;color:#64748b;margin-top:1px;">${pkLabel}${s.anno_scolastico?' · '+s.anno_scolastico:''}</div>
-                </div>
-                <div style="text-align:right;flex-shrink:0;">
-                    <div style="font-weight:700;font-size:14px;color:var(--dark);">${isGrat?'—':prz}</div>
-                    <div style="font-size:11px;color:#94a3b8;">${s.ore_totali||0}h previste</div>
-                </div>
+                ${cl.length>0?`<div style="display:flex;flex-wrap:wrap;gap:6px;">${cl.map(c=>`
+                    <span style="background:${c.post_data?'#f0fdf9':'#f8fafc'};border:1px solid ${c.post_data?'#bbf7d0':'#e2e8f0'};color:#475569;border-radius:8px;padding:4px 10px;font-size:11px;display:flex;align-items:center;gap:5px;">
+                        <i class="fas fa-${c.post_data?'check-circle':'circle'}" style="font-size:9px;color:${c.post_data?'#16a34a':'#cbd5e1'};"></i>
+                        ${c.nome_classe||'—'} <span style="color:#94a3b8;margin-left:2px;">${c.num_studenti||0} stud.</span>
+                    </span>`).join('')}</div>`:''}
             </div>`;
         }).join('');
 
@@ -829,27 +836,17 @@ async function mostraDettaglioBiologo(id){
         </div>
 
         <!-- Info licenza -->
-        <div style="background:#f8fafc;border-radius:14px;padding:14px 16px;margin-bottom:20px;display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:#64748b;">
+        <div style="background:#f8fafc;border-radius:14px;padding:14px 16px;margin-bottom:24px;display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:#64748b;">
             <span><i class="fas fa-calendar-alt" style="color:var(--teal);margin-right:5px;"></i>Iscritto: <b style="color:var(--dark);">${iscr}</b></span>
             <span><i class="fas fa-hourglass-end" style="color:var(--teal);margin-right:5px;"></i>Scadenza: <b style="color:var(--dark);">${scad}</b></span>
-            ${b.valoreContratto>0?`<span><i class="fas fa-euro-sign" style="color:var(--teal);margin-right:5px;"></i>Valore contratti: <b style="color:var(--dark);">${valFmt}</b></span>`:''}
-            ${b.oreContratte>0?`<span><i class="fas fa-clock" style="color:var(--teal);margin-right:5px;"></i>Ore contratte: <b style="color:var(--dark);">${b.oreContratte}h</b></span>`:''}
         </div>
 
-        <!-- SCUOLE -->
-        <div style="margin-bottom:20px;">
-            <h4 style="font-size:13px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
-                <i class="fas fa-school" style="color:var(--teal);"></i> Scuole (${scuole.length})
-            </h4>
-            ${scuoleHtml}
-        </div>
-
-        <!-- CONTRATTI -->
+        <!-- PACCHETTI ATTIVI -->
         <div>
-            <h4 style="font-size:13px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
-                <i class="fas fa-box-open" style="color:var(--teal);"></i> Contratti per Scuola (${scuoleConContratto.length})
+            <h4 style="font-size:13px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;display:flex;align-items:center;gap:6px;">
+                <i class="fas fa-box-open" style="color:var(--teal);"></i> Pacchetti Attivi (${scuole.length})
             </h4>
-            ${contrattiHtml}
+            ${pacchettiHtml}
         </div>
     `;
 }
