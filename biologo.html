@@ -1134,7 +1134,10 @@ function renderClasseDetail(c,scuola){
                 <span style="font-size:9px;font-weight:700;padding:3px 10px;border-radius:99px;background:${stato.bg};color:${stato.col};text-transform:uppercase;">${stato.label}</span>
                 ${haScore?`<span style="background:#d1fae5;color:#065f46;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;">${parseFloat(migVal)>=0?'+':''}${migVal} miglioramento</span>`:''}
             </div>
-            <button onclick="apriModificaClasse('${c.id}')" class="btn-ghost no-print" style="font-size:11px;padding:7px 14px;"><i class="fas fa-edit" style="margin-right:4px;"></i>Modifica dati</button>
+            <div style="display:flex;gap:8px;" class="no-print">
+                <button onclick="apriModificaClasse('${c.id}')" class="btn-ghost" style="font-size:11px;padding:7px 14px;"><i class="fas fa-edit" style="margin-right:4px;"></i>Modifica dati</button>
+                <button onclick="eliminaClasse('${c.id}')" style="background:none;border:1.5px solid #fecaca;color:#ef4444;border-radius:10px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all 0.2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><i class="fas fa-trash"></i>Elimina</button>
+            </div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:${(c.note||c.referente||c.materia)?'14px':'0'};">
             <div style="background:#f8fafc;border-radius:12px;padding:14px;text-align:center;">
@@ -1487,22 +1490,25 @@ function aggiornaScuole(){
                 const prezzolabel=(!isGratuito&&p.prezzo)?(' · €'+p.prezzo.toLocaleString('it-IT')):'';
                 const dataP=p.data_acquisto?new Date(p.data_acquisto).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'})
                     :new Date(p.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'});
-                const clsPac=appState.classi.filter(c=>c.pacchetto_id===p.id||(c.scuola_id===s.id&&!c.pacchetto_id&&pacchetti.indexOf(p)===0));
+                const clsPac=appState.classi.filter(c=>c.pacchetto_id===p.id);
                 const oreUsate=clsPac.reduce((a,c)=>a+oreClasse(c),0);
                 const oreTot=p.ore_totali||0;
                 const pct=oreTot>0?Math.min(100,Math.round((oreUsate/oreTot)*100)):0;
                 const clsHtml=isOpenP?(clsPac.map(c=>{
                     const preOk=!!c.pre_data;const postOk=!!c.post_data;
-                    return `<div onclick="apriClasseDetail('${c.id}')" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:white;border:1.5px solid #e2e8f0;border-radius:9px;margin-bottom:5px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--teal)';this.style.background='#f0fdf9'" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='white'">
-                        <div>
-                            <div style="font-weight:700;font-size:12px;color:var(--dark);">${c.nome_classe}</div>
-                            <div style="font-size:10px;color:#94a3b8;">${c.num_studenti||'—'} studenti</div>
+                    return `<div style="display:flex;align-items:center;gap:4px;margin-bottom:5px;">
+                        <div onclick="apriClasseDetail('${c.id}')" style="flex:1;display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:white;border:1.5px solid #e2e8f0;border-radius:9px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--teal)';this.style.background='#f0fdf9'" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='white'">
+                            <div>
+                                <div style="font-weight:700;font-size:12px;color:var(--dark);">${c.nome_classe}</div>
+                                <div style="font-size:10px;color:#94a3b8;">${c.num_studenti||'—'} studenti</div>
+                            </div>
+                            <div style="display:flex;gap:4px;align-items:center;">
+                                <span style="padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;background:${preOk?'#d1fae5':'#f1f5f9'};color:${preOk?'#065f46':'#94a3b8'};">PRE${preOk?' ✓':''}</span>
+                                <span style="padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;background:${postOk?'#d1fae5':'#f1f5f9'};color:${postOk?'#065f46':'#94a3b8'};">POST${postOk?' ✓':''}</span>
+                                <i class="fas fa-chevron-right" style="font-size:9px;color:#cbd5e1;"></i>
+                            </div>
                         </div>
-                        <div style="display:flex;gap:4px;align-items:center;">
-                            <span style="padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;background:${preOk?'#d1fae5':'#f1f5f9'};color:${preOk?'#065f46':'#94a3b8'};">PRE${preOk?' ✓':''}</span>
-                            <span style="padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;background:${postOk?'#d1fae5':'#f1f5f9'};color:${postOk?'#065f46':'#94a3b8'};">POST${postOk?' ✓':''}</span>
-                            <i class="fas fa-chevron-right" style="font-size:9px;color:#cbd5e1;"></i>
-                        </div>
+                        <button onclick="event.stopPropagation();eliminaClasse('${c.id}')" style="background:none;border:1.5px solid #fecaca;color:#ef4444;border-radius:8px;padding:6px 8px;font-size:10px;cursor:pointer;flex-shrink:0;transition:all 0.2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'" title="Elimina classe"><i class="fas fa-trash"></i></button>
                     </div>`;
                 }).join('')||'<p style="font-size:11px;color:#94a3b8;padding:4px 0 6px;">Nessuna classe</p>'):'';
                 return `<div style="border:1.5px solid #e2e8f0;border-radius:12px;margin-bottom:8px;overflow:hidden;">
@@ -1549,6 +1555,16 @@ function aggiornaScuole(){
             </div>
             ${isOpenS?`<div style="padding:0 16px 16px;border-top:1px solid #f1f5f9;">
                 ${pacchettiBlocchi}
+                ${(()=>{
+                    const orfane=appState.classi.filter(c=>c.scuola_id===s.id&&!c.pacchetto_id);
+                    if(!orfane.length) return '';
+                    return `<div style="margin-top:8px;padding:10px 12px;background:#fff7ed;border:1.5px dashed #fed7aa;border-radius:10px;" class="no-print">
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                            <span style="font-size:11px;color:#c2410c;font-weight:600;"><i class="fas fa-exclamation-circle" style="margin-right:5px;"></i>${orfane.length} class${orfane.length===1?'e':'i'} non assegnat${orfane.length===1?'a':'e'} a nessun pacchetto</span>
+                            <button onclick="eliminaClassiOrfane('${s.id}')" style="background:#ef4444;border:none;color:white;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;">Elimina tutte</button>
+                        </div>
+                    </div>`;
+                })()}
                 <div style="display:flex;gap:8px;margin-top:8px;" class="no-print">
                     <button onclick="event.stopPropagation();apriNuovoPacchetto('${s.id}','${s.nome}')" class="btn-ghost" style="font-size:11px;padding:7px 13px;flex:1;justify-content:center;touch-action:manipulation;"><i class="fas fa-plus" style="margin-right:3px;"></i>Pacchetto</button>
                     <button onclick="event.stopPropagation();generaReport('${s.id}')" class="btn-ghost" style="font-size:11px;padding:7px 13px;touch-action:manipulation;"><i class="fas fa-file-pdf" style="margin-right:3px;color:var(--teal);"></i>Report</button>
@@ -1648,6 +1664,34 @@ async function aggiungiPacchetto(){
     closeModal('pacchettoModal');
     aggiornaScuole();aggiornaDashboard();aggiornaReport();
     showToast(tipo==='gratuito'?'Pacchetto gratuito aggiunto!':'Pacchetto aggiunto (€'+prezzo.toLocaleString('it-IT')+')');
+}
+
+async function eliminaClasse(classeId){
+    const c=appState.classi.find(x=>x.id===classeId);
+    if(!c) return;
+    if(!confirm(`Eliminare la classe "${c.nome_classe}"?\nTutti i dati (moduli, questionari, ore) andranno persi definitivamente.`)) return;
+    const {error}=await db.from('classi').delete().eq('id',classeId);
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    appState.classi=appState.classi.filter(x=>x.id!==classeId);
+    // Se siamo nella vista dettaglio, torna alle scuole
+    const detSection=document.getElementById('sec-classeDetail');
+    if(detSection&&detSection.classList.contains('active')){
+        showSection('scuole',document.querySelector('.nav-item[onclick*=scuole]'));
+    }
+    aggiornaScuole();aggiornaDashboard();
+    showToast('Classe "'+c.nome_classe+'" eliminata ✓');
+}
+
+async function eliminaClassiOrfane(scuolaId){
+    const orfane=appState.classi.filter(c=>c.scuola_id===scuolaId&&!c.pacchetto_id);
+    if(!orfane.length) return;
+    if(!confirm(`Eliminare definitivamente ${orfane.length} class${orfane.length===1?'e':'i'} non assegnate?\nQuesta operazione non può essere annullata.`)) return;
+    const ids=orfane.map(c=>c.id);
+    const {error}=await db.from('classi').delete().in('id',ids);
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    appState.classi=appState.classi.filter(c=>!ids.includes(c.id));
+    aggiornaScuole();aggiornaDashboard();
+    showToast(orfane.length+' class'+( orfane.length===1?'e':'i')+' eliminate ✓');
 }
 
 async function eliminaPacchetto(pacchettoId){
@@ -1904,7 +1948,7 @@ function aggiornaReport(){
         // --- Pacchetti espandibili ---
         const pacchettiHtml=pacchetti.map(p=>{
             const isOpen=_openReportDettagli.has(p.id);
-            const cls=appState.classi.filter(c=>c.pacchetto_id===p.id||(c.scuola_id===s.id&&!c.pacchetto_id&&pacchetti.length===1));
+            const cls=appState.classi.filter(c=>c.pacchetto_id===p.id);
             const isGrat=((p.tipo||'standard')==='gratuito'||p.prezzo===0);
             const tipoLabel=isGrat?'Gratuito':'A Pagamento';
             const oreUsate=cls.reduce((a,c)=>a+oreClasse(c),0);
