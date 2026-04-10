@@ -46,9 +46,6 @@
                 border-top:1px solid rgba(255,255,255,0.1);
                 box-shadow:0 -4px 20px rgba(0,0,0,0.3);
                 z-index:100;
-                transform:translateZ(0);
-                -webkit-transform:translateZ(0);
-                will-change:transform;
             }
             /* Nascondi logo e blocco utente */
             .sidebar > div:first-child,
@@ -388,6 +385,8 @@
         </div>
         <label class="form-label" style="margin-top:14px;">Note del biologo</label>
         <textarea class="form-input" id="classeNote" rows="2" placeholder="Osservazioni, reazioni della classe..."></textarea>
+        <label class="form-label" style="margin-top:14px;">Link Videoconferenza</label>
+        <input class="form-input" type="url" id="classeVideoLink" placeholder="es. https://meet.google.com/abc-defg-hij">
         <div style="display:flex;gap:10px;">
             <button class="btn-ghost" onclick="closeModal('classeModal')">Annulla</button>
             <button class="btn-primary" style="flex:1;" onclick="salvaClasse()"><i class="fas fa-save"></i><span id="classeSalvaLabel">Salva Classe</span></button>
@@ -1788,6 +1787,7 @@ async function salvaClasse(){
     const nome_classe=document.getElementById('classeNome').value.trim();
     const num_studenti=document.getElementById('classeStudenti').value;
     const note=document.getElementById('classeNote').value.trim();
+    const link_videoconferenza=document.getElementById('classeVideoLink').value.trim()||null;
     const scorePre=document.getElementById('scorePre').value;
     const scorePost=document.getElementById('scorePost').value;
     const pre_data=document.getElementById('classePreData').value||null;
@@ -1795,7 +1795,7 @@ async function salvaClasse(){
     const referente=document.getElementById('classeReferente')?.value.trim()||null;
     const materia=document.getElementById('classeMateria')?.value.trim()||null;
     if(!pacchetto_id||!nome_classe){showToast('Seleziona un pacchetto e inserisci il nome classe','error');return;}
-    const payload={scuola_id,pacchetto_id,nome_classe,num_studenti:num_studenti?parseInt(num_studenti):null,note,pre_data,post_data,
+    const payload={scuola_id,pacchetto_id,nome_classe,num_studenti:num_studenti?parseInt(num_studenti):null,note,link_videoconferenza,pre_data,post_data,
         score_pre:scorePre?parseFloat(scorePre):null,score_post:scorePost?parseFloat(scorePost):null,
         referente,materia};
     for(let i=1;i<=6;i++){
@@ -1833,7 +1833,7 @@ function resetClasseModal(){
     _editClasseId=null;
     aggiornaSelectPacchetti();
     renderModuliGrid();
-    ['classeNome','classeStudenti','classeReferente','classeMateria','classeNote','classePreData','classePostData','scorePre','scorePost'].forEach(id=>{
+    ['classeNome','classeStudenti','classeReferente','classeMateria','classeNote','classeVideoLink','classePreData','classePostData','scorePre','scorePost'].forEach(id=>{
         const el=document.getElementById(id);if(el)el.value='';
     });
     document.getElementById('classeModalTitle').textContent='Nuova Classe';
@@ -1858,6 +1858,7 @@ function apriModificaClasse(classeId){
     document.getElementById('classeNome').value=c.nome_classe||'';
     document.getElementById('classeStudenti').value=c.num_studenti||'';
     document.getElementById('classeNote').value=c.note||'';
+    document.getElementById('classeVideoLink').value=c.link_videoconferenza||'';
     document.getElementById('classeReferente').value=c.referente||'';
     document.getElementById('classeMateria').value=c.materia||'';
     document.getElementById('classePreData').value=c.pre_data||'';
@@ -1903,6 +1904,8 @@ function aggiornaClassi(){
                     <span style="font-weight:700;font-size:13px;color:var(--dark);">${nome} — ${c.nome_classe}</span>
                     <span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;background:${stato.bg};color:${stato.col};text-transform:uppercase;">${stato.label}</span>
                     ${haScore?`<span style="font-size:10px;font-weight:700;color:${migVal>=0?'#065f46':'#991b1b'};background:${migVal>=0?'#d1fae5':'#fee2e2'};padding:2px 7px;border-radius:99px;">${migStr}</span>`:''}
+                    ${c.link_videoconferenza?`<a href="${c.link_videoconferenza}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;background:#d1fae5;color:#065f46;font-size:9px;font-weight:700;text-decoration:none;" title="Apri videoconferenza"><i class="fas fa-video"></i></a>`:''}
+
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;margin-top:4px;flex-wrap:wrap;">
                     <span style="font-size:11px;color:#94a3b8;">${oreT}h · ${c.num_studenti||'—'} studenti</span>
@@ -2231,6 +2234,13 @@ async function generaReport(scuolaId, pacchettoId, classeId) {
             <span style="font-size:11px;color:rgba(255,255,255,0.45);">📝 Versioni ${vLabel}</span>
         </div>
     </div>
+
+    ${classeId && cls[0].link_videoconferenza ? `
+    <div style="background:#f0fdf9;border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <i class="fas fa-video" style="color:var(--teal);font-size:12px;flex-shrink:0;"></i>
+        <span style="font-size:11px;color:#475569;font-weight:600;flex-shrink:0;">Videoconferenza:</span>
+        <a href="${cls[0].link_videoconferenza}" target="_blank" style="font-size:11px;color:var(--teal);font-weight:600;text-decoration:none;word-break:break-all;">${cls[0].link_videoconferenza}</a>
+    </div>` : ''}
 
     <!-- KPI -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;">
@@ -3268,7 +3278,7 @@ db.auth.onAuthStateChange(async (event, session) => {
         catch(err){ console.error('Init error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
     } else if(event === 'SIGNED_OUT'){
         Object.keys(localStorage).filter(k=>k.startsWith('sane_')).forEach(k=>localStorage.removeItem(k));
-        appState={utente:null,scuole:[],pacchetti:[],classi:[]};
+        appState={utente:null,scuole:[],pacchetti:[],classi:[],autovalutazioni:[]};
         hideInitLoader();
         document.getElementById('appShell').style.opacity='0';
         setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'),300);

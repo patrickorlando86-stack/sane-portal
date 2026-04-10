@@ -604,10 +604,11 @@ function aggiornaDashboard(){
     document.getElementById('kpiScadute').textContent   = scadute;
     document.getElementById('kpiTotali').textContent    = b.length;
 
-    // KPI nazionali
-    const totScuole   = b.reduce((a,x)=>a+(x.scuole||0),0);
-    const totClassi   = b.reduce((a,x)=>a+(x.classi||0),0);
-    const conMig = b.filter(x=>x.miglioramento);
+    // KPI nazionali (solo biologi attivi)
+    const bAttivi = b.filter(x=>x.stato==='active');
+    const totScuole   = bAttivi.reduce((a,x)=>a+(x.scuole||0),0);
+    const totClassi   = bAttivi.reduce((a,x)=>a+(x.classi||0),0);
+    const conMig = bAttivi.filter(x=>x.miglioramento);
     const mediaMig = conMig.length>0 ? (conMig.reduce((a,x)=>a+x.miglioramento,0)/conMig.length).toFixed(1) : '—';
 
     document.getElementById('kpiScuoleNaz').textContent    = totScuole;
