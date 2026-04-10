@@ -531,10 +531,12 @@ async function caricaDati(){
             .neq('stato','eliminato')
             .order('data_iscrizione',{ascending:false});
     }
-    const [{ data: scuoleRaw }, { data: classiRaw }] = await Promise.all([
-        db.from('scuole').select('biologo_id, pacchetto, ore_totali, prezzo, anno_scolastico'),
+    const [scuoleRes, classiRes] = await Promise.all([
+        db.from('scuole').select('biologo_id'),
         db.from('classi').select('biologo_id, score_pre, score_post, num_studenti')
     ]);
+    const scuoleRaw = scuoleRes.data;
+    const classiRaw = classiRes.data;
     const profiles = profilesRes.data;
     adminState.biologi = (profiles||[]).map(p => {
         const sc  = (scuoleRaw||[]).filter(s=>s.biologo_id===p.id);
