@@ -1657,11 +1657,24 @@ async function aggiungiPacchetto(){
 }
 
 async function eliminaPacchetto(pacchettoId){
-    if(!confirm('Eliminare questo pacchetto? Le classi collegate rimarranno ma perderanno il riferimento.'))return;
+    const classiCollegate=appState.classi.filter(c=>c.pacchetto_id===pacchettoId);
+    const msg=classiCollegate.length>0
+        ?`Eliminare questo pacchetto?\n\n${classiCollegate.length} class${classiCollegate.length===1?'e':'i'} collegate verranno scollegate dal pacchetto ma non eliminate.`
+        :'Eliminare questo pacchetto?';
+    if(!confirm(msg))return;
+    // Prima scollega le classi collegate (imposta pacchetto_id = NULL)
+    if(classiCollegate.length>0){
+        const ids=classiCollegate.map(c=>c.id);
+        const {error:errCl}=await db.from('classi').update({pacchetto_id:null}).in('id',ids);
+        if(errCl){showToast('Errore scollegamento classi: '+errCl.message,'error');return;}
+        // Aggiorna stato locale
+        classiCollegate.forEach(c=>{ c.pacchetto_id=null; });
+    }
     const {error}=await db.from('pacchetti').delete().eq('id',pacchettoId);
     if(error){showToast('Errore: '+error.message,'error');return;}
     appState.pacchetti=appState.pacchetti.filter(p=>p.id!==pacchettoId);
-    aggiornaScuole();showToast('Pacchetto eliminato');
+    aggiornaScuole();aggiornaDashboard();
+    showToast('Pacchetto eliminato'+(classiCollegate.length>0?' · '+classiCollegate.length+' classi scollegatе':''));
 }
 
 function apriNuovaClassePerPacchetto(scuolaId,pacchettoId){
