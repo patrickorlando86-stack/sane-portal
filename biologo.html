@@ -56,7 +56,7 @@
                 display:flex !important;
                 flex-direction:row;
                 padding:0;
-                overflow-x:auto;
+                overflow-x:hidden;
                 scrollbar-width:none;
             }
             .sidebar nav::-webkit-scrollbar{display:none;}
@@ -240,6 +240,21 @@
         <div id="signupFields" style="display:none;">
             <label class="form-label" style="color:rgba(255,255,255,0.4);">Nome e Cognome</label>
             <input class="login-input" type="text" id="loginNome" placeholder="es. Serafina Cardaci">
+            <!-- Consensi obbligatori -->
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;margin-bottom:16px;">
+                <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+                    <input type="checkbox" id="consentoTermini" style="margin-top:2px;accent-color:var(--teal);width:15px;height:15px;flex-shrink:0;">
+                    <span style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Ho letto e accetto i <a href="https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/termini-di-servizio.md" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;font-weight:600;">Termini di Servizio</a></span>
+                </label>
+                <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+                    <input type="checkbox" id="consentoPrivacy" style="margin-top:2px;accent-color:var(--teal);width:15px;height:15px;flex-shrink:0;">
+                    <span style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Ho letto l'<a href="https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/informativa-privacy.md" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;font-weight:600;">Informativa Privacy</a> e acconsento al trattamento dei miei dati personali</span>
+                </label>
+                <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+                    <input type="checkbox" id="consentoDati" style="margin-top:2px;accent-color:var(--teal);width:15px;height:15px;flex-shrink:0;">
+                    <span style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Acconsento alla <a href="https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/consenso-dati-ricerca.md" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;font-weight:600;">condivisione dei dati aggregati</a> del programma con S.A.N.E. Italia per finalità di ricerca e sviluppo</span>
+                </label>
+            </div>
         </div>
         <button id="loginBtn" onclick="doLogin()" style="width:100%;background:var(--teal);color:white;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:background 0.2s;">Accedi al Portale</button>
         <p style="color:rgba(255,255,255,0.35);font-size:12px;text-align:center;margin-top:16px;">
@@ -478,20 +493,20 @@
             </div>
             <!-- 4 KPI -->
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;" class="kpi-grid">
-                <div class="kpi-card">
+                <div class="kpi-card" style="cursor:pointer;" onclick="showSection('scuole',document.querySelector('.nav-item[onclick*=scuole]'))" title="Vai alle Scuole">
                     <div class="kpi-val" id="kpiPacchetti">0</div>
                     <div class="kpi-lbl" id="kpiPacchettiLbl">Pacchetti</div>
                     <div id="kpiPacchettiSub" style="font-size:9px;color:#94a3b8;margin-top:4px;font-weight:400;letter-spacing:0.01em;"></div>
                 </div>
-                <div class="kpi-card">
+                <div class="kpi-card" style="cursor:pointer;" onclick="showSection('scuole',document.querySelector('.nav-item[onclick*=scuole]'))" title="Vai alle Scuole">
                     <div class="kpi-val" id="kpiClassi">0</div>
                     <div class="kpi-lbl" id="kpiClassiLbl">Classi</div>
                 </div>
-                <div class="kpi-card teal">
+                <div class="kpi-card teal" style="cursor:pointer;" onclick="showSection('scuole',document.querySelector('.nav-item[onclick*=scuole]'))" title="Vai alle Scuole">
                     <div class="kpi-val" id="kpiStudenti">0</div>
                     <div class="kpi-lbl" id="kpiStudentiLbl">Studenti</div>
                 </div>
-                <div class="kpi-card">
+                <div class="kpi-card" style="cursor:pointer;" onclick="showSection('report',document.querySelector('.nav-item[onclick*=report]'))" title="Vai al Report">
                     <div class="kpi-val" id="kpiMiglioramento">—</div>
                     <div class="kpi-lbl">Migliorm. PRE→POST</div>
                 </div>
@@ -897,6 +912,7 @@ async function doLogin(){
     if(_authMode==='signup'){
         const nome=document.getElementById('loginNome').value.trim();
         if(!nome){showToast('Inserisci il tuo nome','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
+        if(!document.getElementById('consentoTermini').checked||!document.getElementById('consentoPrivacy').checked||!document.getElementById('consentoDati').checked){showToast('Accetta tutti i consensi obbligatori per procedere','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
         const {error}=await db.auth.signUp({email,password:pass,options:{data:{nome}}});
         if(error){showToast(error.message,'error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
         showToast('Account creato! Controlla la tua email per confermare.');
@@ -1328,8 +1344,8 @@ function aggiornaScuole(){
     if(appState.scuole.length===0){
         grid.innerHTML='<p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Nessuna scuola ancora. <a href="#" onclick="openModal(\'nuovaScuolaModal\')" style="color:var(--teal);font-weight:600;">Aggiungine una</a></p>';return;
     }
-    grid.innerHTML=appState.scuole.map(s=>{
-        const pacchetti=appState.pacchetti.filter(p=>p.scuola_id===s.id).sort((a,b)=>new Date(a.data_acquisto||a.created_at)-new Date(b.data_acquisto||b.created_at));
+    grid.innerHTML=[...appState.scuole].sort((a,b)=>a.nome.localeCompare(b.nome,'it')).map(s=>{
+        const pacchetti=appState.pacchetti.filter(p=>p.scuola_id===s.id).sort((a,b)=>new Date(b.data_acquisto||b.created_at)-new Date(a.data_acquisto||a.created_at));
         const tutteClassi=appState.classi.filter(c=>c.scuola_id===s.id);
         const totStudenti=tutteClassi.reduce((a,c)=>a+(c.num_studenti||0),0);
         const conScore=tutteClassi.filter(c=>c.score_pre!=null&&c.score_post!=null);

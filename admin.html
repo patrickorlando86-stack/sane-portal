@@ -271,6 +271,23 @@
     <div class="modal-box" id="dettaglioBiologoContent" style="max-width:680px;width:100%;"></div>
 </div>
 
+<!-- MODAL RISPOSTE AUTOVALUTAZIONE (ADMIN) -->
+<div class="modal-overlay" id="adminRisposteModal" onclick="if(event.target===this)closeModal('adminRisposteModal')">
+    <div class="modal-box" style="max-width:680px;width:100%;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+            <div>
+                <h3 id="adminRisposteTitolo" style="font-size:18px;font-weight:800;color:var(--dark);margin:0;"></h3>
+                <div style="display:flex;gap:14px;margin-top:6px;flex-wrap:wrap;">
+                    <span id="adminRisposteAnno" style="font-size:12px;color:#64748b;"></span>
+                    <span style="font-size:12px;color:#64748b;">Punteggio: <b id="adminRispostePunteggio" style="color:var(--teal);font-size:14px;"></b></span>
+                </div>
+            </div>
+            <button onclick="closeModal('adminRisposteModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:20px;flex-shrink:0;margin-left:12px;"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="adminRisposteDettaglio"></div>
+    </div>
+</div>
+
 <!-- APP -->
 <div id="appShell" style="opacity:0;transition:opacity 0.5s;">
 
@@ -306,8 +323,8 @@
             <div class="nav-item" onclick="showSection('nazionale',this)">
                 <i class="fas fa-map-marked-alt"></i><span class="label">Dati Nazionali</span>
             </div>
-            <div class="nav-item" onclick="window.location.href='biologo.html'" style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.07);padding-top:10px;">
-                <i class="fas fa-user" style="color:var(--teal);"></i><span class="label" style="color:rgba(255,255,255,0.5);font-size:12px;">Portale Biologo</span>
+            <div class="nav-item" onclick="showSection('autovalutazioni',this)">
+                <i class="fas fa-clipboard-check"></i><span class="label">Autovalutazioni</span>
             </div>
         </nav>
 
@@ -341,10 +358,10 @@
 
             <!-- KPI LICENZE -->
             <div class="kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;">
-                <div class="kpi-card teal"><div class="kpi-val" id="kpiAttive">0</div><div class="kpi-lbl">Licenze Attive</div></div>
-                <div class="kpi-card orange"><div class="kpi-val" id="kpiPending">0</div><div class="kpi-lbl">In Attesa</div></div>
-                <div class="kpi-card"><div class="kpi-val" id="kpiScadute">0</div><div class="kpi-lbl">Scadute</div></div>
-                <div class="kpi-card dark"><div class="kpi-val" id="kpiTotali">0</div><div class="kpi-lbl">Biologi Totali</div></div>
+                <div class="kpi-card teal" style="cursor:pointer;" onclick="showSection('licenze',document.querySelector('.nav-item[onclick*=licenze]'))" title="Vedi licenze attive"><div class="kpi-val" id="kpiAttive">0</div><div class="kpi-lbl">Licenze Attive</div></div>
+                <div class="kpi-card orange" style="cursor:pointer;" onclick="showSection('licenze',document.querySelector('.nav-item[onclick*=licenze]'))" title="Vedi biologi in attesa"><div class="kpi-val" id="kpiPending">0</div><div class="kpi-lbl">In Attesa</div></div>
+                <div class="kpi-card" style="cursor:pointer;" onclick="showSection('licenze',document.querySelector('.nav-item[onclick*=licenze]'))" title="Vedi licenze scadute"><div class="kpi-val" id="kpiScadute">0</div><div class="kpi-lbl">Scadute</div></div>
+                <div class="kpi-card dark" style="cursor:pointer;" onclick="showSection('licenze',document.querySelector('.nav-item[onclick*=licenze]'))" title="Vedi tutti i biologi"><div class="kpi-val" id="kpiTotali">0</div><div class="kpi-lbl">Biologi Totali</div></div>
             </div>
 
             <!-- KPI NAZIONALI -->
@@ -355,7 +372,7 @@
                 </div>
                 <div class="card" style="text-align:center;">
                     <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:var(--teal);" id="kpiSessioniNaz">0</div>
-                    <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;">Sessioni Totali</div>
+                    <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;">Classi Totali</div>
                 </div>
                 <div class="card" style="text-align:center;">
                     <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:var(--teal);" id="kpiMiglioramentoNaz">—</div>
@@ -419,13 +436,13 @@
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:28px;">
                 <div class="kpi-card teal"><div class="kpi-val" id="nazStudenti">0</div><div class="kpi-lbl">Studenti Monitorati</div></div>
                 <div class="kpi-card"><div class="kpi-val" id="nazScuole">0</div><div class="kpi-lbl">Scuole</div></div>
-                <div class="kpi-card"><div class="kpi-val" id="nazSessioni">0</div><div class="kpi-lbl">Sessioni</div></div>
+                <div class="kpi-card"><div class="kpi-val" id="nazSessioni">0</div><div class="kpi-lbl">Classi</div></div>
                 <div class="kpi-card dark"><div class="kpi-val" id="nazMiglioramento">—</div><div class="kpi-lbl">Miglioramento Medio</div></div>
             </div>
 
             <!-- TOP BIOLOGI -->
             <div class="card" style="margin-bottom:18px;">
-                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:18px;">🏆 Top Biologi per Sessioni</h4>
+                <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:18px;">🏆 Top Biologi per Classi</h4>
                 <div id="topBiologi"></div>
             </div>
 
@@ -440,6 +457,24 @@
             </div>
         </section>
 
+        <!-- AUTOVALUTAZIONI -->
+        <section id="sec-autovalutazioni" class="section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
+                <div>
+                    <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Autovalutazioni Scuole</h2>
+                    <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Questionari compilati dalle scuole del programma</p>
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;" class="no-print">
+                <button onclick="filtraAdminAutov('tutte')" id="autovFiltro-tutte" style="background:var(--dark);color:white;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">Tutte</button>
+                <button onclick="filtraAdminAutov('attesa')" id="autovFiltro-attesa" style="background:#f1f5f9;color:#64748b;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">In attesa</button>
+                <button onclick="filtraAdminAutov('completata')" id="autovFiltro-completata" style="background:#f1f5f9;color:#64748b;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">Completate</button>
+                <button onclick="filtraAdminAutov('certificata')" id="autovFiltro-certificata" style="background:#f1f5f9;color:#64748b;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">Certificate</button>
+            </div>
+            <div class="card">
+                <div id="adminAutovList"></div>
+            </div>
+        </section>
 
     </main>
 </div>
@@ -496,32 +531,26 @@ async function caricaDati(){
             .neq('stato','eliminato')
             .order('data_iscrizione',{ascending:false});
     }
-    const [{ data: scuoleRaw }, { data: sessioniRaw }, { data: pacchettiRaw }] = await Promise.all([
-        db.from('scuole').select('biologo_id'),
-        db.from('sessioni').select('biologo_id, score_pre, score_post'),
-        db.from('pacchetti').select('biologo_id, tipo, ore_totali, prezzo')
+    const [{ data: scuoleRaw }, { data: classiRaw }] = await Promise.all([
+        db.from('scuole').select('biologo_id, pacchetto, ore_totali, prezzo, anno_scolastico'),
+        db.from('classi').select('biologo_id, score_pre, score_post, num_studenti')
     ]);
     const profiles = profilesRes.data;
-    // Aggrega pacchetti per biologo
-    const pMap = {};
-    (pacchettiRaw||[]).forEach(p=>{
-        if(!pMap[p.biologo_id]) pMap[p.biologo_id]={count:0,ore:0,valore:0};
-        pMap[p.biologo_id].count++;
-        pMap[p.biologo_id].ore += p.ore_totali||0;
-        pMap[p.biologo_id].valore += p.prezzo||0;
-    });
     adminState.biologi = (profiles||[]).map(p => {
         const sc  = (scuoleRaw||[]).filter(s=>s.biologo_id===p.id);
-        const se  = (sessioniRaw||[]).filter(s=>s.biologo_id===p.id);
-        const seS = se.filter(s=>s.score_pre&&s.score_post);
-        const mig = seS.length>0
-            ? Math.round((seS.reduce((a,s)=>a+(parseFloat(s.score_post)-parseFloat(s.score_pre)),0)/seS.length)*10)/10
+        const cl  = (classiRaw||[]).filter(c=>c.biologo_id===p.id);
+        const clS = cl.filter(c=>c.score_pre&&c.score_post);
+        const mig = clS.length>0
+            ? Math.round((clS.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/clS.length)*10)/10
             : null;
-        const pk = pMap[p.id]||{count:0,ore:0,valore:0};
+        const studenti = cl.reduce((a,c)=>a+(c.num_studenti||0),0);
+        const oreContratte = sc.reduce((a,s)=>a+(s.ore_totali||0),0);
+        const valoreContratto = sc.reduce((a,s)=>a+(s.prezzo||0),0);
         return { id:p.id, nome:p.nome||p.email, email:p.email, regione:p.regione||'—',
                  ordine:p.ordine||'—', stato:p.stato, scadenza:p.scadenza,
-                 dataIscrizione:p.data_iscrizione, scuole:sc.length, sessioni:se.length, miglioramento:mig,
-                 numPacchetti:pk.count, oreContratte:pk.ore, valoreContratto:pk.valore,
+                 dataIscrizione:p.data_iscrizione, scuole:sc.length, classi:cl.length,
+                 studenti, miglioramento:mig,
+                 oreContratte, valoreContratto,
                  isAdmin: p.role==='admin' };
     });
 }
@@ -543,6 +572,7 @@ function showSection(id, el){
     if(id==='dashboard') aggiornaDashboard();
     if(id==='licenze') aggiornaLicenze();
     if(id==='nazionale') aggiornaNazionale();
+    if(id==='autovalutazioni') aggiornaAdminAutovalutazioni();
 }
 
 // ============================================================
@@ -562,12 +592,12 @@ function aggiornaDashboard(){
 
     // KPI nazionali
     const totScuole   = b.reduce((a,x)=>a+(x.scuole||0),0);
-    const totSessioni = b.reduce((a,x)=>a+(x.sessioni||0),0);
+    const totClassi   = b.reduce((a,x)=>a+(x.classi||0),0);
     const conMig = b.filter(x=>x.miglioramento);
     const mediaMig = conMig.length>0 ? (conMig.reduce((a,x)=>a+x.miglioramento,0)/conMig.length).toFixed(1) : '—';
 
     document.getElementById('kpiScuoleNaz').textContent    = totScuole;
-    document.getElementById('kpiSessioniNaz').textContent  = totSessioni;
+    document.getElementById('kpiSessioniNaz').textContent  = totClassi;
     document.getElementById('kpiMiglioramentoNaz').textContent = conMig.length>0 ? '+'+mediaMig : '—';
 
     // Licenze in scadenza (30 giorni)
@@ -641,6 +671,8 @@ function aggiornaLicenze(){
         const color = colors[i % colors.length];
         const badge = badgeHtml(b.stato);
         const scad = b.scadenza ? new Date(b.scadenza).toLocaleDateString('it-IT') : '—';
+        const iscr = b.dataIscrizione ? new Date(b.dataIscrizione).toLocaleDateString('it-IT') : '—';
+        const scadColor = b.scadenza && new Date(b.scadenza) < new Date() ? '#dc2626' : 'var(--dark)';
         const valFmt = b.valoreContratto>0 ? '€'+b.valoreContratto.toLocaleString('it-IT') : '—';
         return `<div class="bio-row">
             <div class="bio-avatar" style="background:${color};">${b.nome.charAt(0)}</div>
@@ -653,14 +685,17 @@ function aggiornaLicenze(){
                 <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
                     ${badge}
                     <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.scuole} scuole</span>
-                    <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.sessioni} sessioni</span>
-                    ${b.numPacchetti>0 ? `<span style="font-size:10px;color:#1e40af;background:#dbeafe;padding:2px 8px;border-radius:6px;font-weight:700;">${b.numPacchetti} pkgs · ${b.oreContratte}h · ${valFmt}</span>` : ''}
+                    <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.classi} classi</span>
+                    ${b.studenti>0 ? `<span style="font-size:10px;color:#64748b;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.studenti} studenti</span>` : ''}
+                    ${(b.oreContratte>0||b.valoreContratto>0) ? `<span style="font-size:10px;color:#1e40af;background:#dbeafe;padding:2px 8px;border-radius:6px;font-weight:700;">${b.oreContratte}h contratte${b.valoreContratto>0?' · '+valFmt:''}</span>` : ''}
                     ${b.miglioramento ? `<span style="font-size:10px;color:#065f46;background:#d1fae5;padding:2px 8px;border-radius:6px;">+${b.miglioramento} mig.</span>` : ''}
                 </div>
             </div>
             <div style="text-align:right;flex-shrink:0;">
-                <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">Scadenza</div>
-                <div style="font-weight:700;font-size:13px;color:var(--dark);margin-bottom:10px;">${scad}</div>
+                <div style="font-size:10px;color:#94a3b8;margin-bottom:2px;">Iscrizione</div>
+                <div style="font-size:12px;color:var(--dark);margin-bottom:8px;">${iscr}</div>
+                <div style="font-size:10px;color:#94a3b8;margin-bottom:2px;">Scadenza</div>
+                <div style="font-weight:700;font-size:13px;color:${scadColor};margin-bottom:10px;">${scad}</div>
                 <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;">
                     <button onclick="mostraDettaglioBiologo('${b.id}')" style="background:#f0fdf9;border:1.5px solid var(--teal);color:var(--teal);border-radius:8px;font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;"><i class="fas fa-eye"></i> Dettaglio</button>
                     ${b.stato==='pending' ? `<button class="btn-success" data-id="${b.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check" style="margin-right:4px;"></i>Approva</button>` : ''}
@@ -682,24 +717,20 @@ async function mostraDettaglioBiologo(id){
     document.getElementById('dettaglioBiologoModal').classList.add('open');
 
     // Fetch dati live
-    const [scuoleRes, pacchettiRes, classiRes, sessioniRes] = await Promise.all([
-        db.from('scuole').select('id, nome, comune').eq('biologo_id', id),
-        db.from('pacchetti').select('id, tipo, ore_totali, prezzo, anno_scolastico, data_inizio').eq('biologo_id', id).order('data_inizio', {ascending:false}),
-        db.from('classi').select('id, nome, num_studenti, scuola_id, stato').eq('biologo_id', id),
-        db.from('sessioni').select('id, tipo, data, score_pre, score_post, note, scuola_id').eq('biologo_id', id).order('data', {ascending:false})
+    const [scuoleRes, classiRes] = await Promise.all([
+        db.from('scuole').select('id, nome, comune, pacchetto, ore_totali, prezzo, anno_scolastico').eq('biologo_id', id),
+        db.from('classi').select('id, nome_classe, num_studenti, scuola_id, stato, score_pre, score_post').eq('biologo_id', id)
     ]);
 
-    const scuole   = scuoleRes.data   || [];
-    const pacchetti= pacchettiRes.data || [];
-    const classi   = classiRes.data   || [];
-    const sessioni = sessioniRes.data  || [];
+    const scuole = scuoleRes.data || [];
+    const classi = classiRes.data || [];
 
     // Calcola KPI
     const totStudenti = classi.reduce((a,c)=>a+(c.num_studenti||0),0);
     const classiComplete = classi.filter(c=>c.stato==='completata'||c.stato==='certificata').length;
-    const sessCon = sessioni.filter(s=>s.score_pre&&s.score_post);
-    const migMedia = sessCon.length>0
-        ? (sessCon.reduce((a,s)=>a+(parseFloat(s.score_post)-parseFloat(s.score_pre)),0)/sessCon.length).toFixed(1)
+    const classiConMig = classi.filter(c=>c.score_pre&&c.score_post);
+    const migMedia = classiConMig.length>0
+        ? (classiConMig.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/classiConMig.length).toFixed(1)
         : null;
 
     const scad = b.scadenza ? new Date(b.scadenza).toLocaleDateString('it-IT') : '—';
@@ -729,28 +760,30 @@ async function mostraDettaglioBiologo(id){
                 </div>
                 ${cl.length>0 ? `<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;">${cl.map(c=>`
                     <span style="background:#f1f5f9;color:#475569;border-radius:7px;padding:3px 9px;font-size:11px;">
-                        ${c.nome||'—'} <span style="color:#94a3b8;">(${c.num_studenti||0} stud.)</span>
+                        ${c.nome_classe||'—'} <span style="color:#94a3b8;">(${c.num_studenti||0} stud.)</span>
                     </span>`).join('')}</div>` : ''}
             </div>`;
         }).join('');
 
-    // HTML pacchetti
-    const pacchettiHtml = pacchetti.length===0
-        ? '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:16px;">Nessun pacchetto</p>'
-        : pacchetti.map(p=>{
-            const isGrat = p.tipo==='gratuito';
-            const prz = p.prezzo>0 ? '€'+p.prezzo.toLocaleString('it-IT') : '—';
+    // HTML contratti per scuola (pacchetto/ore/prezzo ora sono sulla tabella scuole)
+    const scuoleConContratto = scuole.filter(s=>s.pacchetto||s.ore_totali||s.prezzo);
+    const contrattiHtml = scuoleConContratto.length===0
+        ? '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:16px;">Nessun contratto registrato</p>'
+        : scuoleConContratto.map(s=>{
+            const isGrat = s.pacchetto==='gratuito';
+            const prz = s.prezzo>0 ? '€'+s.prezzo.toLocaleString('it-IT') : '—';
+            const pkLabel = s.pacchetto ? (s.pacchetto.charAt(0).toUpperCase()+s.pacchetto.slice(1)) : '—';
             return `<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:#f8fafc;border-radius:12px;margin-bottom:8px;flex-wrap:wrap;">
                 <div style="width:36px;height:36px;border-radius:10px;background:${isGrat?'#dcfce7':'#dbeafe'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <i class="fas ${isGrat?'fa-gift':'fa-handshake'}" style="color:${isGrat?'#16a34a':'#1e40af'};font-size:14px;"></i>
                 </div>
                 <div style="flex:1;min-width:0;">
-                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${isGrat?'Gratuito':'A Pagamento'}</div>
-                    <div style="font-size:11px;color:#64748b;margin-top:1px;">${p.anno_scolastico||'—'}</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${s.nome||'—'}</div>
+                    <div style="font-size:11px;color:#64748b;margin-top:1px;">${pkLabel}${s.anno_scolastico?' · '+s.anno_scolastico:''}</div>
                 </div>
                 <div style="text-align:right;flex-shrink:0;">
                     <div style="font-weight:700;font-size:14px;color:var(--dark);">${isGrat?'—':prz}</div>
-                    <div style="font-size:11px;color:#94a3b8;">${p.ore_totali||0}h previste</div>
+                    <div style="font-size:11px;color:#94a3b8;">${s.ore_totali||0}h previste</div>
                 </div>
             </div>`;
         }).join('');
@@ -811,12 +844,12 @@ async function mostraDettaglioBiologo(id){
             ${scuoleHtml}
         </div>
 
-        <!-- PACCHETTI -->
+        <!-- CONTRATTI -->
         <div>
             <h4 style="font-size:13px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
-                <i class="fas fa-box-open" style="color:var(--teal);"></i> Pacchetti (${pacchetti.length})
+                <i class="fas fa-box-open" style="color:var(--teal);"></i> Contratti per Scuola (${scuoleConContratto.length})
             </h4>
-            ${pacchettiHtml}
+            ${contrattiHtml}
         </div>
     `;
 }
@@ -913,18 +946,18 @@ async function aggiungiBiologo(){
 function aggiornaNazionale(){
     const b = adminState.biologi.filter(x=>x.stato==='active');
     const totScuole   = b.reduce((a,x)=>a+(x.scuole||0),0);
-    const totSessioni = b.reduce((a,x)=>a+(x.sessioni||0),0);
-    const totStudenti = totSessioni * 22;
+    const totClassi   = b.reduce((a,x)=>a+(x.classi||0),0);
+    const totStudenti = b.reduce((a,x)=>a+(x.studenti||0),0);
     const conMig = b.filter(x=>x.miglioramento);
     const mediaMig = conMig.length>0 ? '+' + (conMig.reduce((a,x)=>a+x.miglioramento,0)/conMig.length).toFixed(1) : '—';
 
     document.getElementById('nazStudenti').textContent    = totStudenti;
     document.getElementById('nazScuole').textContent      = totScuole;
-    document.getElementById('nazSessioni').textContent    = totSessioni;
+    document.getElementById('nazSessioni').textContent    = totClassi;
     document.getElementById('nazMiglioramento').textContent = mediaMig;
 
     // Top biologi
-    const top = [...adminState.biologi].sort((a,b)=>(b.sessioni||0)-(a.sessioni||0)).slice(0,5);
+    const top = [...adminState.biologi].sort((a,b)=>(b.classi||0)-(a.classi||0)).slice(0,5);
     document.getElementById('topBiologi').innerHTML = top.map((b,i)=>`
         <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #f1f5f9;">
             <div style="width:28px;height:28px;background:${i===0?'#F4A261':i===1?'#94a3b8':i===2?'#d97706':'#e2e8f0'};border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:white;flex-shrink:0;">#${i+1}</div>
@@ -933,8 +966,8 @@ function aggiornaNazionale(){
                 <div style="font-size:11px;color:#94a3b8;">${b.regione}</div>
             </div>
             <div style="text-align:right;">
-                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--teal);">${b.sessioni}</div>
-                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;">Sessioni</div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--teal);">${b.classi||0}</div>
+                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;">Classi</div>
             </div>
         </div>`).join('');
 }
@@ -943,10 +976,10 @@ function aggiornaNazionale(){
 // EXPORT CSV
 // ============================================================
 function exportCSV(){
-    const headers = ['Nome','Email','Regione','Ordine','Stato','Scadenza','Scuole','Sessioni','Miglioramento Medio'];
+    const headers = ['Nome','Email','Regione','Ordine','Stato','Scadenza','Scuole','Classi','Studenti','Miglioramento Medio'];
     const rows = adminState.biologi.map(b=>[
         b.nome, b.email, b.regione, b.ordine, b.stato,
-        b.scadenza||'—', b.scuole, b.sessioni,
+        b.scadenza||'—', b.scuole, b.classi||0, b.studenti||0,
         b.miglioramento ? '+'+b.miglioramento : '—'
     ]);
     const csv = [headers, ...rows].map(r=>r.join(',')).join('\n');
@@ -961,6 +994,221 @@ function exportCSV(){
 // ============================================================
 // EXPORT CSV (invariato, usa adminState.biologi già caricati)
 // ============================================================
+
+// ============================================================
+// AUTOVALUTAZIONI (ADMIN)
+// ============================================================
+const AREE_AUTOV_ADMIN = ['Mensa e Refezione','Educazione Alimentare','Ambiente e Spazi','Sicurezza Alimentare','Attività Fisica e Benessere'];
+const DOMANDE_AUTOV_ADMIN = [
+    {area:1,testo:'La scuola ha una mensa scolastica attiva'},
+    {area:1,testo:'Il menù è approvato da un nutrizionista o ASL'},
+    {area:1,testo:'Sono previsti menù alternativi per allergie e intolleranze'},
+    {area:1,testo:'Viene comunicato il menù settimanale alle famiglie'},
+    {area:1,testo:'Esiste un protocollo scritto per la gestione delle allergie gravi'},
+    {area:2,testo:'Vengono svolte attività di educazione alimentare durante l\'anno'},
+    {area:2,testo:'Gli insegnanti hanno ricevuto formazione specifica sull\'alimentazione'},
+    {area:2,testo:'La scuola utilizza strumenti digitali per l\'educazione alimentare'},
+    {area:2,testo:'Sono coinvolte le famiglie nelle attività di educazione alimentare'},
+    {area:2,testo:'Esiste un progetto strutturato pluriennale sull\'alimentazione'},
+    {area:3,testo:'Sono disponibili distributori di acqua potabile'},
+    {area:3,testo:'Gli spazi per la consumazione dei pasti sono adeguati'},
+    {area:3,testo:'È garantito un tempo sufficiente per il pasto'},
+    {area:3,testo:'L\'ambiente mensa è pulito e confortevole'},
+    {area:3,testo:'Sono presenti aree verdi o orti scolastici'},
+    {area:4,testo:'Il personale di cucina è formato sulla sicurezza alimentare'},
+    {area:4,testo:'Esiste un piano HACCP aggiornato'},
+    {area:4,testo:'Vengono effettuati controlli periodici sulle forniture'},
+    {area:4,testo:'Il personale conosce i 14 allergeni principali'},
+    {area:4,testo:'Esiste un registro aggiornato degli alunni con allergie certificate'},
+    {area:5,testo:'Sono previste almeno 2 ore di educazione fisica settimanale'},
+    {area:5,testo:'Vengono promosse attività motorie durante le pause'},
+    {area:5,testo:'Esiste una collaborazione con associazioni sportive del territorio'},
+    {area:5,testo:'Viene monitorato il benessere psicofisico degli studenti'},
+    {area:5,testo:'La scuola partecipa a progetti regionali o nazionali sulla salute'},
+];
+
+let _adminAutov = [];
+let _adminAutovFiltro = 'tutte';
+
+async function aggiornaAdminAutovalutazioni(){
+    const list = document.getElementById('adminAutovList');
+    list.innerHTML = '<p style="text-align:center;color:#94a3b8;padding:40px;"><i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i>Caricamento...</p>';
+    const { data, error } = await db.from('autovalutazioni')
+        .select('*, scuole!scuola_id(nome,comune), profiles!biologo_id(nome)')
+        .order('created_at',{ascending:false});
+    if(error){
+        list.innerHTML='<p style="text-align:center;color:#94a3b8;padding:40px;">Errore: '+error.message+'</p>';
+        return;
+    }
+    _adminAutov = data||[];
+    renderAdminAutovalutazioni();
+}
+
+function filtraAdminAutov(filtro){
+    _adminAutovFiltro = filtro;
+    document.querySelectorAll('[id^=autovFiltro-]').forEach(b=>{ b.style.background='#f1f5f9'; b.style.color='#64748b'; });
+    const btn = document.getElementById('autovFiltro-'+filtro);
+    if(btn){ btn.style.background='var(--dark)'; btn.style.color='white'; }
+    renderAdminAutovalutazioni();
+}
+
+function renderAdminAutovalutazioni(){
+    const list = document.getElementById('adminAutovList');
+    let rows = _adminAutov;
+    if(_adminAutovFiltro !== 'tutte') rows = rows.filter(a=>a.stato===_adminAutovFiltro);
+    if(rows.length===0){
+        list.innerHTML='<p style="text-align:center;color:#94a3b8;padding:40px;">Nessuna autovalutazione trovata.</p>';
+        return;
+    }
+    const statiCfg={
+        attesa:     {label:'In attesa',  bg:'#fef3c7',col:'#92400e',icon:'fa-clock'},
+        completata: {label:'Completata', bg:'#dbeafe', col:'#1e40af',icon:'fa-check-circle'},
+        certificata:{label:'Certificata',bg:'#d1fae5', col:'#065f46',icon:'fa-award'}
+    };
+    list.innerHTML = rows.map(a=>{
+        const st = statiCfg[a.stato]||statiCfg.attesa;
+        const nomeScuola  = a.scuole?.nome||'—';
+        const comune      = a.scuole?.comune||'';
+        const nomeBiologo = a.profiles?.nome||'—';
+        const hasPts      = a.punteggio_totale!=null;
+        const pts         = a.punteggio_totale;
+        const sufficiente = hasPts && pts>=35;
+        const pct         = hasPts ? Math.round((pts/50)*100) : null;
+        const dataComp    = a.compilata_il ? new Date(a.compilata_il).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'}) : '—';
+        const puoRisposte = a.stato==='completata'||a.stato==='certificata';
+        return `<div class="bio-row">
+            <div style="flex:1;min-width:0;">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+                    <span style="font-weight:700;font-size:14px;color:var(--dark);">${nomeScuola}</span>
+                    ${comune?`<span style="font-size:11px;color:#94a3b8;">${comune}</span>`:''}
+                </div>
+                <div style="font-size:11px;color:#64748b;margin-bottom:6px;">
+                    <i class="fas fa-user" style="color:var(--teal);margin-right:4px;"></i>${nomeBiologo}
+                    &nbsp;·&nbsp; A.S. ${a.anno_scolastico||'—'}
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                    <span style="padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;background:${st.bg};color:${st.col};display:inline-flex;align-items:center;gap:4px;">
+                        <i class="fas ${st.icon}" style="font-size:9px;"></i>${st.label}
+                    </span>
+                    ${hasPts?`<span style="font-size:12px;font-weight:700;color:${sufficiente?'var(--teal)':'#f59e0b'};">${pts}/50</span>`:''}
+                    <span style="font-size:11px;color:#94a3b8;"><i class="fas fa-calendar-alt" style="margin-right:3px;"></i>${dataComp}</span>
+                </div>
+                ${hasPts?`<div style="margin-top:8px;max-width:300px;">
+                    <div style="height:5px;background:#e2e8f0;border-radius:99px;overflow:hidden;">
+                        <div style="height:100%;width:${pct}%;background:${sufficiente?'var(--teal)':'#f59e0b'};border-radius:99px;"></div>
+                    </div>
+                </div>`:''}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;flex-shrink:0;align-items:flex-end;">
+                ${puoRisposte?`<button onclick="vediRisposteAdmin('${a.id}')" class="btn-ghost" style="font-size:11px;padding:7px 12px;white-space:nowrap;"><i class="fas fa-list-ul" style="margin-right:5px;"></i>Vedi Risposte</button>`:''}
+                ${sufficiente?`<button onclick="generaCertificatoAdmin('${a.id}')" class="btn-primary" style="font-size:11px;padding:7px 12px;white-space:nowrap;"><i class="fas fa-award" style="margin-right:5px;"></i>Genera Certificato</button>`:''}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+async function vediRisposteAdmin(autovId){
+    const a = _adminAutov.find(x=>x.id===autovId);
+    if(!a) return;
+    document.getElementById('adminRisposteTitolo').textContent  = a.scuole?.nome||'—';
+    document.getElementById('adminRisposteAnno').textContent    = 'A.S. '+(a.anno_scolastico||'—');
+    document.getElementById('adminRispostePunteggio').textContent = (a.punteggio_totale!=null?a.punteggio_totale:'—')+'/50';
+    document.getElementById('adminRisposteDettaglio').innerHTML = '<p style="text-align:center;color:#94a3b8;padding:20px;"><i class="fas fa-spinner fa-spin"></i></p>';
+    document.getElementById('adminRisposteModal').classList.add('open');
+    const {data:risposte} = await db.from('risposte_autovalutazione').select('*').eq('autovalutazione_id',autovId).order('area').order('domanda_index');
+    renderRisposteAdmin(risposte||[]);
+}
+
+function renderRisposteAdmin(risposte){
+    let html='';
+    for(let a=1;a<=5;a++){
+        const rArea   = risposte.filter(r=>r.area===a);
+        const pts     = rArea.reduce((s,r)=>s+(r.punteggio||0),0);
+        const pct     = Math.round((pts/10)*100);
+        const domArea = DOMANDE_AUTOV_ADMIN.filter(d=>d.area===a);
+        html+=`<div style="margin-bottom:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-weight:700;font-size:13px;color:var(--dark);">${a}. ${AREE_AUTOV_ADMIN[a-1]}</span>
+                <span style="font-size:12px;font-weight:700;color:var(--teal);">${pts}/10</span>
+            </div>
+            <div style="height:7px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin-bottom:10px;">
+                <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--teal),var(--teal-light));border-radius:99px;"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px;">`;
+        domArea.forEach((dom,idx)=>{
+            const r   = rArea.find(x=>x.domanda_index===idx);
+            const p   = r?r.punteggio:null;
+            const lbl = p===null?'N/A':p===0?'Mai':p===1?'A volte':'Sempre';
+            const col = p===2?'#065f46':p===1?'#92400e':p===0?'#b91c1c':'#94a3b8';
+            const bg  = p===2?'#d1fae5':p===1?'#fef3c7':p===0?'#fee2e2':'#f1f5f9';
+            html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#f8fafc;border-radius:8px;gap:10px;">
+                <span style="font-size:11px;color:#64748b;flex:1;">${dom.testo}</span>
+                <span style="padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;background:${bg};color:${col};white-space:nowrap;">${lbl}</span>
+            </div>`;
+        });
+        html+=`</div></div>`;
+    }
+    document.getElementById('adminRisposteDettaglio').innerHTML=html;
+}
+
+function generaCertificatoAdmin(autovId){
+    const a = _adminAutov.find(x=>x.id===autovId);
+    if(!a) return;
+    const nomeScuola  = a.scuole?.nome||'—';
+    const comune      = a.scuole?.comune||'';
+    const nomeBiologo = a.profiles?.nome||'—';
+    const pts         = a.punteggio_totale;
+    const livello     = pts>=40?'Avanzato':pts>=30?'Intermedio':'Base';
+    const dataStr     = a.compilata_il
+        ? new Date(a.compilata_il).toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'})
+        : new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+    const cert = window.open('','_blank');
+    cert.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Certificato SANE — ${nomeScuola}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:#f0f4f8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px;}
+        .cert{background:white;max-width:700px;width:100%;border:3px solid #00A896;border-radius:20px;padding:54px;text-align:center;box-shadow:0 8px 40px rgba(10,38,71,0.12);}
+        h1,h2,h3{font-family:'Syne',sans-serif;}
+        .header-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:44px;text-align:left;}
+        .score-big{font-family:'Syne',sans-serif;font-size:72px;font-weight:700;color:#00A896;line-height:1;}
+        .divider{border:none;border-top:1px solid #e2e8f0;margin:44px 0;}
+        .firma-row{display:flex;justify-content:space-between;text-align:left;}
+        @media print{body{background:white;padding:0;}.cert{box-shadow:none;border-radius:0;}}
+    </style></head><body>
+    <div class="cert">
+        <div class="header-row">
+            <div>
+                <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#0A2647;">S.A.N.E. Italia</div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:3px;">Sistema di Alimentazione Naturale ed Educativa</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px;">Partner Scientifico</div>
+                <div style="font-size:16px;font-weight:700;color:#0A2647;">F.N.O.B.</div>
+            </div>
+        </div>
+        <div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.18em;margin-bottom:14px;">Certificato di Qualità Alimentare Scolastica</div>
+        <h2 style="font-size:30px;color:#0A2647;margin-bottom:6px;">${nomeScuola}</h2>
+        <p style="color:#64748b;font-size:14px;margin-bottom:40px;">Anno Scolastico ${a.anno_scolastico||'—'}${comune?' &middot; '+comune:''}</p>
+        <div class="score-big">${pts}/50</div>
+        <div style="font-size:22px;font-weight:700;color:#0A2647;margin:12px 0 20px;">Livello <span style="color:#00A896;">${livello}</span></div>
+        <div style="display:inline-block;background:#00A896;color:white;padding:8px 28px;border-radius:99px;font-weight:700;font-size:14px;letter-spacing:0.05em;">★ Scuola Certificata SANE Italia</div>
+        <hr class="divider">
+        <div class="firma-row">
+            <div>
+                <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Biologo Responsabile</div>
+                <div style="font-size:16px;font-weight:700;color:#0A2647;">${nomeBiologo}</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Data Certificazione</div>
+                <div style="font-size:16px;font-weight:700;color:#0A2647;">${dataStr}</div>
+            </div>
+        </div>
+    </div>
+    <script>window.onload=function(){window.print();}<\/script>
+    </body></html>`);
+    cert.document.close();
+}
 
 // ============================================================
 // MODAL
