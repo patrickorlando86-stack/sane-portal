@@ -1248,14 +1248,8 @@ function aggiornaDashboard(){
         return String(m>=9?y:y-1)===annoYear;
     });
     const pAnnoIds=new Set(pAnno.map(p=>p.id));
-    // Classi collegate a pacchetti dell'anno, oppure (fallback) classi senza pacchetto create nell'anno
-    const cAnno=appState.classi.filter(c=>{
-        if(c.pacchetto_id) return pAnnoIds.has(c.pacchetto_id);
-        // classi orfane: usa created_at
-        const d=new Date(c.created_at); if(isNaN(d)) return false;
-        const m=d.getMonth()+1; const y=d.getFullYear();
-        return String(m>=9?y:y-1)===annoYear;
-    });
+    // Solo classi collegate a un pacchetto dell'anno corrente
+    const cAnno=appState.classi.filter(c=>c.pacchetto_id&&pAnnoIds.has(c.pacchetto_id));
 
     // KPI 1: pacchetti attivi / completati
     const pCompletati=pAnno.filter(p=>{
