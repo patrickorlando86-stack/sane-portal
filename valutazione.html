@@ -240,7 +240,8 @@ async function inviaRisposte(){
     const righe=DOMANDE.map((dom,idx)=>({
         autovalutazione_id:_autovId,
         area:dom.area,
-        domanda_index:idx%5,
+        domanda_id:idx,
+        domanda:dom.testo,
         punteggio:_risposte[idx]===null?null:(_risposte[idx]!==undefined?_risposte[idx]:null)
     }));
 
