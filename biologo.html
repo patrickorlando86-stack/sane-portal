@@ -108,6 +108,8 @@
             }
             /* Cards e layout */
             .kpi-grid{grid-template-columns:repeat(2,1fr) !important;}
+            #reportGrid{grid-template-columns:1fr !important;}
+            .rpt-ore-pct{display:none !important;}
             .kpi-val{font-size:26px;}
             .card{border-radius:18px;padding:16px;}
             .dash-codice-gioco{grid-template-columns:1fr !important;}
@@ -1898,7 +1900,7 @@ function aggiornaReport(){
                         <i class="fas ${isGrat?'fa-gift':'fa-handshake'}" style="color:${isOpen?'var(--teal)':'#94a3b8'};font-size:11px;flex-shrink:0;"></i>
                         <span style="font-size:12px;font-weight:700;color:var(--dark);">${tipoLabel}${p.prezzo&&!isGrat?' · €'+p.prezzo.toLocaleString('it-IT'):''}</span>
                         <span style="font-size:10px;color:#94a3b8;"><i class="fas fa-calendar-alt" style="margin-right:3px;"></i>${dataP}</span>
-                        ${oreTot>0?`<span style="font-size:10px;color:#94a3b8;">${oreUsate.toFixed(1)}/${oreTot}h (${pct}%)</span>`:''}
+                        ${oreTot>0?`<span class="rpt-ore-pct" style="font-size:10px;color:#94a3b8;">${oreUsate.toFixed(1)}/${oreTot}h (${pct}%)</span>`:''}
                     </div>
                     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
                         <span style="font-size:10px;color:#64748b;background:#e2e8f0;border-radius:6px;padding:2px 8px;font-weight:700;">${cls.length} cl.</span>
