@@ -1770,7 +1770,7 @@ function aggiornaReport(){
             const oreUsate=cls.reduce((a,c)=>a+oreClasse(c),0);
             const oreTot=p.ore_totali||0;
             const pct=oreTot>0?Math.min(100,Math.round((oreUsate/oreTot)*100)):0;
-            const anno=p.anno_scolastico?p.anno_scolastico:'';
+            const dataP=p.data_acquisto?new Date(p.data_acquisto).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'}):new Date(p.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'});
 
             const classiRows=cls.length===0
                 ?'<p style="font-size:11px;color:#94a3b8;padding:8px 4px;text-align:center;">Nessuna classe associata</p>'
@@ -1801,7 +1801,7 @@ function aggiornaReport(){
                     <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
                         <i class="fas ${isGrat?'fa-gift':'fa-handshake'}" style="color:${isOpen?'var(--teal)':'#94a3b8'};font-size:11px;flex-shrink:0;"></i>
                         <span style="font-size:12px;font-weight:700;color:var(--dark);">${tipoLabel}${p.prezzo&&!isGrat?' · €'+p.prezzo.toLocaleString('it-IT'):''}</span>
-                        ${anno?`<span style="font-size:10px;color:#94a3b8;">${anno}</span>`:''}
+                        <span style="font-size:10px;color:#94a3b8;"><i class="fas fa-calendar-alt" style="margin-right:3px;"></i>${dataP}</span>
                         ${oreTot>0?`<span style="font-size:10px;color:#94a3b8;">${oreUsate.toFixed(1)}/${oreTot}h (${pct}%)</span>`:''}
                     </div>
                     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
