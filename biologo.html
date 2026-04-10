@@ -410,6 +410,23 @@
     </div>
 </div>
 
+<!-- MODAL PROFILO -->
+<div class="modal-overlay" id="profiloModal" onclick="if(event.target===this)closeModal('profiloModal')">
+    <div class="modal-box" style="max-width:400px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <h3 style="font-size:18px;font-weight:700;color:var(--dark);">Il Tuo Profilo</h3>
+            <button onclick="closeModal('profiloModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
+        </div>
+        <label class="form-label">Nome e Cognome</label>
+        <input class="form-input" id="profiloNome" placeholder="es. Serafina Cardaci" onkeydown="if(event.key==='Enter')salvaProfilo()">
+        <p style="font-size:11px;color:#94a3b8;margin-top:-8px;margin-bottom:20px;">Appare nel saluto, nella sidebar e nei certificati.</p>
+        <div style="display:flex;gap:10px;">
+            <button class="btn-ghost" onclick="closeModal('profiloModal')">Annulla</button>
+            <button class="btn-primary" style="flex:1;" onclick="salvaProfilo()"><i class="fas fa-check"></i>Salva Nome</button>
+        </div>
+    </div>
+</div>
+
 <!-- APP -->
 <div id="appShell" style="opacity:0;transition:opacity 0.5s;">
 
@@ -425,17 +442,18 @@
         </div>
 
         <!-- UTENTE -->
-        <div style="margin:10px 8px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px;display:flex;align-items:center;gap:8px;">
+        <div onclick="apriProfilo()" title="Modifica profilo" style="margin:10px 8px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.11)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
             <div style="width:30px;height:30px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <i class="fas fa-user" style="color:white;font-size:11px;"></i>
             </div>
-            <div class="label" style="min-width:0;">
+            <div class="label" style="min-width:0;flex:1;">
                 <div id="sidebarNome" style="color:white;font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
                 <div style="display:flex;align-items:center;gap:4px;margin-top:1px;">
                     <span class="pulse-dot" style="width:5px;height:5px;background:#22c55e;border-radius:50%;display:inline-block;"></span>
                     <span style="color:rgba(255,255,255,0.35);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;">Online</span>
                 </div>
             </div>
+            <i class="fas fa-pen label" style="color:rgba(255,255,255,0.2);font-size:9px;flex-shrink:0;"></i>
         </div>
 
         <!-- NAV -->
@@ -923,6 +941,27 @@ async function doLogin(){
         if(error){showToast('Credenziali non valide','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Accedi al Portale';return;}
         // onAuthStateChange gestirà il resto
     }
+}
+
+function apriProfilo(){
+    document.getElementById('profiloNome').value=appState.utente?.nome||'';
+    document.getElementById('profiloModal').classList.add('open');
+    setTimeout(()=>document.getElementById('profiloNome').select(),50);
+}
+
+async function salvaProfilo(){
+    const nome=document.getElementById('profiloNome').value.trim();
+    if(!nome){showToast('Inserisci il tuo nome completo','error');return;}
+    const {error}=await db.from('profiles').update({nome}).eq('id',appState.utente.id);
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    appState.utente.nome=nome;
+    document.getElementById('sidebarNome').textContent=nome;
+    const ora=new Date().getHours();
+    const saluto=ora<12?'Buongiorno':ora<18?'Buon pomeriggio':'Buonasera';
+    const el=document.getElementById('dashGreeting');
+    if(el) el.textContent=saluto+', '+nome+' 👋';
+    closeModal('profiloModal');
+    showToast('Profilo aggiornato ✓');
 }
 
 async function doLogout(){
