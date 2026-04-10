@@ -46,6 +46,9 @@
                 border-top:1px solid rgba(255,255,255,0.1);
                 box-shadow:0 -4px 20px rgba(0,0,0,0.3);
                 z-index:100;
+                transform:translateZ(0);
+                -webkit-transform:translateZ(0);
+                will-change:transform;
             }
             /* Nascondi logo e blocco utente */
             .sidebar > div:first-child,
@@ -132,7 +135,7 @@
                 overscroll-behavior:contain;
             }
             .modal-overlay{align-items:flex-end !important;}
-            body.modal-open{overflow:hidden;position:fixed;width:100%;}
+            body.modal-open{overflow:hidden;}
             /* Toast più basso per non sovrapporsi alla bottom nav */
             #toast{bottom:72px !important;right:12px !important;left:12px;text-align:center;}
         }
@@ -410,7 +413,7 @@
         <input type="hidden" id="pacchettoScuolaId">
         <label class="form-label">Tipo</label>
         <select class="form-select" id="pacchettoTipo" onchange="aggiornaPacchettoForm()">
-            <option value="pagamento" selected>A Pagamento</option>
+            <option value="standard" selected>A Pagamento</option>
             <option value="gratuito">Gratuito</option>
         </select>
         <div id="pacchettoPrezzoCont">
@@ -1318,8 +1321,8 @@ function aggiornaDashboard(){
 
             // Pacchetti espansi
             const pacchettiHtml=pSc.map(p=>{
-                const isGrat=(p.tipo||'pagamento')==='gratuito';
-                const tipoLabel=isGrat?'Gratuito':'A Pagamento';
+                const isGrat=p.tipo==='gratuito';
+                const tipoLabel=p.tipo==='gratuito'?'Gratuito':'A Pagamento';
                 const clsP=appState.classi.filter(c=>c.pacchetto_id===p.id);
                 const oreUsate=clsP.reduce((a,c)=>a+oreClasse(c),0);
                 const oreTot=p.ore_totali||0;
@@ -1459,7 +1462,7 @@ function aggiornaScuole(){
                 const isOpenP=_openPacchetti.has(p.id);
                 const isGratuito=p.tipo==='gratuito';
                 const bc=isGratuito?'badge-green':'badge-blue';
-                const tipoLabel=isGratuito?'Gratuito':'A Pagamento';
+                const tipoLabel=p.tipo==='gratuito'?'Gratuito':'A Pagamento';
                 const prezzolabel=(!isGratuito&&p.prezzo)?(' · €'+p.prezzo.toLocaleString('it-IT')):'';
                 const dataP=p.data_acquisto?new Date(p.data_acquisto).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'})
                     :new Date(p.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'});
@@ -2269,14 +2272,21 @@ function generaCodice(){
     document.getElementById('codiceData').textContent='Generato il '+new Date().toLocaleDateString('it-IT');
 }
 
+let _modalScrollY = 0;
 function openModal(id){
     if(id==='classeModal') resetClasseModal();
+    if(!document.querySelector('.modal-overlay.open')){
+        _modalScrollY = window.scrollY || 0;
+        document.body.classList.add('modal-open');
+    }
     document.getElementById(id).classList.add('open');
-    document.body.classList.add('modal-open');
 }
 function closeModal(id){
     document.getElementById(id).classList.remove('open');
-    if(!document.querySelector('.modal-overlay.open')) document.body.classList.remove('modal-open');
+    if(!document.querySelector('.modal-overlay.open')){
+        document.body.classList.remove('modal-open');
+        window.scrollTo(0, _modalScrollY);
+    }
 }
 
 function showToast(msg,tipo){
