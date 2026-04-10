@@ -251,6 +251,19 @@
             <div id="passwordMismatchError" style="display:none;color:#ef4444;font-size:11px;margin:-10px 0 10px;font-weight:600;">Le password non coincidono</div>
             <label class="form-label" style="color:rgba(255,255,255,0.4);">Nome e Cognome</label>
             <input class="login-input" type="text" id="loginNome" placeholder="es. Serafina Cardaci">
+            <label class="form-label" style="color:rgba(255,255,255,0.4);">Regione <span style="color:rgba(255,255,255,0.25);font-size:11px;">(opzionale)</span></label>
+            <select class="login-input" id="loginRegione" style="appearance:auto;-webkit-appearance:auto;">
+                <option value="">Seleziona regione...</option>
+                <option>Piemonte</option><option>Liguria</option><option>Lombardia</option>
+                <option>Trentino-Alto Adige</option><option>Veneto</option><option>Friuli-Venezia Giulia</option>
+                <option>Emilia-Romagna</option><option>Toscana</option><option>Umbria</option>
+                <option>Marche</option><option>Lazio</option><option>Abruzzo</option>
+                <option>Molise</option><option>Campania</option><option>Puglia</option>
+                <option>Basilicata</option><option>Calabria</option><option>Sicilia</option>
+                <option>Sardegna</option><option>Valle d'Aosta</option>
+            </select>
+            <label class="form-label" style="color:rgba(255,255,255,0.4);">Numero Ordine Biologi <span style="color:rgba(255,255,255,0.25);font-size:11px;">(opzionale)</span></label>
+            <input class="login-input" type="text" id="loginOrdine" placeholder="es. AL-2847">
             <!-- Consensi obbligatori -->
             <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;margin-bottom:16px;">
                 <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
@@ -441,10 +454,23 @@
         </div>
         <label class="form-label">Nome e Cognome</label>
         <input class="form-input" id="profiloNome" placeholder="es. Serafina Cardaci" onkeydown="if(event.key==='Enter')salvaProfilo()">
-        <p style="font-size:11px;color:#94a3b8;margin-top:-8px;margin-bottom:20px;">Appare nel saluto, nella sidebar e nei certificati.</p>
-        <div style="display:flex;gap:10px;">
+        <p style="font-size:11px;color:#94a3b8;margin-top:-8px;margin-bottom:16px;">Appare nel saluto, nella sidebar e nei certificati.</p>
+        <label class="form-label">Regione</label>
+        <select class="form-input" id="profiloRegione" style="appearance:auto;-webkit-appearance:auto;">
+            <option value="">— nessuna —</option>
+            <option>Piemonte</option><option>Liguria</option><option>Lombardia</option>
+            <option>Trentino-Alto Adige</option><option>Veneto</option><option>Friuli-Venezia Giulia</option>
+            <option>Emilia-Romagna</option><option>Toscana</option><option>Umbria</option>
+            <option>Marche</option><option>Lazio</option><option>Abruzzo</option>
+            <option>Molise</option><option>Campania</option><option>Puglia</option>
+            <option>Basilicata</option><option>Calabria</option><option>Sicilia</option>
+            <option>Sardegna</option><option>Valle d'Aosta</option>
+        </select>
+        <label class="form-label" style="margin-top:12px;">Numero Ordine Biologi</label>
+        <input class="form-input" id="profiloOrdine" placeholder="es. AL-2847">
+        <div style="display:flex;gap:10px;margin-top:20px;">
             <button class="btn-ghost" onclick="closeModal('profiloModal')">Annulla</button>
-            <button class="btn-primary" style="flex:1;" onclick="salvaProfilo()"><i class="fas fa-check"></i>Salva Nome</button>
+            <button class="btn-primary" style="flex:1;" onclick="salvaProfilo()"><i class="fas fa-check"></i>Salva Profilo</button>
         </div>
     </div>
 </div>
@@ -977,10 +1003,16 @@ async function doLogin(){
         }
         errEl.style.display='none';
         const nome=document.getElementById('loginNome').value.trim();
+        const regione=document.getElementById('loginRegione').value||null;
+        const ordine=document.getElementById('loginOrdine').value.trim()||null;
         if(!nome){showToast('Inserisci il tuo nome','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
         if(!document.getElementById('consentoTermini').checked||!document.getElementById('consentoPrivacy').checked||!document.getElementById('consentoDati').checked){showToast('Accetta tutti i consensi obbligatori per procedere','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
-        const {error}=await db.auth.signUp({email,password:pass,options:{data:{nome}}});
+        const {data:signUpData,error}=await db.auth.signUp({email,password:pass,options:{data:{nome,regione,ordine}}});
         if(error){showToast(error.message,'error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
+        // Salva regione/ordine nel profilo se presenti
+        if(signUpData?.user&&(regione||ordine)){
+            await db.from('profiles').upsert({id:signUpData.user.id,nome,regione,ordine},{onConflict:'id'});
+        }
         document.getElementById('loginBtn').disabled=false;
         document.getElementById('loginBtn').textContent='Crea Account';
         document.getElementById('loginSignupForm').style.display='none';
@@ -994,14 +1026,22 @@ async function doLogin(){
 
 function apriProfilo(){
     document.getElementById('profiloNome').value=appState.utente?.nome||'';
+    const reg=document.getElementById('profiloRegione');
+    if(reg) reg.value=appState.utente?.regione||'';
+    const ord=document.getElementById('profiloOrdine');
+    if(ord) ord.value=(appState.utente?.ordine&&appState.utente.ordine!=='—')?appState.utente.ordine:'';
     document.getElementById('profiloModal').classList.add('open');
     setTimeout(()=>document.getElementById('profiloNome').select(),50);
 }
 
 async function salvaProfilo(){
     const nome=document.getElementById('profiloNome').value.trim();
+    const regione=document.getElementById('profiloRegione').value||null;
+    const ordine=document.getElementById('profiloOrdine').value.trim()||null;
     if(!nome){showToast('Inserisci il tuo nome completo','error');return;}
-    const {error}=await db.from('profiles').update({nome}).eq('id',appState.utente.id);
+    const {error}=await db.from('profiles').update({nome,regione,ordine}).eq('id',appState.utente.id);
+    if(regione) appState.utente.regione=regione;
+    if(ordine) appState.utente.ordine=ordine;
     if(error){showToast('Errore: '+error.message,'error');return;}
     appState.utente.nome=nome;
     document.getElementById('sidebarNome').textContent=nome;
