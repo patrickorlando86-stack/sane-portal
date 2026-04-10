@@ -1498,7 +1498,10 @@ function aggiornaScuole(){
                     return `<div style="display:flex;align-items:center;gap:4px;margin-bottom:5px;">
                         <div onclick="apriClasseDetail('${c.id}')" style="flex:1;display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:white;border:1.5px solid #e2e8f0;border-radius:9px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--teal)';this.style.background='#f0fdf9'" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='white'">
                             <div>
-                                <div style="font-weight:700;font-size:12px;color:var(--dark);">${c.nome_classe}</div>
+                                <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                                    <span style="font-weight:700;font-size:12px;color:var(--dark);">${c.nome_classe}</span>
+                                    ${c.link_videoconferenza?`<a href="${c.link_videoconferenza}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:99px;background:#d1fae5;color:#065f46;font-size:9px;font-weight:700;text-decoration:none;" title="Videoconferenza"><i class="fas fa-video"></i></a>`:''}
+                                </div>
                                 <div style="font-size:10px;color:#94a3b8;">${c.num_studenti||'—'} studenti</div>
                             </div>
                             <div style="display:flex;gap:4px;align-items:center;">
