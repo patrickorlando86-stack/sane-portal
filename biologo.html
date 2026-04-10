@@ -425,7 +425,7 @@
         <label class="form-label">Data Inizio</label>
         <input class="form-input" type="date" id="pacchettoData">
         <label class="form-label">Anno Scolastico</label>
-        <input class="form-input" id="pacchettoAnno" placeholder="es. 2024/2025">
+        <select class="form-select" id="pacchettoAnno"></select>
         <div style="display:flex;gap:10px;margin-top:4px;">
             <button class="btn-ghost" onclick="closeModal('pacchettoModal')">Annulla</button>
             <button class="btn-primary" id="pacchettoModalBtn" style="flex:1;" onclick="aggiungiPacchetto()"><i class="fas fa-plus"></i>Aggiungi Pacchetto</button>
@@ -1238,10 +1238,24 @@ function aggiornaDashboard(){
     const annoYear=anno.split('-')[0];
     const annoShort=annoYear+'-'+anno.slice(7); // "2025-26"
 
-    // Pacchetti e classi dell'anno scolastico corrente
-    const pAnno=appState.pacchetti.filter(p=>p.anno_scolastico&&String(p.anno_scolastico).split('-')[0]===annoYear);
+    // Pacchetti anno corrente — normalizza formato (slash/dash) e fallback su data_acquisto/created_at
+    const pAnno=appState.pacchetti.filter(p=>{
+        if(p.anno_scolastico) return annoIniziale(p.anno_scolastico)===annoYear;
+        // nessun anno impostato → usa data_acquisto o created_at
+        const d=new Date(p.data_acquisto||p.created_at);
+        if(isNaN(d)) return false;
+        const m=d.getMonth()+1; const y=d.getFullYear();
+        return String(m>=9?y:y-1)===annoYear;
+    });
     const pAnnoIds=new Set(pAnno.map(p=>p.id));
-    const cAnno=appState.classi.filter(c=>pAnnoIds.has(c.pacchetto_id));
+    // Classi collegate a pacchetti dell'anno, oppure (fallback) classi senza pacchetto create nell'anno
+    const cAnno=appState.classi.filter(c=>{
+        if(c.pacchetto_id) return pAnnoIds.has(c.pacchetto_id);
+        // classi orfane: usa created_at
+        const d=new Date(c.created_at); if(isNaN(d)) return false;
+        const m=d.getMonth()+1; const y=d.getFullYear();
+        return String(m>=9?y:y-1)===annoYear;
+    });
 
     // KPI 1: pacchetti attivi / completati
     const pCompletati=pAnno.filter(p=>{
@@ -1368,6 +1382,19 @@ function annoScolasticoCorrente(){
     const anno=oggi.getFullYear();
     const mese=oggi.getMonth()+1;
     return mese>=9?`${anno}-${anno+1}`:`${anno-1}-${anno}`;
+}
+// Estrae l'anno iniziale da qualsiasi formato: "2025-2026","2024/2025","2025-26" → "2025"
+function annoIniziale(anno){
+    if(!anno) return null;
+    return String(anno).replace('/','-').split('-')[0];
+}
+// Genera le opzioni anno scolastico per i select (3 anni centrati sull'anno corrente)
+function opzioniAnnoScolastico(selezionato){
+    const ac=annoScolasticoCorrente();
+    const y=parseInt(ac.split('-')[0]);
+    const anni=[`${y-1}-${y}`,`${y}-${y+1}`,`${y+1}-${y+2}`];
+    const def=selezionato||ac;
+    return anni.map(a=>`<option value="${a}"${a===def?' selected':''}>${a}</option>`).join('');
 }
 function oreClasse(c){return ['m1','m2','m3','m4','m5','m6'].reduce((a,m)=>a+(parseFloat(c[m+'_ore'])||0),0);}
 function moduliCompletati(c){return ['m1','m2','m3','m4','m5','m6'].filter(m=>c[m+'_data']).length;}
@@ -1546,7 +1573,7 @@ function apriNuovoPacchetto(scuolaId, scuolaNome){
     document.getElementById('pacchettoData').value=new Date().toISOString().split('T')[0];
     document.getElementById('pacchettoTipo').value='standard';
     document.getElementById('pacchettoOre').value='30';
-    document.getElementById('pacchettoAnno').value='';
+    document.getElementById('pacchettoAnno').innerHTML=opzioniAnnoScolastico();
     const prezzoEl=document.getElementById('pacchettoPrezzo');
     if(prezzoEl) prezzoEl.value='';
     document.getElementById('pacchettoPrezzoCont').style.display='block';
@@ -1564,7 +1591,10 @@ function modificaPacchetto(id){
     document.getElementById('pacchettoModalScuolaNome').innerHTML='<i class="fas fa-school" style="font-size:11px;opacity:0.7;"></i> '+s.nome;
     document.getElementById('pacchettoTipo').value=(p.prezzo===0||p.tipo==='gratuito')?'gratuito':'standard';
     document.getElementById('pacchettoOre').value=p.ore_totali||0;
-    document.getElementById('pacchettoAnno').value=p.anno_scolastico||'';
+    // Normalizza l'anno salvato al formato YYYY-YYYY per il select
+    const annoNorm=p.anno_scolastico?annoIniziale(p.anno_scolastico):(()=>{const d=new Date(p.data_acquisto||p.created_at);const m=d.getMonth()+1;const y=d.getFullYear();return String(m>=9?y:y-1);})();
+    const annoFull=annoNorm?(annoNorm+'-'+(parseInt(annoNorm)+1)):annoScolasticoCorrente();
+    document.getElementById('pacchettoAnno').innerHTML=opzioniAnnoScolastico(annoFull);
     document.getElementById('pacchettoData').value=p.data_acquisto||'';
     const prezzoEl=document.getElementById('pacchettoPrezzo');
     if(prezzoEl) prezzoEl.value=p.prezzo||'';
@@ -1590,7 +1620,7 @@ async function aggiungiPacchetto(){
     const tipo=document.getElementById('pacchettoTipo').value;
     const data=document.getElementById('pacchettoData').value||null;
     const ore=parseInt(document.getElementById('pacchettoOre').value)||0;
-    const anno=document.getElementById('pacchettoAnno').value.trim()||null;
+    const anno=document.getElementById('pacchettoAnno').value||null;
     const prezzoRaw=document.getElementById('pacchettoPrezzo')?.value;
     const prezzo=tipo==='gratuito'?0:(parseFloat(prezzoRaw)||0);
     // Il DB accetta solo 'standard' come valore — gratuito si distingue per prezzo=0
