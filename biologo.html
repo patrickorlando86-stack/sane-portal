@@ -1388,9 +1388,8 @@ function aggiornaScuole(){
                         <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
                             <i class="fas ${isGratuito?'fa-gift':'fa-handshake'}" style="color:var(--teal);font-size:11px;"></i>
                             <span style="font-weight:700;font-size:12px;color:var(--dark);">${tipoLabel}</span>
-                            <span class="badge ${bc}" style="font-size:8px;">${tipoLabel}</span>
                             ${oreTot>0?`<span style="font-size:10px;color:#64748b;">${oreTot}h</span>`:''}
-                            ${p.anno_scolastico?`<span style="font-size:10px;color:#94a3b8;">· ${p.anno_scolastico}</span>`:''}
+                            <span style="font-size:10px;color:#94a3b8;"><i class="fas fa-calendar-alt" style="margin-right:3px;"></i>${dataP}</span>
                             ${prezzolabel?`<span style="font-size:10px;font-weight:700;color:#065f46;">${prezzolabel}</span>`:''}
                         </div>
                         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
