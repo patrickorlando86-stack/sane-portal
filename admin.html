@@ -927,6 +927,7 @@ async function eliminaBiologo(id){
     adminState.biologi = adminState.biologi.filter(x=>x.id!==id);
     aggiornaLicenze(); aggiornaDashboard();
     showToast(b.nome+' rimosso ✓');
+    alert('Nota: per eliminare completamente l\'accesso dell\'utente è necessario rimuoverlo anche da Supabase Authentication. Vai su Supabase → Authentication → Users e cerca l\'email.');
 }
 
 async function aggiungiBiologo(){

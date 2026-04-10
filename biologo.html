@@ -232,12 +232,16 @@
             <h1 style="color:white;font-size:22px;font-weight:700;margin:0;">S.A.N.E. Italia</h1>
             <p style="color:rgba(255,255,255,0.35);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin-top:6px;">Portale Biologi Certificati</p>
         </div>
+        <div id="loginSignupForm">
         <label class="form-label" style="color:rgba(255,255,255,0.4);">Email</label>
         <input class="login-input" type="email" id="loginEmail" placeholder="tuanome@email.it" onkeydown="if(event.key==='Enter')doLogin()">
         <label class="form-label" style="color:rgba(255,255,255,0.4);">Password</label>
         <input class="login-input" type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
         <!-- Campi extra solo per registrazione -->
         <div id="signupFields" style="display:none;">
+            <label class="form-label" style="color:rgba(255,255,255,0.4);">Conferma Password</label>
+            <input class="login-input" type="password" id="loginPasswordConfirm" placeholder="••••••••">
+            <div id="passwordMismatchError" style="display:none;color:#ef4444;font-size:11px;margin:-10px 0 10px;font-weight:600;">Le password non coincidono</div>
             <label class="form-label" style="color:rgba(255,255,255,0.4);">Nome e Cognome</label>
             <input class="login-input" type="text" id="loginNome" placeholder="es. Serafina Cardaci">
             <!-- Consensi obbligatori -->
@@ -261,6 +265,15 @@
             Non hai un account?
             <a href="#" id="toggleSignup" onclick="toggleAuthMode(event)" style="color:var(--teal);font-weight:700;text-decoration:none;">Registrati</a>
         </p>
+        </div><!-- /loginSignupForm -->
+        <!-- SCHERMATA CONFERMA REGISTRAZIONE -->
+        <div id="signupSuccessScreen" style="display:none;">
+            <div style="background:rgba(0,168,150,0.12);border:1px solid rgba(0,168,150,0.3);border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;">
+                <i class="fas fa-envelope-open-text" style="color:var(--teal);font-size:36px;margin-bottom:14px;display:block;"></i>
+                <p style="color:white;font-size:13px;line-height:1.75;margin:0;">Registrazione completata! Ti abbiamo inviato una email di conferma. Una volta verificata la tua email, il tuo account sarà esaminato dal team S.A.N.E. Italia.</p>
+            </div>
+            <button onclick="tornaAlLogin()" style="width:100%;background:var(--teal);color:white;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;">Torna al Login</button>
+        </div>
         <div style="margin-top:20px;text-align:center;">
             <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
                 <i class="fas fa-arrow-left" style="font-size:10px;"></i> Torna alla pagina iniziale
@@ -474,7 +487,7 @@
                 <i class="fas fa-clipboard-check"></i><span class="label">Autovalutazione Scuola</span>
                 <span id="navBadgeAutov" style="display:none;position:absolute;top:7px;right:7px;background:#ef4444;color:white;font-size:7px;font-weight:700;min-width:15px;height:15px;border-radius:99px;align-items:center;justify-content:center;padding:0 3px;line-height:1;"></span>
             </div>
-            <div class="nav-item" onclick="window.location.href='mailto:info@saneitalia.it'" title="Contatta S.A.N.E.">
+            <div class="nav-item" onclick="window.location.href='mailto:patrick.orlando@libero.it'" title="Contatta S.A.N.E.">
                 <i class="fas fa-envelope"></i><span class="label">Contatta S.A.N.E.</span>
             </div>
         </nav>
@@ -510,7 +523,7 @@
                 </div>
             </div>
             <!-- 4 KPI -->
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;" class="kpi-grid">
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;" class="kpi-grid">
                 <div class="kpi-card" style="cursor:pointer;" onclick="showSection('scuole',document.querySelector('.nav-item[onclick*=scuole]'))" title="Vai alle Scuole">
                     <div class="kpi-val" id="kpiPacchetti">0</div>
                     <div class="kpi-lbl" id="kpiPacchettiLbl">Pacchetti</div>
@@ -519,6 +532,10 @@
                 <div class="kpi-card" style="cursor:pointer;" onclick="showSection('scuole',document.querySelector('.nav-item[onclick*=scuole]'))" title="Vai alle Scuole">
                     <div class="kpi-val" id="kpiClassi">0</div>
                     <div class="kpi-lbl" id="kpiClassiLbl">Classi</div>
+                </div>
+                <div class="kpi-card" style="cursor:pointer;" onclick="showSection('scuole',document.querySelector('.nav-item[onclick*=scuole]'))" title="Vai alle Scuole">
+                    <div class="kpi-val" id="kpiScuole">0</div>
+                    <div class="kpi-lbl" id="kpiScuoleLbl">Scuole</div>
                 </div>
                 <div class="kpi-card teal" style="cursor:pointer;" onclick="showSection('scuole',document.querySelector('.nav-item[onclick*=scuole]'))" title="Vai alle Scuole">
                     <div class="kpi-val" id="kpiStudenti">0</div>
@@ -882,7 +899,7 @@ const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 // ============================================================
 // STATO
 // ============================================================
-let appState={utente:null,scuole:[],pacchetti:[],classi:[]};
+let appState={utente:null,scuole:[],pacchetti:[],classi:[],autovalutazioni:[]};
 let _authMode = 'login';
 let _editClasseId = null;
 let _editPacchettoId = null;
@@ -910,6 +927,19 @@ function toggleReportDettaglio(id){
     aggiornaReport();
 }
 
+function tornaAlLogin(){
+    document.getElementById('signupSuccessScreen').style.display='none';
+    document.getElementById('loginSignupForm').style.display='block';
+    _authMode='login';
+    document.getElementById('signupFields').style.display='none';
+    document.getElementById('loginBtn').textContent='Accedi al Portale';
+    document.getElementById('toggleSignup').textContent='Registrati';
+    document.getElementById('loginEmail').value='';
+    document.getElementById('loginPassword').value='';
+    document.getElementById('loginPasswordConfirm').value='';
+    document.getElementById('passwordMismatchError').style.display='none';
+}
+
 function toggleAuthMode(e){
     e.preventDefault();
     _authMode = _authMode==='login' ? 'signup' : 'login';
@@ -928,14 +958,24 @@ async function doLogin(){
     document.getElementById('loginBtn').textContent='...';
 
     if(_authMode==='signup'){
+        const passConfirm=document.getElementById('loginPasswordConfirm').value;
+        const errEl=document.getElementById('passwordMismatchError');
+        if(pass!==passConfirm){
+            errEl.style.display='block';
+            document.getElementById('loginBtn').disabled=false;
+            document.getElementById('loginBtn').textContent='Crea Account';
+            return;
+        }
+        errEl.style.display='none';
         const nome=document.getElementById('loginNome').value.trim();
         if(!nome){showToast('Inserisci il tuo nome','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
         if(!document.getElementById('consentoTermini').checked||!document.getElementById('consentoPrivacy').checked||!document.getElementById('consentoDati').checked){showToast('Accetta tutti i consensi obbligatori per procedere','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
         const {error}=await db.auth.signUp({email,password:pass,options:{data:{nome}}});
         if(error){showToast(error.message,'error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
-        showToast('Account creato! Controlla la tua email per confermare.');
         document.getElementById('loginBtn').disabled=false;
         document.getElementById('loginBtn').textContent='Crea Account';
+        document.getElementById('loginSignupForm').style.display='none';
+        document.getElementById('signupSuccessScreen').style.display='block';
     } else {
         const {error}=await db.auth.signInWithPassword({email,password:pass});
         if(error){showToast('Credenziali non valide','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Accedi al Portale';return;}
@@ -959,7 +999,7 @@ async function salvaProfilo(){
     const ora=new Date().getHours();
     const saluto=ora<12?'Buongiorno':ora<18?'Buon pomeriggio':'Buonasera';
     const el=document.getElementById('dashGreeting');
-    if(el) el.textContent=saluto+', '+nome+' 👋';
+    if(el) el.textContent=saluto+', '+nome;
     closeModal('profiloModal');
     showToast('Profilo aggiornato ✓');
 }
@@ -974,14 +1014,17 @@ async function doLogout(){
 async function caricaDati(){
     const {data:{user}}=await db.auth.getUser();
     if(!user) return;
-    const [{data:scuole},{data:pacchetti},{data:classi}]=await Promise.all([
+    const [{data:scuole},{data:pacchetti},{data:classi},{data:autov}]=await Promise.all([
         db.from('scuole').select('*').eq('biologo_id',user.id).order('created_at'),
         db.from('pacchetti').select('*').eq('biologo_id',user.id).order('created_at'),
-        db.from('classi').select('*').eq('biologo_id',user.id).order('created_at',{ascending:false})
+        db.from('classi').select('*').eq('biologo_id',user.id).order('created_at',{ascending:false}),
+        db.from('autovalutazioni').select('id,stato').eq('biologo_id',user.id)
     ]);
     appState.scuole=scuole||[];
     appState.pacchetti=pacchetti||[];
     appState.classi=classi||[];
+    appState.autovalutazioni=autov||[];
+    aggiornaBadgeAutov();
 }
 
 async function inizializzaApp(user){
@@ -989,6 +1032,10 @@ async function inizializzaApp(user){
     const {data:profilo, error:errP}=await db.from('profiles').select('*').eq('id',user.id).single();
     console.log('[SANE] 2. profilo caricato', profilo?.stato, errP?.message);
     if(!profilo){showToast('Profilo non trovato. Contatta l\'amministratore.','error');await db.auth.signOut();return;}
+    if(profilo.stato==='eliminato'){
+        showToast('Questo account è stato disattivato. Per informazioni contatta patrick.orlando@libero.it','error');
+        await db.auth.signOut();return;
+    }
     if(profilo.stato!=='active'){
         const msg=profilo.stato==='pending'?'Licenza in attesa di approvazione.':'Licenza sospesa o scaduta.';
         showToast(msg+' Contatta l\'amministratore.','error');
@@ -1171,7 +1218,7 @@ function aggiornaUI(){
     document.getElementById('sidebarNome').textContent=appState.utente?.nome||'';
     const ora=new Date().getHours();
     const saluto=ora<12?'Buongiorno':ora<18?'Buon pomeriggio':'Buonasera';
-    document.getElementById('dashGreeting').textContent=saluto+', '+(appState.utente?.nome||'')+' 👋';
+    document.getElementById('dashGreeting').textContent=saluto+', '+(appState.utente?.nome||'');
     document.getElementById('dashDate').textContent=new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     aggiornaDashboard();aggiornaGrafico();
 }
@@ -1200,7 +1247,12 @@ function aggiornaDashboard(){
     document.getElementById('kpiClassi').textContent=cAnno.length;
     document.getElementById('kpiClassiLbl').textContent='Classi '+annoShort;
 
-    // KPI 3: studenti anno corrente
+    // KPI 3: scuole anno corrente
+    const scuoleAnnoIds=new Set(pAnno.map(p=>p.scuola_id));
+    document.getElementById('kpiScuole').textContent=scuoleAnnoIds.size;
+    document.getElementById('kpiScuoleLbl').textContent='Scuole '+annoShort;
+
+    // KPI 4: studenti anno corrente
     const studenti=cAnno.reduce((a,c)=>a+(c.num_studenti||0),0);
     document.getElementById('kpiStudenti').textContent=studenti;
     document.getElementById('kpiStudentiLbl').textContent='Studenti '+annoShort;
@@ -2732,6 +2784,14 @@ const DOMANDE_AUTOV = [
 
 const AREE_AUTOV = ['Mensa e Refezione','Educazione Alimentare','Ambiente e Spazi','Sicurezza Alimentare','Attività Fisica e Benessere'];
 
+function aggiornaBadgeAutov(){
+    const badge=document.getElementById('navBadgeAutov');
+    if(!badge) return;
+    const n=(appState.autovalutazioni||[]).filter(a=>a.stato==='attesa').length;
+    if(n>0){badge.textContent=n;badge.style.display='flex';}
+    else{badge.style.display='none';}
+}
+
 async function aggiornaAutovalutazione(){
     const el=document.getElementById('autovalutazioneList');
     if(!el)return;
@@ -2743,6 +2803,8 @@ async function aggiornaAutovalutazione(){
     const {data,error}=await db.from('autovalutazioni').select('*').eq('biologo_id',appState.utente.id).order('created_at',{ascending:false});
     if(error){showToast('Errore caricamento autovalutazioni','error');el.innerHTML='';return;}
     _autovalutazioni=data||[];
+    appState.autovalutazioni=_autovalutazioni.map(a=>({id:a.id,stato:a.stato}));
+    aggiornaBadgeAutov();
     // Notifica nuove completate (solo se avevo già dati precedenti)
     if(Object.keys(vecchiStati).length>0){
         _autovalutazioni.forEach(a=>{
