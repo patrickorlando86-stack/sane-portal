@@ -3144,6 +3144,7 @@ async function onbAggiungiScuola(){
 function hideInitLoader(){
     const el=document.getElementById('initLoader');
     if(!el) return;
+    el.style.pointerEvents='none';
     el.style.opacity='0';
     setTimeout(()=>{ el.style.display='none'; }, 400);
 }
@@ -3158,7 +3159,7 @@ db.auth.onAuthStateChange(async (event, session) => {
         // Mostra loader con messaggio di attesa mentre il DB si sveglia
         document.getElementById('loginScreen').classList.add('hidden');
         const el = document.getElementById('initLoader');
-        if(el){ el.style.display='flex'; el.style.opacity='1'; }
+        if(el){ el.style.display='flex'; el.style.opacity='1'; el.style.pointerEvents=''; }
         const msgEl = document.getElementById('initLoaderMsg');
         if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
         try { await inizializzaApp(session.user); }
