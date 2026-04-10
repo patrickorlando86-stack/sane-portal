@@ -437,6 +437,7 @@
                 <div class="kpi-card teal"><div class="kpi-val" id="nazStudenti">0</div><div class="kpi-lbl">Studenti Monitorati</div></div>
                 <div class="kpi-card"><div class="kpi-val" id="nazScuole">0</div><div class="kpi-lbl">Scuole</div></div>
                 <div class="kpi-card"><div class="kpi-val" id="nazSessioni">0</div><div class="kpi-lbl">Classi</div></div>
+                <div class="kpi-card"><div class="kpi-val" id="nazPacchetti">0</div><div class="kpi-lbl">Pacchetti</div></div>
                 <div class="kpi-card dark"><div class="kpi-val" id="nazMiglioramento">—</div><div class="kpi-lbl">Miglioramento Medio</div></div>
             </div>
 
@@ -531,26 +532,37 @@ async function caricaDati(){
             .neq('stato','eliminato')
             .order('data_iscrizione',{ascending:false});
     }
-    const [scuoleRes, classiRes] = await Promise.all([
+    const [scuoleRes, classiRes, pacchettiRes] = await Promise.all([
         db.from('scuole').select('biologo_id'),
-        db.from('classi').select('biologo_id, score_pre, score_post, num_studenti')
+        db.from('classi').select('biologo_id, score_pre, score_post, num_studenti'),
+        db.from('pacchetti').select('biologo_id, ore_totali, prezzo')
     ]);
-    const scuoleRaw = scuoleRes.data;
-    const classiRaw = classiRes.data;
+    const scuoleRaw    = scuoleRes.data;
+    const classiRaw    = classiRes.data;
+    const pacchettiRaw = pacchettiRes.data;
+    // Diagnosi RLS: log se admin non riesce a leggere tutti i pacchetti
+    if(pacchettiRes.error){
+        console.warn('⚠️ RLS pacchetti:', pacchettiRes.error.message,
+            '\n→ Supabase Dashboard → Table Editor → pacchetti → RLS Policies',
+            '\n→ Aggiungi policy SELECT per ruolo admin: (auth.uid()=biologo_id) OR EXISTS(SELECT 1 FROM profiles WHERE id=auth.uid() AND role=\'admin\')');
+        showToast('⚠️ Dati pacchetti limitati — configura RLS su Supabase (vedi console)','error');
+    }
     const profiles = profilesRes.data;
     adminState.biologi = (profiles||[]).map(p => {
         const sc  = (scuoleRaw||[]).filter(s=>s.biologo_id===p.id);
+        const pk  = (pacchettiRaw||[]).filter(x=>x.biologo_id===p.id);
         const cl  = (classiRaw||[]).filter(c=>c.biologo_id===p.id);
         const clS = cl.filter(c=>c.score_pre&&c.score_post);
         const mig = clS.length>0
             ? Math.round((clS.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/clS.length)*10)/10
             : null;
         const studenti = cl.reduce((a,c)=>a+(c.num_studenti||0),0);
-        const oreContratte = sc.reduce((a,s)=>a+(s.ore_totali||0),0);
-        const valoreContratto = sc.reduce((a,s)=>a+(s.prezzo||0),0);
+        const oreContratte = pk.reduce((a,x)=>a+(x.ore_totali||0),0);
+        const valoreContratto = pk.reduce((a,x)=>a+(x.prezzo||0),0);
         return { id:p.id, nome:p.nome||p.email, email:p.email, regione:p.regione||'—',
                  ordine:p.ordine||'—', stato:p.stato, scadenza:p.scadenza,
-                 dataIscrizione:p.data_iscrizione, scuole:sc.length, classi:cl.length,
+                 dataIscrizione:p.data_iscrizione,
+                 scuole:sc.length, pacchetti:pk.length, classi:cl.length,
                  studenti, miglioramento:mig,
                  oreContratte, valoreContratto,
                  isAdmin: p.role==='admin' };
@@ -698,8 +710,9 @@ function aggiornaLicenze(){
                 <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${b.email} · ${b.regione}</div>
                 <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
                     ${badge}
-                    <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.scuole} scuole</span>
-                    <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.classi} classi</span>
+                    <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.scuole} scuol${b.scuole===1?'a':'e'}</span>
+                    <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.pacchetti} pacchet${b.pacchetti===1?'to':'ti'}</span>
+                    <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.classi} class${b.classi===1?'e':'i'}</span>
                     ${b.studenti>0 ? `<span style="font-size:10px;color:#64748b;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.studenti} studenti</span>` : ''}
                     ${(b.oreContratte>0||b.valoreContratto>0) ? `<span style="font-size:10px;color:#1e40af;background:#dbeafe;padding:2px 8px;border-radius:6px;font-weight:700;">${b.oreContratte}h contratte${b.valoreContratto>0?' · '+valFmt:''}</span>` : ''}
                     ${b.miglioramento ? `<span style="font-size:10px;color:#065f46;background:#d1fae5;padding:2px 8px;border-radius:6px;">+${b.miglioramento} mig.</span>` : ''}
@@ -958,15 +971,17 @@ async function aggiungiBiologo(){
 // ============================================================
 function aggiornaNazionale(){
     const b = adminState.biologi.filter(x=>x.stato==='active');
-    const totScuole   = b.reduce((a,x)=>a+(x.scuole||0),0);
-    const totClassi   = b.reduce((a,x)=>a+(x.classi||0),0);
-    const totStudenti = b.reduce((a,x)=>a+(x.studenti||0),0);
+    const totScuole    = b.reduce((a,x)=>a+(x.scuole||0),0);
+    const totClassi    = b.reduce((a,x)=>a+(x.classi||0),0);
+    const totStudenti  = b.reduce((a,x)=>a+(x.studenti||0),0);
+    const totPacchetti = b.reduce((a,x)=>a+(x.pacchetti||0),0);
     const conMig = b.filter(x=>x.miglioramento);
     const mediaMig = conMig.length>0 ? '+' + (conMig.reduce((a,x)=>a+x.miglioramento,0)/conMig.length).toFixed(1) : '—';
 
-    document.getElementById('nazStudenti').textContent    = totStudenti;
-    document.getElementById('nazScuole').textContent      = totScuole;
-    document.getElementById('nazSessioni').textContent    = totClassi;
+    document.getElementById('nazStudenti').textContent     = totStudenti;
+    document.getElementById('nazScuole').textContent       = totScuole;
+    document.getElementById('nazSessioni').textContent     = totClassi;
+    document.getElementById('nazPacchetti').textContent    = totPacchetti;
     document.getElementById('nazMiglioramento').textContent = mediaMig;
 
     // Top biologi

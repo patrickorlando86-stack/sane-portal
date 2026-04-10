@@ -1321,8 +1321,8 @@ function aggiornaDashboard(){
 
             // Pacchetti espansi
             const pacchettiHtml=pSc.map(p=>{
-                const isGrat=p.tipo==='gratuito';
-                const tipoLabel=p.tipo==='gratuito'?'Gratuito':'A Pagamento';
+                const isGrat=(p.tipo==='gratuito'||p.prezzo===0);
+                const tipoLabel=isGrat?'Gratuito':'A Pagamento';
                 const clsP=appState.classi.filter(c=>c.pacchetto_id===p.id);
                 const oreUsate=clsP.reduce((a,c)=>a+oreClasse(c),0);
                 const oreTot=p.ore_totali||0;
@@ -1460,9 +1460,9 @@ function aggiornaScuole(){
                </div>`
             :pacchetti.map(p=>{
                 const isOpenP=_openPacchetti.has(p.id);
-                const isGratuito=p.tipo==='gratuito';
+                const isGratuito=(p.tipo==='gratuito'||p.prezzo===0);
                 const bc=isGratuito?'badge-green':'badge-blue';
-                const tipoLabel=p.tipo==='gratuito'?'Gratuito':'A Pagamento';
+                const tipoLabel=isGratuito?'Gratuito':'A Pagamento';
                 const prezzolabel=(!isGratuito&&p.prezzo)?(' · €'+p.prezzo.toLocaleString('it-IT')):'';
                 const dataP=p.data_acquisto?new Date(p.data_acquisto).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'})
                     :new Date(p.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'});
@@ -1544,7 +1544,7 @@ function apriNuovoPacchetto(scuolaId, scuolaNome){
     document.getElementById('pacchettoScuolaId').value=scuolaId;
     document.getElementById('pacchettoModalScuolaNome').innerHTML='<i class="fas fa-school" style="font-size:11px;opacity:0.7;"></i> '+scuolaNome;
     document.getElementById('pacchettoData').value=new Date().toISOString().split('T')[0];
-    document.getElementById('pacchettoTipo').value='pagamento';
+    document.getElementById('pacchettoTipo').value='standard';
     document.getElementById('pacchettoOre').value='30';
     document.getElementById('pacchettoAnno').value='';
     const prezzoEl=document.getElementById('pacchettoPrezzo');
@@ -1562,7 +1562,7 @@ function modificaPacchetto(id){
     document.getElementById('pacchettoModalBtn').innerHTML='<i class="fas fa-save"></i>Salva Modifiche';
     document.getElementById('pacchettoScuolaId').value=p.scuola_id;
     document.getElementById('pacchettoModalScuolaNome').innerHTML='<i class="fas fa-school" style="font-size:11px;opacity:0.7;"></i> '+s.nome;
-    document.getElementById('pacchettoTipo').value=p.tipo||'pagamento';
+    document.getElementById('pacchettoTipo').value=(p.prezzo===0||p.tipo==='gratuito')?'gratuito':'standard';
     document.getElementById('pacchettoOre').value=p.ore_totali||0;
     document.getElementById('pacchettoAnno').value=p.anno_scolastico||'';
     document.getElementById('pacchettoData').value=p.data_acquisto||'';
@@ -1593,12 +1593,14 @@ async function aggiungiPacchetto(){
     const anno=document.getElementById('pacchettoAnno').value.trim()||null;
     const prezzoRaw=document.getElementById('pacchettoPrezzo')?.value;
     const prezzo=tipo==='gratuito'?0:(parseFloat(prezzoRaw)||0);
+    // Il DB accetta solo 'standard' come valore — gratuito si distingue per prezzo=0
+    const tipoDb=tipo==='gratuito'?'standard':tipo;
     if(!scuolaId){showToast('Errore: scuola non trovata','error');return;}
 
     // MODIFICA pacchetto esistente
     if(_editPacchettoId){
         const {data:updated,error}=await db.from('pacchetti')
-            .update({tipo,data_acquisto:data,ore_totali:ore,anno_scolastico:anno,prezzo})
+            .update({tipo:tipoDb,data_acquisto:data,ore_totali:ore,anno_scolastico:anno,prezzo})
             .eq('id',_editPacchettoId).select().single();
         if(error){showToast('Errore: '+error.message,'error');return;}
         const idx=appState.pacchetti.findIndex(x=>x.id===_editPacchettoId);
@@ -1615,7 +1617,7 @@ async function aggiungiPacchetto(){
     const user=authData?.user;
     if(!user){showToast('Sessione scaduta, effettua il login','error');return;}
     const {data:nuovo,error}=await db.from('pacchetti').insert({
-        scuola_id:scuolaId,biologo_id:user.id,tipo,data_acquisto:data,ore_totali:ore,anno_scolastico:anno,prezzo
+        scuola_id:scuolaId,biologo_id:user.id,tipo:tipoDb,data_acquisto:data,ore_totali:ore,anno_scolastico:anno,prezzo
     }).select().single();
     if(error){showToast('Errore: '+error.message,'error');return;}
     if(nuovo){ appState.pacchetti.push(nuovo); } else { await caricaDati(); }
@@ -1654,7 +1656,7 @@ function aggiornaSelectPacchetti(preScuolaId, prePacchettoId){
     }
     sel.innerHTML=appState.pacchetti.map(p=>{
         const s=appState.scuole.find(sc=>sc.id===p.scuola_id);
-        const tipoLabel=p.tipo==='gratuito'?'Gratuito':'A Pagamento';
+        const tipoLabel=(p.tipo==='gratuito'||p.prezzo===0)?'Gratuito':'A Pagamento';
         const oreLabel=p.ore_totali>0?' · '+p.ore_totali+'h':'';
         const label=`${s?s.nome:'?'} · ${tipoLabel}${oreLabel}${p.anno_scolastico?' '+p.anno_scolastico:''}`;
         return `<option value="${p.id}" data-scuola="${p.scuola_id}">${label}</option>`;
@@ -1866,7 +1868,7 @@ function aggiornaReport(){
         const pacchettiHtml=pacchetti.map(p=>{
             const isOpen=_openReportDettagli.has(p.id);
             const cls=appState.classi.filter(c=>c.pacchetto_id===p.id||(c.scuola_id===s.id&&!c.pacchetto_id&&pacchetti.length===1));
-            const isGrat=(p.tipo||'pagamento')==='gratuito';
+            const isGrat=((p.tipo||'standard')==='gratuito'||p.prezzo===0);
             const tipoLabel=isGrat?'Gratuito':'A Pagamento';
             const oreUsate=cls.reduce((a,c)=>a+oreClasse(c),0);
             const oreTot=p.ore_totali||0;
@@ -1973,7 +1975,7 @@ async function generaReport(scuolaId, pacchettoId, classeId) {
         if (!s) return;
         cls = appState.classi.filter(c => c.pacchetto_id === pacchettoId);
         const pk = appState.pacchetti.find(pk => pk.id === pacchettoId);
-        const pkLabel = pk?.tipo==='gratuito'?'Gratuito':'A Pagamento';
+        const pkLabel = (pk?.tipo==='gratuito'||(pk?.prezzo||0)===0)?'Gratuito':'A Pagamento';
         sottotitolo = 'Report Pacchetto' + (pk ? ' · ' + pkLabel : '');
     } else {
         s = appState.scuole.find(sc => sc.id === scuolaId);
