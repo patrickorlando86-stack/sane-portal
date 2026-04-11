@@ -278,6 +278,10 @@
                     <input type="checkbox" id="consentoDati" style="margin-top:2px;accent-color:var(--teal);width:15px;height:15px;flex-shrink:0;">
                     <span style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Acconsento alla <a href="https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/consenso-dati-ricerca.md" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;font-weight:600;">condivisione dei dati aggregati</a> del programma con S.A.N.E. Italia per finalità di ricerca e sviluppo</span>
                 </label>
+                <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+                    <input type="checkbox" id="consentoDPA" style="margin-top:2px;accent-color:var(--teal);width:15px;height:15px;flex-shrink:0;">
+                    <span style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Ho letto e accetto l'<a href="https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/dpa1-sane-biologo.md" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;font-weight:600;">Accordo sul Trattamento dei Dati (DPA)</a> e mi impegno a operare come Responsabile del trattamento ai sensi dell'art. 28 GDPR</span>
+                </label>
             </div>
         </div>
         <button id="loginBtn" onclick="doLogin()" style="width:100%;background:var(--teal);color:white;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:background 0.2s;">Accedi al Portale</button>
@@ -1007,7 +1011,7 @@ async function doLogin(){
         const regione=document.getElementById('loginRegione').value||null;
         const ordine=document.getElementById('loginOrdine').value.trim()||null;
         if(!nome){showToast('Inserisci il tuo nome','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
-        if(!document.getElementById('consentoTermini').checked||!document.getElementById('consentoPrivacy').checked||!document.getElementById('consentoDati').checked){showToast('Accetta tutti i consensi obbligatori per procedere','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
+        if(!document.getElementById('consentoTermini').checked||!document.getElementById('consentoPrivacy').checked||!document.getElementById('consentoDati').checked||!document.getElementById('consentoDPA').checked){showToast('Accetta tutti i consensi obbligatori per procedere','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
         const {data:signUpData,error}=await db.auth.signUp({email,password:pass,options:{data:{nome,regione,ordine}}});
         if(error){showToast(error.message,'error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
         // Salva regione/ordine nel profilo se presenti
@@ -1333,6 +1337,7 @@ function aggiornaDashboard(){
     const docs=[
         {nome:'PMB — Presentazione Aule Scuole Primarie',icon:'fa-file-powerpoint',url:'https://docs.google.com/presentation/d/1O5-_wJHNpfbZrkg1L3K4TVszIrol1IWa/edit?usp=drive_link&ouid=111966764933940330192&rtpof=true&sd=true'},
         {nome:'SANE Liberatoria (per genitori)',icon:'fa-file-pdf',url:'https://drive.google.com/file/d/13yt-K_LeuHgm_4judYaDTM1wMvrk7bvV/view?usp=drive_link'},
+        {nome:'DPA — Accordo Responsabile del Trattamento (Biologo → Scuola)',icon:'fa-file-contract',url:'https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/dpa2-biologo-scuola.md'},
     ];
     document.getElementById('dashDocumenti').innerHTML=docs.map((d,i)=>`
         <div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i<docs.length-1?'border-bottom:1px solid #f1f5f9;':''}">
