@@ -276,11 +276,11 @@
                 </label>
                 <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
                     <input type="checkbox" id="consentoDati" style="margin-top:2px;accent-color:var(--teal);width:15px;height:15px;flex-shrink:0;">
-                    <span style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Acconsento alla <a href="https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/consenso-dati-ricerca.md" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;font-weight:600;">condivisione dei dati aggregati</a> del programma con S.A.N.E. Italia per finalità di ricerca e sviluppo</span>
+                    <span style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Acconsento alla <a href="https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/consenso-dati-ricerca.docx" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;font-weight:600;">condivisione dei dati aggregati</a> del programma con S.A.N.E. Italia per finalità di ricerca e sviluppo</span>
                 </label>
                 <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
                     <input type="checkbox" id="consentoDPA" style="margin-top:2px;accent-color:var(--teal);width:15px;height:15px;flex-shrink:0;">
-                    <span style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Ho letto e accetto l'<a href="https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/dpa1-sane-biologo.md" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;font-weight:600;">Accordo sul Trattamento dei Dati (DPA)</a> e mi impegno a operare come Responsabile del trattamento ai sensi dell'art. 28 GDPR</span>
+                    <span style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Ho letto e accetto l'<a href="https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/dpa1-sane-biologo.docx" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;font-weight:600;">Accordo sul Trattamento dei Dati (DPA)</a> e mi impegno a operare come Responsabile del trattamento ai sensi dell'art. 28 GDPR</span>
                 </label>
             </div>
         </div>
@@ -1327,8 +1327,8 @@ function aggiornaDashboard(){
     // Documenti scaricabili (link placeholder)
     const docs=[
         {nome:'PMB — Presentazione Aule Scuole Primarie',icon:'fa-file-powerpoint',url:'https://docs.google.com/presentation/d/1O5-_wJHNpfbZrkg1L3K4TVszIrol1IWa/edit?usp=drive_link&ouid=111966764933940330192&rtpof=true&sd=true'},
-        {nome:'SANE Liberatoria (per genitori)',icon:'fa-file-alt',url:'https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/SANE_Liberatoria.md'},
-        {nome:'DPA — Accordo Responsabile del Trattamento (Biologo → Scuola)',icon:'fa-file-contract',url:'https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/dpa2-biologo-scuola.md'},
+        {nome:'SANE Liberatoria (per genitori)',icon:'fa-file-alt',url:'https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/SANE_Liberatoria.docx'},
+        {nome:'DPA — Accordo Responsabile del Trattamento (Biologo → Scuola)',icon:'fa-file-contract',url:'https://github.com/patrickorlando86-stack/sane-italia-legal/blob/main/dpa2-biologo-scuola.docx'},
     ];
     document.getElementById('dashDocumenti').innerHTML=docs.map((d,i)=>`
         <div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i<docs.length-1?'border-bottom:1px solid #f1f5f9;':''}">
