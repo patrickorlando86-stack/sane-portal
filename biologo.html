@@ -92,7 +92,7 @@
                 flex-shrink:0;
             }
             .sidebar > div:last-child .label{display:none !important;}
-            /* Nascondi FNOB nel footer */
+            /* Nascondi footer sidebar su mobile */
             .sidebar > div:last-child > div{display:none !important;}
             .btn-esci{
                 width:44px !important;
@@ -302,10 +302,6 @@
             <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
                 <i class="fas fa-arrow-left" style="font-size:10px;"></i> Torna alla pagina iniziale
             </a>
-        </div>
-        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.07);text-align:center;">
-            <p style="color:rgba(255,255,255,0.2);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;">In collaborazione con</p>
-            <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/fnob.webp" alt="FNOB" style="height:64px;margin:0 auto;display:block;">
         </div>
     </div>
 </div>
@@ -534,11 +530,6 @@
 
         <!-- FOOTER SIDEBAR — sempre visibile anche su mobile -->
         <div style="padding:10px 8px;border-top:1px solid rgba(255,255,255,0.07);">
-            <!-- Logo FNOB -->
-            <div class="label" style="text-align:center;margin-bottom:8px;padding:8px 4px;">
-                <div style="color:rgba(255,255,255,0.3);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;font-weight:700;">Partner Scientifico</div>
-                <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/fnob.webp" alt="FNOB" style="height:64px;margin:0 auto;display:block;">
-            </div>
             <!-- Bottone Esci — sempre visibile -->
             <button onclick="doLogout()" class="btn-esci"
                 style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;cursor:pointer;padding:10px 8px;border-radius:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;"
@@ -697,7 +688,7 @@
         <section id="sec-report" class="section">
             <div style="margin-bottom:28px;">
                 <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Report & Certificati</h2>
-                <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Genera report PDF per le scuole — con bollino FNOB</p>
+                <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Genera report PDF per le scuole</p>
             </div>
             <div id="reportGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:18px;"><p style="color:#94a3b8;font-size:13px;grid-column:1/-1;text-align:center;padding:40px;">Aggiungi scuole per generare report.</p></div>
         </section>
@@ -817,7 +808,7 @@
             <div style="text-align:center;margin-bottom:28px;">
                 <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="SANE" style="height:52px;margin:0 auto 14px;display:block;">
                 <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--dark);margin:0 0 10px;">Benvenuto in S.A.N.E. Italia 🎉</h2>
-                <p style="color:#64748b;font-size:13px;line-height:1.6;">Il tuo portale per gestire il programma di<br><strong style="color:var(--dark);">educazione alimentare nelle scuole</strong> con F.N.O.B.</p>
+                <p style="color:#64748b;font-size:13px;line-height:1.6;">Il tuo portale per gestire il programma di<br><strong style="color:var(--dark);">educazione alimentare nelle scuole</strong>.</p>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:28px;">
                 <div style="background:#f0fdf9;border-radius:14px;padding:14px;text-align:center;">
@@ -828,7 +819,7 @@
                 <div style="background:#f0fdf9;border-radius:14px;padding:14px;text-align:center;">
                     <i class="fas fa-file-pdf" style="font-size:22px;color:var(--teal);margin-bottom:8px;display:block;"></i>
                     <div style="font-size:11px;font-weight:700;color:var(--dark);">Report PDF</div>
-                    <div style="font-size:10px;color:#94a3b8;margin-top:3px;">Con bollino FNOB</div>
+                    <div style="font-size:10px;color:#94a3b8;margin-top:3px;">Certificato S.A.N.E.</div>
                 </div>
                 <div style="background:#f0fdf9;border-radius:14px;padding:14px;text-align:center;">
                     <i class="fas fa-clipboard-check" style="font-size:22px;color:var(--teal);margin-bottom:8px;display:block;"></i>
@@ -2268,8 +2259,6 @@ async function generaReport(scuolaId, pacchettoId, classeId) {
             </div>
         </div>
         <div style="background:#f0fdf9;border-radius:9px;padding:7px 12px;text-align:center;">
-            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Partner Scientifico</div>
-            <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--dark);font-size:12px;">F.N.O.B.</div>
         </div>
     </div>
 
@@ -2389,7 +2378,7 @@ async function generaReport(scuolaId, pacchettoId, classeId) {
     <!-- Attestato -->
     <div style="margin-top:20px;padding:14px;background:#f0fdf9;border-radius:14px;border-left:4px solid var(--teal);">
         <p style="font-size:11px;color:#065f46;margin:0;line-height:1.5;">
-            <strong>Attestato:</strong> Il presente report certifica l'avvenuta implementazione del Programma "Mangiare Bene, Crescere Meglio" — Metodo Cardaci-Orlando — presso ${classeId ? (cls[0].nome_classe||'—')+' ('+s.nome+')' : s.nome}. Dati raccolti e validati in conformità alle linee guida F.N.O.B.
+            <strong>Attestato:</strong> Il presente report certifica l'avvenuta implementazione del Programma "Mangiare Bene, Crescere Meglio" — Metodo Cardaci-Orlando — presso ${classeId ? (cls[0].nome_classe||'—')+' ('+s.nome+')' : s.nome}. Dati raccolti e validati in conformità alle linee guida S.A.N.E. Italia.
         </p>
     </div>
 
@@ -3129,13 +3118,13 @@ function inviaEmailScuola(autovId){
     const anno=autov.anno_scolastico||annoScolasticoCorrente();
     const subject=`Autovalutazione Alimentare S.A.N.E. — ${nomeScuola} — A.S. ${anno}`;
     const body=`Gentile referente scolastico,\n\n`+
-        `sono ${nomeBiologo}, biologo nutrizionista certificato F.N.O.B. responsabile del programma S.A.N.E. Italia presso la vostra scuola.\n\n`+
+        `sono ${nomeBiologo}, biologo nutrizionista responsabile del programma S.A.N.E. Italia presso la vostra scuola.\n\n`+
         `Le invio il link per completare il questionario di autovalutazione alimentare per l'Anno Scolastico ${anno}.\n\n`+
         `Il questionario richiede circa 10 minuti ed è compilabile senza registrazione.\n\n`+
         `🔗 Link autovalutazione:\n${link}\n\n`+
         `I risultati saranno analizzati e le sarà trasmesso un report dettagliato con eventuali raccomandazioni per migliorare la qualità alimentare scolastica.\n\n`+
         `Per qualsiasi informazione rimango a disposizione.\n\n`+
-        `Cordiali saluti,\n${nomeBiologo}\nBiologo Nutrizionista certificato F.N.O.B. — Programma S.A.N.E. Italia`;
+        `Cordiali saluti,\n${nomeBiologo}\nBiologo Nutrizionista — Programma S.A.N.E. Italia`;
     window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
 }
 
@@ -3245,10 +3234,6 @@ function generaCertificatoAutovalutazione(autovId){
             <div>
                 <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#0A2647;">S.A.N.E. Italia</div>
                 <div style="font-size:11px;color:#94a3b8;margin-top:3px;">Sistema di Alimentazione Naturale ed Educativa</div>
-            </div>
-            <div style="text-align:right;">
-                <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px;">Partner Scientifico</div>
-                <div style="font-size:16px;font-weight:700;color:#0A2647;">F.N.O.B.</div>
             </div>
         </div>
         <div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.18em;margin-bottom:14px;">Certificato di Qualità Alimentare Scolastica</div>
