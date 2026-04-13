@@ -1686,6 +1686,7 @@ function aggiornaScuole(){
                 })()}
                 <div style="display:flex;gap:8px;margin-top:8px;" class="no-print">
                     <button onclick="event.stopPropagation();apriNuovoPacchetto('${s.id}','${s.nome}')" class="btn-ghost" style="font-size:11px;padding:7px 13px;flex:1;justify-content:center;touch-action:manipulation;"><i class="fas fa-plus" style="margin-right:3px;"></i>Pacchetto</button>
+                    <button onclick="event.stopPropagation();openModal('classeModal')" class="btn-ghost" style="font-size:11px;padding:7px 13px;flex:1;justify-content:center;touch-action:manipulation;"><i class="fas fa-plus" style="margin-right:3px;"></i>Nuova Classe</button>
                 </div>
             </div>`:''}
         </div>`;
