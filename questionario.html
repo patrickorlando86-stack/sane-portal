@@ -521,16 +521,48 @@ function tornaSetup(){
 (function precompilaDaPortale(){
   const p=new URLSearchParams(window.location.search);
   if(!p.has('scuola')) return;
-  const set=function(id,val){const el=document.getElementById(id);if(el&&val)el.value=val;};
-  set('scuola', p.get('scuola'));
-  set('comune', p.get('comune'));
-  set('livello', p.get('livello')||'A');
-  // aggiornaClassi prima di impostare classe
+
+  const set=function(id,val){const el=document.getElementById(id);if(el&&val!==undefined&&val!=='')el.value=val;};
+
+  // Blocca un campo visivamente e funzionalmente (input o select)
+  const lock=function(id){
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.setAttribute('readonly','');
+    el.style.pointerEvents='none';
+    el.style.background='#f1f5f9';
+    el.style.color='#64748b';
+    el.style.cursor='not-allowed';
+    // Per i select readonly non funziona — usiamo tabIndex=-1 per impedire focus
+    if(el.tagName==='SELECT') el.tabIndex=-1;
+    // Aggiunge icona lucchetto alla label corrispondente
+    const lbl=el.closest('div')&&el.closest('div').querySelector('label');
+    if(lbl&&!lbl.querySelector('.lock-icon')){
+      const ico=document.createElement('span');
+      ico.className='lock-icon';
+      ico.textContent=' 🔒';
+      ico.style.cssText='font-size:10px;opacity:0.5;';
+      lbl.appendChild(ico);
+    }
+  };
+
+  set('scuola', p.get('scuola'));   lock('scuola');
+  set('comune', p.get('comune'));   lock('comune');
+  const livello=p.get('livello')||'A';
+  set('livello', livello);          lock('livello');
   if(typeof aggiornaClassi==='function') aggiornaClassi();
+
   setTimeout(()=>{
-    set('classe', p.get('classe'));
-    set('nStudenti', p.get('nStudenti'));
-    set('codiceSessione', p.get('codice'));
+    const annoNum=p.get('annoNum');
+    if(annoNum){
+      const suffix={A:'ª', B:'ª Media', C:'ª Superiore'}[livello]||'ª';
+      set('classe', annoNum+suffix);
+    }
+    lock('classe');
+    const sezione=p.get('sezione');
+    if(sezione){ set('sezione', sezione); lock('sezione'); }
+    set('nStudenti', p.get('nStudenti')); lock('nStudenti');
+    set('codiceSessione', p.get('codice')); lock('codiceSessione');
   }, 50);
 })();
 

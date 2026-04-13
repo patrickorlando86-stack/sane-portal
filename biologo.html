@@ -1370,10 +1370,17 @@ function apriGeneraQuestionari(classeId){
     const c=appState.classi.find(cl=>cl.id===classeId);
     if(!c) return;
     const scuola=appState.scuole.find(s=>s.id===c.scuola_id);
+    // Estrai il primo numero (anno) e la prima lettera (sezione) da nome_classe
+    // Es: "3A"→anno=3,sez=A | "2q"→anno=2,sez=Q | "333"→anno=3,sez='' | "21"→anno=2,sez=''
+    const nc=c.nome_classe||'';
+    const m=/^(\d)([A-Za-z])?/.exec(nc);
+    const annoNum=m?m[1]:'';
+    const sezione=m&&m[2]?m[2].toUpperCase():'';
     const params=new URLSearchParams({
         scuola: scuola?.nome||'',
         comune: scuola?.comune||'',
-        classe: c.nome_classe||'',
+        annoNum,
+        sezione,
         livello: c.tipo_scuola||'A',
         nStudenti: c.num_studenti||22,
         codice: classeId.substring(0,8).toUpperCase()
@@ -1965,6 +1972,7 @@ async function salvaClasse(){
     const referente=document.getElementById('classeReferente')?.value.trim()||null;
     const materia=document.getElementById('classeMateria')?.value.trim()||null;
     if(!pacchetto_id||!nome_classe){showToast('Seleziona un pacchetto e inserisci il nome classe','error');return;}
+    if(!tipo_scuola){showToast('Seleziona il Tipo Scuola (A/B/C) — serve per generare il questionario corretto','error');document.getElementById('classeTipoScuola').focus();return;}
     const payload={scuola_id,pacchetto_id,nome_classe,num_studenti:num_studenti?parseInt(num_studenti):null,note,tipo_scuola,link_videoconferenza,pre_data,post_data,
         score_pre:scorePre?parseFloat(scorePre):null,score_post:scorePost?parseFloat(scorePost):null,
         referente,materia};
