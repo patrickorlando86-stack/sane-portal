@@ -517,6 +517,23 @@ function tornaSetup(){
   window.scrollTo(0,0);
 }
 
+// Precompila il form se arrivano parametri dal portale biologo
+(function precompilaDaPortale(){
+  const p=new URLSearchParams(window.location.search);
+  if(!p.has('scuola')) return;
+  const set=function(id,val){const el=document.getElementById(id);if(el&&val)el.value=val;};
+  set('scuola', p.get('scuola'));
+  set('comune', p.get('comune'));
+  set('livello', p.get('livello')||'A');
+  // aggiornaClassi prima di impostare classe
+  if(typeof aggiornaClassi==='function') aggiornaClassi();
+  setTimeout(()=>{
+    set('classe', p.get('classe'));
+    set('nStudenti', p.get('nStudenti'));
+    set('codiceSessione', p.get('codice'));
+  }, 50);
+})();
+
 function genera(){
   const scuola = document.getElementById('scuola').value.trim() || 'Istituto';
   const comune = document.getElementById('comune').value.trim() || '';
