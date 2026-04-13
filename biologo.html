@@ -257,7 +257,7 @@
             <label class="form-label" style="color:rgba(255,255,255,0.4);">Nome e Cognome</label>
             <input class="login-input" type="text" id="loginNome" placeholder="es. Serafina Cardaci">
             <label class="form-label" style="color:rgba(255,255,255,0.4);">Regione <span style="color:rgba(255,255,255,0.25);font-size:11px;">(opzionale)</span></label>
-            <select class="login-input" id="loginRegione" style="appearance:auto;-webkit-appearance:auto;">
+            <select class="login-input" id="loginRegione" style="appearance:auto;-webkit-appearance:auto;color:#0A2647;background:rgba(255,255,255,0.92);">
                 <option value="">Seleziona regione...</option>
                 <option>Piemonte</option><option>Liguria</option><option>Lombardia</option>
                 <option>Trentino-Alto Adige</option><option>Veneto</option><option>Friuli-Venezia Giulia</option>
@@ -353,6 +353,15 @@
             <div>
                 <label class="form-label">N° Studenti</label>
                 <input class="form-input" type="number" id="classeStudenti" placeholder="es. 22" min="1" max="40" style="margin-bottom:0;">
+            </div>
+            <div style="grid-column:1/-1;">
+                <label class="form-label">Tipo Scuola <span style="color:#94a3b8;font-size:11px;">— determina la versione del questionario</span></label>
+                <select class="form-select" id="classeTipoScuola" style="margin-bottom:0;" onchange="aggiornaTipoScuolaHint()">
+                    <option value="">Seleziona tipo...</option>
+                    <option value="A">Scuola Primaria (elementari) — Versione A</option>
+                    <option value="B">Scuola Secondaria 1° grado (medie) — Versione B</option>
+                    <option value="C">Scuola Secondaria 2° grado (superiori) — Versione C</option>
+                </select>
             </div>
             <div>
                 <label class="form-label">Prof. Referente</label>
@@ -671,6 +680,7 @@
                             </button>
                         </div>
                     </div>
+                    <input type="hidden" id="risposteVersione" value="A">
                     <!-- elementi nascosti per compatibilità JS -->
                     <input type="hidden" id="risposteSessione">
                     <input type="hidden" id="risposteTipo">
@@ -1305,6 +1315,8 @@ function mostraRisposteInline(tipo){
     document.getElementById('risposteSessione').value=_detailClasseId;
     document.getElementById('risposteTipo').value=tipo;
     if(c.num_studenti) document.getElementById('risposteNumStudenti').value=c.num_studenti;
+    const selV=document.getElementById('risposteVersione');
+    if(selV&&c.tipo_scuola) selV.value=c.tipo_scuola;
     document.getElementById('inlineRisposteTitolo').textContent='Inserisci Risposte '+tipo;
     document.getElementById('inlineRisposteWrapper').style.display='block';
     document.getElementById('risposteStudentiContainer').innerHTML='';
@@ -1674,7 +1686,6 @@ function aggiornaScuole(){
                 })()}
                 <div style="display:flex;gap:8px;margin-top:8px;" class="no-print">
                     <button onclick="event.stopPropagation();apriNuovoPacchetto('${s.id}','${s.nome}')" class="btn-ghost" style="font-size:11px;padding:7px 13px;flex:1;justify-content:center;touch-action:manipulation;"><i class="fas fa-plus" style="margin-right:3px;"></i>Pacchetto</button>
-                    <button onclick="event.stopPropagation();generaReport('${s.id}')" class="btn-ghost" style="font-size:11px;padding:7px 13px;touch-action:manipulation;"><i class="fas fa-file-pdf" style="margin-right:3px;color:var(--teal);"></i>Report</button>
                 </div>
             </div>`:''}
         </div>`;
@@ -1895,6 +1906,7 @@ async function salvaClasse(){
     const nome_classe=document.getElementById('classeNome').value.trim();
     const num_studenti=document.getElementById('classeStudenti').value;
     const note=document.getElementById('classeNote').value.trim();
+    const tipo_scuola=document.getElementById('classeTipoScuola').value||null;
     const link_videoconferenza=document.getElementById('classeVideoLink').value.trim()||null;
     const scorePre=document.getElementById('scorePre').value;
     const scorePost=document.getElementById('scorePost').value;
@@ -1903,7 +1915,7 @@ async function salvaClasse(){
     const referente=document.getElementById('classeReferente')?.value.trim()||null;
     const materia=document.getElementById('classeMateria')?.value.trim()||null;
     if(!pacchetto_id||!nome_classe){showToast('Seleziona un pacchetto e inserisci il nome classe','error');return;}
-    const payload={scuola_id,pacchetto_id,nome_classe,num_studenti:num_studenti?parseInt(num_studenti):null,note,link_videoconferenza,pre_data,post_data,
+    const payload={scuola_id,pacchetto_id,nome_classe,num_studenti:num_studenti?parseInt(num_studenti):null,note,tipo_scuola,link_videoconferenza,pre_data,post_data,
         score_pre:scorePre?parseFloat(scorePre):null,score_post:scorePost?parseFloat(scorePost):null,
         referente,materia};
     for(let i=1;i<=6;i++){
@@ -1942,6 +1954,7 @@ function resetClasseModal(){
     aggiornaSelectPacchetti();
     renderModuliGrid();
     ['classeNome','classeStudenti','classeReferente','classeMateria','classeNote','classeVideoLink','classePreData','classePostData','scorePre','scorePost'].forEach(id=>{
+    const tsEl=document.getElementById('classeTipoScuola'); if(tsEl) tsEl.value='';
         const el=document.getElementById(id);if(el)el.value='';
     });
     document.getElementById('classeModalTitle').textContent='Nuova Classe';
@@ -1966,6 +1979,7 @@ function apriModificaClasse(classeId){
     document.getElementById('classeNome').value=c.nome_classe||'';
     document.getElementById('classeStudenti').value=c.num_studenti||'';
     document.getElementById('classeNote').value=c.note||'';
+    document.getElementById('classeTipoScuola').value=c.tipo_scuola||'';
     document.getElementById('classeVideoLink').value=c.link_videoconferenza||'';
     document.getElementById('classeReferente').value=c.referente||'';
     document.getElementById('classeMateria').value=c.materia||'';
@@ -2689,12 +2703,17 @@ async function generaFormStudenti() {
 
     const classeObj = appState.classi.find(c => c.id === sessId);
     const classeDefault = classeObj ? classeObj.nome_classe : '';
+    // Versione globale: da classe, poi da select globale, poi default A
+    const versioneGlobale = (classeObj?.tipo_scuola) || document.getElementById('risposteVersione')?.value || 'A';
+    // Aggiorna il select globale per coerenza
+    const selVers = document.getElementById('risposteVersione');
+    if(selVers) selVers.value = versioneGlobale;
     const esistentiMap = {};
     esistenti.forEach(r => { esistentiMap[r.studente_num] = r; });
 
     let html = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
         <div style="height:2px;flex:1;background:#e2e8f0;"></div>
-        <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;">${numStudenti} studenti · ${tipo}${esistenti.length > 0 ? ' · ' + esistenti.length + ' già salvati' : ''}</span>
+        <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;">${numStudenti} studenti · ${tipo} · Versione ${versioneGlobale}${esistenti.length > 0 ? ' · ' + esistenti.length + ' già salvati' : ''}</span>
         <div style="height:2px;flex:1;background:#e2e8f0;"></div>
     </div>`;
     for (let i = 1; i <= numStudenti; i++) {
@@ -2790,19 +2809,7 @@ function renderFormStudente(num, tipo, classeDefault, giaEsistente = false) {
             </div>
             <div id="scoreDisplay_${num}" style="background:#f0fdf9;color:var(--teal);font-family:'Syne',sans-serif;font-weight:700;padding:6px 14px;border-radius:10px;font-size:14px;display:none;"></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px;">
-            <div>
-                <label class="form-label">Versione</label>
-                <select class="form-select" id="versione_${num}" style="margin-bottom:0;" onchange="aggiornaVersioneStudente(${num})">
-                    <option value="A">Versione A</option>
-                    <option value="B">Versione B</option>
-                    <option value="C">Versione C</option>
-                </select>
-            </div>
-            <div>
-                <label class="form-label">Classe Studente</label>
-                <input class="form-input" id="classe_${num}" value="${classeDefault}" style="margin-bottom:0;" placeholder="es. 3A">
-            </div>
+        <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:18px;">
             <div>
                 <label class="form-label">Sesso</label>
                 <select class="form-select" id="sesso_${num}" style="margin-bottom:0;">
@@ -2812,6 +2819,8 @@ function renderFormStudente(num, tipo, classeDefault, giaEsistente = false) {
                 </select>
             </div>
         </div>
+        <input type="hidden" id="classe_${num}" value="${classeDefault}">
+        <input type="hidden" id="versione_${num}" value="A">
         <div style="border-top:1px solid #f1f5f9;padding-top:16px;">
             <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:12px;">Domande D1–D9 (tutte le versioni)</p>
             <div id="domandeABC_${num}">${renderDomandeGruppo(['d1','d2','d3','d4','d5','d6','d7','d8','d9'], num)}</div>
@@ -2882,10 +2891,20 @@ function getSelectedAnswer(group) {
 }
 
 function aggiornaVersioneStudente(num) {
-    const versione = document.getElementById('versione_' + num).value;
+    const verEl = document.getElementById('versione_' + num);
+    const versione = verEl ? verEl.value : (document.getElementById('risposteVersione')?.value || 'A');
     document.getElementById('domandeBC_' + num).style.display = (versione === 'B' || versione === 'C') ? 'block' : 'none';
     document.getElementById('domandeC_' + num).style.display = (versione === 'C') ? 'block' : 'none';
     aggiornaScoreStudente(num);
+}
+
+function aggiornaVersioneGlobale() {
+    const versione = document.getElementById('risposteVersione')?.value || 'A';
+    const numStudenti = parseInt(document.getElementById('risposteNumStudenti')?.value) || 0;
+    for (let i = 1; i <= numStudenti; i++) {
+        const verEl = document.getElementById('versione_' + i);
+        if (verEl) { verEl.value = versione; aggiornaVersioneStudente(i); }
+    }
 }
 
 function aggiornaScoreStudente(num) {
@@ -2905,10 +2924,11 @@ async function salvaRisposte() {
     const numStudenti = parseInt(document.getElementById('risposteNumStudenti').value);
     if (!sessId || !numStudenti) { showToast('Dati mancanti', 'error'); return; }
 
+    const versioneGlobale = document.getElementById('risposteVersione')?.value || 'A';
     const righe = [];
     for (let i = 1; i <= numStudenti; i++) {
-        const versione = document.getElementById('versione_' + i).value;
-        const classe_studente = document.getElementById('classe_' + i).value.trim();
+        const versione = versioneGlobale;
+        const classe_studente = document.getElementById('classe_' + i)?.value.trim() || '';
         const sesso = document.getElementById('sesso_' + i).value;
         const riga = { classe_id: sessId, studente_num: i, tipo, versione, classe_studente, sesso };
 
