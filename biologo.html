@@ -3719,8 +3719,10 @@ db.auth.onAuthStateChange(async (event, session) => {
             } catch(err){ console.error('ViewAs error:',err); hideInitLoader(); }
             return;
         }
-        try { await inizializzaApp(session.user); }
-        catch(err){ console.error('Init error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
+        // Timeout sicurezza: se dopo 12s lo spinner è ancora lì, mostra login
+        const _initTimeout = setTimeout(()=>{ hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }, 12000);
+        try { await inizializzaApp(session.user); clearTimeout(_initTimeout); }
+        catch(err){ clearTimeout(_initTimeout); console.error('Init error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
     } else if(event === 'INITIAL_SESSION' && !session){
         // Nessuna sessione salvata → mostra login
         hideInitLoader();
