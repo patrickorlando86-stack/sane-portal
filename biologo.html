@@ -986,35 +986,13 @@ if (localStorage.getItem('sane_v2') !== null) {
 // ============================================================
 // SUPABASE
 // ============================================================
-const _isViewAs = !!new URLSearchParams(window.location.search).get('viewAs');
-
-if(!_isViewAs){
-    Object.keys(localStorage).filter(k=>k.includes('sb-')||k.includes('supabase')).forEach(k=>localStorage.removeItem(k));
-}
+// Pulisci sempre la sessione — in viewAs l'admin fa login nel nuovo tab
+Object.keys(localStorage).filter(k=>k.includes('sb-')||k.includes('supabase')).forEach(k=>localStorage.removeItem(k));
 
 const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZm9zbGlva2Zza2Z0bW91a3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDY3NTEsImV4cCI6MjA5MDYyMjc1MX0.eX9BL0tIy83zZ49hxzxFloH24hGIcbMRb2AsmCOiF9k';
 const { createClient } = supabase;
-
-// In viewAs mode: sessione in memoria + lock separato → nessun conflitto col tab admin
-const db = createClient(SUPABASE_URL, SUPABASE_KEY, _isViewAs ? {
-    auth: { persistSession: false, autoRefreshToken: false, storageKey: 'sb-sane-viewas' }
-} : {});
-
-// In viewAs mode: inietta manualmente il token admin dalla localStorage
-if(_isViewAs){
-    (async () => {
-        const keys = Object.keys(localStorage).filter(k => k.startsWith('sb-') && k.includes('auth-token'));
-        for(const key of keys){
-            try {
-                const data = JSON.parse(localStorage.getItem(key) || '{}');
-                const at = data.access_token;
-                const rt = data.refresh_token || '';
-                if(at){ await db.auth.setSession({ access_token: at, refresh_token: rt }); break; }
-            } catch(e){ console.warn('ViewAs session inject:', e); }
-        }
-    })();
-}
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ============================================================
 // STATO
@@ -3697,45 +3675,39 @@ function hideInitLoader(){
     setTimeout(()=>{ el.style.display='none'; }, 400);
 }
 
-// ── MODALITÀ VIEW-AS: legge dati pre-caricati dall'admin, zero auth ──
-const _viewAsId = new URLSearchParams(window.location.search).get('viewAs');
-if(_viewAsId){
-    try{
-        const raw = localStorage.getItem('sane_viewas_data');
-        const vd  = raw ? JSON.parse(raw) : null;
-        if(!vd || vd.id !== _viewAsId || (Date.now()-vd.ts) > 30*60*1000){
-            document.getElementById('initLoader').innerHTML='<div style="color:white;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:16px;">⚠️</div><div style="font-size:16px;font-weight:700;">Dati non disponibili</div><div style="font-size:12px;opacity:0.6;margin-top:8px;">Riapri il portale dal pannello admin</div></div>';
-        } else {
-            _viewAsMode = true;
-            const p = vd.profilo;
-            appState.utente = {nome:p.nome||'—',email:p.email||'',id:_viewAsId,regione:p.regione||null,ordine:p.ordine||null,genere:p.genere||null};
-            appState.scuole     = vd.scuole     || [];
-            appState.pacchetti  = vd.pacchetti  || [];
-            appState.classi     = vd.classi     || [];
-            appState.autovalutazioni = [];
-            hideInitLoader();
-            document.getElementById('appShell').style.opacity='1';
-            const banner=document.getElementById('viewAsBanner');
-            if(banner){ banner.style.display='flex'; document.getElementById('viewAsNome').textContent=p.nome||p.email; document.getElementById('mainContent').style.paddingTop='60px'; }
-            aggiornaUI();
-        }
-    } catch(e){ console.error('ViewAs init:',e); }
-} else {
-
-// Nessuna sessione salvata → mostra login subito
+// Mostra login subito
 hideInitLoader();
 document.getElementById('loginScreen').classList.remove('hidden');
 
-// Gestisce solo login successivi e logout
 db.auth.onAuthStateChange(async (event, session) => {
-    if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session && !appState.utente){
+    if(event === 'SIGNED_IN' && session && !appState.utente){
         document.getElementById('loginScreen').classList.add('hidden');
         const el = document.getElementById('initLoader');
         if(el){ el.style.display='flex'; el.style.opacity='1'; el.style.pointerEvents=''; }
         const msgEl = document.getElementById('initLoaderMsg');
         if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
-        const viewAsId = null; // viewAs gestito sopra
+        // Controlla se è modalità viewAs
+        const viewAsId = new URLSearchParams(window.location.search).get('viewAs');
         if(viewAsId){
+            try{
+                const {data:adminProfilo}=await db.from('profiles').select('role').eq('id',session.user.id).single();
+                if(!adminProfilo||adminProfilo.role!=='admin'){
+                    showToast('Accesso non autorizzato','error');
+                    hideInitLoader();
+                    document.getElementById('loginScreen').classList.remove('hidden');
+                    return;
+                }
+                const {data:targetProfilo}=await db.from('profiles').select('*').eq('id',viewAsId).single();
+                if(!targetProfilo){ showToast('Biologo non trovato','error'); hideInitLoader(); return; }
+                _viewAsMode = true;
+                appState.utente={nome:targetProfilo.nome||'—',email:targetProfilo.email||'',id:viewAsId,regione:targetProfilo.regione||null,ordine:targetProfilo.ordine||null,genere:targetProfilo.genere||null};
+                await caricaDati(viewAsId);
+                hideInitLoader();
+                document.getElementById('appShell').style.opacity='1';
+                const banner=document.getElementById('viewAsBanner');
+                if(banner){ banner.style.display='flex'; document.getElementById('viewAsNome').textContent=targetProfilo.nome||targetProfilo.email; document.getElementById('mainContent').style.paddingTop='60px'; }
+                aggiornaUI();
+            } catch(err){ console.error('ViewAs error:',err); hideInitLoader(); }
             return;
         }
         try { await inizializzaApp(session.user); }
@@ -3748,8 +3720,6 @@ db.auth.onAuthStateChange(async (event, session) => {
         setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'),300);
     }
 });
-
-} // fine else (non viewAs)
 </script>
 </body>
 </html>
