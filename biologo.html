@@ -3690,6 +3690,7 @@ db.auth.onAuthStateChange(async (event, session) => {
         const viewAsId = new URLSearchParams(window.location.search).get('viewAs');
         if(viewAsId){
             try{
+                // Verifica ruolo admin dell'utente loggato
                 const {data:adminProfilo}=await db.from('profiles').select('role').eq('id',session.user.id).single();
                 if(!adminProfilo||adminProfilo.role!=='admin'){
                     showToast('Accesso non autorizzato','error');
@@ -3697,15 +3698,26 @@ db.auth.onAuthStateChange(async (event, session) => {
                     document.getElementById('loginScreen').classList.remove('hidden');
                     return;
                 }
-                const {data:targetProfilo}=await db.from('profiles').select('*').eq('id',viewAsId).single();
-                if(!targetProfilo){ showToast('Biologo non trovato','error'); hideInitLoader(); return; }
-                _viewAsMode = true;
-                appState.utente={nome:targetProfilo.nome||'—',email:targetProfilo.email||'',id:viewAsId,regione:targetProfilo.regione||null,ordine:targetProfilo.ordine||null,genere:targetProfilo.genere||null};
-                await caricaDati(viewAsId);
+                // Usa i dati pre-caricati dall'admin (localStorage) — evita blocchi RLS
+                const raw = localStorage.getItem('sane_viewas_data');
+                const vd  = raw ? JSON.parse(raw) : null;
+                if(vd && vd.id === viewAsId){
+                    _viewAsMode = true;
+                    const p = vd.profilo;
+                    appState.utente={nome:p.nome||'—',email:p.email||'',id:viewAsId,regione:p.regione||null,ordine:p.ordine||null,genere:p.genere||null};
+                    appState.scuole=vd.scuole||[]; appState.pacchetti=vd.pacchetti||[]; appState.classi=vd.classi||[]; appState.autovalutazioni=[];
+                } else {
+                    // Fallback Supabase (stesso dominio, RLS admin attivo)
+                    const {data:tp}=await db.from('profiles').select('*').eq('id',viewAsId).single();
+                    if(!tp){ showToast('Biologo non trovato','error'); hideInitLoader(); return; }
+                    _viewAsMode = true;
+                    appState.utente={nome:tp.nome||'—',email:tp.email||'',id:viewAsId,regione:tp.regione||null,ordine:tp.ordine||null,genere:tp.genere||null};
+                    await caricaDati(viewAsId);
+                }
                 hideInitLoader();
                 document.getElementById('appShell').style.opacity='1';
                 const banner=document.getElementById('viewAsBanner');
-                if(banner){ banner.style.display='flex'; document.getElementById('viewAsNome').textContent=targetProfilo.nome||targetProfilo.email; document.getElementById('mainContent').style.paddingTop='60px'; }
+                if(banner){ banner.style.display='flex'; document.getElementById('viewAsNome').textContent=appState.utente.nome||appState.utente.email; document.getElementById('mainContent').style.paddingTop='60px'; }
                 aggiornaUI();
             } catch(err){ console.error('ViewAs error:',err); hideInitLoader(); }
             return;
