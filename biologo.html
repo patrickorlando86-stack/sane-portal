@@ -3682,7 +3682,7 @@ document.getElementById('loginScreen').classList.remove('hidden');
 
 // Gestisce solo login successivi e logout
 db.auth.onAuthStateChange(async (event, session) => {
-    if(event === 'SIGNED_IN' && session && !appState.utente){
+    if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session && !appState.utente){
         document.getElementById('loginScreen').classList.add('hidden');
         const el = document.getElementById('initLoader');
         if(el){ el.style.display='flex'; el.style.opacity='1'; el.style.pointerEvents=''; }
