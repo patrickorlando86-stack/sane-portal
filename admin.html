@@ -538,15 +538,13 @@
 </div>
 
 <script>
-// Nessun clear — la sessione persiste tra tab e reload
-
 // ============================================================
 // SUPABASE
 // ============================================================
 const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZm9zbGlva2Zza2Z0bW91a3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDY3NTEsImV4cCI6MjA5MDYyMjc1MX0.eX9BL0tIy83zZ49hxzxFloH24hGIcbMRb2AsmCOiF9k';
 const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'sane-admin-session' } });
 
 // ============================================================
 // STATO
@@ -1602,7 +1600,6 @@ async function avviaAdmin(user){
     }, 400);
 }
 
-// Ascolta nuovi login e logout
 db.auth.onAuthStateChange(async (event, session) => {
     if(event === 'SIGNED_IN' && session && !adminState.currentUserId){
         document.getElementById('loginScreen').classList.add('hidden');
@@ -1612,13 +1609,12 @@ db.auth.onAuthStateChange(async (event, session) => {
         if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
         const _t = setTimeout(()=>{ hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }, 12000);
         try { await avviaAdmin(session.user); clearTimeout(_t); }
-        catch(err){ clearTimeout(_t); console.error('avviaAdmin error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
+        catch(err){ clearTimeout(_t); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
     } else if(event === 'SIGNED_OUT'){
         window.location.href='index.html';
     }
 });
 
-// Sessione già attiva? Entra direttamente
 (async () => {
     try {
         const { data: { session } } = await db.auth.getSession();

@@ -987,13 +987,15 @@ if (localStorage.getItem('sane_v2') !== null) {
 // ============================================================
 // SUPABASE
 // ============================================================
-// Cancella sessione solo se NON è viewAs (il viewAs usa la sessione admin)
-if(!new URLSearchParams(window.location.search).get('viewAs')) localStorage.clear();
+const _isViewAs = !!new URLSearchParams(window.location.search).get('viewAs');
+// Biologo normale: cancella solo la sessione biologo (non tocca quella admin)
+if(!_isViewAs) localStorage.removeItem('sane-biologo-session');
 
 const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZm9zbGlva2Zza2Z0bW91a3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDY3NTEsImV4cCI6MjA5MDYyMjc1MX0.eX9BL0tIy83zZ49hxzxFloH24hGIcbMRb2AsmCOiF9k';
 const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+// ViewAs usa la sessione admin, biologo normale usa la sua sessione separata
+const db = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: _isViewAs ? 'sane-admin-session' : 'sane-biologo-session' } });
 
 // ============================================================
 // STATO
