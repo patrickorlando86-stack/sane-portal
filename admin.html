@@ -1599,7 +1599,7 @@ async function avviaAdmin(user){
 // initLoader rimane visibile mentre Supabase controlla la sessione
 
 db.auth.onAuthStateChange(async (event, session) => {
-    if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session){
+    if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session && !adminState.currentUserId){
         document.getElementById('loginScreen').classList.add('hidden');
         const el = document.getElementById('initLoader');
         if(el){ el.style.display='flex'; el.style.opacity='1'; }
