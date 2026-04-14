@@ -1611,7 +1611,9 @@ db.auth.onAuthStateChange(async (event, session) => {
         if(el){ el.style.display='flex'; el.style.opacity='1'; }
         const msgEl = document.getElementById('initLoaderMsg');
         if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
-        await avviaAdmin(session.user);
+        const _t = setTimeout(()=>{ hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }, 12000);
+        try { await avviaAdmin(session.user); clearTimeout(_t); }
+        catch(err){ clearTimeout(_t); console.error('avviaAdmin error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
     } else if(event === 'SIGNED_OUT'){
         window.location.href='index.html';
     }
@@ -1622,14 +1624,14 @@ db.auth.onAuthStateChange(async (event, session) => {
     try {
         const { data: { session } } = await db.auth.getSession();
         if(session){
-            // Sessione trovata — avvia direttamente
             const el = document.getElementById('initLoader');
             if(el){ el.style.display='flex'; el.style.opacity='1'; }
             const msgEl = document.getElementById('initLoaderMsg');
             if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
-            await avviaAdmin(session.user);
+            const _t = setTimeout(()=>{ hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }, 12000);
+            try { await avviaAdmin(session.user); clearTimeout(_t); }
+            catch(err){ clearTimeout(_t); console.error('avviaAdmin error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
         } else {
-            // Nessuna sessione — mostra login
             hideInitLoader();
             document.getElementById('loginScreen').classList.remove('hidden');
         }
