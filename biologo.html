@@ -342,9 +342,13 @@
             <button onclick="closeModal('classeModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;"><i class="fas fa-times"></i></button>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div style="grid-column:1/-1;">
+            <div style="grid-column:1/-1;" id="classePacchettoRow">
                 <label class="form-label">Pacchetto</label>
                 <select class="form-select" id="classePacchetto"></select>
+                <div id="classePacchettoLocked" style="display:none;padding:10px 14px;background:#f1f5f9;border-radius:10px;font-size:12px;font-weight:600;color:#475569;display:none;align-items:center;gap:7px;">
+                    <i class="fas fa-lock" style="font-size:10px;color:#94a3b8;"></i>
+                    <span id="classePacchettoLockedNome"></span>
+                </div>
             </div>
             <div>
                 <label class="form-label">Classe / Sezione</label>
@@ -561,10 +565,14 @@
         <!-- DASHBOARD -->
         <section id="sec-dashboard" class="section active">
             <!-- SALUTO -->
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;" class="dash-header">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;flex-wrap:wrap;gap:14px;" class="dash-header">
                 <div>
-                    <h2 id="dashGreeting" style="font-size:22px;font-weight:700;color:var(--dark);line-height:1.2;" class="dash-title"></h2>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <h2 id="dashGreeting" style="font-size:22px;font-weight:700;color:var(--dark);line-height:1.2;" class="dash-title"></h2>
+                        <button onclick="apriProfilo()" title="Modifica profilo" style="background:none;border:1.5px solid #e2e8f0;color:#94a3b8;border-radius:8px;padding:5px 8px;cursor:pointer;font-size:11px;transition:all 0.2s;flex-shrink:0;" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.color='#94a3b8'"><i class="fas fa-pen"></i></button>
+                    </div>
                     <p id="dashDate" style="color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;"></p>
+                    <div id="dashProfiloInfo" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
                 </div>
             </div>
             <!-- 4 KPI -->
@@ -1394,6 +1402,15 @@ function aggiornaUI(){
     const saluto=ora<12?'Buongiorno':ora<18?'Buon pomeriggio':'Buonasera';
     document.getElementById('dashGreeting').textContent=saluto+', '+(appState.utente?.nome||'');
     document.getElementById('dashDate').textContent=new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    // Badge regione + ordine sotto il saluto
+    const u=appState.utente;
+    const info=document.getElementById('dashProfiloInfo');
+    if(info){
+        const chips=[];
+        if(u?.regione) chips.push(`<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-map-marker-alt" style="font-size:9px;color:var(--teal);"></i>${u.regione}</span>`);
+        if(u?.ordine&&u.ordine!=='—') chips.push(`<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-id-card" style="font-size:9px;color:var(--teal);"></i>N° ${u.ordine}</span>`);
+        info.innerHTML=chips.join('');
+    }
     aggiornaBadgeProfilo();
     aggiornaDashboard();aggiornaGrafico();
 }
@@ -1742,7 +1759,7 @@ function aggiornaScuole(){
                 })()}
                 <div style="display:flex;gap:8px;margin-top:8px;" class="no-print">
                     <button onclick="event.stopPropagation();apriNuovoPacchetto('${s.id}','${s.nome}')" class="btn-ghost" style="font-size:11px;padding:7px 13px;flex:1;justify-content:center;touch-action:manipulation;"><i class="fas fa-plus" style="margin-right:3px;"></i>Pacchetto</button>
-                    <button onclick="event.stopPropagation();openModal('classeModal')" class="btn-ghost" style="font-size:11px;padding:7px 13px;flex:1;justify-content:center;touch-action:manipulation;"><i class="fas fa-plus" style="margin-right:3px;"></i>Nuova Classe</button>
+                    <button onclick="event.stopPropagation();generaReport('${s.id}')" class="btn-ghost" style="font-size:11px;padding:7px 13px;touch-action:manipulation;"><i class="fas fa-file-pdf" style="margin-right:3px;color:var(--teal);"></i>Report</button>
                 </div>
             </div>`:''}
         </div>`;
@@ -1891,8 +1908,20 @@ async function eliminaPacchetto(pacchettoId){
 }
 
 function apriNuovaClassePerPacchetto(scuolaId,pacchettoId){
-    openModal('classeModal');                       // reset prima
-    aggiornaSelectPacchetti(scuolaId,pacchettoId);  // poi pre-seleziona il pacchetto giusto
+    openModal('classeModal');
+    aggiornaSelectPacchetti(scuolaId,pacchettoId);
+    // Blocca il select — si è già dentro il pacchetto giusto
+    const sel=document.getElementById('classePacchetto');
+    const locked=document.getElementById('classePacchettoLocked');
+    const lockedNome=document.getElementById('classePacchettoLockedNome');
+    if(sel&&locked){
+        const p=appState.pacchetti.find(x=>x.id===pacchettoId);
+        const s=appState.scuole.find(x=>x.id===scuolaId);
+        const label=(s?s.nome:'')+(p?.anno_scolastico?' · '+p.anno_scolastico:'')+(p?.ore_totali?' · '+p.ore_totali+'h':'');
+        if(lockedNome) lockedNome.textContent=label;
+        sel.style.display='none';
+        locked.style.display='flex';
+    }
 }
 
 function apriNuovaClassePerScuola(scuolaId){
@@ -2009,6 +2038,11 @@ async function salvaClasse(){
 
 function resetClasseModal(){
     _editClasseId=null;
+    // Sblocca il select pacchetto (potrebbe essere stato bloccato da apriNuovaClassePerPacchetto)
+    const sel=document.getElementById('classePacchetto');
+    const locked=document.getElementById('classePacchettoLocked');
+    if(sel) sel.style.display='';
+    if(locked) locked.style.display='none';
     aggiornaSelectPacchetti();
     renderModuliGrid();
     ['classeNome','classeStudenti','classeReferente','classeMateria','classeNote','classeVideoLink','classePreData','classePostData','scorePre','scorePost'].forEach(id=>{
