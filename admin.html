@@ -106,9 +106,15 @@
                 left:0;
                 right:0;
                 max-height:85vh !important;
+                padding:20px !important;
+                box-sizing:border-box !important;
             }
             .modal-overlay{align-items:flex-end !important;}
             #toast{bottom:72px !important;right:12px !important;left:12px;text-align:center;}
+            .dett-header{ flex-wrap:wrap !important; }
+            .dett-actions{ width:100% !important; justify-content:space-between !important; flex-shrink:unset !important; margin-top:4px !important; }
+            .dett-viewbtn span{ display:none !important; }
+            .kpi-grid{ grid-template-columns:repeat(2,1fr) !important; }
         }
 
         /* NAV */
@@ -911,14 +917,6 @@ async function mostraDettaglioBiologo(id){
     }));
 
     box.innerHTML = `
-        <style>
-        @media(max-width:640px){
-            #dettaglioBiologoContent .dett-header{ flex-wrap:wrap !important; }
-            #dettaglioBiologoContent .dett-actions{ width:100% !important; justify-content:space-between !important; flex-shrink:unset !important; }
-            #dettaglioBiologoContent .dett-actions .dett-viewbtn span{ display:none !important; }
-            #dettaglioBiologoContent .kpi-grid{ grid-template-columns:repeat(2,1fr) !important; }
-        }
-        </style>
         <!-- HEADER -->
         <div class="dett-header" style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:12px;">
             <div style="display:flex;align-items:center;gap:14px;">
