@@ -326,6 +326,9 @@
             <div class="nav-item" onclick="showSection('autovalutazioni',this)">
                 <i class="fas fa-clipboard-check"></i><span class="label">Autovalutazioni</span>
             </div>
+            <div class="nav-item" onclick="showSection('log',this);caricaLog()">
+                <i class="fas fa-history"></i><span class="label">Log Attività</span>
+            </div>
         </nav>
 
         <div style="padding:10px 8px;border-top:1px solid rgba(255,255,255,0.07);">
@@ -470,6 +473,57 @@
             </div>
             <div class="card">
                 <div id="adminAutovList"></div>
+            </div>
+        </section>
+
+        <!-- LOG ATTIVITÀ -->
+        <section id="sec-log" class="section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
+                <div>
+                    <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Log Attività</h2>
+                    <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Storico operazioni dei biologi e accessi admin</p>
+                </div>
+                <button onclick="esportaLogCSV()" class="btn-ghost no-print" style="font-size:11px;padding:7px 14px;"><i class="fas fa-download" style="margin-right:5px;"></i>Esporta CSV</button>
+            </div>
+            <!-- FILTRI -->
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:flex-end;">
+                <div>
+                    <label style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:4px;">Biologo</label>
+                    <select id="logFiltroBiologo" onchange="renderLog()" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:7px 12px;font-size:12px;color:var(--dark);background:white;min-width:180px;">
+                        <option value="">Tutti</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:4px;">Tipo evento</label>
+                    <select id="logFiltroTipo" onchange="renderLog()" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:7px 12px;font-size:12px;color:var(--dark);background:white;min-width:160px;">
+                        <option value="">Tutti</option>
+                        <option value="login">Login</option>
+                        <option value="scuola_aggiunta">Scuola aggiunta</option>
+                        <option value="pacchetto_aggiunto">Pacchetto aggiunto</option>
+                        <option value="pacchetto_modificato">Pacchetto modificato</option>
+                        <option value="classe_aggiunta">Classe aggiunta</option>
+                        <option value="classe_modificata">Classe modificata</option>
+                        <option value="questionario_generato">Questionario generato</option>
+                        <option value="report_generato">Report generato</option>
+                        <option value="profilo_aggiornato">Profilo aggiornato</option>
+                        <option value="admin_accesso">Accesso admin</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:4px;">Da</label>
+                    <input type="date" id="logFiltroDal" onchange="renderLog()" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:7px 12px;font-size:12px;color:var(--dark);">
+                </div>
+                <div>
+                    <label style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:4px;">A</label>
+                    <input type="date" id="logFiltroAl" onchange="renderLog()" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:7px 12px;font-size:12px;color:var(--dark);">
+                </div>
+                <button onclick="resetFiltriLog()" style="background:#f1f5f9;border:none;border-radius:10px;padding:7px 12px;font-size:11px;font-weight:600;color:#64748b;cursor:pointer;"><i class="fas fa-times" style="margin-right:4px;"></i>Reset</button>
+            </div>
+            <!-- TABELLA -->
+            <div class="card" style="padding:0;overflow:hidden;">
+                <div id="logTabella" style="overflow-x:auto;">
+                    <p style="text-align:center;color:#94a3b8;padding:40px;font-size:13px;">Clicca su "Log Attività" per caricare i dati.</p>
+                </div>
             </div>
         </section>
 
@@ -1100,8 +1154,145 @@ function exportCSV(){
 }
 
 // ============================================================
-// EXPORT CSV (invariato, usa adminState.biologi già caricati)
+// LOG ATTIVITÀ
 // ============================================================
+let _logData = []; // cache log caricati
+
+const LOG_LABELS = {
+    login:               { icon:'fa-sign-in-alt',  color:'#6366f1', label:'Login' },
+    scuola_aggiunta:     { icon:'fa-school',        color:'#0891b2', label:'Scuola aggiunta' },
+    pacchetto_aggiunto:  { icon:'fa-box-open',      color:'#16a34a', label:'Pacchetto aggiunto' },
+    pacchetto_modificato:{ icon:'fa-edit',          color:'#d97706', label:'Pacchetto modificato' },
+    classe_aggiunta:     { icon:'fa-users',         color:'#0891b2', label:'Classe aggiunta' },
+    classe_modificata:   { icon:'fa-user-edit',     color:'#d97706', label:'Classe modificata' },
+    questionario_generato:{ icon:'fa-file-alt',     color:'#7c3aed', label:'Questionario generato' },
+    report_generato:     { icon:'fa-file-pdf',      color:'#dc2626', label:'Report generato' },
+    profilo_aggiornato:  { icon:'fa-user-check',    color:'#0891b2', label:'Profilo aggiornato' },
+    admin_accesso:       { icon:'fa-eye',           color:'#f59e0b', label:'Accesso admin' },
+};
+
+async function caricaLog(){
+    document.getElementById('logTabella').innerHTML='<p style="text-align:center;color:#94a3b8;padding:40px;font-size:13px;"><i class="fas fa-spinner fa-spin" style="margin-right:8px;"></i>Caricamento...</p>';
+
+    // Carica activity_log + admin_access_log in parallelo
+    const [actRes, admRes] = await Promise.all([
+        db.from('activity_log')
+            .select('id,biologo_id,azione,dettaglio,created_at')
+            .order('created_at',{ascending:false})
+            .limit(500),
+        db.from('admin_access_log')
+            .select('id,admin_id,biologo_id,biologo_nome,azione,created_at')
+            .order('created_at',{ascending:false})
+            .limit(200)
+    ]);
+
+    const attivita = (actRes.data||[]).map(r=>({
+        id: r.id,
+        biologo_id: r.biologo_id,
+        biologo_nome: adminState.biologi.find(b=>b.id===r.biologo_id)?.nome || r.biologo_id?.slice(0,8)+'…',
+        azione: r.azione,
+        dettaglio: r.dettaglio||{},
+        created_at: r.created_at,
+        fonte: 'biologo'
+    }));
+
+    const adminLog = (admRes.data||[]).map(r=>({
+        id: r.id,
+        biologo_id: r.biologo_id,
+        biologo_nome: r.biologo_nome || adminState.biologi.find(b=>b.id===r.biologo_id)?.nome || '—',
+        azione: 'admin_accesso',
+        dettaglio: { admin_id: r.admin_id },
+        created_at: r.created_at,
+        fonte: 'admin'
+    }));
+
+    _logData = [...attivita, ...adminLog].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+
+    // Popola select biologo
+    const sel = document.getElementById('logFiltroBiologo');
+    const nomi = [...new Map(_logData.map(r=>[r.biologo_id, r.biologo_nome])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
+    sel.innerHTML = '<option value="">Tutti</option>' + nomi.map(([id,nome])=>`<option value="${id}">${nome}</option>`).join('');
+
+    renderLog();
+}
+
+function renderLog(){
+    const filtroBiologo = document.getElementById('logFiltroBiologo').value;
+    const filtroTipo    = document.getElementById('logFiltroTipo').value;
+    const filtroDal     = document.getElementById('logFiltroDal').value;
+    const filtroAl      = document.getElementById('logFiltroAl').value;
+
+    let righe = _logData;
+    if(filtroBiologo) righe = righe.filter(r=>r.biologo_id===filtroBiologo);
+    if(filtroTipo)    righe = righe.filter(r=>r.azione===filtroTipo);
+    if(filtroDal)     righe = righe.filter(r=>r.created_at>=filtroDal);
+    if(filtroAl)      righe = righe.filter(r=>r.created_at<=filtroAl+'T23:59:59');
+
+    const tabella = document.getElementById('logTabella');
+    if(righe.length===0){
+        tabella.innerHTML='<p style="text-align:center;color:#94a3b8;padding:40px;font-size:13px;">Nessun evento trovato.</p>';
+        return;
+    }
+
+    tabella.innerHTML = `
+    <div style="padding:12px 16px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:11px;color:#64748b;font-weight:700;">
+        ${righe.length} eventi trovati
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+            <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;">
+                <th style="padding:10px 16px;text-align:left;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap;">Data / Ora</th>
+                <th style="padding:10px 16px;text-align:left;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Biologo</th>
+                <th style="padding:10px 16px;text-align:left;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Evento</th>
+                <th style="padding:10px 16px;text-align:left;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Dettaglio</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${righe.map((r,i)=>{
+                const meta = LOG_LABELS[r.azione] || {icon:'fa-circle',color:'#94a3b8',label:r.azione};
+                const dt   = new Date(r.created_at);
+                const data = dt.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'});
+                const ora  = dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+                const det  = Object.entries(r.dettaglio||{}).filter(([k])=>k!=='admin_id').map(([k,v])=>`<span style="background:#f1f5f9;padding:1px 6px;border-radius:5px;margin-right:3px;font-size:10px;">${v}</span>`).join('');
+                return `<tr style="border-bottom:1px solid #f1f5f9;background:${i%2===0?'white':'#fafafa'};" onmouseover="this.style.background='#f0fdf9'" onmouseout="this.style.background='${i%2===0?'white':'#fafafa'}'">
+                    <td style="padding:10px 16px;white-space:nowrap;color:#64748b;">${data}<span style="color:#94a3b8;margin-left:6px;">${ora}</span></td>
+                    <td style="padding:10px 16px;font-weight:600;color:var(--dark);">${r.biologo_nome}</td>
+                    <td style="padding:10px 16px;white-space:nowrap;">
+                        <span style="display:inline-flex;align-items:center;gap:5px;background:${meta.color}18;color:${meta.color};padding:3px 9px;border-radius:7px;font-weight:700;font-size:11px;">
+                            <i class="fas ${meta.icon}" style="font-size:9px;"></i>${meta.label}
+                        </span>
+                    </td>
+                    <td style="padding:10px 16px;color:#64748b;">${det||'—'}</td>
+                </tr>`;
+            }).join('')}
+        </tbody>
+    </table>`;
+}
+
+function resetFiltriLog(){
+    document.getElementById('logFiltroBiologo').value='';
+    document.getElementById('logFiltroTipo').value='';
+    document.getElementById('logFiltroDal').value='';
+    document.getElementById('logFiltroAl').value='';
+    renderLog();
+}
+
+function esportaLogCSV(){
+    const filtroBiologo = document.getElementById('logFiltroBiologo').value;
+    const filtroTipo    = document.getElementById('logFiltroTipo').value;
+    let righe = _logData;
+    if(filtroBiologo) righe = righe.filter(r=>r.biologo_id===filtroBiologo);
+    if(filtroTipo)    righe = righe.filter(r=>r.azione===filtroTipo);
+    const csv = ['Data,Ora,Biologo,Evento,Dettaglio', ...righe.map(r=>{
+        const dt = new Date(r.created_at);
+        const det = Object.entries(r.dettaglio||{}).filter(([k])=>k!=='admin_id').map(([k,v])=>`${k}:${v}`).join(' | ');
+        return `"${dt.toLocaleDateString('it-IT')}","${dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}","${r.biologo_nome}","${LOG_LABELS[r.azione]?.label||r.azione}","${det}"`;
+    })].join('\n');
+    const a=document.createElement('a');
+    a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+    a.download='sane_log_'+new Date().toISOString().slice(0,10)+'.csv';
+    a.click();
+}
 
 // ============================================================
 // AUTOVALUTAZIONI (ADMIN)

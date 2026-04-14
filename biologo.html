@@ -1083,7 +1083,18 @@ async function salvaProfilo(){
     appState.utente.ordine=ordine;
     closeModal('profiloModal');
     aggiornaUI();
+    logActivity('profilo_aggiornato');
     showToast('Profilo aggiornato ✓');
+}
+
+function logActivity(azione, dettaglio={}){
+    if(_viewAsMode) return;
+    if(!appState.utente?.id) return;
+    db.from('activity_log').insert({
+        biologo_id: appState.utente.id,
+        azione,
+        dettaglio
+    }).then(({error})=>{ if(error) console.warn('[Log]',azione,error.message); });
 }
 
 async function doLogout(){
@@ -1141,6 +1152,7 @@ async function inizializzaApp(user){
         try{
             document.getElementById('appShell').style.opacity='1';
             aggiornaUI();
+            logActivity('login');
             showToast('Bentornato, '+appState.utente.nome+'!');
             console.log('[SANE] 6. aggiornaUI OK');
             // Onboarding per nuovi utenti
@@ -1390,6 +1402,7 @@ function apriGioco(){window.open('https://ilpiattosano.netlify.app/','_blank');}
 function apriGeneraQuestionari(classeId){
     const c=appState.classi.find(cl=>cl.id===classeId);
     if(!c) return;
+    logActivity('questionario_generato',{nome_classe:c.nome_classe,tipo_scuola:c.tipo_scuola});
     const scuola=appState.scuole.find(s=>s.id===c.scuola_id);
     // Estrai il primo numero (anno) e la prima lettera (sezione) da nome_classe
     // Es: "3A"→anno=3,sez=A | "2q"→anno=2,sez=Q | "333"→anno=3,sez='' | "21"→anno=2,sez=''
@@ -1660,6 +1673,7 @@ async function aggiungiScuola(){
     ['scuolaNome','scuolaComune','scuolaClassi'].forEach(id=>document.getElementById(id).value='');
     closeModal('nuovaScuolaModal');
     aggiornaDashboard();aggiornaScuole();
+    logActivity('scuola_aggiunta',{nome, comune});
     showToast('Scuola aggiunta: '+nome);
 }
 
@@ -1878,6 +1892,7 @@ async function aggiungiPacchetto(){
         _editPacchettoId=null;
         closeModal('pacchettoModal');
         aggiornaScuole();aggiornaDashboard();aggiornaReport();
+        logActivity('pacchetto_modificato',{tipo:tipoDb, anno, ore});
         showToast('Pacchetto aggiornato ✓');
         return;
     }
@@ -1893,6 +1908,7 @@ async function aggiungiPacchetto(){
     if(nuovo){ appState.pacchetti.push(nuovo); } else { await caricaDati(); }
     closeModal('pacchettoModal');
     aggiornaScuole();aggiornaDashboard();aggiornaReport();
+    logActivity('pacchetto_aggiunto',{tipo:tipoDb, anno, ore, prezzo});
     showToast(tipo==='gratuito'?'Pacchetto gratuito aggiunto!':'Pacchetto aggiunto (€'+prezzo.toLocaleString('it-IT')+')');
 }
 
@@ -2060,6 +2076,7 @@ async function salvaClasse(){
             await caricaDati();
         }
         closeModal('classeModal');aggiornaClassi();aggiornaScuole();aggiornaDashboard();
+        logActivity('classe_modificata',{nome_classe,tipo_scuola});
         showToast('Classe aggiornata!');
     } else {
         const {data:authData}=await db.auth.getUser();
@@ -2073,6 +2090,7 @@ async function salvaClasse(){
             await caricaDati();
         }
         closeModal('classeModal');aggiornaClassi();aggiornaScuole();aggiornaDashboard();
+        logActivity('classe_aggiunta',{nome_classe,tipo_scuola});
         showToast('Classe registrata!');
     }
 }
@@ -2301,6 +2319,8 @@ function aggiornaReport(){
 }
 
 async function generaReport(scuolaId, pacchettoId, classeId) {
+    const tipoReport = classeId ? 'classe' : pacchettoId ? 'pacchetto' : 'scuola';
+    logActivity('report_generato',{tipo:tipoReport, scuola_id:scuolaId, pacchetto_id:pacchettoId, classe_id:classeId});
     // Determina scuola, classi e livello del report
     let s, cls, sottotitolo;
     if (classeId) {
