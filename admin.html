@@ -750,6 +750,16 @@ async function mostraDettaglioBiologo(id){
     const classi = classiRes.data || [];
     const pacchetti = pacchettiRes.data || [];
 
+    // Log accesso admin
+    if(adminState.currentUserId){
+        db.from('admin_access_log').insert({
+            admin_id: adminState.currentUserId,
+            biologo_id: id,
+            biologo_nome: b.nome,
+            azione: 'visualizza_dettaglio'
+        }).then(({error})=>{ if(error) console.warn('Log accesso non registrato:', error.message); });
+    }
+
     // KPI
     const totStudenti = classi.reduce((a,c)=>a+(c.num_studenti||0),0);
     const classiConMig = classi.filter(c=>c.score_pre!=null&&c.score_post!=null);
@@ -859,7 +869,10 @@ async function mostraDettaglioBiologo(id){
                     </div>
                 </div>
             </div>
-            <button onclick="closeModal('dettaglioBiologoModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:20px;flex-shrink:0;"><i class="fas fa-times"></i></button>
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+                <button onclick="window.open('biologo.html?viewAs=${b.id}','_blank')" style="display:inline-flex;align-items:center;gap:6px;background:var(--teal);color:white;border:none;border-radius:10px;padding:7px 13px;font-size:11px;font-weight:700;cursor:pointer;" title="Apri il portale come questo biologo (sola lettura)"><i class="fas fa-eye"></i> Visualizza Portale</button>
+                <button onclick="closeModal('dettaglioBiologoModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:20px;"><i class="fas fa-times"></i></button>
+            </div>
         </div>
 
         <!-- KPI strip -->
@@ -1340,6 +1353,7 @@ function showLoginScreen(){
 }
 
 async function avviaAdmin(user){
+    adminState.currentUserId = user.id;
     const { data: profilo } = await db.from('profiles').select('role,stato').eq('id', user.id).single();
     if(!profilo || profilo.role !== 'admin'){
         document.getElementById('loginMsg').textContent = 'Accesso non autorizzato.';

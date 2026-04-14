@@ -564,8 +564,14 @@
         </div>
     </aside>
 
+    <!-- BANNER VIEW-AS (admin) -->
+    <div id="viewAsBanner" style="display:none;position:fixed;top:0;left:256px;right:0;z-index:50;background:#f59e0b;color:#1c1917;padding:9px 20px;font-size:12px;font-weight:700;display:none;align-items:center;justify-content:space-between;gap:12px;">
+        <span><i class="fas fa-eye" style="margin-right:6px;"></i>Stai visualizzando il portale di <span id="viewAsNome"></span> — <em>sola lettura</em></span>
+        <button onclick="window.close()" style="background:rgba(0,0,0,0.15);border:none;border-radius:8px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;color:#1c1917;">✕ Chiudi</button>
+    </div>
+
     <!-- MAIN -->
-    <main class="main-content">
+    <main class="main-content" id="mainContent">
 
         <!-- DASHBOARD -->
         <section id="sec-dashboard" class="section active">
@@ -959,6 +965,7 @@ const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 // STATO
 // ============================================================
 let appState={utente:null,scuole:[],pacchetti:[],classi:[],autovalutazioni:[]};
+let _viewAsMode = false;
 let _authMode = 'login';
 let _editClasseId = null;
 let _editPacchettoId = null;
@@ -1062,6 +1069,7 @@ function apriProfilo(){
 }
 
 async function salvaProfilo(){
+    if(_viewAsMode){showToast('Modalità sola lettura — nessuna modifica consentita','error');return;}
     const nome=document.getElementById('profiloNome').value.trim();
     const regione=document.getElementById('profiloRegione').value||null;
     const genere=document.getElementById('profiloGenere').value||null;
@@ -1640,6 +1648,7 @@ function renderClasseRow(c){
 }
 
 async function aggiungiScuola(){
+    if(_viewAsMode){showToast('Modalità sola lettura — nessuna modifica consentita','error');return;}
     const nome=document.getElementById('scuolaNome').value.trim();
     const comune=document.getElementById('scuolaComune').value.trim();
     const classi=document.getElementById('scuolaClassi').value;
@@ -1655,6 +1664,7 @@ async function aggiungiScuola(){
 }
 
 async function eliminaScuola(scuolaId){
+    if(_viewAsMode){showToast('Modalità sola lettura — nessuna modifica consentita','error');return;}
     if(!confirm('Eliminare questa scuola e tutte le classi collegate?'))return;
     const {error}=await db.from('scuole').delete().eq('id',scuolaId);
     if(error){showToast('Errore: '+error.message,'error');return;}
@@ -1845,6 +1855,7 @@ function aggiornaPacchettoForm(){
 }
 
 async function aggiungiPacchetto(){
+    if(_viewAsMode){showToast('Modalità sola lettura — nessuna modifica consentita','error');return;}
     const scuolaId=document.getElementById('pacchettoScuolaId').value;
     const tipo=document.getElementById('pacchettoTipo').value;
     const data=document.getElementById('pacchettoData').value||null;
@@ -1914,6 +1925,7 @@ async function eliminaClassiOrfane(scuolaId){
 }
 
 async function eliminaPacchetto(pacchettoId){
+    if(_viewAsMode){showToast('Modalità sola lettura — nessuna modifica consentita','error');return;}
     const classiCollegate=appState.classi.filter(c=>c.pacchetto_id===pacchettoId);
     const msg=classiCollegate.length>0
         ?`Eliminare questo pacchetto?\n\n${classiCollegate.length} class${classiCollegate.length===1?'e':'i'} collegate verranno scollegate dal pacchetto ma non eliminate.`
@@ -2014,6 +2026,7 @@ function aggiornaPrePostUnlock(){
 }
 
 async function salvaClasse(){
+    if(_viewAsMode){showToast('Modalità sola lettura — nessuna modifica consentita','error');return;}
     const pacchetto_id=document.getElementById('classePacchetto').value;
     const selOpt=document.getElementById('classePacchetto').selectedOptions[0];
     const scuola_id=selOpt?selOpt.getAttribute('data-scuola'):'';
@@ -2167,6 +2180,7 @@ function aggiornaClassi(){
 }
 
 async function eliminaClasse(classeId){
+    if(_viewAsMode){showToast('Modalità sola lettura — nessuna modifica consentita','error');return;}
     if(!confirm('Eliminare questa classe?'))return;
     const {error}=await db.from('classi').delete().eq('id',classeId);
     if(error){showToast('Errore: '+error.message,'error');return;}
@@ -3518,12 +3532,38 @@ document.getElementById('loginScreen').classList.remove('hidden');
 // Gestisce solo login successivi e logout
 db.auth.onAuthStateChange(async (event, session) => {
     if(event === 'SIGNED_IN' && session && !appState.utente){
-        // Mostra loader con messaggio di attesa mentre il DB si sveglia
         document.getElementById('loginScreen').classList.add('hidden');
         const el = document.getElementById('initLoader');
         if(el){ el.style.display='flex'; el.style.opacity='1'; el.style.pointerEvents=''; }
         const msgEl = document.getElementById('initLoaderMsg');
         if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
+        // Controlla se è modalità viewAs (admin che visualizza portale di un biologo)
+        const viewAsId = new URLSearchParams(window.location.search).get('viewAs');
+        if(viewAsId){
+            try{
+                // Verifica che l'utente loggato sia admin
+                const {data:adminProfilo}=await db.from('profiles').select('role').eq('id',session.user.id).single();
+                if(!adminProfilo||adminProfilo.role!=='admin'){
+                    showToast('Accesso non autorizzato','error');
+                    hideInitLoader();
+                    document.getElementById('loginScreen').classList.remove('hidden');
+                    return;
+                }
+                // Carica il profilo del biologo target
+                const {data:targetProfilo}=await db.from('profiles').select('*').eq('id',viewAsId).single();
+                if(!targetProfilo){ showToast('Biologo non trovato','error'); hideInitLoader(); return; }
+                _viewAsMode = true;
+                appState.utente={nome:targetProfilo.nome||'—',email:targetProfilo.email||'',id:viewAsId,regione:targetProfilo.regione||null,ordine:targetProfilo.ordine||null,genere:targetProfilo.genere||null};
+                await caricaDati();
+                hideInitLoader();
+                document.getElementById('appShell').style.opacity='1';
+                // Banner
+                const banner=document.getElementById('viewAsBanner');
+                if(banner){ banner.style.display='flex'; document.getElementById('viewAsNome').textContent=targetProfilo.nome||targetProfilo.email; document.getElementById('mainContent').style.paddingTop='60px'; }
+                aggiornaUI();
+            } catch(err){ console.error('ViewAs error:',err); hideInitLoader(); }
+            return;
+        }
         try { await inizializzaApp(session.user); }
         catch(err){ console.error('Init error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
     } else if(event === 'SIGNED_OUT'){
