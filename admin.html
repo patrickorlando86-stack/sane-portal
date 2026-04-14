@@ -1585,7 +1585,8 @@ async function avviaAdmin(user){
     if(!profilo || profilo.role !== 'admin'){
         document.getElementById('loginMsg').textContent = 'Accesso non autorizzato.';
         await db.auth.signOut();
-        showLoginScreen();
+        hideInitLoader();
+        document.getElementById('loginScreen').classList.remove('hidden');
         return;
     }
     hideInitLoader();
@@ -1607,8 +1608,8 @@ db.auth.onAuthStateChange(async (event, session) => {
         if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
         await avviaAdmin(session.user);
     } else if(event === 'INITIAL_SESSION' && !session){
-        // Nessuna sessione → mostra login
-        showLoginScreen();
+        hideInitLoader();
+        document.getElementById('loginScreen').classList.remove('hidden');
     } else if(event === 'SIGNED_OUT'){
         window.location.href='index.html';
     }
