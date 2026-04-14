@@ -537,7 +537,7 @@ if (localStorage.getItem('sane_v2') !== null) { localStorage.clear(); }
 // ============================================================
 // SUPABASE
 // ============================================================
-// La sessione viene mantenuta automaticamente da Supabase in localStorage
+Object.keys(localStorage).filter(k=>k.includes('sb-')||k.includes('supabase')).forEach(k=>localStorage.removeItem(k));
 const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZm9zbGlva2Zza2Z0bW91a3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDY3NTEsImV4cCI6MjA5MDYyMjc1MX0.eX9BL0tIy83zZ49hxzxFloH24hGIcbMRb2AsmCOiF9k';
 const { createClient } = supabase;
@@ -1597,19 +1597,17 @@ async function avviaAdmin(user){
     }, 400);
 }
 
-// initLoader rimane visibile mentre Supabase controlla la sessione
+hideInitLoader();
+document.getElementById('loginScreen').classList.remove('hidden');
 
 db.auth.onAuthStateChange(async (event, session) => {
-    if((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session && !adminState.currentUserId){
+    if(event === 'SIGNED_IN' && session){
         document.getElementById('loginScreen').classList.add('hidden');
         const el = document.getElementById('initLoader');
         if(el){ el.style.display='flex'; el.style.opacity='1'; }
         const msgEl = document.getElementById('initLoaderMsg');
         if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
         await avviaAdmin(session.user);
-    } else if(event === 'INITIAL_SESSION' && !session){
-        hideInitLoader();
-        document.getElementById('loginScreen').classList.remove('hidden');
     } else if(event === 'SIGNED_OUT'){
         window.location.href='index.html';
     }
