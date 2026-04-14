@@ -538,7 +538,7 @@
 </div>
 
 <script>
-localStorage.clear();
+// Nessun clear — la sessione persiste tra tab e reload
 
 // ============================================================
 // SUPABASE
@@ -1602,11 +1602,9 @@ async function avviaAdmin(user){
     }, 400);
 }
 
-hideInitLoader();
-document.getElementById('loginScreen').classList.remove('hidden');
-
+// Ascolta nuovi login e logout
 db.auth.onAuthStateChange(async (event, session) => {
-    if(event === 'SIGNED_IN' && session){
+    if(event === 'SIGNED_IN' && session && !adminState.currentUserId){
         document.getElementById('loginScreen').classList.add('hidden');
         const el = document.getElementById('initLoader');
         if(el){ el.style.display='flex'; el.style.opacity='1'; }
@@ -1619,6 +1617,28 @@ db.auth.onAuthStateChange(async (event, session) => {
         window.location.href='index.html';
     }
 });
+
+// Sessione già attiva? Entra direttamente
+(async () => {
+    try {
+        const { data: { session } } = await db.auth.getSession();
+        if(session){
+            const el = document.getElementById('initLoader');
+            if(el){ el.style.display='flex'; el.style.opacity='1'; }
+            const msgEl = document.getElementById('initLoaderMsg');
+            if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
+            const _t = setTimeout(()=>{ hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }, 12000);
+            try { await avviaAdmin(session.user); clearTimeout(_t); }
+            catch(err){ clearTimeout(_t); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
+        } else {
+            hideInitLoader();
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+    } catch(e) {
+        hideInitLoader();
+        document.getElementById('loginScreen').classList.remove('hidden');
+    }
+})();
 </script>
 </body>
 </html>
