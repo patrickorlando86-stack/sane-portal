@@ -996,9 +996,9 @@ const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZm9zbGlva2Zza2Z0bW91a3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDY3NTEsImV4cCI6MjA5MDYyMjc1MX0.eX9BL0tIy83zZ49hxzxFloH24hGIcbMRb2AsmCOiF9k';
 const { createClient } = supabase;
 
-// In viewAs mode: sessione solo in memoria, nessun lock su localStorage
+// In viewAs mode: sessione in memoria + lock separato → nessun conflitto col tab admin
 const db = createClient(SUPABASE_URL, SUPABASE_KEY, _isViewAs ? {
-    auth: { persistSession: false, autoRefreshToken: false }
+    auth: { persistSession: false, autoRefreshToken: false, storageKey: 'sb-sane-viewas' }
 } : {});
 
 // In viewAs mode: inietta manualmente il token admin dalla localStorage
