@@ -290,11 +290,25 @@
             </div>
         </div>
         <button id="loginBtn" onclick="doLogin()" style="width:100%;background:var(--teal);color:white;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:background 0.2s;">Accedi al Portale</button>
-        <p style="color:rgba(255,255,255,0.35);font-size:12px;text-align:center;margin-top:16px;">
+        <p style="color:rgba(255,255,255,0.35);font-size:12px;text-align:center;margin-top:12px;">
+            <a href="#" onclick="mostraResetPassword(event)" style="color:rgba(255,255,255,0.4);font-size:11px;text-decoration:none;" id="resetLink">Hai dimenticato la password?</a>
+        </p>
+        <p style="color:rgba(255,255,255,0.35);font-size:12px;text-align:center;margin-top:8px;">
             Non hai un account?
             <a href="#" id="toggleSignup" onclick="toggleAuthMode(event)" style="color:var(--teal);font-weight:700;text-decoration:none;">Registrati</a>
         </p>
         </div><!-- /loginSignupForm -->
+        <!-- SCHERMATA RESET PASSWORD -->
+        <div id="resetPasswordScreen" style="display:none;">
+            <div style="text-align:center;margin-bottom:20px;">
+                <i class="fas fa-key" style="color:var(--teal);font-size:32px;margin-bottom:12px;display:block;"></i>
+                <h3 style="color:white;font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;">Reset Password</h3>
+                <p style="color:rgba(255,255,255,0.4);font-size:12px;">Inserisci la tua email — ti mandiamo un link per reimpostare la password</p>
+            </div>
+            <input class="login-input" type="email" id="resetEmail" placeholder="tuanome@email.it">
+            <button onclick="inviaResetPassword()" style="width:100%;background:var(--teal);color:white;border:none;border-radius:12px;padding:14px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;margin-top:6px;">Invia Link Reset</button>
+            <p style="text-align:center;margin-top:14px;"><a href="#" onclick="chiudiResetPassword(event)" style="color:rgba(255,255,255,0.4);font-size:12px;text-decoration:none;">← Torna al login</a></p>
+        </div>
         <!-- SCHERMATA CONFERMA REGISTRAZIONE -->
         <div id="signupSuccessScreen" style="display:none;">
             <div style="background:rgba(0,168,150,0.12);border:1px solid rgba(0,168,150,0.3);border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;">
@@ -495,6 +509,24 @@
         <div style="display:flex;gap:10px;margin-top:20px;">
             <button class="btn-ghost" onclick="closeModal('profiloModal')">Annulla</button>
             <button class="btn-primary" style="flex:1;" onclick="salvaProfilo()"><i class="fas fa-check"></i>Salva Profilo</button>
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9;">
+            <button onclick="esportaDatiPersonali()" style="width:100%;background:none;border:1.5px solid #e2e8f0;color:#64748b;border-radius:10px;padding:9px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.color='#64748b'">
+                <i class="fas fa-download"></i>Scarica i miei dati (GDPR Art. 20)
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL SESSIONE IN SCADENZA -->
+<div id="sessioneModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:24px;padding:32px;max-width:360px;width:90%;text-align:center;">
+        <i class="fas fa-clock" style="font-size:36px;color:#f59e0b;margin-bottom:14px;display:block;"></i>
+        <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--dark);margin-bottom:8px;">Sessione in scadenza</h3>
+        <p style="color:#64748b;font-size:13px;margin-bottom:20px;">Sei ancora qui? La sessione scadrà tra <strong id="sessioneCountdown">2:00</strong> per inattività.</p>
+        <div style="display:flex;gap:10px;">
+            <button onclick="doLogout()" style="flex:1;background:none;border:1.5px solid #e2e8f0;color:#64748b;border-radius:12px;padding:11px;font-weight:600;font-size:13px;cursor:pointer;">Esci</button>
+            <button onclick="prolungaSessione()" style="flex:1;background:var(--teal);color:white;border:none;border-radius:12px;padding:11px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Syne',sans-serif;">Sono qui</button>
         </div>
     </div>
 </div>
@@ -954,8 +986,10 @@ if (localStorage.getItem('sane_v2') !== null) {
 // ============================================================
 // SUPABASE
 // ============================================================
-// Cancella token sessione ad ogni caricamento → login sempre richiesto (evita hang su DB paused)
-Object.keys(localStorage).filter(k=>k.includes('sb-')||k.includes('supabase')).forEach(k=>localStorage.removeItem(k));
+// Cancella token sessione ad ogni caricamento — MA non in modalità viewAs (l'admin porta la sua sessione)
+if(!new URLSearchParams(window.location.search).get('viewAs')){
+    Object.keys(localStorage).filter(k=>k.includes('sb-')||k.includes('supabase')).forEach(k=>localStorage.removeItem(k));
+}
 const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_VxN-7lIjR3lgcG1Kv_nMrg_c0xJpY0n';
 const { createClient } = supabase;
@@ -1044,6 +1078,9 @@ async function doLogin(){
         if(signUpData?.user&&(regione||ordine)){
             await db.from('profiles').upsert({id:signUpData.user.id,nome,regione,ordine},{onConflict:'id'});
         }
+        if(signUpData?.user){
+            db.from('activity_log').insert({biologo_id:signUpData.user.id,azione:'registrazione',dettaglio:{nome,email,regione:regione||null}});
+        }
         document.getElementById('loginBtn').disabled=false;
         document.getElementById('loginBtn').textContent='Crea Account';
         document.getElementById('loginSignupForm').style.display='none';
@@ -1087,6 +1124,92 @@ async function salvaProfilo(){
     showToast('Profilo aggiornato ✓');
 }
 
+// ─── RESET PASSWORD ───────────────────────────────────────────
+function mostraResetPassword(e){
+    e.preventDefault();
+    document.getElementById('loginSignupForm').style.display='none';
+    document.getElementById('resetPasswordScreen').style.display='block';
+    document.getElementById('signupSuccessScreen').style.display='none';
+    const em=document.getElementById('loginEmail').value;
+    if(em) document.getElementById('resetEmail').value=em;
+}
+function chiudiResetPassword(e){
+    e.preventDefault();
+    document.getElementById('resetPasswordScreen').style.display='none';
+    document.getElementById('loginSignupForm').style.display='block';
+}
+async function inviaResetPassword(){
+    const email=document.getElementById('resetEmail').value.trim();
+    if(!email){showToast('Inserisci la tua email','error');return;}
+    const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:window.location.href});
+    if(error){showToast('Errore: '+error.message,'error');return;}
+    document.getElementById('resetPasswordScreen').innerHTML=`
+        <div style="text-align:center;padding:10px 0;">
+            <i class="fas fa-envelope-open-text" style="color:var(--teal);font-size:36px;margin-bottom:14px;display:block;"></i>
+            <h3 style="color:white;font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;">Email inviata!</h3>
+            <p style="color:rgba(255,255,255,0.5);font-size:12px;line-height:1.6;">Controlla la tua casella di posta e clicca il link per reimpostare la password.</p>
+            <p style="margin-top:16px;"><a href="#" onclick="chiudiResetPassword(event)" style="color:var(--teal);font-size:12px;font-weight:700;text-decoration:none;">← Torna al login</a></p>
+        </div>`;
+}
+
+// ─── TIMEOUT SESSIONE ─────────────────────────────────────────
+let _sessionTimer=null, _countdownTimer=null, _countdownSec=120;
+const SESSION_TIMEOUT=20*60*1000; // 20 min inattività
+const SESSION_WARNING=2*60;       // 2 min avviso
+
+function resetSessionTimer(){
+    if(!appState.utente) return;
+    clearTimeout(_sessionTimer);
+    const modal=document.getElementById('sessioneModal');
+    if(modal&&modal.style.display==='flex'){ prolungaSessione(); return; }
+    _sessionTimer=setTimeout(()=>mostraAvvisoSessione(), SESSION_TIMEOUT);
+}
+function mostraAvvisoSessione(){
+    const modal=document.getElementById('sessioneModal');
+    if(!modal) return;
+    modal.style.display='flex';
+    _countdownSec=SESSION_WARNING;
+    aggiornaCountdown();
+    _countdownTimer=setInterval(()=>{
+        _countdownSec--;
+        aggiornaCountdown();
+        if(_countdownSec<=0){ clearInterval(_countdownTimer); doLogout(); }
+    },1000);
+}
+function aggiornaCountdown(){
+    const el=document.getElementById('sessioneCountdown');
+    if(el) el.textContent=Math.floor(_countdownSec/60)+':'+((_countdownSec%60)<10?'0':'')+(_countdownSec%60);
+}
+function prolungaSessione(){
+    clearInterval(_countdownTimer);
+    const modal=document.getElementById('sessioneModal');
+    if(modal) modal.style.display='none';
+    resetSessionTimer();
+}
+['mousedown','mousemove','keydown','touchstart','scroll','click'].forEach(ev=>
+    document.addEventListener(ev, ()=>resetSessionTimer(), {passive:true})
+);
+
+// ─── EXPORT DATI PERSONALI (GDPR Art.20) ──────────────────────
+function esportaDatiPersonali(){
+    const u=appState.utente;
+    const payload={
+        esportazione_data: new Date().toISOString(),
+        profilo:{ nome:u.nome, email:u.email, regione:u.regione, ordine:u.ordine, genere:u.genere },
+        scuole: appState.scuole.map(s=>({nome:s.nome,comune:s.comune,creata:s.created_at})),
+        pacchetti: appState.pacchetti.map(p=>({tipo:p.tipo,prezzo:p.prezzo,ore:p.ore_totali,anno:p.anno_scolastico,creato:p.created_at})),
+        classi: appState.classi.map(c=>({nome:c.nome_classe,studenti:c.num_studenti,tipo_scuola:c.tipo_scuola,score_pre:c.score_pre,score_post:c.score_post})),
+    };
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='sane_miei_dati_'+new Date().toISOString().slice(0,10)+'.json';
+    a.click();
+    logActivity('export_gdpr');
+    showToast('Download avviato — dati personali esportati ✓');
+}
+
+// ─── LOG ATTIVITÀ ─────────────────────────────────────────────
 function logActivity(azione, dettaglio={}){
     if(_viewAsMode) return;
     if(!appState.utente?.id) return;
@@ -1157,6 +1280,7 @@ async function inizializzaApp(user){
             document.getElementById('appShell').style.opacity='1';
             aggiornaUI();
             logActivity('login');
+            resetSessionTimer();
             showToast('Bentornato, '+appState.utente.nome+'!');
             console.log('[SANE] 6. aggiornaUI OK');
             // Onboarding per nuovi utenti
@@ -1443,7 +1567,6 @@ function aggiornaUI(){
     const info=document.getElementById('dashProfiloInfo');
     if(info){
         const chips=[];
-        if(u?.genere) chips.push(`<span style="display:inline-flex;align-items:center;gap:5px;background:#e0f2fe;color:#0369a1;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;">${titolo.trim()}</span>`);
         if(u?.regione) chips.push(`<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-map-marker-alt" style="font-size:9px;color:var(--teal);"></i>${u.regione}</span>`);
         if(u?.ordine&&u.ordine!=='—') chips.push(`<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-id-card" style="font-size:9px;color:var(--teal);"></i>N° ${u.ordine}</span>`);
         info.innerHTML=chips.join('');
@@ -1688,6 +1811,7 @@ async function eliminaScuola(scuolaId){
     if(error){showToast('Errore: '+error.message,'error');return;}
     appState.scuole=appState.scuole.filter(s=>s.id!==scuolaId);
     appState.classi=appState.classi.filter(c=>c.scuola_id!==scuolaId);
+    logActivity('scuola_eliminata',{scuola_id:scuolaId});
     aggiornaScuole();aggiornaDashboard();showToast('Scuola eliminata');
 }
 
@@ -1928,6 +2052,7 @@ async function eliminaClasse(classeId){
     if(detSection&&detSection.classList.contains('active')){
         showSection('scuole',document.querySelector('.nav-item[onclick*=scuole]'));
     }
+    logActivity('classe_eliminata',{nome_classe:c.nome_classe});
     aggiornaScuole();aggiornaDashboard();
     showToast('Classe "'+c.nome_classe+'" eliminata ✓');
 }
@@ -1940,6 +2065,7 @@ async function eliminaClassiOrfane(scuolaId){
     const {error}=await db.from('classi').delete().in('id',ids);
     if(error){showToast('Errore: '+error.message,'error');return;}
     appState.classi=appState.classi.filter(c=>!ids.includes(c.id));
+    logActivity('classi_orfane_eliminate',{count:orfane.length,scuola_id:scuolaId});
     aggiornaScuole();aggiornaDashboard();
     showToast(orfane.length+' class'+( orfane.length===1?'e':'i')+' eliminate ✓');
 }
@@ -1962,6 +2088,7 @@ async function eliminaPacchetto(pacchettoId){
     const {error}=await db.from('pacchetti').delete().eq('id',pacchettoId);
     if(error){showToast('Errore: '+error.message,'error');return;}
     appState.pacchetti=appState.pacchetti.filter(p=>p.id!==pacchettoId);
+    logActivity('pacchetto_eliminato',{pacchetto_id:pacchettoId,classi_scollegate:classiCollegate.length});
     aggiornaScuole();aggiornaDashboard();
     showToast('Pacchetto eliminato'+(classiCollegate.length>0?' · '+classiCollegate.length+' classi scollegatе':''));
 }

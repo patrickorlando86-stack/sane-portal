@@ -621,6 +621,7 @@ async function caricaDati(){
 
 async function inizializzaApp(){
     await caricaDati();
+    await verificaScadenzeAuto();
     document.getElementById('dashDate').textContent = new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     aggiornaDashboard();
 }
@@ -1154,21 +1155,51 @@ function exportCSV(){
 }
 
 // ============================================================
+// SCADENZE AUTO
+// ============================================================
+async function verificaScadenzeAuto(){
+    const oggi = new Date().toISOString().split('T')[0];
+    const scaduti = adminState.biologi.filter(b=>
+        b.stato==='active' && b.scadenza && b.scadenza < oggi
+    );
+    if(scaduti.length===0) return;
+    // Aggiorna DB in batch
+    const ids = scaduti.map(b=>b.id);
+    const {error} = await db.from('profiles').update({stato:'expired'}).in('id',ids);
+    if(error){ console.warn('Errore aggiornamento scadenze:', error.message); return; }
+    // Aggiorna stato in memoria
+    scaduti.forEach(b=>{ b.stato='expired'; });
+    aggiornaDashboard(); aggiornaLicenze();
+    // Banner notifica
+    const banner = document.createElement('div');
+    banner.style.cssText='position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;background:#dc2626;color:white;padding:10px 20px;border-radius:12px;font-size:12px;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,0.2);display:flex;align-items:center;gap:8px;';
+    banner.innerHTML=`<i class="fas fa-clock"></i> ${scaduti.length} licenz${scaduti.length===1?'a':'e'} scadut${scaduti.length===1?'a':'e'} aggiornata${scaduti.length===1?'':'e'} automaticamente: ${scaduti.map(b=>b.nome).join(', ')} <button onclick="this.parentElement.remove()" style="margin-left:8px;background:rgba(255,255,255,0.2);border:none;color:white;border-radius:6px;padding:2px 8px;cursor:pointer;">✕</button>`;
+    document.body.appendChild(banner);
+    setTimeout(()=>banner.remove(), 8000);
+}
+
+// ============================================================
 // LOG ATTIVITÀ
 // ============================================================
 let _logData = []; // cache log caricati
 
 const LOG_LABELS = {
-    login:               { icon:'fa-sign-in-alt',  color:'#6366f1', label:'Login' },
-    scuola_aggiunta:     { icon:'fa-school',        color:'#0891b2', label:'Scuola aggiunta' },
-    pacchetto_aggiunto:  { icon:'fa-box-open',      color:'#16a34a', label:'Pacchetto aggiunto' },
-    pacchetto_modificato:{ icon:'fa-edit',          color:'#d97706', label:'Pacchetto modificato' },
-    classe_aggiunta:     { icon:'fa-users',         color:'#0891b2', label:'Classe aggiunta' },
-    classe_modificata:   { icon:'fa-user-edit',     color:'#d97706', label:'Classe modificata' },
-    questionario_generato:{ icon:'fa-file-alt',     color:'#7c3aed', label:'Questionario generato' },
-    report_generato:     { icon:'fa-file-pdf',      color:'#dc2626', label:'Report generato' },
-    profilo_aggiornato:  { icon:'fa-user-check',    color:'#0891b2', label:'Profilo aggiornato' },
-    admin_accesso:       { icon:'fa-eye',           color:'#f59e0b', label:'Accesso admin' },
+    login:                    { icon:'fa-sign-in-alt',     color:'#6366f1', label:'Login' },
+    registrazione:            { icon:'fa-user-plus',       color:'#16a34a', label:'Registrazione' },
+    scuola_aggiunta:          { icon:'fa-school',          color:'#0891b2', label:'Scuola aggiunta' },
+    scuola_eliminata:         { icon:'fa-school',          color:'#dc2626', label:'Scuola eliminata' },
+    pacchetto_aggiunto:       { icon:'fa-box-open',        color:'#16a34a', label:'Pacchetto aggiunto' },
+    pacchetto_modificato:     { icon:'fa-edit',            color:'#d97706', label:'Pacchetto modificato' },
+    pacchetto_eliminato:      { icon:'fa-box-open',        color:'#dc2626', label:'Pacchetto eliminato' },
+    classe_aggiunta:          { icon:'fa-users',           color:'#0891b2', label:'Classe aggiunta' },
+    classe_modificata:        { icon:'fa-user-edit',       color:'#d97706', label:'Classe modificata' },
+    classe_eliminata:         { icon:'fa-users',           color:'#dc2626', label:'Classe eliminata' },
+    classi_orfane_eliminate:  { icon:'fa-trash-alt',       color:'#dc2626', label:'Classi orfane eliminate' },
+    questionario_generato:    { icon:'fa-file-alt',        color:'#7c3aed', label:'Questionario generato' },
+    report_generato:          { icon:'fa-file-pdf',        color:'#dc2626', label:'Report generato' },
+    profilo_aggiornato:       { icon:'fa-user-check',      color:'#0891b2', label:'Profilo aggiornato' },
+    export_gdpr:              { icon:'fa-download',        color:'#475569', label:'Export GDPR' },
+    admin_accesso:            { icon:'fa-eye',             color:'#f59e0b', label:'Accesso admin' },
 };
 
 async function caricaLog(){
