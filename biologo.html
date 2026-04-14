@@ -991,7 +991,7 @@ if(!new URLSearchParams(window.location.search).get('viewAs')){
     Object.keys(localStorage).filter(k=>k.includes('sb-')||k.includes('supabase')).forEach(k=>localStorage.removeItem(k));
 }
 const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_VxN-7lIjR3lgcG1Kv_nMrg_c0xJpY0n';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZm9zbGlva2Zza2Z0bW91a3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDY3NTEsImV4cCI6MjA5MDYyMjc1MX0.eX9BL0tIy83zZ49hxzxFloH24hGIcbMRb2AsmCOiF9k';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
