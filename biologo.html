@@ -3697,6 +3697,31 @@ function hideInitLoader(){
     setTimeout(()=>{ el.style.display='none'; }, 400);
 }
 
+// ── MODALITÀ VIEW-AS: legge dati pre-caricati dall'admin, zero auth ──
+const _viewAsId = new URLSearchParams(window.location.search).get('viewAs');
+if(_viewAsId){
+    try{
+        const raw = localStorage.getItem('sane_viewas_data');
+        const vd  = raw ? JSON.parse(raw) : null;
+        if(!vd || vd.id !== _viewAsId || (Date.now()-vd.ts) > 30*60*1000){
+            document.getElementById('initLoader').innerHTML='<div style="color:white;text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:16px;">⚠️</div><div style="font-size:16px;font-weight:700;">Dati non disponibili</div><div style="font-size:12px;opacity:0.6;margin-top:8px;">Riapri il portale dal pannello admin</div></div>';
+        } else {
+            _viewAsMode = true;
+            const p = vd.profilo;
+            appState.utente = {nome:p.nome||'—',email:p.email||'',id:_viewAsId,regione:p.regione||null,ordine:p.ordine||null,genere:p.genere||null};
+            appState.scuole     = vd.scuole     || [];
+            appState.pacchetti  = vd.pacchetti  || [];
+            appState.classi     = vd.classi     || [];
+            appState.autovalutazioni = [];
+            hideInitLoader();
+            document.getElementById('appShell').style.opacity='1';
+            const banner=document.getElementById('viewAsBanner');
+            if(banner){ banner.style.display='flex'; document.getElementById('viewAsNome').textContent=p.nome||p.email; document.getElementById('mainContent').style.paddingTop='60px'; }
+            aggiornaUI();
+        }
+    } catch(e){ console.error('ViewAs init:',e); }
+} else {
+
 // Nessuna sessione salvata → mostra login subito
 hideInitLoader();
 document.getElementById('loginScreen').classList.remove('hidden');
@@ -3709,31 +3734,8 @@ db.auth.onAuthStateChange(async (event, session) => {
         if(el){ el.style.display='flex'; el.style.opacity='1'; el.style.pointerEvents=''; }
         const msgEl = document.getElementById('initLoaderMsg');
         if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
-        // Controlla se è modalità viewAs (admin che visualizza portale di un biologo)
-        const viewAsId = new URLSearchParams(window.location.search).get('viewAs');
+        const viewAsId = null; // viewAs gestito sopra
         if(viewAsId){
-            try{
-                // Verifica che l'utente loggato sia admin
-                const {data:adminProfilo}=await db.from('profiles').select('role').eq('id',session.user.id).single();
-                if(!adminProfilo||adminProfilo.role!=='admin'){
-                    showToast('Accesso non autorizzato','error');
-                    hideInitLoader();
-                    document.getElementById('loginScreen').classList.remove('hidden');
-                    return;
-                }
-                // Carica il profilo del biologo target
-                const {data:targetProfilo}=await db.from('profiles').select('*').eq('id',viewAsId).single();
-                if(!targetProfilo){ showToast('Biologo non trovato','error'); hideInitLoader(); return; }
-                _viewAsMode = true;
-                appState.utente={nome:targetProfilo.nome||'—',email:targetProfilo.email||'',id:viewAsId,regione:targetProfilo.regione||null,ordine:targetProfilo.ordine||null,genere:targetProfilo.genere||null};
-                await caricaDati(viewAsId);
-                hideInitLoader();
-                document.getElementById('appShell').style.opacity='1';
-                // Banner
-                const banner=document.getElementById('viewAsBanner');
-                if(banner){ banner.style.display='flex'; document.getElementById('viewAsNome').textContent=targetProfilo.nome||targetProfilo.email; document.getElementById('mainContent').style.paddingTop='60px'; }
-                aggiornaUI();
-            } catch(err){ console.error('ViewAs error:',err); hideInitLoader(); }
             return;
         }
         try { await inizializzaApp(session.user); }
@@ -3746,6 +3748,8 @@ db.auth.onAuthStateChange(async (event, session) => {
         setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'),300);
     }
 });
+
+} // fine else (non viewAs)
 </script>
 </body>
 </html>

@@ -906,6 +906,11 @@ async function mostraDettaglioBiologo(id){
             </div>`;
         }).join('');
 
+    // Salva dati biologo in localStorage per viewAs (evita conflitti auth cross-tab)
+    localStorage.setItem('sane_viewas_data', JSON.stringify({
+        id: b.id, profilo: b, scuole: scuole||[], pacchetti: pacchetti||[], classi: classi||[], ts: Date.now()
+    }));
+
     box.innerHTML = `
         <!-- HEADER -->
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:12px;">
