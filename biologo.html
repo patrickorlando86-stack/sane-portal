@@ -988,14 +988,16 @@ if (localStorage.getItem('sane_v2') !== null) {
 // SUPABASE
 // ============================================================
 const _isViewAs = !!new URLSearchParams(window.location.search).get('viewAs');
-// Biologo normale: cancella solo la sessione biologo (non tocca quella admin)
-if(!_isViewAs) localStorage.removeItem('sane-biologo-session');
+// Biologo normale: cancella sessione — viewAs non tocca nulla
+if(!_isViewAs) localStorage.clear();
 
 const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZm9zbGlva2Zza2Z0bW91a3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDY3NTEsImV4cCI6MjA5MDYyMjc1MX0.eX9BL0tIy83zZ49hxzxFloH24hGIcbMRb2AsmCOiF9k';
 const { createClient } = supabase;
-// ViewAs usa la sessione admin, biologo normale usa la sua sessione separata
-const db = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: _isViewAs ? 'sane-admin-session' : 'sane-biologo-session' } });
+// ViewAs usa persistSession:false — nessun lock, nessun conflitto con admin
+const db = createClient(SUPABASE_URL, SUPABASE_KEY, _isViewAs
+    ? { auth: { persistSession: false, autoRefreshToken: false } }
+    : {});
 
 // ============================================================
 // STATO
@@ -3736,64 +3738,26 @@ db.auth.onAuthStateChange(async (event, session) => {
 
 // Se viewAs: sessione admin già presente, entra direttamente senza aspettare SIGNED_IN
 if(_isViewAs){
-    (async () => {
-        try {
-            console.log('[ViewAs] Avvio — cerco sessione admin...');
-            const { data: { session }, error: sessErr } = await db.auth.getSession();
-            console.log('[ViewAs] getSession result:', session ? 'sessione trovata user='+session.user.id : 'NESSUNA SESSIONE', sessErr || '');
-            if(session && !appState.utente){
-                document.getElementById('loginScreen').classList.add('hidden');
-                const el = document.getElementById('initLoader');
-                if(el){ el.style.display='flex'; el.style.opacity='1'; el.style.pointerEvents=''; }
-                const msgEl = document.getElementById('initLoaderMsg');
-                if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
-                const viewAsId = new URLSearchParams(window.location.search).get('viewAs');
-                console.log('[ViewAs] viewAsId:', viewAsId);
-                try {
-                    const {data:adminProfilo, error:roleErr}=await db.from('profiles').select('role').eq('id',session.user.id).single();
-                    console.log('[ViewAs] ruolo admin:', adminProfilo?.role, roleErr?.message || '');
-                    if(!adminProfilo||adminProfilo.role!=='admin'){
-                        showToast('Accesso non autorizzato','error');
-                        hideInitLoader();
-                        document.getElementById('loginScreen').classList.remove('hidden');
-                        return;
-                    }
-                    const raw = localStorage.getItem('sane_viewas_data');
-                    const vd  = raw ? JSON.parse(raw) : null;
-                    console.log('[ViewAs] cache localStorage:', vd ? 'trovata id='+vd.id : 'NON TROVATA');
-                    if(vd && vd.id === viewAsId){
-                        _viewAsMode = true;
-                        const p = vd.profilo;
-                        appState.utente={nome:p.nome||'—',email:p.email||'',id:viewAsId,regione:p.regione||null,ordine:p.ordine||null,genere:p.genere||null};
-                        appState.scuole=vd.scuole||[]; appState.pacchetti=vd.pacchetti||[]; appState.classi=vd.classi||[]; appState.autovalutazioni=[];
-                        console.log('[ViewAs] dati caricati da cache:', appState.utente.nome);
-                    } else {
-                        console.log('[ViewAs] cache mancante — carico da DB...');
-                        const {data:tp, error:tpErr}=await db.from('profiles').select('*').eq('id',viewAsId).single();
-                        console.log('[ViewAs] profilo DB:', tp?.nome, tpErr?.message || '');
-                        if(!tp){ showToast('Biologo non trovato','error'); hideInitLoader(); return; }
-                        _viewAsMode = true;
-                        appState.utente={nome:tp.nome||'—',email:tp.email||'',id:viewAsId,regione:tp.regione||null,ordine:tp.ordine||null,genere:tp.genere||null};
-                        await caricaDati(viewAsId);
-                    }
-                    hideInitLoader();
-                    document.getElementById('appShell').style.opacity='1';
-                    const banner=document.getElementById('viewAsBanner');
-                    if(banner){ banner.style.display='flex'; document.getElementById('viewAsNome').textContent=appState.utente.nome||appState.utente.email; document.getElementById('mainContent').style.paddingTop='60px'; }
-                    aggiornaUI();
-                    console.log('[ViewAs] ✅ Portale caricato per:', appState.utente.nome);
-                } catch(err){ console.error('[ViewAs] errore interno:', err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
-            } else if(!session){
-                console.warn('[ViewAs] Nessuna sessione admin trovata — mostro login');
-                hideInitLoader();
-                document.getElementById('loginScreen').classList.remove('hidden');
-            }
-        } catch(e){
-            console.error('[ViewAs] errore getSession:', e);
-            hideInitLoader();
-            document.getElementById('loginScreen').classList.remove('hidden');
-        }
-    })();
+    // ViewAs: nessuna auth Supabase — usa solo i dati pre-caricati dall'admin
+    const viewAsId = new URLSearchParams(window.location.search).get('viewAs');
+    const raw = localStorage.getItem('sane_viewas_data');
+    const vd  = raw ? JSON.parse(raw) : null;
+    if(vd && vd.id === viewAsId && (Date.now() - (vd.ts||0)) < 600000){
+        _viewAsMode = true;
+        const p = vd.profilo;
+        appState.utente={nome:p.nome||'—',email:p.email||'',id:viewAsId,regione:p.regione||null,ordine:p.ordine||null,genere:p.genere||null};
+        appState.scuole=vd.scuole||[]; appState.pacchetti=vd.pacchetti||[]; appState.classi=vd.classi||[]; appState.autovalutazioni=[];
+        hideInitLoader();
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('appShell').style.opacity='1';
+        const banner=document.getElementById('viewAsBanner');
+        if(banner){ banner.style.display='flex'; document.getElementById('viewAsNome').textContent=appState.utente.nome||appState.utente.email; document.getElementById('mainContent').style.paddingTop='60px'; }
+        aggiornaUI();
+    } else {
+        hideInitLoader();
+        showToast('Sessione scaduta — riapri dal pannello admin','error');
+        setTimeout(()=>{ window.close(); }, 2000);
+    }
 } else {
     hideInitLoader();
     document.getElementById('loginScreen').classList.remove('hidden');
