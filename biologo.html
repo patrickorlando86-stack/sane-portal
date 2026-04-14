@@ -3678,9 +3678,6 @@ function hideInitLoader(){
     setTimeout(()=>{ el.style.display='none'; }, 400);
 }
 
-hideInitLoader();
-document.getElementById('loginScreen').classList.remove('hidden');
-
 db.auth.onAuthStateChange(async (event, session) => {
     if(event === 'SIGNED_IN' && session && !appState.utente){
         document.getElementById('loginScreen').classList.add('hidden');
@@ -3736,6 +3733,60 @@ db.auth.onAuthStateChange(async (event, session) => {
         setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'),300);
     }
 });
+
+// Se viewAs: sessione admin già presente, entra direttamente senza aspettare SIGNED_IN
+if(_isViewAs){
+    (async () => {
+        try {
+            const { data: { session } } = await db.auth.getSession();
+            if(session && !appState.utente){
+                document.getElementById('loginScreen').classList.add('hidden');
+                const el = document.getElementById('initLoader');
+                if(el){ el.style.display='flex'; el.style.opacity='1'; el.style.pointerEvents=''; }
+                const msgEl = document.getElementById('initLoaderMsg');
+                if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
+                const viewAsId = new URLSearchParams(window.location.search).get('viewAs');
+                try {
+                    const {data:adminProfilo}=await db.from('profiles').select('role').eq('id',session.user.id).single();
+                    if(!adminProfilo||adminProfilo.role!=='admin'){
+                        showToast('Accesso non autorizzato','error');
+                        hideInitLoader();
+                        document.getElementById('loginScreen').classList.remove('hidden');
+                        return;
+                    }
+                    const raw = localStorage.getItem('sane_viewas_data');
+                    const vd  = raw ? JSON.parse(raw) : null;
+                    if(vd && vd.id === viewAsId){
+                        _viewAsMode = true;
+                        const p = vd.profilo;
+                        appState.utente={nome:p.nome||'—',email:p.email||'',id:viewAsId,regione:p.regione||null,ordine:p.ordine||null,genere:p.genere||null};
+                        appState.scuole=vd.scuole||[]; appState.pacchetti=vd.pacchetti||[]; appState.classi=vd.classi||[]; appState.autovalutazioni=[];
+                    } else {
+                        const {data:tp}=await db.from('profiles').select('*').eq('id',viewAsId).single();
+                        if(!tp){ showToast('Biologo non trovato','error'); hideInitLoader(); return; }
+                        _viewAsMode = true;
+                        appState.utente={nome:tp.nome||'—',email:tp.email||'',id:viewAsId,regione:tp.regione||null,ordine:tp.ordine||null,genere:tp.genere||null};
+                        await caricaDati(viewAsId);
+                    }
+                    hideInitLoader();
+                    document.getElementById('appShell').style.opacity='1';
+                    const banner=document.getElementById('viewAsBanner');
+                    if(banner){ banner.style.display='flex'; document.getElementById('viewAsNome').textContent=appState.utente.nome||appState.utente.email; document.getElementById('mainContent').style.paddingTop='60px'; }
+                    aggiornaUI();
+                } catch(err){ console.error('ViewAs getSession error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
+            } else if(!session){
+                hideInitLoader();
+                document.getElementById('loginScreen').classList.remove('hidden');
+            }
+        } catch(e){
+            hideInitLoader();
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+    })();
+} else {
+    hideInitLoader();
+    document.getElementById('loginScreen').classList.remove('hidden');
+}
 </script>
 </body>
 </html>
