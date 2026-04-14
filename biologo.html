@@ -1408,10 +1408,10 @@ function titoloProfessionale(genere){
 }
 function aggiornaUI(){
     const u=appState.utente;
-    document.getElementById('sidebarNome').textContent=u?.nome||'';
+    const titolo=titoloProfessionale(u?.genere);
+    document.getElementById('sidebarNome').textContent=titolo+(u?.nome||'');
     const ora=new Date().getHours();
     const saluto=ora<12?'Buongiorno':ora<18?'Buon pomeriggio':'Buonasera';
-    const titolo=titoloProfessionale(u?.genere);
     document.getElementById('dashGreeting').textContent=saluto+', '+titolo+(u?.nome||'');
     document.getElementById('dashDate').textContent=new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     // Chips: titolo + regione + ordine
