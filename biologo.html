@@ -1104,14 +1104,18 @@ async function doLogout(){
     window.location.href='index.html';
 }
 
-async function caricaDati(){
-    const {data:{user}}=await db.auth.getUser();
-    if(!user) return;
+async function caricaDati(targetId=null){
+    let uid = targetId;
+    if(!uid){
+        const {data:{user}}=await db.auth.getUser();
+        if(!user) return;
+        uid=user.id;
+    }
     const [{data:scuole},{data:pacchetti},{data:classi},{data:autov}]=await Promise.all([
-        db.from('scuole').select('*').eq('biologo_id',user.id).order('created_at'),
-        db.from('pacchetti').select('*').eq('biologo_id',user.id).order('created_at'),
-        db.from('classi').select('*').eq('biologo_id',user.id).order('created_at',{ascending:false}),
-        db.from('autovalutazioni').select('id,stato').eq('biologo_id',user.id)
+        db.from('scuole').select('*').eq('biologo_id',uid).order('created_at'),
+        db.from('pacchetti').select('*').eq('biologo_id',uid).order('created_at'),
+        db.from('classi').select('*').eq('biologo_id',uid).order('created_at',{ascending:false}),
+        db.from('autovalutazioni').select('id,stato').eq('biologo_id',uid)
     ]);
     appState.scuole=scuole||[];
     appState.pacchetti=pacchetti||[];
@@ -3574,7 +3578,7 @@ db.auth.onAuthStateChange(async (event, session) => {
                 if(!targetProfilo){ showToast('Biologo non trovato','error'); hideInitLoader(); return; }
                 _viewAsMode = true;
                 appState.utente={nome:targetProfilo.nome||'—',email:targetProfilo.email||'',id:viewAsId,regione:targetProfilo.regione||null,ordine:targetProfilo.ordine||null,genere:targetProfilo.genere||null};
-                await caricaDati();
+                await caricaDati(viewAsId);
                 hideInitLoader();
                 document.getElementById('appShell').style.opacity='1';
                 // Banner
