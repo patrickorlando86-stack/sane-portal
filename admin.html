@@ -537,7 +537,6 @@ if (localStorage.getItem('sane_v2') !== null) { localStorage.clear(); }
 // ============================================================
 // SUPABASE
 // ============================================================
-Object.keys(localStorage).filter(k=>k.includes('sb-')||k.includes('supabase')).forEach(k=>localStorage.removeItem(k));
 const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZm9zbGlva2Zza2Z0bW91a3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDY3NTEsImV4cCI6MjA5MDYyMjc1MX0.eX9BL0tIy83zZ49hxzxFloH24hGIcbMRb2AsmCOiF9k';
 const { createClient } = supabase;
@@ -1597,11 +1596,9 @@ async function avviaAdmin(user){
     }, 400);
 }
 
-hideInitLoader();
-document.getElementById('loginScreen').classList.remove('hidden');
-
+// Ascolta nuovi login e logout
 db.auth.onAuthStateChange(async (event, session) => {
-    if(event === 'SIGNED_IN' && session){
+    if(event === 'SIGNED_IN' && session && !adminState.currentUserId){
         document.getElementById('loginScreen').classList.add('hidden');
         const el = document.getElementById('initLoader');
         if(el){ el.style.display='flex'; el.style.opacity='1'; }
@@ -1612,6 +1609,29 @@ db.auth.onAuthStateChange(async (event, session) => {
         window.location.href='index.html';
     }
 });
+
+// Controlla se c'è già una sessione attiva (evita login ad ogni reload)
+(async () => {
+    try {
+        const { data: { session } } = await db.auth.getSession();
+        if(session){
+            // Sessione trovata — avvia direttamente
+            const el = document.getElementById('initLoader');
+            if(el){ el.style.display='flex'; el.style.opacity='1'; }
+            const msgEl = document.getElementById('initLoaderMsg');
+            if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
+            await avviaAdmin(session.user);
+        } else {
+            // Nessuna sessione — mostra login
+            hideInitLoader();
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+    } catch(e) {
+        console.error('getSession error:', e);
+        hideInitLoader();
+        document.getElementById('loginScreen').classList.remove('hidden');
+    }
+})();
 </script>
 </body>
 </html>
