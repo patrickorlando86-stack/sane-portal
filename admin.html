@@ -911,8 +911,16 @@ async function mostraDettaglioBiologo(id){
     }));
 
     box.innerHTML = `
+        <style>
+        @media(max-width:640px){
+            #dettaglioBiologoContent .dett-header{ flex-wrap:wrap !important; }
+            #dettaglioBiologoContent .dett-actions{ width:100% !important; justify-content:space-between !important; flex-shrink:unset !important; }
+            #dettaglioBiologoContent .dett-actions .dett-viewbtn span{ display:none !important; }
+            #dettaglioBiologoContent .kpi-grid{ grid-template-columns:repeat(2,1fr) !important; }
+        }
+        </style>
         <!-- HEADER -->
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:12px;">
+        <div class="dett-header" style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:12px;">
             <div style="display:flex;align-items:center;gap:14px;">
                 <div style="width:52px;height:52px;background:var(--teal);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <span style="color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:22px;">${b.nome.charAt(0)}</span>
@@ -928,14 +936,14 @@ async function mostraDettaglioBiologo(id){
                     </div>
                 </div>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-                <button onclick="window.open('biologo.html?viewAs=${b.id}','_blank')" style="display:inline-flex;align-items:center;gap:6px;background:var(--teal);color:white;border:none;border-radius:10px;padding:7px 13px;font-size:11px;font-weight:700;cursor:pointer;" title="Apri il portale come questo biologo (sola lettura)"><i class="fas fa-eye"></i> Visualizza Portale</button>
+            <div class="dett-actions" style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+                <button class="dett-viewbtn" onclick="window.open('biologo.html?viewAs=${b.id}','_blank')" style="display:inline-flex;align-items:center;gap:6px;background:var(--teal);color:white;border:none;border-radius:10px;padding:7px 13px;font-size:11px;font-weight:700;cursor:pointer;" title="Visualizza Portale"><i class="fas fa-eye"></i><span> Visualizza Portale</span></button>
                 <button onclick="closeModal('dettaglioBiologoModal')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:20px;"><i class="fas fa-times"></i></button>
             </div>
         </div>
 
         <!-- KPI strip -->
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;">
+        <div class="kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;">
             <div style="background:#f0fdf9;border-radius:14px;padding:12px;text-align:center;">
                 <div style="font-size:22px;font-weight:800;color:var(--teal);font-family:'Syne',sans-serif;">${scuole.length}</div>
                 <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Scuole</div>
