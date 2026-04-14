@@ -484,6 +484,12 @@
             <option>Basilicata</option><option>Calabria</option><option>Sicilia</option>
             <option>Sardegna</option><option>Valle d'Aosta</option>
         </select>
+        <label class="form-label" style="margin-top:12px;">Titolo Professionale</label>
+        <select class="form-input" id="profiloGenere" style="appearance:auto;-webkit-appearance:auto;">
+            <option value="">— nessuno —</option>
+            <option value="M">Dott. (maschile)</option>
+            <option value="F">Dott.ssa (femminile)</option>
+        </select>
         <label class="form-label" style="margin-top:12px;">Numero Ordine Biologi</label>
         <input class="form-input" id="profiloOrdine" placeholder="es. AL-2847">
         <div style="display:flex;gap:10px;margin-top:20px;">
@@ -520,7 +526,6 @@
                     <span style="color:rgba(255,255,255,0.35);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;">Online</span>
                 </div>
             </div>
-            <i class="fas fa-pen label" style="color:rgba(255,255,255,0.2);font-size:9px;flex-shrink:0;"></i>
         </div>
 
         <!-- NAV -->
@@ -1044,11 +1049,14 @@ async function doLogin(){
 }
 
 function apriProfilo(){
-    document.getElementById('profiloNome').value=appState.utente?.nome||'';
+    const u=appState.utente;
+    document.getElementById('profiloNome').value=u?.nome||'';
     const reg=document.getElementById('profiloRegione');
-    if(reg) reg.value=appState.utente?.regione||'';
+    if(reg) reg.value=u?.regione||'';
+    const gen=document.getElementById('profiloGenere');
+    if(gen) gen.value=u?.genere||'';
     const ord=document.getElementById('profiloOrdine');
-    if(ord) ord.value=(appState.utente?.ordine&&appState.utente.ordine!=='—')?appState.utente.ordine:'';
+    if(ord) ord.value=(u?.ordine&&u.ordine!=='—')?u.ordine:'';
     document.getElementById('profiloModal').classList.add('open');
     setTimeout(()=>document.getElementById('profiloNome').select(),50);
 }
@@ -1056,20 +1064,17 @@ function apriProfilo(){
 async function salvaProfilo(){
     const nome=document.getElementById('profiloNome').value.trim();
     const regione=document.getElementById('profiloRegione').value||null;
+    const genere=document.getElementById('profiloGenere').value||null;
     const ordine=document.getElementById('profiloOrdine').value.trim()||null;
     if(!nome){showToast('Inserisci il tuo nome completo','error');return;}
-    const {error}=await db.from('profiles').update({nome,regione,ordine}).eq('id',appState.utente.id);
-    if(regione) appState.utente.regione=regione;
-    if(ordine) appState.utente.ordine=ordine;
-    aggiornaBadgeProfilo();
+    const {error}=await db.from('profiles').update({nome,regione,genere,ordine}).eq('id',appState.utente.id);
     if(error){showToast('Errore: '+error.message,'error');return;}
     appState.utente.nome=nome;
-    document.getElementById('sidebarNome').textContent=nome;
-    const ora=new Date().getHours();
-    const saluto=ora<12?'Buongiorno':ora<18?'Buon pomeriggio':'Buonasera';
-    const el=document.getElementById('dashGreeting');
-    if(el) el.textContent=saluto+', '+nome;
+    appState.utente.regione=regione;
+    appState.utente.genere=genere;
+    appState.utente.ordine=ordine;
     closeModal('profiloModal');
+    aggiornaUI();
     showToast('Profilo aggiornato ✓');
 }
 
@@ -1110,7 +1115,7 @@ async function inizializzaApp(user){
         showToast(msg+' Contatta l\'amministratore.','error');
         await db.auth.signOut();return;
     }
-    appState.utente={nome:profilo.nome||user.email.split('@')[0],email:user.email,id:user.id};
+    appState.utente={nome:profilo.nome||user.email.split('@')[0],email:user.email,id:user.id,regione:profilo.regione||null,ordine:profilo.ordine||null,genere:profilo.genere||null};
     console.log('[SANE] 3. caricaDati start');
     await caricaDati();
     console.log('[SANE] 4. caricaDati done — scuole:',appState.scuole.length,'pacchetti:',appState.pacchetti.length,'classi:',appState.classi.length);
@@ -1396,17 +1401,24 @@ function apriGeneraQuestionari(classeId){
     window.open('questionario.html?'+params.toString(),'_blank');
 }
 
+function titoloProfessionale(genere){
+    if(genere==='M') return 'Dott. ';
+    if(genere==='F') return 'Dott.ssa ';
+    return '';
+}
 function aggiornaUI(){
-    document.getElementById('sidebarNome').textContent=appState.utente?.nome||'';
+    const u=appState.utente;
+    document.getElementById('sidebarNome').textContent=u?.nome||'';
     const ora=new Date().getHours();
     const saluto=ora<12?'Buongiorno':ora<18?'Buon pomeriggio':'Buonasera';
-    document.getElementById('dashGreeting').textContent=saluto+', '+(appState.utente?.nome||'');
+    const titolo=titoloProfessionale(u?.genere);
+    document.getElementById('dashGreeting').textContent=saluto+', '+titolo+(u?.nome||'');
     document.getElementById('dashDate').textContent=new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    // Badge regione + ordine sotto il saluto
-    const u=appState.utente;
+    // Chips: titolo + regione + ordine
     const info=document.getElementById('dashProfiloInfo');
     if(info){
         const chips=[];
+        if(u?.genere) chips.push(`<span style="display:inline-flex;align-items:center;gap:5px;background:#e0f2fe;color:#0369a1;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;">${titolo.trim()}</span>`);
         if(u?.regione) chips.push(`<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-map-marker-alt" style="font-size:9px;color:var(--teal);"></i>${u.regione}</span>`);
         if(u?.ordine&&u.ordine!=='—') chips.push(`<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-id-card" style="font-size:9px;color:var(--teal);"></i>N° ${u.ordine}</span>`);
         info.innerHTML=chips.join('');
@@ -1707,6 +1719,7 @@ function aggiornaScuole(){
                         <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
                             <i class="fas ${isGratuito?'fa-gift':'fa-handshake'}" style="color:var(--teal);font-size:11px;"></i>
                             <span style="font-weight:700;font-size:12px;color:var(--dark);">${tipoLabel}</span>
+                            <span style="font-size:9px;font-weight:700;color:#94a3b8;background:#f1f5f9;padding:2px 7px;border-radius:6px;letter-spacing:0.04em;font-family:monospace;">${codicePacket(p,s)}</span>
                             ${oreTot>0?`<span style="font-size:10px;color:#64748b;">${oreTot}h</span>`:''}
                             <span style="font-size:10px;color:#94a3b8;"><i class="fas fa-calendar-alt" style="margin-right:3px;"></i>${dataP}</span>
                             ${prezzolabel?`<span style="font-size:10px;font-weight:700;color:#065f46;">${prezzolabel}</span>`:''}
@@ -1759,11 +1772,26 @@ function aggiornaScuole(){
                 })()}
                 <div style="display:flex;gap:8px;margin-top:8px;" class="no-print">
                     <button onclick="event.stopPropagation();apriNuovoPacchetto('${s.id}','${s.nome}')" class="btn-ghost" style="font-size:11px;padding:7px 13px;flex:1;justify-content:center;touch-action:manipulation;"><i class="fas fa-plus" style="margin-right:3px;"></i>Pacchetto</button>
-                    <button onclick="event.stopPropagation();generaReport('${s.id}')" class="btn-ghost" style="font-size:11px;padding:7px 13px;touch-action:manipulation;"><i class="fas fa-file-pdf" style="margin-right:3px;color:var(--teal);"></i>Report</button>
                 </div>
             </div>`:''}
         </div>`;
     }).join('');
+}
+
+function codicePacket(p, s){
+    // Parole da saltare nel nome scuola
+    const skip=new Set(['IC','ISTITUTO','COMPRENSIVO','STATALE','SCUOLA','PRIMARIA','MEDIA','SECONDARIA','DI','DEL','DELLA','PRIMO','SECONDO','GRADO','E','CON','SMS','ICS','IPSSAR','ITCG','ITIS','IPSIA']);
+    const parole=(s?.nome||'???').toUpperCase().split(/\s+/).filter(w=>!skip.has(w));
+    const scuolaCode=(parole[0]||'???').substring(0,8);
+    // Anno: ultimi 2 cifre dell'anno finale
+    const anno=String(p.anno_scolastico||'').replace('/','-');
+    const annoEnd=(anno.split('-')[1]||'').slice(-2)||'??';
+    // Sequenza tra pacchetti della stessa scuola+anno
+    const stessi=appState.pacchetti
+        .filter(x=>x.scuola_id===p.scuola_id && annoIniziale(x.anno_scolastico)===annoIniziale(p.anno_scolastico))
+        .sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
+    const seq=String(stessi.findIndex(x=>x.id===p.id)+1).padStart(2,'0');
+    return `${scuolaCode}-${annoEnd}-${seq}`;
 }
 
 function apriNuovoPacchetto(scuolaId, scuolaNome){

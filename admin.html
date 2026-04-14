@@ -743,7 +743,7 @@ async function mostraDettaglioBiologo(id){
     const [scuoleRes, classiRes, pacchettiRes] = await Promise.all([
         db.from('scuole').select('*').eq('biologo_id', id),
         db.from('classi').select('*').eq('biologo_id', id),
-        db.from('pacchetti').select('id,scuola_id,tipo,prezzo,ore_totali').eq('biologo_id', id)
+        db.from('pacchetti').select('id,scuola_id,tipo,prezzo,ore_totali,anno_scolastico,created_at').eq('biologo_id', id)
     ]);
 
     const scuole = scuoleRes.data || [];
@@ -762,16 +762,37 @@ async function mostraDettaglioBiologo(id){
     const statoCol = {active:'#16a34a',pending:'#d97706',expired:'#dc2626',suspended:'#6b7280'}[b.stato]||'#6b7280';
     const statoLabel = {active:'Attiva',pending:'In Attesa',expired:'Scaduta',suspended:'Sospesa'}[b.stato]||b.stato;
 
-    // Badge pacchetto basato sui pacchetti reali della scuola
-    function pkBadgeScuola(scuolaId){
+    // Calcola codice pacchetto identico a biologo.html
+    function annoIniziale(anno){
+        if(!anno) return null;
+        return String(anno).replace('/','-').split('-')[0];
+    }
+    function codicePacket(p, s, allPacchetti){
+        const skip=new Set(['IC','ISTITUTO','COMPRENSIVO','STATALE','SCUOLA','PRIMARIA','MEDIA','SECONDARIA','DI','DEL','DELLA','PRIMO','SECONDO','GRADO','E','CON','SMS','ICS','IPSSAR','ITCG','ITIS','IPSIA']);
+        const parole=(s?.nome||'???').toUpperCase().split(/\s+/).filter(w=>!skip.has(w));
+        const scuolaCode=(parole[0]||'???').substring(0,8);
+        const anno=String(p.anno_scolastico||'').replace('/','-');
+        const annoEnd=(anno.split('-')[1]||'').slice(-2)||'??';
+        const stessi=(allPacchetti||[])
+            .filter(x=>x.scuola_id===p.scuola_id && annoIniziale(x.anno_scolastico)===annoIniziale(p.anno_scolastico))
+            .sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
+        const seq=String(stessi.findIndex(x=>x.id===p.id)+1).padStart(2,'0');
+        return `${scuolaCode}-${annoEnd}-${seq}`;
+    }
+
+    // Badge pacchetti individuali per scuola
+    function pkBadgeScuola(scuolaId, s){
         const pk = pacchetti.filter(p=>p.scuola_id===scuolaId);
         if(pk.length===0) return '';
-        const hasPagamento = pk.some(p=>p.prezzo>0);
-        const hasGratuito  = pk.some(p=>p.prezzo===0||p.prezzo==null);
-        const parts = [];
-        if(hasGratuito)  parts.push(`<span style="background:#dcfce7;color:#16a34a;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;">Gratuito</span>`);
-        if(hasPagamento) parts.push(`<span style="background:#dbeafe;color:#1e40af;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;">A Pagamento</span>`);
-        return parts.join('');
+        return pk.map(p=>{
+            const isGratuito = p.prezzo===0||p.prezzo==null;
+            const tipoColor = isGratuito ? 'background:#dcfce7;color:#16a34a;' : 'background:#dbeafe;color:#1e40af;';
+            const codice = codicePacket(p, s, pacchetti);
+            return `<span style="${tipoColor}border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:5px;">
+                ${isGratuito?'Gratuito':'A Pagamento'}
+                <span style="font-family:monospace;font-size:9px;opacity:0.7;">${codice}</span>
+            </span>`;
+        }).join('');
     }
 
     // Pacchetti Attivi — una card per scuola
@@ -794,7 +815,7 @@ async function mostraDettaglioBiologo(id){
                         <div style="font-size:11px;color:#64748b;margin-top:3px;"><i class="fas fa-map-marker-alt" style="margin-right:4px;color:var(--teal);"></i>${s.comune||'—'}</div>
                     </div>
                     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-                        ${pkBadgeScuola(s.id)}
+                        ${pkBadgeScuola(s.id, s)}
                         ${s.anno_scolastico?`<span style="background:#f1f5f9;color:#475569;border-radius:8px;padding:3px 9px;font-size:11px;">A.S. ${s.anno_scolastico}</span>`:''}
                     </div>
                 </div>
