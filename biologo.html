@@ -3738,7 +3738,9 @@ db.auth.onAuthStateChange(async (event, session) => {
 if(_isViewAs){
     (async () => {
         try {
-            const { data: { session } } = await db.auth.getSession();
+            console.log('[ViewAs] Avvio — cerco sessione admin...');
+            const { data: { session }, error: sessErr } = await db.auth.getSession();
+            console.log('[ViewAs] getSession result:', session ? 'sessione trovata user='+session.user.id : 'NESSUNA SESSIONE', sessErr || '');
             if(session && !appState.utente){
                 document.getElementById('loginScreen').classList.add('hidden');
                 const el = document.getElementById('initLoader');
@@ -3746,8 +3748,10 @@ if(_isViewAs){
                 const msgEl = document.getElementById('initLoaderMsg');
                 if(msgEl) msgEl.textContent = 'Server in avvio — attendere...';
                 const viewAsId = new URLSearchParams(window.location.search).get('viewAs');
+                console.log('[ViewAs] viewAsId:', viewAsId);
                 try {
-                    const {data:adminProfilo}=await db.from('profiles').select('role').eq('id',session.user.id).single();
+                    const {data:adminProfilo, error:roleErr}=await db.from('profiles').select('role').eq('id',session.user.id).single();
+                    console.log('[ViewAs] ruolo admin:', adminProfilo?.role, roleErr?.message || '');
                     if(!adminProfilo||adminProfilo.role!=='admin'){
                         showToast('Accesso non autorizzato','error');
                         hideInitLoader();
@@ -3756,13 +3760,17 @@ if(_isViewAs){
                     }
                     const raw = localStorage.getItem('sane_viewas_data');
                     const vd  = raw ? JSON.parse(raw) : null;
+                    console.log('[ViewAs] cache localStorage:', vd ? 'trovata id='+vd.id : 'NON TROVATA');
                     if(vd && vd.id === viewAsId){
                         _viewAsMode = true;
                         const p = vd.profilo;
                         appState.utente={nome:p.nome||'—',email:p.email||'',id:viewAsId,regione:p.regione||null,ordine:p.ordine||null,genere:p.genere||null};
                         appState.scuole=vd.scuole||[]; appState.pacchetti=vd.pacchetti||[]; appState.classi=vd.classi||[]; appState.autovalutazioni=[];
+                        console.log('[ViewAs] dati caricati da cache:', appState.utente.nome);
                     } else {
-                        const {data:tp}=await db.from('profiles').select('*').eq('id',viewAsId).single();
+                        console.log('[ViewAs] cache mancante — carico da DB...');
+                        const {data:tp, error:tpErr}=await db.from('profiles').select('*').eq('id',viewAsId).single();
+                        console.log('[ViewAs] profilo DB:', tp?.nome, tpErr?.message || '');
                         if(!tp){ showToast('Biologo non trovato','error'); hideInitLoader(); return; }
                         _viewAsMode = true;
                         appState.utente={nome:tp.nome||'—',email:tp.email||'',id:viewAsId,regione:tp.regione||null,ordine:tp.ordine||null,genere:tp.genere||null};
@@ -3773,12 +3781,15 @@ if(_isViewAs){
                     const banner=document.getElementById('viewAsBanner');
                     if(banner){ banner.style.display='flex'; document.getElementById('viewAsNome').textContent=appState.utente.nome||appState.utente.email; document.getElementById('mainContent').style.paddingTop='60px'; }
                     aggiornaUI();
-                } catch(err){ console.error('ViewAs getSession error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
+                    console.log('[ViewAs] ✅ Portale caricato per:', appState.utente.nome);
+                } catch(err){ console.error('[ViewAs] errore interno:', err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
             } else if(!session){
+                console.warn('[ViewAs] Nessuna sessione admin trovata — mostro login');
                 hideInitLoader();
                 document.getElementById('loginScreen').classList.remove('hidden');
             }
         } catch(e){
+            console.error('[ViewAs] errore getSession:', e);
             hideInitLoader();
             document.getElementById('loginScreen').classList.remove('hidden');
         }
