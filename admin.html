@@ -410,7 +410,7 @@
             </div>
 
             <!-- LICENZE IN SCADENZA + ULTIMI ISCRITTI -->
-            <div class="two-col-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+            <div class="two-col-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
                 <div class="card">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
                         <h4 style="font-size:15px;font-weight:700;color:var(--dark);">⚠️ Licenze in Scadenza</h4>
@@ -427,6 +427,18 @@
                 </div>
             </div>
 
+            <!-- PRONTI PER ATTESTATO -->
+            <div class="card" id="cardProntiAttestatoWrap" style="display:none;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                    <h4 style="font-size:15px;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:8px;">
+                        <span style="background:#d1fae5;color:#065f46;width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;">✅</span>
+                        Pronti per Attestato
+                    </h4>
+                    <span style="font-size:10px;color:#94a3b8;font-weight:600;">tutte le classi completate</span>
+                </div>
+                <div id="prontiAttestatoList"></div>
+            </div>
+
         </section>
 
         <!-- LICENZE BIOLOGI -->
@@ -436,9 +448,14 @@
                     <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Gestione Licenze</h2>
                     <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Tutti i biologi registrati nel sistema</p>
                 </div>
-                <button id="btnAggiungiBiologo" class="btn-primary no-print" onclick="openModal('nuovoBiologoModal')">
-                    <i class="fas fa-plus"></i>Aggiungi Biologo
-                </button>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="btn-ghost no-print" onclick="esportaCSV()" style="display:flex;align-items:center;gap:7px;">
+                        <i class="fas fa-file-csv" style="color:#16a34a;"></i>Esporta Excel
+                    </button>
+                    <button id="btnAggiungiBiologo" class="btn-primary no-print" onclick="openModal('nuovoBiologoModal')">
+                        <i class="fas fa-plus"></i>Aggiungi Biologo
+                    </button>
+                </div>
             </div>
 
             <!-- MAPPA FILTRO -->
@@ -859,6 +876,9 @@ function aggiornaDashboard(){
             </div>`).join('');
     }
 
+    // Pronti per attestato
+    aggiornaProntiAttestatoDashboard();
+
     renderMappa();
 }
 
@@ -1003,6 +1023,43 @@ function popolaFiltroRegioni(){
     const regioni = [...new Set(adminState.biologi.map(b=>b.regione).filter(r=>r&&r!=='—'))].sort();
     const current = sel.value;
     sel.innerHTML = '<option value="">Tutte le regioni</option>' + regioni.map(r=>`<option value="${r}"${r===current?' selected':''}>${r}</option>`).join('');
+}
+
+async function aggiornaProntiAttestatoDashboard(){
+    const wrap = document.getElementById('cardProntiAttestatoWrap');
+    const list = document.getElementById('prontiAttestatoList');
+    if(!wrap || !list) return;
+
+    // Carica classi aggregate per biologo per capire se tutte complete
+    const { data: classiAll } = await db.from('classi')
+        .select('biologo_id, score_pre, score_post')
+        .in('biologo_id', adminState.biologi.filter(b=>b.stato==='active'&&b.classi>0).map(b=>b.id));
+
+    if(!classiAll) return;
+
+    const pronti = adminState.biologi.filter(b => {
+        if(b.stato !== 'active' || b.classi === 0) return false;
+        const cl = classiAll.filter(c => c.biologo_id === b.id);
+        if(cl.length === 0) return false;
+        return cl.every(c => c.score_pre && c.score_post);
+    });
+
+    if(pronti.length === 0){ wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+
+    list.innerHTML = pronti.map(b => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;gap:8px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;border-radius:10px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:#065f46;font-size:14px;">${b.nome.charAt(0)}</div>
+                <div>
+                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${b.nome}</div>
+                    <div style="font-size:11px;color:#94a3b8;">${b.regione} · ${b.classi} class${b.classi===1?'e':'i'} · ${b.studenti} studenti</div>
+                </div>
+            </div>
+            <button onclick="mostraDettaglioBiologo('${b.id}')" style="background:#d1fae5;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;color:#065f46;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;">
+                <i class="fas fa-certificate"></i> Genera Attestati
+            </button>
+        </div>`).join('');
 }
 
 function aggiornaLicenze(){
@@ -1593,6 +1650,44 @@ async function rimuoviResponsabile(id){
     b.ruolo = 'biologo';
     showToast(`Ruolo rimosso — ${b.nome} è ora un biologo normale ✓`);
     aggiornaLicenze();
+}
+
+function esportaCSV(){
+    const biologi = adminState.biologi;
+    if(!biologi.length){ showToast('Nessun dato da esportare','error'); return; }
+
+    const intestazione = ['Nome','Email','Regione','N. Ordine','Stato','Iscrizione','Scadenza','Scuole','Pacchetti','Classi','Studenti','Ore Contratte','Valore Contratto (€)','Miglioramento Medio'];
+    const righe = biologi.map(b => [
+        b.nome,
+        b.email,
+        b.regione,
+        b.ordine,
+        {active:'Attiva',pending:'In Attesa',expired:'Scaduta',suspended:'Sospesa'}[b.stato]||b.stato,
+        b.dataIscrizione ? new Date(b.dataIscrizione).toLocaleDateString('it-IT') : '—',
+        b.scadenza      ? new Date(b.scadenza).toLocaleDateString('it-IT')       : '—',
+        b.scuole,
+        b.pacchetti,
+        b.classi,
+        b.studenti,
+        b.oreContratte||0,
+        b.valoreContratto||0,
+        b.miglioramento ? '+'+b.miglioramento : '—'
+    ]);
+
+    const csv = [intestazione, ...righe]
+        .map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(';'))
+        .join('\n');
+
+    const bom = '\uFEFF'; // BOM per Excel italiano
+    const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const oggi = new Date().toISOString().split('T')[0];
+    a.href     = url;
+    a.download = `sane-licenze-${oggi}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`Esportati ${biologi.length} biologi ✓`);
 }
 
 function badgeHtml(stato){
