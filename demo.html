@@ -133,9 +133,7 @@
                 <i class="fas fa-map" style="color:var(--teal);"></i> Distribuzione Geografica
             </h4>
             <div style="display:flex;gap:20px;align-items:flex-start;">
-                <div id="mappaContainer" style="flex:1;">
-                    <object id="italySvg" data="immagini/italy-min.svg" type="image/svg+xml" style="width:100%;height:auto;display:block;"></object>
-                </div>
+                <div id="mappaContainer" style="flex:1;"></div>
                 <div style="flex:0 0 140px;">
                     <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Regioni attive</div>
                     <div id="regioneList"></div>
@@ -318,38 +316,26 @@ function renderRegioni(){
         </div>`).join('');
 }
 
-function renderMappa(){
-    const obj = document.getElementById('italySvg');
-    const counts = {};
-    BIOLOGI.filter(b=>b.stato==='active').forEach(b=>{ counts[b.regione]=(counts[b.regione]||0)+1; });
+async function renderMappa(){
+    try {
+        const res = await fetch('immagini/italy-min.svg');
+        const svg = await res.text();
+        document.getElementById('mappaContainer').innerHTML = svg;
 
-    function coloraMappa(){
-        const svgDoc = obj.contentDocument;
-        if(!svgDoc) return;
-        // Stile base
-        svgDoc.querySelectorAll('path').forEach(p=>{
-            p.style.fill='#e2e8f0';
-            p.style.stroke='white';
-            p.style.strokeWidth='1';
-            p.style.transition='fill 0.3s';
-        });
+        const counts = {};
+        BIOLOGI.filter(b=>b.stato==='active').forEach(b=>{ counts[b.regione]=(counts[b.regione]||0)+1; });
+
         Object.entries(counts).forEach(([regione, count])=>{
             const id = REGIONE_MAPPA[regione];
             if(!id) return;
-            const path = svgDoc.getElementById(id) || svgDoc.querySelector('[id="'+id+'"]');
+            const path = document.querySelector('#mappaContainer [id="'+id+'"]');
             if(!path) return;
             let fill = '#b2dfdb';
             if(count===2) fill='#4db6ac';
             if(count>=3) fill='#00A896';
             path.style.fill = fill;
         });
-    }
-
-    if(obj.contentDocument && obj.contentDocument.querySelector('path')){
-        coloraMappa();
-    } else {
-        obj.addEventListener('load', coloraMappa);
-    }
+    } catch(e){ console.warn('SVG:', e); }
 }
 
 // ============================================================
