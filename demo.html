@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.A.N.E. Italia — Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root{--dark:#0A2647;--teal:#00A896;--teal-light:#00C9B1;--accent:#F4A261;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:#f0f4f8;min-height:100vh;}
+        h1,h2,h3,h4{font-family:'Syne',sans-serif;}
+
+        /* HEADER */
+        .header{background:var(--dark);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
+        .header-logo{display:flex;align-items:center;gap:12px;}
+        .header-logo img{height:40px;}
+        .header-logo h1{color:white;font-size:18px;font-weight:800;}
+        .header-logo p{color:rgba(255,255,255,0.35);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;}
+        .demo-badge{background:var(--accent);color:white;font-size:10px;font-weight:700;padding:4px 12px;border-radius:99px;letter-spacing:0.08em;text-transform:uppercase;font-family:'Syne',sans-serif;}
+
+        /* MAIN */
+        .main{padding:32px 40px;max-width:1200px;margin:0 auto;}
+
+        /* KPI */
+        .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px;}
+        .kpi-card{background:white;border-radius:20px;padding:22px;text-align:center;box-shadow:0 2px 12px rgba(10,38,71,0.06);}
+        .kpi-card.teal{background:var(--teal);}
+        .kpi-card.dark{background:var(--dark);}
+        .kpi-card.orange{background:var(--accent);}
+        .kpi-card.purple{background:#7c3aed;}
+        .kpi-val{font-family:'Syne',sans-serif;font-size:32px;font-weight:700;color:var(--dark);line-height:1;}
+        .kpi-card.teal .kpi-val,.kpi-card.dark .kpi-val,.kpi-card.orange .kpi-val,.kpi-card.purple .kpi-val{color:white;}
+        .kpi-lbl{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin-top:5px;}
+        .kpi-card.teal .kpi-lbl,.kpi-card.dark .kpi-lbl,.kpi-card.orange .kpi-lbl,.kpi-card.purple .kpi-lbl{color:rgba(255,255,255,0.7);}
+
+        /* GRID */
+        .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+        .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px;}
+        .card{background:white;border-radius:24px;padding:24px;box-shadow:0 2px 16px rgba(10,38,71,0.06);}
+
+        /* MAPPA */
+        #mappaContainer svg{width:100%;height:auto;}
+        #mappaContainer svg path{fill:#e2e8f0;stroke:white;stroke-width:1;transition:fill 0.3s;}
+
+        /* BIOLOGI */
+        .bio-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f1f5f9;}
+        .bio-row:last-child{border-bottom:none;}
+        .bio-avatar{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:white;flex-shrink:0;}
+        .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;}
+        .badge-active{background:#d1fae5;color:#065f46;}
+        .badge-pending{background:#fef3c7;color:#92400e;}
+
+        /* CHART BAR */
+        .bar-wrap{margin-bottom:12px;}
+        .bar-label{display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;}
+        .bar-track{background:#f1f5f9;border-radius:99px;height:8px;overflow:hidden;}
+        .bar-fill{height:100%;border-radius:99px;background:var(--teal);transition:width 1.5s ease;}
+
+        /* MIGLIORAMENTO */
+        .mig-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;}
+        .mig-row:last-child{border-bottom:none;}
+
+        /* COUNTER ANIMATION */
+        @keyframes countUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+        .kpi-val{animation:countUp 0.6s ease forwards;}
+
+        /* RESPONSIVE */
+        @media(max-width:768px){
+            .kpi-grid{grid-template-columns:repeat(2,1fr);}
+            .two-col,.three-col{grid-template-columns:1fr;}
+            .main{padding:16px;}
+        }
+
+        /* FOOTER */
+        .footer{text-align:center;padding:24px;color:#94a3b8;font-size:11px;margin-top:8px;}
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-logo">
+        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="SANE" onerror="this.style.display='none'">
+        <div>
+            <h1>S.A.N.E. Italia</h1>
+            <p>Sicurezza · Alimentazione · Nutrizione · Educazione</p>
+        </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+        <span style="color:rgba(255,255,255,0.4);font-size:12px;">Anno Scolastico 2025/2026</span>
+        <span class="demo-badge">Demo</span>
+    </div>
+</div>
+
+<div class="main">
+
+    <!-- TITOLO -->
+    <div style="margin-bottom:24px;">
+        <h2 style="font-size:24px;font-weight:700;color:var(--dark);">Panoramica Nazionale</h2>
+        <p style="color:#94a3b8;font-size:12px;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;">mercoledì 15 aprile 2026</p>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-grid">
+        <div class="kpi-card teal">
+            <div class="kpi-val" id="k1">0</div>
+            <div class="kpi-lbl">Biologi Attivi</div>
+        </div>
+        <div class="kpi-card dark">
+            <div class="kpi-val" id="k2">0</div>
+            <div class="kpi-lbl">Scuole Coinvolte</div>
+        </div>
+        <div class="kpi-card orange">
+            <div class="kpi-val" id="k3">0</div>
+            <div class="kpi-lbl">Classi Formate</div>
+        </div>
+        <div class="kpi-card purple">
+            <div class="kpi-val" id="k4">0</div>
+            <div class="kpi-lbl">Studenti Raggiunti</div>
+        </div>
+        <div class="kpi-card" style="background:white;">
+            <div class="kpi-val" style="color:var(--teal);" id="k5">+0%</div>
+            <div class="kpi-lbl">Miglioramento Medio</div>
+        </div>
+    </div>
+
+    <!-- MAPPA + BIOLOGI -->
+    <div class="two-col">
+        <div class="card">
+            <h4 style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:7px;">
+                <i class="fas fa-map" style="color:var(--teal);"></i> Distribuzione Geografica
+            </h4>
+            <div style="display:flex;gap:20px;align-items:flex-start;">
+                <div id="mappaContainer" style="flex:1;">
+                    <object id="italySvg" data="immagini/italy-min.svg" type="image/svg+xml" style="width:100%;height:auto;display:block;"></object>
+                </div>
+                <div style="flex:0 0 140px;">
+                    <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Regioni attive</div>
+                    <div id="regioneList"></div>
+                    <div style="margin-top:16px;display:flex;flex-direction:column;gap:5px;">
+                        <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:#64748b;"><div style="width:12px;height:12px;border-radius:3px;background:#b2dfdb;flex-shrink:0;"></div>1 biologo</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:#64748b;"><div style="width:12px;height:12px;border-radius:3px;background:#4db6ac;flex-shrink:0;"></div>2 biologi</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:#64748b;"><div style="width:12px;height:12px;border-radius:3px;background:#00A896;flex-shrink:0;"></div>3+ biologi</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h4 style="font-size:14px;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:7px;">
+                    <i class="fas fa-users" style="color:var(--teal);"></i> Biologi Certificati
+                </h4>
+                <span style="font-size:10px;color:#94a3b8;font-weight:600;">12 attivi · 2 in attesa</span>
+            </div>
+            <div id="biologiList"></div>
+        </div>
+    </div>
+
+    <!-- MIGLIORAMENTO + TOP SCUOLE + SCADENZE -->
+    <div class="three-col">
+        <div class="card">
+            <h4 style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:7px;">
+                <i class="fas fa-chart-line" style="color:var(--teal);"></i> Miglioramento per Regione
+            </h4>
+            <div id="miglioreList"></div>
+        </div>
+
+        <div class="card">
+            <h4 style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:7px;">
+                <i class="fas fa-trophy" style="color:var(--accent);"></i> Top Biologi
+            </h4>
+            <div id="topList"></div>
+        </div>
+
+        <div class="card">
+            <h4 style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:7px;">
+                <i class="fas fa-certificate" style="color:#7c3aed;"></i> Attestati Generati
+            </h4>
+            <div style="text-align:center;padding:20px 0;">
+                <div style="font-family:'Syne',sans-serif;font-size:56px;font-weight:800;color:#7c3aed;" id="k6">0</div>
+                <div style="font-size:12px;color:#94a3b8;margin-top:4px;">attestati emessi</div>
+            </div>
+            <div style="background:#f5f3ff;border-radius:12px;padding:14px;margin-top:8px;">
+                <div style="font-size:12px;color:#7c3aed;font-weight:600;margin-bottom:8px;">✅ Pronti per attestato</div>
+                <div style="font-size:12px;color:#64748b;line-height:1.6;">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;"></div>A. Esposito — Campania</div>
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;"></div>F. Marino — Sicilia</div>
+                    <div style="display:flex;align-items:center;gap:6px;"><div style="width:6px;height:6px;border-radius:50%;background:#7c3aed;"></div>S. De Luca — Puglia</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATTIVITÀ RECENTE -->
+    <div class="card">
+        <h4 style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:7px;">
+            <i class="fas fa-history" style="color:var(--teal);"></i> Attività Recente
+        </h4>
+        <div id="logList"></div>
+    </div>
+
+</div>
+
+<div class="footer">© 2026 S.A.N.E. Italia · Patrick Orlando &amp; Serafina Cardaci · <span style="color:var(--teal);font-weight:600;">www.sane-italia.it</span></div>
+
+<script>
+// ============================================================
+// DATI DEMO
+// ============================================================
+const BIOLOGI = [
+    { nome:'Sara Comandi',      email:'comandi80@gmail.com',       regione:'Toscana',          stato:'active', scuole:4,  classi:18, studenti:412,  mig:22, scadenza:'08/04/2027' },
+    { nome:'Marco Ferretti',    email:'m.ferretti@email.it',       regione:'Lombardia',        stato:'active', scuole:5,  classi:24, studenti:563,  mig:19, scadenza:'15/09/2026' },
+    { nome:'Giulia Romano',     email:'g.romano@email.it',         regione:'Lazio',            stato:'active', scuole:3,  classi:14, studenti:318,  mig:24, scadenza:'01/12/2026' },
+    { nome:'Antonio Esposito',  email:'a.esposito@email.it',       regione:'Campania',         stato:'active', scuole:6,  classi:28, studenti:647,  mig:18, scadenza:'20/06/2026' },
+    { nome:'Chiara Bianchi',    email:'c.bianchi@email.it',        regione:'Piemonte',         stato:'active', scuole:3,  classi:13, studenti:291,  mig:21, scadenza:'10/11/2026' },
+    { nome:'Francesco Marino',  email:'f.marino@email.it',         regione:'Sicilia',          stato:'active', scuole:4,  classi:19, studenti:438,  mig:17, scadenza:'05/03/2027' },
+    { nome:'Laura Conti',       email:'l.conti@email.it',          regione:'Veneto',           stato:'active', scuole:3,  classi:12, studenti:276,  mig:23, scadenza:'18/07/2026' },
+    { nome:'Stefano De Luca',   email:'s.deluca@email.it',         regione:'Puglia',           stato:'active', scuole:5,  classi:22, studenti:508,  mig:20, scadenza:'30/10/2026' },
+    { nome:'Alessia Ricci',     email:'a.ricci@email.it',          regione:'Emilia-Romagna',   stato:'active', scuole:2,  classi:9,  studenti:207,  mig:25, scadenza:'14/08/2026' },
+    { nome:'Roberto Mancini',   email:'r.mancini@email.it',        regione:'Calabria',         stato:'active', scuole:3,  classi:11, studenti:253,  mig:16, scadenza:'22/05/2026' },
+    { nome:'Valentina Costa',   email:'v.costa@email.it',          regione:'Marche',           stato:'active', scuole:2,  classi:8,  studenti:184,  mig:22, scadenza:'09/02/2027' },
+    { nome:'Elena Fontana',     email:'e.fontana@email.it',        regione:'Sardegna',         stato:'active', scuole:3,  classi:11, studenti:252,  mig:19, scadenza:'27/01/2027' },
+    { nome:'Luca Moretti',      email:'l.moretti@email.it',        regione:'Liguria',          stato:'pending', scuole:0, classi:0,  studenti:0,    mig:0,  scadenza:'—' },
+    { nome:'Sofia Greco',       email:'s.greco@email.it',          regione:'Umbria',           stato:'pending', scuole:0, classi:0,  studenti:0,    mig:0,  scadenza:'—' },
+];
+
+const LOG = [
+    { ico:'fa-check-circle', col:'#16a34a', testo:'Sara Comandi ha completato le sessioni presso IC Pascoli, Firenze', tempo:'2 ore fa' },
+    { ico:'fa-user-plus',    col:'#7c3aed', testo:'Luca Moretti si è registrato — in attesa di approvazione (Liguria)', tempo:'5 ore fa' },
+    { ico:'fa-certificate',  col:'#7c3aed', testo:'Generati 18 attestati — Stefano De Luca, IC Manzoni, Bari', tempo:'ieri' },
+    { ico:'fa-chart-bar',    col:'var(--teal)', testo:'Antonio Esposito ha completato pre-test e post-test — 4 classi, Napoli', tempo:'ieri' },
+    { ico:'fa-user-plus',    col:'#7c3aed', testo:'Sofia Greco si è registrata — in attesa di approvazione (Umbria)', tempo:'2 giorni fa' },
+    { ico:'fa-redo',         col:'var(--accent)', testo:'Licenza rinnovata — Marco Ferretti (Lombardia) +12 mesi', tempo:'3 giorni fa' },
+];
+
+const REGIONE_MAPPA = {
+    'Piemonte':'IT-21','Valle d\'Aosta':'IT-23','Lombardia':'IT-25',
+    'Trentino-Alto Adige':'IT-32','Veneto':'IT-34','Friuli-Venezia Giulia':'IT-36',
+    'Liguria':'IT-42','Emilia-Romagna':'IT-45','Toscana':'IT-52',
+    'Umbria':'IT-55','Marche':'IT-57','Lazio':'IT-62','Abruzzo':'IT_65',
+    'Molise':'IT-67','Campania':'IT-72','Puglia':'IT-75','Basilicata':'IT-77',
+    'Calabria':'IT-78','Sicilia':'IT-82','Sardegna':'IT-88'
+};
+
+// ============================================================
+// RENDER
+// ============================================================
+const COLORS = ['#00A896','#0A2647','#F4A261','#8b5cf6','#3b82f6','#ec4899','#16a34a','#d97706','#7c3aed','#0891b2','#65a30d','#dc2626'];
+
+function renderBiologi(){
+    const attivi = BIOLOGI.filter(b=>b.stato==='active').slice(0,8);
+    document.getElementById('biologiList').innerHTML = attivi.map((b,i)=>`
+        <div class="bio-row">
+            <div class="bio-avatar" style="background:${COLORS[i%COLORS.length]};">${b.nome.charAt(0)}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:13px;color:var(--dark);">${b.nome}</div>
+                <div style="font-size:11px;color:#94a3b8;">${b.regione} · ${b.scuole} scuole · ${b.classi} classi</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+                <span class="badge badge-active">Attiva</span>
+                <div style="font-size:10px;color:#94a3b8;margin-top:3px;">${b.scadenza}</div>
+            </div>
+        </div>`).join('');
+}
+
+function renderMiglioramento(){
+    const attivi = BIOLOGI.filter(b=>b.stato==='active'&&b.mig>0);
+    const maxMig = Math.max(...attivi.map(b=>b.mig));
+    const perRegione = {};
+    attivi.forEach(b=>{ perRegione[b.regione] = b.mig; });
+    const sorted = Object.entries(perRegione).sort((a,b)=>b[1]-a[1]).slice(0,7);
+    document.getElementById('miglioreList').innerHTML = sorted.map(([reg,mig])=>`
+        <div class="bar-wrap">
+            <div class="bar-label"><span>${reg}</span><span style="font-weight:700;color:var(--teal);">+${mig}%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:${(mig/maxMig*100)}%;"></div></div>
+        </div>`).join('');
+}
+
+function renderTop(){
+    const sorted = [...BIOLOGI].filter(b=>b.stato==='active').sort((a,b)=>b.studenti-a.studenti).slice(0,5);
+    document.getElementById('topList').innerHTML = sorted.map((b,i)=>`
+        <div class="mig-row">
+            <div style="width:22px;height:22px;border-radius:6px;background:${i===0?'#fbbf24':i===1?'#cbd5e1':i===2?'#d97706':'#f1f5f9'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:${i<3?'white':'#94a3b8'};flex-shrink:0;">${i+1}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:12px;color:var(--dark);">${b.nome}</div>
+                <div style="font-size:10px;color:#94a3b8;">${b.regione}</div>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:var(--dark);text-align:right;">
+                ${b.studenti.toLocaleString('it-IT')}<div style="font-size:9px;color:#94a3b8;font-weight:400;">studenti</div>
+            </div>
+        </div>`).join('');
+}
+
+function renderLog(){
+    document.getElementById('logList').innerHTML = LOG.map(l=>`
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+            <div style="width:28px;height:28px;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas ${l.ico}" style="color:${l.col};font-size:11px;"></i>
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:12px;color:var(--dark);">${l.testo}</div>
+                <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${l.tempo}</div>
+            </div>
+        </div>`).join('');
+}
+
+function renderRegioni(){
+    const counts = {};
+    BIOLOGI.filter(b=>b.stato==='active').forEach(b=>{ counts[b.regione]=(counts[b.regione]||0)+1; });
+    const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+    document.getElementById('regioneList').innerHTML = sorted.map(([r,n])=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:11px;color:#475569;">${r}</span>
+            <span style="font-size:11px;font-weight:700;color:var(--teal);">${n}</span>
+        </div>`).join('');
+}
+
+function renderMappa(){
+    const obj = document.getElementById('italySvg');
+    const counts = {};
+    BIOLOGI.filter(b=>b.stato==='active').forEach(b=>{ counts[b.regione]=(counts[b.regione]||0)+1; });
+
+    function coloraMappa(){
+        const svgDoc = obj.contentDocument;
+        if(!svgDoc) return;
+        // Stile base
+        svgDoc.querySelectorAll('path').forEach(p=>{
+            p.style.fill='#e2e8f0';
+            p.style.stroke='white';
+            p.style.strokeWidth='1';
+            p.style.transition='fill 0.3s';
+        });
+        Object.entries(counts).forEach(([regione, count])=>{
+            const id = REGIONE_MAPPA[regione];
+            if(!id) return;
+            const path = svgDoc.getElementById(id) || svgDoc.querySelector('[id="'+id+'"]');
+            if(!path) return;
+            let fill = '#b2dfdb';
+            if(count===2) fill='#4db6ac';
+            if(count>=3) fill='#00A896';
+            path.style.fill = fill;
+        });
+    }
+
+    if(obj.contentDocument && obj.contentDocument.querySelector('path')){
+        coloraMappa();
+    } else {
+        obj.addEventListener('load', coloraMappa);
+    }
+}
+
+// ============================================================
+// COUNTER ANIMATION
+// ============================================================
+function animateCounter(id, target, prefix='', suffix='', duration=1800){
+    const el = document.getElementById(id);
+    if(!el) return;
+    const start = Date.now();
+    const tick = ()=>{
+        const elapsed = Date.now()-start;
+        const progress = Math.min(elapsed/duration, 1);
+        const ease = 1-Math.pow(1-progress, 3);
+        const val = Math.round(ease*target);
+        el.textContent = prefix + val.toLocaleString('it-IT') + suffix;
+        if(progress<1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+const attivi = BIOLOGI.filter(b=>b.stato==='active');
+const totScuole   = attivi.reduce((a,b)=>a+b.scuole,0);
+const totClassi   = attivi.reduce((a,b)=>a+b.classi,0);
+const totStudenti = attivi.reduce((a,b)=>a+b.studenti,0);
+const mediaMig    = Math.round(attivi.reduce((a,b)=>a+b.mig,0)/attivi.length);
+const totAttestati = Math.round(totClassi * 22.3);
+
+renderBiologi();
+renderMiglioramento();
+renderTop();
+renderLog();
+renderRegioni();
+renderMappa();
+
+setTimeout(()=>{
+    animateCounter('k1', attivi.length);
+    animateCounter('k2', totScuole);
+    animateCounter('k3', totClassi);
+    animateCounter('k4', totStudenti);
+    animateCounter('k6', totAttestati);
+    // k5 speciale
+    const el5 = document.getElementById('k5');
+    let i=0;
+    const t = setInterval(()=>{
+        i += 0.5;
+        el5.textContent = '+'+i.toFixed(0)+'%';
+        if(i>=mediaMig) clearInterval(t);
+    }, 50);
+}, 300);
+</script>
+</body>
+</html>
