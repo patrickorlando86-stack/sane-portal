@@ -436,14 +436,26 @@
                 </button>
             </div>
 
-            <!-- FILTRI -->
-            <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;" class="no-print">
+            <!-- BARRA RICERCA + REGIONE -->
+            <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;" class="no-print">
+                <div style="position:relative;flex:1;min-width:200px;">
+                    <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:12px;pointer-events:none;"></i>
+                    <input type="text" id="searchBiologi" placeholder="Cerca per nome o email..." oninput="aggiornaLicenze()" style="width:100%;padding:9px 12px 9px 34px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13px;color:var(--dark);outline:none;background:white;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='#e2e8f0'">
+                </div>
+                <select id="filtroRegione" onchange="aggiornaLicenze()" style="padding:9px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13px;color:var(--dark);outline:none;background:white;cursor:pointer;min-width:170px;">
+                    <option value="">Tutte le regioni</option>
+                </select>
+            </div>
+
+            <!-- FILTRI STATO -->
+            <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;" class="no-print">
                 <button onclick="filtraLicenze('tutti')" id="filtro-tutti" style="background:var(--dark);color:white;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">Tutti</button>
                 <button onclick="filtraLicenze('active')" id="filtro-active" style="background:#f1f5f9;color:#64748b;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">Attivi</button>
                 <button onclick="filtraLicenze('pending')" id="filtro-pending" style="background:#f1f5f9;color:#64748b;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">In Attesa</button>
                 <button onclick="filtraLicenze('expired')" id="filtro-expired" style="background:#f1f5f9;color:#64748b;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">Scadute</button>
                 <button onclick="filtraLicenze('suspended')" id="filtro-suspended" style="background:#f1f5f9;color:#64748b;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">Sospese</button>
             </div>
+            <div id="biologiCounter" style="font-size:12px;color:#94a3b8;margin-bottom:16px;min-height:18px;"></div>
 
             <div class="card">
                 <div id="biologiList"></div>
@@ -679,6 +691,7 @@ async function inizializzaApp(){
     await verificaScadenzeAuto();
     document.getElementById('dashDate').textContent = new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     aggiornaDashboard();
+    popolaFiltroRegioni();
 }
 
 // ============================================================
@@ -789,10 +802,36 @@ function buildMailtoPromemoria(email, nome, scadenza){
     return `mailto:${email}?subject=${oggetto}&body=${corpo}`;
 }
 
+function popolaFiltroRegioni(){
+    const sel = document.getElementById('filtroRegione');
+    if(!sel) return;
+    const regioni = [...new Set(adminState.biologi.map(b=>b.regione).filter(r=>r&&r!=='—'))].sort();
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Tutte le regioni</option>' + regioni.map(r=>`<option value="${r}"${r===current?' selected':''}>${r}</option>`).join('');
+}
+
 function aggiornaLicenze(){
     const list = document.getElementById('biologiList');
     let biologi = adminState.biologi;
+
+    // Filtro stato
     if(filtroCorrente !== 'tutti') biologi = biologi.filter(b=>b.stato===filtroCorrente);
+
+    // Filtro ricerca testo
+    const query = (document.getElementById('searchBiologi')?.value||'').toLowerCase().trim();
+    if(query) biologi = biologi.filter(b=>(b.nome||'').toLowerCase().includes(query)||(b.email||'').toLowerCase().includes(query));
+
+    // Filtro regione
+    const regione = document.getElementById('filtroRegione')?.value||'';
+    if(regione) biologi = biologi.filter(b=>b.regione===regione);
+
+    // Contatore
+    const counter = document.getElementById('biologiCounter');
+    if(counter){
+        const tot = adminState.biologi.length;
+        const vis = biologi.length;
+        counter.textContent = vis === tot ? `${tot} biolog${tot===1?'o':'i'}` : `${vis} di ${tot} biolog${tot===1?'o':'i'}`;
+    }
 
     if(biologi.length===0){
         list.innerHTML='<p style="color:#94a3b8;font-size:13px;text-align:center;padding:40px;">Nessun biologo trovato.</p>';
