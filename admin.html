@@ -1537,6 +1537,51 @@ async function nominaResponsabile(id){
     b.ruolo = 'regional_admin';
     showToast(`${b.nome} nominato/a Responsabile Regionale ✓`);
     aggiornaLicenze();
+
+    // Chiedi se inviare email di notifica
+    const regione = b.regione==='—' ? 'la tua regione' : b.regione;
+    setTimeout(()=>{
+        apriPopupEmailNomina(b, regione);
+    }, 400);
+}
+
+function apriPopupEmailNomina(b, regione){
+    const oggetto = encodeURIComponent(`Accesso Pannello Admin S.A.N.E. — Responsabile ${regione}`);
+    const corpo = encodeURIComponent(
+`Cara/o ${b.nome},
+
+ti comunichiamo che sei stata/o nominata/o Responsabile Regionale per ${regione} nel programma S.A.N.E. Italia.
+
+Puoi accedere al pannello admin al seguente link:
+https://patrickorlando86-stack.github.io/sane-portal/admin.html
+
+Usa le tue credenziali abituali (la stessa email e password con cui accedi al portale biologi).
+
+Dal pannello potrai visualizzare i biologi della tua regione, approvare nuove iscrizioni e monitorare l'attività.
+
+Buon lavoro,
+Patrick Orlando
+S.A.N.E. Italia`);
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:400;background:rgba(10,38,71,0.7);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;';
+    overlay.innerHTML = `
+        <div style="background:white;border-radius:24px;padding:32px;max-width:400px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.25);">
+            <div style="width:56px;height:56px;background:#f5f3ff;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+                <i class="fas fa-envelope" style="color:#7c3aed;font-size:22px;"></i>
+            </div>
+            <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--dark);margin-bottom:10px;">Invia notifica a ${b.nome}?</h3>
+            <p style="color:#64748b;font-size:13px;line-height:1.6;margin-bottom:24px;">Si aprirà il tuo client email con un messaggio pre-compilato che spiega come accedere al pannello admin.</p>
+            <p style="background:#f8fafc;border-radius:10px;padding:10px 14px;font-size:12px;color:#64748b;margin-bottom:24px;">
+                <i class="fas fa-at" style="color:#7c3aed;margin-right:6px;"></i>${b.email}
+            </p>
+            <div style="display:flex;gap:10px;">
+                <button onclick="this.closest('div[style*=fixed]').remove()" style="flex:1;background:#f1f5f9;border:none;border-radius:12px;padding:13px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:#64748b;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;">Non ora</button>
+                <a href="mailto:${b.email}?subject=${oggetto}&body=${corpo}" onclick="this.closest('div[style*=fixed]').remove()" style="flex:1;background:#7c3aed;border:none;border-radius:12px;padding:13px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:white;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;"><i class="fas fa-paper-plane"></i> Invia Email</a>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
 }
 
 async function rimuoviResponsabile(id){
