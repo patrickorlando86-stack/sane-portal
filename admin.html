@@ -855,11 +855,7 @@ function renderMappa(){
         path.onmouseenter = function(e){
             if(!regione) return;
             const c = counts[regione]||0;
-            const nomiList = names[regione]||[];
-            const preview = nomiList.slice(0,3).join(', ')+(nomiList.length>3?' e altri '+(nomiList.length-3):'');
-            tooltip.innerHTML = '<b>'+regione+'</b>'+(c>0?'<br>'+c+' biologo'+(c!==1?'gi':'')+' attivo'+(c!==1?'i':'')+
-                (preview?'<br><span style="font-weight:400;opacity:0.8;">'+preview+'</span>':'')
-                :'<br><span style="opacity:0.6;">Nessun biologo</span>');
+            tooltip.innerHTML = '<b>'+regione+'</b>'+(c>0?'<br>'+c+' biologo'+(c!==1?'gi':'')+' attivo'+(c!==1?'i':''):'<br><span style="opacity:0.6;">Nessun biologo</span>');
             tooltip.style.display='block';
         };
         path.onmousemove = function(e){
