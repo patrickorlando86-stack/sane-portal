@@ -1089,10 +1089,10 @@ function generaAttestato(scuolaId){
         (c.m1_ore||0)+(c.m2_ore||0)+(c.m3_ore||0)+
         (c.m4_ore||0)+(c.m5_ore||0)+(c.m6_ore||0)
     ),0);
+    const annoScolastico = s.anno_scolastico || pk[0]?.anno_scolastico || '—';
     const pkHtml = pk.length>0 ? pk.map(p=>{
-        const tipo = p.prezzo===0||p.prezzo==null ? 'Gratuito' : 'A Pagamento';
-        return `${tipo}${p.ore_totali?' · '+p.ore_totali+'h contrattate':''}${p.anno_scolastico?' · A.S. '+p.anno_scolastico:''}`;
-    }).map(t=>`<li>${t}</li>`).join('') : '';
+        return `${p.ore_totali?p.ore_totali+'h contrattate':''}${p.anno_scolastico?' · A.S. '+p.anno_scolastico:''}`.replace(/^· /,'');
+    }).filter(t=>t).map(t=>`<li>${t}</li>`).join('') : '';
 
     const righe = cl.map(c=>{
         const ore=(c.m1_ore||0)+(c.m2_ore||0)+(c.m3_ore||0)+(c.m4_ore||0)+(c.m5_ore||0)+(c.m6_ore||0);
@@ -1138,7 +1138,7 @@ tbody td{padding:9px 14px;color:#334155;border-bottom:1px solid #e2e8f0;}
 .sig-line{border-bottom:1.5px dashed #0A2647;width:140px;margin:0 auto 5px;}
 .sig-label{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;}
 .sig-name{font-size:11px;font-weight:700;color:#0A2647;margin-top:3px;}
-.footer-cert{text-align:center;font-size:9px;color:#94a3b8;letter-spacing:0.12em;margin-top:6mm;text-transform:uppercase;}
+.footer-cert{text-align:center;font-size:8.5px;color:#94a3b8;letter-spacing:0.1em;margin-top:6mm;text-transform:uppercase;white-space:nowrap;overflow:hidden;}
 @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}.toolbar{display:none !important;}}
 </style>
 </head>
@@ -1153,18 +1153,19 @@ tbody td{padding:9px 14px;color:#334155;border-bottom:1px solid #e2e8f0;}
 <div style="height:52px;"></div>
 <div class="border-outer"><div class="border-inner">
 
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6mm;">
-        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo3.webp" alt="Mangiare bene, crescere meglio" style="height:90px;">
-        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-            <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" style="height:36px;">
-            <span style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#0A2647;">S.A.N.E. Italia</span>
+    <div style="display:flex;justify-content:center;align-items:center;gap:32px;margin-bottom:7mm;">
+        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo3.webp" alt="Mangiare bene, crescere meglio" style="height:100px;">
+        <div style="width:1px;height:70px;background:#e2e8f0;"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+            <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" style="height:52px;">
+            <span style="font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:#0A2647;letter-spacing:0.05em;">S.A.N.E. Italia</span>
         </div>
     </div>
     <hr class="divider-top"><hr class="divider-teal">
 
     <div class="title-section">
         <h1>Attestato di Partecipazione</h1>
-        <p>Progetto "Mangiare bene, crescere meglio" &nbsp;·&nbsp; Anno Scolastico ${s.anno_scolastico||'—'}</p>
+        <p>Progetto "Mangiare bene, crescere meglio" &nbsp;·&nbsp; Anno Scolastico ${annoScolastico}</p>
     </div>
 
     <div class="body-text">
