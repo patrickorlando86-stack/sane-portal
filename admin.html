@@ -218,18 +218,32 @@
             <h1 style="color:white;font-size:22px;font-weight:700;margin:0;">S.A.N.E. Admin</h1>
             <p style="color:rgba(255,255,255,0.35);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin-top:6px;">Pannello di Controllo</p>
         </div>
-        <label class="form-label" style="color:rgba(255,255,255,0.4);">Email Admin</label>
-        <input class="login-input" type="email" id="loginEmail" placeholder="admin@saneitalia.it" onkeydown="if(event.key==='Enter')doLogin()">
-        <label class="form-label" style="color:rgba(255,255,255,0.4);">Password</label>
-        <input class="login-input" type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-        <button onclick="doLogin()" style="width:100%;background:var(--accent);color:white;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:background 0.2s;">
-            Accedi al Pannello
-        </button>
-        <p id="loginMsg" style="color:rgba(255,255,255,0.35);font-size:11px;text-align:center;margin-top:16px;min-height:16px;"></p>
-        <p style="text-align:center;margin-top:4px;">
-            <a href="#" onclick="mostraResetPasswordAdmin(event)" style="color:rgba(255,255,255,0.4);font-size:11px;text-decoration:none;">Hai dimenticato la password?</a>
-        </p>
-        <div style="margin-top:8px;text-align:center;">
+        <div id="loginFormAdmin">
+            <label class="form-label" style="color:rgba(255,255,255,0.4);">Email Admin</label>
+            <input class="login-input" type="email" id="loginEmail" placeholder="admin@saneitalia.it" onkeydown="if(event.key==='Enter')doLogin()">
+            <label class="form-label" style="color:rgba(255,255,255,0.4);">Password</label>
+            <input class="login-input" type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+            <button onclick="doLogin()" style="width:100%;background:var(--accent);color:white;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:background 0.2s;">
+                Accedi al Pannello
+            </button>
+            <p id="loginMsg" style="color:rgba(255,255,255,0.35);font-size:11px;text-align:center;margin-top:16px;min-height:16px;"></p>
+            <p style="text-align:center;margin-top:4px;">
+                <a href="#" onclick="mostraResetPasswordAdmin(event)" style="color:rgba(255,255,255,0.4);font-size:11px;text-decoration:none;">Hai dimenticato la password?</a>
+            </p>
+        </div>
+
+        <div id="resetPasswordScreenAdmin" style="display:none;">
+            <div style="text-align:center;margin-bottom:20px;">
+                <i class="fas fa-key" style="color:var(--accent);font-size:32px;margin-bottom:12px;display:block;"></i>
+                <h3 style="color:white;font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;">Reset Password</h3>
+                <p style="color:rgba(255,255,255,0.4);font-size:12px;">Inserisci la tua email — ti mandiamo un link per reimpostare la password</p>
+            </div>
+            <input class="login-input" type="email" id="resetEmailAdmin" placeholder="admin@saneitalia.it">
+            <button onclick="inviaResetPasswordAdmin()" style="width:100%;background:var(--accent);color:white;border:none;border-radius:12px;padding:14px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;">Invia Link Reset</button>
+            <p style="text-align:center;margin-top:14px;"><a href="#" onclick="chiudiResetPasswordAdmin(event)" style="color:rgba(255,255,255,0.4);font-size:12px;text-decoration:none;">← Torna al login</a></p>
+        </div>
+
+        <div style="margin-top:16px;text-align:center;">
             <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
                 <i class="fas fa-arrow-left" style="font-size:10px;"></i> Torna alla pagina iniziale
             </a>
@@ -559,17 +573,38 @@ let filtroAttivo = 'tutti';
 // ============================================================
 // AUTH
 // ============================================================
-async function mostraResetPasswordAdmin(e){
+function mostraResetPasswordAdmin(e){
     e.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
-    const msg = document.getElementById('loginMsg');
-    if(!email){ msg.textContent='Inserisci prima la tua email'; return; }
-    msg.textContent = 'Invio link in corso...';
+    document.getElementById('loginFormAdmin').style.display='none';
+    document.getElementById('resetPasswordScreenAdmin').style.display='block';
+    const em = document.getElementById('loginEmail').value;
+    if(em) document.getElementById('resetEmailAdmin').value = em;
+}
+function chiudiResetPasswordAdmin(e){
+    e.preventDefault();
+    document.getElementById('resetPasswordScreenAdmin').style.display='none';
+    document.getElementById('loginFormAdmin').style.display='block';
+}
+async function inviaResetPasswordAdmin(){
+    const email = document.getElementById('resetEmailAdmin').value.trim();
+    if(!email){ document.getElementById('loginMsg').textContent='Inserisci la tua email'; return; }
+    const btn = document.querySelector('#resetPasswordScreenAdmin button');
+    btn.disabled = true; btn.textContent = 'Invio in corso...';
     const { error } = await db.auth.resetPasswordForEmail(email, {
         redirectTo: 'https://sane-italia.it/reset-password.html'
     });
-    if(error){ msg.textContent = 'Errore: ' + error.message; }
-    else { msg.textContent = '✅ Link inviato! Controlla la tua email.'; }
+    if(error){
+        btn.disabled = false; btn.textContent = 'Invia Link Reset';
+        document.getElementById('resetPasswordScreenAdmin').innerHTML += `<p style="color:#ef4444;font-size:11px;text-align:center;margin-top:8px;">Errore: ${error.message}</p>`;
+    } else {
+        document.getElementById('resetPasswordScreenAdmin').innerHTML = `
+            <div style="text-align:center;padding:10px 0;">
+                <i class="fas fa-envelope-open-text" style="color:var(--accent);font-size:36px;margin-bottom:14px;display:block;"></i>
+                <h3 style="color:white;font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;">Email inviata!</h3>
+                <p style="color:rgba(255,255,255,0.5);font-size:12px;line-height:1.6;">Controlla la tua casella di posta e clicca il link per reimpostare la password.</p>
+                <p style="margin-top:16px;"><a href="#" onclick="chiudiResetPasswordAdmin(event)" style="color:var(--accent);font-size:12px;font-weight:700;text-decoration:none;">← Torna al login</a></p>
+            </div>`;
+    }
 }
 
 async function doLogin(){
