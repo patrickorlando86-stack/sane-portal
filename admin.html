@@ -1139,10 +1139,18 @@ tbody td{padding:9px 14px;color:#334155;border-bottom:1px solid #e2e8f0;}
 .sig-label{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;}
 .sig-name{font-size:11px;font-weight:700;color:#0A2647;margin-top:3px;}
 .footer-cert{text-align:center;font-size:9px;color:#94a3b8;letter-spacing:0.12em;margin-top:6mm;text-transform:uppercase;}
-@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}.toolbar{display:none !important;}}
 </style>
 </head>
 <body>
+<div class="toolbar" style="position:fixed;top:0;left:0;right:0;z-index:999;background:#0A2647;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,0.3);">
+    <span style="color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">Attestato di Partecipazione</span>
+    <div style="display:flex;gap:8px;">
+        <button onclick="window.print()" style="background:#00A896;color:white;border:none;border-radius:8px;padding:8px 18px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;">🖨️ Stampa / Salva PDF</button>
+        <button onclick="window.close()" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:8px;padding:8px 14px;font-weight:600;font-size:12px;cursor:pointer;">✕ Chiudi</button>
+    </div>
+</div>
+<div style="height:52px;"></div>
 <div class="border-outer"><div class="border-inner">
 
     <div class="logo-wrap">
@@ -1198,7 +1206,6 @@ tbody td{padding:9px 14px;color:#334155;border-bottom:1px solid #e2e8f0;}
     <div class="footer-cert">S.A.N.E. Italia &nbsp;·&nbsp; Sicurezza Alimentare Nelle Scuole &nbsp;·&nbsp; saneitalia.it</div>
 
 </div></div>
-<script>window.onload=function(){ setTimeout(function(){ window.print(); },700); }<\/script>
 </body></html>`;
 
     const win = window.open('','_blank','width=900,height=1150');
