@@ -323,6 +323,7 @@
                 <i class="fas fa-arrow-left" style="font-size:10px;"></i> Torna alla pagina iniziale
             </a>
         </div>
+        <p style="text-align:center;font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:0.5px;padding:20px 0 0;">© 2026 S.A.N.E. Italia — Patrick Orlando &amp; Serafina Cardaci</p>
     </div>
 </div>
 
@@ -1145,7 +1146,7 @@ function chiudiResetPassword(e){
 async function inviaResetPassword(){
     const email=document.getElementById('resetEmail').value.trim();
     if(!email){showToast('Inserisci la tua email','error');return;}
-    const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:window.location.href});
+    const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://sane-italia.it/reset-password.html'});
     if(error){showToast('Errore: '+error.message,'error');return;}
     document.getElementById('resetPasswordScreen').innerHTML=`
         <div style="text-align:center;padding:10px 0;">

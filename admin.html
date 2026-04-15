@@ -226,11 +226,15 @@
             Accedi al Pannello
         </button>
         <p id="loginMsg" style="color:rgba(255,255,255,0.35);font-size:11px;text-align:center;margin-top:16px;min-height:16px;"></p>
+        <p style="text-align:center;margin-top:4px;">
+            <a href="#" onclick="mostraResetPasswordAdmin(event)" style="color:rgba(255,255,255,0.4);font-size:11px;text-decoration:none;">Hai dimenticato la password?</a>
+        </p>
         <div style="margin-top:8px;text-align:center;">
             <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
                 <i class="fas fa-arrow-left" style="font-size:10px;"></i> Torna alla pagina iniziale
             </a>
         </div>
+        <p style="text-align:center;font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:0.5px;padding:20px 0 0;">© 2026 S.A.N.E. Italia — Patrick Orlando &amp; Serafina Cardaci</p>
     </div>
 </div>
 
@@ -555,6 +559,19 @@ let filtroAttivo = 'tutti';
 // ============================================================
 // AUTH
 // ============================================================
+async function mostraResetPasswordAdmin(e){
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const msg = document.getElementById('loginMsg');
+    if(!email){ msg.textContent='Inserisci prima la tua email'; return; }
+    msg.textContent = 'Invio link in corso...';
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://sane-italia.it/reset-password.html'
+    });
+    if(error){ msg.textContent = 'Errore: ' + error.message; }
+    else { msg.textContent = '✅ Link inviato! Controlla la tua email.'; }
+}
+
 async function doLogin(){
     const email = document.getElementById('loginEmail').value.trim();
     const pass  = document.getElementById('loginPassword').value;
