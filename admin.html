@@ -1001,7 +1001,7 @@ async function mostraDettaglioBiologo(id){
                         ${c.nome_classe||'—'} <span style="color:#94a3b8;margin-left:2px;">${c.num_studenti||0} stud.</span>
                     </span>`).join('')}</div>`:''}
                 <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;">
-                    ${cl.length>=0
+                    ${cl.length>0 && clComplete.length===cl.length
                         ? `<button onclick="generaAttestato('${s.id}')" style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf9;border:1.5px solid var(--teal);color:var(--teal);border-radius:8px;padding:6px 13px;font-size:11px;font-weight:700;cursor:pointer;"><i class="fas fa-file-alt"></i> Genera Attestato</button>`
                         : `<span style="font-size:11px;color:#94a3b8;display:inline-flex;align-items:center;gap:5px;"><i class="fas fa-lock"></i> Attestato disponibile al completamento</span>`
                     }
