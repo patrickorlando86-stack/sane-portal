@@ -1153,22 +1153,26 @@ tbody td{padding:9px 14px;color:#334155;border-bottom:1px solid #e2e8f0;}
 <div style="height:52px;"></div>
 <div class="border-outer"><div class="border-inner">
 
-    <div class="logo-wrap">
-        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6mm;">
+        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo3.webp" alt="Mangiare bene, crescere meglio" style="height:90px;">
+        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+            <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" style="height:36px;">
+            <span style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#0A2647;">S.A.N.E. Italia</span>
+        </div>
     </div>
     <hr class="divider-top"><hr class="divider-teal">
 
     <div class="title-section">
         <h1>Attestato di Partecipazione</h1>
-        <p>Programma S.A.N.E. Italia &nbsp;·&nbsp; Anno Scolastico ${s.anno_scolastico||'—'}</p>
+        <p>Progetto "Mangiare bene, crescere meglio" &nbsp;·&nbsp; Anno Scolastico ${s.anno_scolastico||'—'}</p>
     </div>
 
     <div class="body-text">
         Si attesta che l'Istituto<br>
         <span class="school-name">${s.nome||'—'}</span>
         <span style="font-size:12px;color:#64748b;">${s.comune||''}</span><br><br>
-        ha partecipato al programma <span class="program-name">S.A.N.E. Italia</span><br>
-        <em style="color:#64748b;font-size:12px;">Sicurezza · Alimentazione · Nutrizione · Educazione</em><br>
+        ha partecipato al progetto <span class="program-name">Mangiare bene, crescere meglio</span><br>
+        <em style="color:#64748b;font-size:12px;">Progetto di Educazione Alimentare — un'iniziativa S.A.N.E. Italia</em><br>
         con le seguenti classi:
     </div>
 
@@ -1203,7 +1207,7 @@ tbody td{padding:9px 14px;color:#334155;border-bottom:1px solid #e2e8f0;}
         </div>
     </div>
 
-    <div class="footer-cert">S.A.N.E. Italia &nbsp;·&nbsp; Sicurezza Alimentare Nelle Scuole &nbsp;·&nbsp; saneitalia.it</div>
+    <div class="footer-cert">Mangiare bene, crescere meglio &nbsp;·&nbsp; Progetto Educazione Alimentare &nbsp;·&nbsp; Un'iniziativa S.A.N.E. Italia &nbsp;·&nbsp; saneitalia.it</div>
 
 </div></div>
 </body></html>`;
