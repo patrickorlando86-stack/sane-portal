@@ -338,8 +338,8 @@
                 <i class="fas fa-user-shield" style="color:white;font-size:11px;"></i>
             </div>
             <div class="label">
-                <div style="color:white;font-weight:600;font-size:12px;">Patrick Orlando</div>
-                <div style="color:rgba(255,255,255,0.35);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;margin-top:1px;">Amministratore</div>
+                <div id="sidebarAdminNome" style="color:white;font-weight:600;font-size:12px;">Admin</div>
+                <div id="sidebarAdminRuolo" style="color:rgba(255,255,255,0.35);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;margin-top:1px;">Amministratore</div>
             </div>
         </div>
 
@@ -350,13 +350,13 @@
             <div class="nav-item" onclick="showSection('licenze',this)">
                 <i class="fas fa-id-card"></i><span class="label">Licenze Biologi</span>
             </div>
-            <div class="nav-item" onclick="showSection('nazionale',this)">
+            <div id="navNazionale" class="nav-item" onclick="showSection('nazionale',this)">
                 <i class="fas fa-map-marked-alt"></i><span class="label">Dati Nazionali</span>
             </div>
             <div class="nav-item" onclick="showSection('autovalutazioni',this)">
                 <i class="fas fa-clipboard-check"></i><span class="label">Autovalutazioni</span>
             </div>
-            <div class="nav-item" onclick="showSection('log',this);caricaLog()">
+            <div id="navLog" class="nav-item" onclick="showSection('log',this);caricaLog()">
                 <i class="fas fa-history"></i><span class="label">Log Attività</span>
             </div>
         </nav>
@@ -377,7 +377,7 @@
         <section id="sec-dashboard" class="section active">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
                 <div>
-                    <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Panoramica Nazionale</h2>
+                    <h2 id="dashTitolo" style="font-size:22px;font-weight:700;color:var(--dark);">Panoramica Nazionale</h2>
                     <p id="dashDate" style="color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;"></p>
                 </div>
                 <button class="btn-primary no-print" onclick="showSection('licenze',document.querySelector('.nav-item[onclick*=licenze]'))">
@@ -436,7 +436,7 @@
                     <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Gestione Licenze</h2>
                     <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Tutti i biologi registrati nel sistema</p>
                 </div>
-                <button class="btn-primary no-print" onclick="openModal('nuovoBiologoModal')">
+                <button id="btnAggiungiBiologo" class="btn-primary no-print" onclick="openModal('nuovoBiologoModal')">
                     <i class="fas fa-plus"></i>Aggiungi Biologo
                 </button>
             </div>
@@ -608,7 +608,7 @@ const db = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'sane-
 // ============================================================
 // STATO
 // ============================================================
-let adminState = { biologi: [] };
+let adminState = { biologi: [], role: 'admin', regioneAdmin: null, nomeAdmin: '' };
 let filtroAttivo = 'tutti';
 
 // ============================================================
@@ -661,22 +661,29 @@ async function doLogin(){
 }
 
 function doLogout(){
-    adminState = { biologi:[] };
+    adminState = { biologi:[], role:'admin', regioneAdmin:null, nomeAdmin:'' };
     db.auth.signOut().then(()=>{ window.location.href='index.html'; });
 }
 
 async function caricaDati(){
-    // Prova query con role2 (richiede ALTER TABLE), fallback a solo role=biologo
-    let profilesRes = await db.from('profiles').select('*')
-        .or('role.eq.biologo,role2.eq.biologo')
+    const isRegionale = adminState.role === 'regional_admin';
+    const regioneFiltro = isRegionale ? adminState.regioneAdmin : null;
+
+    // Prova query con role2 (richiede ALTER TABLE), fallback a solo role=biologo/regional_admin
+    let q1 = db.from('profiles').select('*')
+        .or('role.eq.biologo,role.eq.regional_admin,role2.eq.biologo')
         .neq('stato','eliminato')
         .order('data_iscrizione',{ascending:false});
+    if(regioneFiltro) q1 = q1.eq('regione', regioneFiltro);
+    let profilesRes = await q1;
     if(profilesRes.error){
         // role2 non esiste ancora nel DB — usa query semplice
-        profilesRes = await db.from('profiles').select('*')
-            .eq('role','biologo')
+        let q2 = db.from('profiles').select('*')
+            .in('role',['biologo','regional_admin'])
             .neq('stato','eliminato')
             .order('data_iscrizione',{ascending:false});
+        if(regioneFiltro) q2 = q2.eq('regione', regioneFiltro);
+        profilesRes = await q2;
     }
     const [scuoleRes, classiRes, pacchettiRes] = await Promise.all([
         db.from('scuole').select('biologo_id'),
@@ -711,6 +718,7 @@ async function caricaDati(){
                  scuole:sc.length, pacchetti:pk.length, classi:cl.length,
                  studenti, miglioramento:mig,
                  oreContratte, valoreContratto,
+                 ruolo: p.role || 'biologo',
                  isAdmin: p.role==='admin' };
     });
 }
@@ -719,8 +727,54 @@ async function inizializzaApp(){
     await caricaDati();
     await verificaScadenzeAuto();
     document.getElementById('dashDate').textContent = new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    adattaInterfaccia();
     aggiornaDashboard();
     popolaFiltroRegioni();
+}
+
+function adattaInterfaccia(){
+    const isRegionale = adminState.role === 'regional_admin';
+
+    // Aggiorna sidebar nome e ruolo
+    const nomeEl = document.getElementById('sidebarAdminNome');
+    const ruoloEl = document.getElementById('sidebarAdminRuolo');
+    if(nomeEl) nomeEl.textContent = adminState.nomeAdmin || 'Admin';
+    if(ruoloEl) ruoloEl.textContent = isRegionale
+        ? 'Admin ' + (adminState.regioneAdmin || 'Regionale')
+        : 'Amministratore';
+
+    if(!isRegionale) return; // Super admin: nessuna restrizione
+
+    // Nascondi sezioni riservate al super admin
+    const navNaz = document.getElementById('navNazionale');
+    const navLog = document.getElementById('navLog');
+    if(navNaz) navNaz.style.display = 'none';
+    if(navLog) navLog.style.display = 'none';
+
+    // Nascondi pulsante aggiungi biologo
+    const btnAdd = document.getElementById('btnAggiungiBiologo');
+    if(btnAdd) btnAdd.style.display = 'none';
+
+    // Titolo dashboard
+    const titolo = document.getElementById('dashTitolo');
+    if(titolo) titolo.textContent = 'Panoramica — ' + (adminState.regioneAdmin || 'Regione');
+
+    // Banner regione in dashboard
+    const dashDate = document.getElementById('dashDate');
+    if(dashDate) dashDate.insertAdjacentHTML('afterend',
+        `<span style="display:inline-flex;align-items:center;gap:5px;background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:0.08em;margin-top:6px;">
+            <i class="fas fa-map-marker-alt"></i> ${adminState.regioneAdmin}
+        </span>`);
+
+    // Lock filtro regione nella sezione licenze
+    const sel = document.getElementById('filtroRegione');
+    if(sel){
+        sel.value = adminState.regioneAdmin || '';
+        sel.disabled = true;
+        sel.style.opacity = '0.6';
+        sel.style.cursor = 'not-allowed';
+    }
+    _mappaRegioneSelezionata = adminState.regioneAdmin;
 }
 
 // ============================================================
@@ -908,6 +962,8 @@ function renderMappa(){
 }
 
 function resetMappaFiltro(){
+    // Admin regionale non può deselezionare la sua regione
+    if(adminState.role === 'regional_admin') return;
     _mappaRegioneSelezionata = null;
     const sel = document.getElementById('filtroRegione');
     if(sel) sel.value = '';
@@ -953,6 +1009,14 @@ function aggiornaLicenze(){
     const list = document.getElementById('biologiList');
     let biologi = adminState.biologi;
 
+    // Admin regionale: forza sempre la sua regione
+    if(adminState.role === 'regional_admin' && adminState.regioneAdmin){
+        biologi = biologi.filter(b=>b.regione===adminState.regioneAdmin);
+        // Re-lock il select nel caso fosse stato resettato
+        const sel = document.getElementById('filtroRegione');
+        if(sel && sel.value !== adminState.regioneAdmin){ sel.value = adminState.regioneAdmin; }
+    }
+
     // Filtro stato
     if(filtroCorrente !== 'tutti') biologi = biologi.filter(b=>b.stato===filtroCorrente);
 
@@ -960,13 +1024,15 @@ function aggiornaLicenze(){
     const query = (document.getElementById('searchBiologi')?.value||'').toLowerCase().trim();
     if(query) biologi = biologi.filter(b=>(b.nome||'').toLowerCase().includes(query)||(b.email||'').toLowerCase().includes(query));
 
-    // Filtro regione
-    const regione = document.getElementById('filtroRegione')?.value||'';
-    if(regione){ 
-        biologi = biologi.filter(b=>b.regione===regione);
-        if(_mappaRegioneSelezionata !== regione){ _mappaRegioneSelezionata = regione; renderMappa(); }
-    } else {
-        if(_mappaRegioneSelezionata){ _mappaRegioneSelezionata = null; renderMappa(); }
+    // Filtro regione (solo super admin — l'admin regionale è già filtrato sopra)
+    if(adminState.role === 'admin'){
+        const regione = document.getElementById('filtroRegione')?.value||'';
+        if(regione){
+            biologi = biologi.filter(b=>b.regione===regione);
+            if(_mappaRegioneSelezionata !== regione){ _mappaRegioneSelezionata = regione; renderMappa(); }
+        } else {
+            if(_mappaRegioneSelezionata){ _mappaRegioneSelezionata = null; renderMappa(); }
+        }
     }
 
     // Contatore
@@ -996,6 +1062,7 @@ function aggiornaLicenze(){
                 <div style="display:flex;align-items:center;gap:7px;">
                     <span style="font-weight:700;font-size:14px;color:var(--dark);">${b.nome}</span>
                     ${b.isAdmin?'<span style="font-size:9px;font-weight:700;background:#0A2647;color:white;padding:2px 7px;border-radius:5px;letter-spacing:0.06em;">ADMIN</span>':''}
+                    ${b.ruolo==='regional_admin'?'<span style="font-size:9px;font-weight:700;background:#7c3aed;color:white;padding:2px 7px;border-radius:5px;letter-spacing:0.06em;"><i class="fas fa-star" style="font-size:8px;margin-right:3px;"></i>RESP. REG.</span>':''}
                 </div>
                 <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${b.email} · ${b.regione}</div>
                 <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
@@ -1015,11 +1082,13 @@ function aggiornaLicenze(){
                 <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;">
                     <button onclick="mostraDettaglioBiologo('${b.id}')" style="background:#f0fdf9;border:1.5px solid var(--teal);color:var(--teal);border-radius:8px;font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;"><i class="fas fa-eye"></i> Dettaglio</button>
                     ${b.stato==='pending' ? `<button class="btn-success" data-id="${b.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check" style="margin-right:4px;"></i>Approva</button>` : ''}
-                    ${b.stato==='active' ? `<button class="btn-warn" data-id="${b.id}" data-action="rinnova" onclick="handleStatoBtn(this)"><i class="fas fa-redo" style="margin-right:4px;"></i>Rinnova</button>` : ''}
+                    ${adminState.role!=='regional_admin' && b.stato==='active' ? `<button class="btn-warn" data-id="${b.id}" data-action="rinnova" onclick="handleStatoBtn(this)"><i class="fas fa-redo" style="margin-right:4px;"></i>Rinnova</button>` : ''}
                     ${(b.stato==='active'&&b.scadenza&&new Date(b.scadenza)<=new Date(Date.now()+30*864e5)&&new Date(b.scadenza)>=new Date()) ? '<a href="'+buildMailtoPromemoria(b.email,b.nome,b.scadenza)+'" class="btn-warn" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;"><i class="fas fa-envelope"></i> Promemoria</a>' : ''}
-                    ${b.stato==='active'||b.stato==='pending' ? `<button class="btn-danger" data-id="${b.id}" data-action="suspended" onclick="handleStatoBtn(this)"><i class="fas fa-ban" style="margin-right:4px;"></i>Sospendi</button>` : ''}
-                    ${b.stato==='suspended'||b.stato==='expired' ? `<button class="btn-success" data-id="${b.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check" style="margin-right:4px;"></i>Riattiva</button>` : ''}
-                    <button class="btn-ghost" data-id="${b.id}" data-action="elimina" onclick="handleStatoBtn(this)" style="font-size:10px;padding:7px 10px;" title="Elimina"><i class="fas fa-trash"></i></button>
+                    ${adminState.role!=='regional_admin' && (b.stato==='active'||b.stato==='pending') ? `<button class="btn-danger" data-id="${b.id}" data-action="suspended" onclick="handleStatoBtn(this)"><i class="fas fa-ban" style="margin-right:4px;"></i>Sospendi</button>` : ''}
+                    ${adminState.role!=='regional_admin' && (b.stato==='suspended'||b.stato==='expired') ? `<button class="btn-success" data-id="${b.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check" style="margin-right:4px;"></i>Riattiva</button>` : ''}
+                    ${adminState.role!=='regional_admin' ? `<button class="btn-ghost" data-id="${b.id}" data-action="elimina" onclick="handleStatoBtn(this)" style="font-size:10px;padding:7px 10px;" title="Elimina"><i class="fas fa-trash"></i></button>` : ''}
+                    ${adminState.role==='admin' && b.ruolo==='biologo' ? `<button onclick="nominaResponsabile('${b.id}')" style="background:#f5f3ff;border:none;border-radius:8px;font-size:11px;font-weight:700;color:#7c3aed;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:4px;" title="Nomina Responsabile Regionale"><i class="fas fa-star"></i> Nomina Resp.</button>` : ''}
+                    ${adminState.role==='admin' && b.ruolo==='regional_admin' ? `<button onclick="rimuoviResponsabile('${b.id}')" style="background:#fdf4ff;border:1.5px solid #d8b4fe;border-radius:8px;font-size:11px;font-weight:700;color:#7c3aed;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:4px;" title="Rimuovi ruolo Responsabile Regionale"><i class="fas fa-star-half-alt"></i> Rimuovi Ruolo</button>` : ''}
                 </div>
             </div>
         </div>`;
@@ -1172,7 +1241,7 @@ async function mostraDettaglioBiologo(id){
                         <span style="background:${statoCol};color:white;border-radius:7px;padding:2px 10px;font-size:11px;font-weight:700;">${statoLabel}</span>
                         <span style="font-size:11px;color:#64748b;">Regione: <b>${b.regione}</b></span>
                         <span style="font-size:11px;color:#64748b;">Ordine: <b>${b.ordine}</b></span>
-                        <button onclick="modificaProfiloBiologo('${b.id}')" style="display:inline-flex;align-items:center;gap:4px;background:#f1f5f9;border:none;border-radius:7px;padding:3px 9px;font-size:10px;font-weight:700;color:#475569;cursor:pointer;" title="Modifica regione/ordine"><i class="fas fa-pen" style="font-size:9px;"></i> Modifica</button>
+                        ${adminState.role!=='regional_admin' ? `<button onclick="modificaProfiloBiologo('${b.id}')" style="display:inline-flex;align-items:center;gap:4px;background:#f1f5f9;border:none;border-radius:7px;padding:3px 9px;font-size:10px;font-weight:700;color:#475569;cursor:pointer;" title="Modifica regione/ordine"><i class="fas fa-pen" style="font-size:9px;"></i> Modifica</button>` : ''}
                     </div>
                 </div>
             </div>
@@ -1457,6 +1526,28 @@ async function salvaProfiloBiologo(id){
     showToast('Profilo aggiornato ✓');
     aggiornaLicenze();
     mostraDettaglioBiologo(id);
+}
+
+async function nominaResponsabile(id){
+    const b = adminState.biologi.find(x=>x.id===id);
+    if(!b) return;
+    if(!confirm(`Nominare "${b.nome}" come Responsabile Regionale per ${b.regione==='—'?'la sua regione':b.regione}?\n\nPotrà accedere al pannello admin e gestire i biologi della sua regione.`)) return;
+    const { error } = await db.from('profiles').update({ role: 'regional_admin' }).eq('id', id);
+    if(error){ showToast('Errore: '+error.message,'error'); return; }
+    b.ruolo = 'regional_admin';
+    showToast(`${b.nome} nominato/a Responsabile Regionale ✓`);
+    aggiornaLicenze();
+}
+
+async function rimuoviResponsabile(id){
+    const b = adminState.biologi.find(x=>x.id===id);
+    if(!b) return;
+    if(!confirm(`Rimuovere il ruolo di Responsabile Regionale a "${b.nome}"?\n\nTornerà ad essere un biologo normale.`)) return;
+    const { error } = await db.from('profiles').update({ role: 'biologo' }).eq('id', id);
+    if(error){ showToast('Errore: '+error.message,'error'); return; }
+    b.ruolo = 'biologo';
+    showToast(`Ruolo rimosso — ${b.nome} è ora un biologo normale ✓`);
+    aggiornaLicenze();
 }
 
 function badgeHtml(stato){
@@ -2022,14 +2113,17 @@ function showLoginScreen(){
 
 async function avviaAdmin(user){
     adminState.currentUserId = user.id;
-    const { data: profilo } = await db.from('profiles').select('role,stato').eq('id', user.id).single();
-    if(!profilo || profilo.role !== 'admin'){
+    const { data: profilo } = await db.from('profiles').select('role,stato,nome,regione').eq('id', user.id).single();
+    if(!profilo || (profilo.role !== 'admin' && profilo.role !== 'regional_admin')){
         document.getElementById('loginMsg').textContent = 'Accesso non autorizzato.';
         await db.auth.signOut();
         hideInitLoader();
         document.getElementById('loginScreen').classList.remove('hidden');
         return;
     }
+    adminState.role = profilo.role || 'admin';
+    adminState.regioneAdmin = profilo.regione || null;
+    adminState.nomeAdmin = profilo.nome || user.email;
     hideInitLoader();
     document.getElementById('loginScreen').classList.add('hidden');
     setTimeout(async ()=>{
