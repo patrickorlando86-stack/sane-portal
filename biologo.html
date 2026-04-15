@@ -2447,11 +2447,56 @@ function aggiornaReport(){
             <!-- PACCHETTI ESPANDIBILI -->
             <div style="margin-bottom:14px;">${pacchettiHtml}</div>
             <!-- REPORT SCUOLA COMPLETO -->
-            <button class="btn-dark no-print" style="width:100%;font-size:11px;justify-content:center;" onclick="generaReport('${s.id}')">
-                <i class="fas fa-file-pdf"></i>Report Completo Scuola
-            </button>
+            <div style="display:flex;gap:8px;">
+                <button class="btn-dark no-print" style="flex:1;font-size:11px;justify-content:center;" onclick="generaReport('${s.id}')">
+                    <i class="fas fa-file-pdf"></i>Report Completo Scuola
+                </button>
+                <button class="no-print" onclick="generaPTOFBiologo('${s.id}')" style="display:inline-flex;align-items:center;gap:6px;background:#f8fafc;border:1.5px solid #e2e8f0;color:#475569;border-radius:10px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">
+                    <i class="fas fa-file-word"></i> Testo PTOF
+                </button>
+            </div>
         </div>`;
     }).join('');
+}
+
+function generaPTOFBiologo(scuolaId){
+    const s = appState.scuole.find(x=>x.id===scuolaId);
+    if(!s) return;
+    const cl = appState.classi.filter(c=>c.scuola_id===scuolaId);
+    const pk = appState.pacchetti.filter(p=>p.scuola_id===scuolaId);
+    const biologo = appState.utente;
+
+    const totStudenti = cl.reduce((a,c)=>a+(c.num_studenti||0),0);
+    const totOre = cl.reduce((a,c)=>a+(
+        (c.m1_ore||0)+(c.m2_ore||0)+(c.m3_ore||0)+
+        (c.m4_ore||0)+(c.m5_ore||0)+(c.m6_ore||0)
+    ),0);
+    const anno = s.anno_scolastico || pk[0]?.anno_scolastico || '—';
+    const classiConMig = cl.filter(c=>c.score_pre!=null&&c.score_post!=null);
+    const mig = classiConMig.length>0
+        ? (classiConMig.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/classiConMig.length).toFixed(1)
+        : null;
+
+    const testo = `Nell'anno scolastico ${anno}, l'Istituto "${s.nome}" di ${s.comune||'—'} ha aderito al progetto "Mangiare bene, crescere meglio" — Progetto di Educazione Alimentare promosso da S.A.N.E. Italia (Sicurezza · Alimentazione · Nutrizione · Educazione).
+
+Il progetto, condotto dal Biologo Nutrizionista ${biologo.nome}, ha coinvolto ${cl.length} class${cl.length===1?'e':'i'} per un totale di ${totStudenti} student${totStudenti===1?'e':'i'}${totOre>0?', con '+totOre+' ore di attività educativa strutturata':''}.
+
+Le attività hanno previsto interventi di educazione alimentare volti a promuovere corrette abitudini nutrizionali e uno stile di vita sano, in coerenza con le finalità del Piano Triennale dell'Offerta Formativa.${mig?' La valutazione delle conoscenze alimentari degli studenti attraverso questionari pre e post intervento ha registrato un miglioramento medio di +'+mig+' punti.':''}
+
+Il progetto si inserisce nel quadro delle iniziative di educazione alla salute e al benessere promosse dall'istituzione scolastica, in collaborazione con professionisti certificati iscritti alla Federazione Nazionale degli Ordini dei Biologi (FNOB).`;
+
+    document.getElementById('reportContent').innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h3 style="font-size:16px;font-weight:800;color:var(--dark);display:flex;align-items:center;gap:8px;"><i class="fas fa-file-word" style="color:var(--teal);"></i> Testo per il PTOF</h3>
+            <button class="btn-ghost" onclick="closeModal('reportModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <p style="font-size:11px;color:#94a3b8;margin-bottom:12px;">Copia il testo e incollalo nella sezione dedicata del PTOF scolastico.</p>
+        <textarea id="ptofTestoBio" readonly style="width:100%;height:220px;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;font-size:12px;line-height:1.7;color:#334155;resize:vertical;font-family:'Inter',sans-serif;">${testo}</textarea>
+        <div style="display:flex;gap:10px;margin-top:14px;">
+            <button onclick="navigator.clipboard.writeText(document.getElementById('ptofTestoBio').value).then(()=>{this.innerHTML='<i class=\\'fas fa-check\\'></i> Copiato!';this.style.background='#16a34a';setTimeout(()=>{this.innerHTML='<i class=\\'fas fa-copy\\'></i> Copia testo';this.style.background='var(--teal)';},2000)})" style="flex:1;background:var(--teal);color:white;border:none;border-radius:10px;padding:11px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"><i class="fas fa-copy"></i> Copia testo</button>
+            <button class="btn-ghost" onclick="closeModal('reportModal')">Chiudi</button>
+        </div>`;
+    openModal('reportModal');
 }
 
 async function generaReport(scuolaId, pacchettoId, classeId) {
