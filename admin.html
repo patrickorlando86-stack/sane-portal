@@ -899,6 +899,9 @@ async function mostraDettaglioBiologo(id){
     const classi = classiRes.data || [];
     const pacchetti = pacchettiRes.data || [];
 
+    // Cache per generaAttestato
+    adminState._dettaglioCache = { biologo: b, scuole, classi, pacchetti };
+
     // Log accesso admin
     if(adminState.currentUserId){
         db.from('admin_access_log').insert({
@@ -997,6 +1000,12 @@ async function mostraDettaglioBiologo(id){
                         <i class="fas fa-${c.post_data?'check-circle':'circle'}" style="font-size:9px;color:${c.post_data?'#16a34a':'#cbd5e1'};"></i>
                         ${c.nome_classe||'—'} <span style="color:#94a3b8;margin-left:2px;">${c.num_studenti||0} stud.</span>
                     </span>`).join('')}</div>`:''}
+                <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;">
+                    ${cl.length>=0
+                        ? `<button onclick="generaAttestato('${s.id}')" style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf9;border:1.5px solid var(--teal);color:var(--teal);border-radius:8px;padding:6px 13px;font-size:11px;font-weight:700;cursor:pointer;"><i class="fas fa-file-alt"></i> Genera Attestato</button>`
+                        : `<span style="font-size:11px;color:#94a3b8;display:inline-flex;align-items:center;gap:5px;"><i class="fas fa-lock"></i> Attestato disponibile al completamento</span>`
+                    }
+                </div>
             </div>`;
         }).join('');
 
@@ -1063,6 +1072,137 @@ async function mostraDettaglioBiologo(id){
             ${pacchettiHtml}
         </div>
     `;
+}
+
+function generaAttestato(scuolaId){
+    const cache = adminState._dettaglioCache;
+    if(!cache) return;
+    const s = cache.scuole.find(x=>x.id===scuolaId);
+    if(!s) return;
+    const cl = cache.classi.filter(c=>c.scuola_id===scuolaId);
+    const pk = cache.pacchetti.filter(p=>p.scuola_id===scuolaId);
+    const b = cache.biologo;
+
+    const oggi = new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+    const totStudenti = cl.reduce((a,c)=>a+(c.num_studenti||0),0);
+    const totOre = cl.reduce((a,c)=>a+(
+        (c.m1_ore||0)+(c.m2_ore||0)+(c.m3_ore||0)+
+        (c.m4_ore||0)+(c.m5_ore||0)+(c.m6_ore||0)
+    ),0);
+    const pkHtml = pk.length>0 ? pk.map(p=>{
+        const tipo = p.prezzo===0||p.prezzo==null ? 'Gratuito' : 'A Pagamento';
+        return `${tipo}${p.ore_totali?' · '+p.ore_totali+'h contrattate':''}${p.anno_scolastico?' · A.S. '+p.anno_scolastico:''}`;
+    }).map(t=>`<li>${t}</li>`).join('') : '';
+
+    const righe = cl.map(c=>{
+        const ore=(c.m1_ore||0)+(c.m2_ore||0)+(c.m3_ore||0)+(c.m4_ore||0)+(c.m5_ore||0)+(c.m6_ore||0);
+        return `<tr>
+            <td>${c.nome_classe||'—'}</td>
+            <td style="text-align:center;">${c.num_studenti||0}</td>
+            <td style="text-align:center;">${ore>0?ore+'h':'—'}</td>
+        </tr>`;
+    }).join('');
+
+    const html=`<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Attestato — ${s.nome||'Scuola'}</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+@page{size:A4 portrait;margin:0;}
+body{font-family:'Inter',sans-serif;background:white;width:210mm;min-height:297mm;padding:14mm;display:flex;flex-direction:column;}
+.border-outer{border:3px solid #0A2647;border-radius:4px;padding:2px;flex:1;display:flex;flex-direction:column;}
+.border-inner{border:1px solid #00A896;border-radius:2px;padding:14mm 14mm 10mm;flex:1;display:flex;flex-direction:column;}
+.logo-wrap{display:flex;justify-content:center;margin-bottom:8mm;}
+.logo-wrap img{height:56px;}
+.divider-top{border:none;border-top:2.5px solid #0A2647;margin-bottom:2mm;}
+.divider-teal{border:none;border-top:1.5px solid #00A896;margin-bottom:7mm;}
+.title-section{text-align:center;margin-bottom:7mm;}
+.title-section h1{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#0A2647;letter-spacing:0.15em;text-transform:uppercase;}
+.title-section p{font-size:10px;color:#64748b;letter-spacing:0.25em;text-transform:uppercase;margin-top:5px;}
+.body-text{font-size:13px;color:#334155;line-height:1.9;margin-bottom:6mm;text-align:center;}
+.school-name{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#0A2647;display:block;margin:3px 0;}
+.program-name{font-weight:700;color:#00A896;}
+table{width:100%;border-collapse:collapse;margin:4mm 0 6mm;font-size:12px;}
+thead tr{background:#0A2647;color:white;}
+thead th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;}
+thead th:not(:first-child){text-align:center;}
+tbody tr:nth-child(even){background:#f8fafc;}
+tbody td{padding:9px 14px;color:#334155;border-bottom:1px solid #e2e8f0;}
+.totals{background:#f0fdf9;border:1.5px solid #bbf7d0;border-radius:8px;padding:10px 16px;margin-bottom:8mm;display:flex;gap:28px;justify-content:center;flex-wrap:wrap;font-size:12px;color:#475569;}
+.totals strong{color:#0A2647;font-family:'Syne',sans-serif;font-size:13px;}
+.sig-section{margin-top:auto;padding-top:8mm;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;}
+.sig-block{text-align:center;flex:1;}
+.sig-line{border-bottom:1.5px dashed #0A2647;width:140px;margin:0 auto 5px;}
+.sig-label{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;}
+.sig-name{font-size:11px;font-weight:700;color:#0A2647;margin-top:3px;}
+.footer-cert{text-align:center;font-size:9px;color:#94a3b8;letter-spacing:0.12em;margin-top:6mm;text-transform:uppercase;}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+</style>
+</head>
+<body>
+<div class="border-outer"><div class="border-inner">
+
+    <div class="logo-wrap">
+        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
+    </div>
+    <hr class="divider-top"><hr class="divider-teal">
+
+    <div class="title-section">
+        <h1>Attestato di Partecipazione</h1>
+        <p>Programma S.A.N.E. Italia &nbsp;·&nbsp; Anno Scolastico ${s.anno_scolastico||'—'}</p>
+    </div>
+
+    <div class="body-text">
+        Si attesta che l'Istituto<br>
+        <span class="school-name">${s.nome||'—'}</span>
+        <span style="font-size:12px;color:#64748b;">${s.comune||''}</span><br><br>
+        ha partecipato al programma <span class="program-name">S.A.N.E. Italia</span><br>
+        <em style="color:#64748b;font-size:12px;">Sicurezza · Alimentazione · Nutrizione · Educazione</em><br>
+        con le seguenti classi:
+    </div>
+
+    ${pkHtml?`<div style="margin-bottom:5mm;font-size:11px;color:#475569;text-align:center;">
+        <span style="font-weight:700;color:#0A2647;text-transform:uppercase;letter-spacing:0.08em;font-size:10px;">Pacchetti erogati</span>
+        <ul style="list-style:none;margin-top:4px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">${pkHtml}</ul>
+    </div>`:''}
+    <table>
+        <thead><tr><th>Classe</th><th>N° Studenti</th><th>Ore Erogate</th></tr></thead>
+        <tbody>${righe}</tbody>
+    </table>
+
+    <div class="totals">
+        <span>Totale studenti coinvolti: <strong>${totStudenti}</strong></span>
+        ${totOre>0?`<span>Ore totali erogate: <strong>${totOre}h</strong></span>`:''}
+        <span>Biologo responsabile: <strong>${b.nome}</strong></span>
+    </div>
+
+    <div class="sig-section">
+        <div class="sig-block">
+            <div class="sig-label">Luogo e Data</div>
+            <div class="sig-name">${s.comune||'—'}, ${oggi}</div>
+        </div>
+        <div class="sig-block">
+            <div class="sig-line"></div>
+            <div class="sig-label">Firma e Timbro dell'Istituto</div>
+        </div>
+        <div class="sig-block">
+            <div class="sig-line"></div>
+            <div class="sig-label">Responsabile S.A.N.E. Italia</div>
+            <div class="sig-name">Serafina Cardaci</div>
+        </div>
+    </div>
+
+    <div class="footer-cert">S.A.N.E. Italia &nbsp;·&nbsp; Sicurezza Alimentare Nelle Scuole &nbsp;·&nbsp; saneitalia.it</div>
+
+</div></div>
+<script>window.onload=function(){ setTimeout(function(){ window.print(); },700); }</script>
+</body></html>`;
+
+    const win = window.open('','_blank','width=900,height=1150');
+    if(win){ win.document.write(html); win.document.close(); }
 }
 
 function modificaProfiloBiologo(id){
