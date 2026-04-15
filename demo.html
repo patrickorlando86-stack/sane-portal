@@ -318,7 +318,7 @@ function renderRegioni(){
 
 async function renderMappa(){
     try {
-        const res = await fetch('https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/italy-min.svg');
+        const res = await fetch('immagini/logo/italy-min.svg');
         const svg = await res.text();
         document.getElementById('mappaContainer').innerHTML = svg;
 
