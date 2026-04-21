@@ -1517,11 +1517,14 @@ function mostraRisposteInline(tipo){
     if(c.num_studenti) document.getElementById('risposteNumStudenti').value=c.num_studenti;
     const selV=document.getElementById('risposteVersione');
     if(selV&&c.tipo_scuola) selV.value=c.tipo_scuola;
-    document.getElementById('inlineRisposteTitolo').textContent='Inserisci Risposte '+tipo;
+    document.getElementById('inlineRisposteTitolo').textContent=(tipo==='PRE'?'✏️ Risposte PRE':'✏️ Risposte POST');
     document.getElementById('inlineRisposteWrapper').style.display='block';
     document.getElementById('risposteStudentiContainer').innerHTML='';
     document.getElementById('risposteSalvaContainer').style.display='none';
     setTimeout(()=>document.getElementById('inlineRisposteWrapper').scrollIntoView({behavior:'smooth',block:'start'}),50);
+    // Se esistono già risposte (pre_data/post_data impostati) → carica subito senza cliccare GENERA
+    const hasData = tipo==='PRE' ? !!c.pre_data : !!c.post_data;
+    if(hasData) setTimeout(()=>generaFormStudenti(), 150);
 }
 
 function chiudiRisposteInline(){
@@ -3307,7 +3310,24 @@ async function salvaRisposte() {
     // Pulizia localStorage dopo invio riuscito
     localStorage.removeItem(bozzaKey);
     localStorage.removeItem(bozzaKey+'_pending');
-    showToast('Risposte salvate con successo!');
+
+    // ── Auto-calcolo score medio (scala 0-10) e aggiornamento classi ──
+    const totalPunti = righe.reduce((a,r)=>a+(r.punteggio||0),0);
+    const mediaScore = righe.length>0 ? parseFloat(((totalPunti/righe.length/9)*10).toFixed(1)) : null;
+    const scoreField = tipo==='PRE' ? 'score_pre' : 'score_post';
+    const dataField  = tipo==='PRE' ? 'pre_data'  : 'post_data';
+    const oggi = new Date().toISOString().split('T')[0];
+    const classeAttuale = appState.classi.find(c=>c.id===sessId);
+    const updatePayload = { [scoreField]: mediaScore };
+    if(classeAttuale && !classeAttuale[dataField]) updatePayload[dataField] = oggi;
+    const {error:errScore} = await db.from('classi').update(updatePayload).eq('id',sessId);
+    if(!errScore){
+        const ci=appState.classi.findIndex(c=>c.id===sessId);
+        if(ci!==-1) Object.assign(appState.classi[ci], updatePayload);
+    }
+    // ─────────────────────────────────────────────────────────────────
+
+    showToast(`Risposte salvate ✓  Score ${tipo}: ${mediaScore!=null?mediaScore+'/10':'—'}`);
     document.getElementById('risposteStudentiContainer').innerHTML = '';
     document.getElementById('risposteSalvaContainer').style.display = 'none';
     document.getElementById('risposteNumStudenti').value = '';
