@@ -742,8 +742,8 @@
                 <div id="risposteStudentiContainer"></div>
                 <!-- Salva tutte -->
                 <div id="risposteSalvaContainer" style="display:none;margin-top:8px;">
-                    <div style="background:#fef3c7;border-radius:12px;padding:10px 16px;margin-bottom:10px;font-size:12px;color:#92400e;display:flex;align-items:center;gap:8px;">
-                        <i class="fas fa-info-circle"></i>Le risposte vengono salvate temporaneamente in memoria locale prima di essere inviate.
+                    <div id="autoSaveStatus" style="background:#f0fdf9;border-radius:12px;padding:10px 16px;margin-bottom:10px;font-size:12px;color:#065f46;display:flex;align-items:center;gap:8px;transition:opacity 0.3s;">
+                        <i class="fas fa-cloud-upload-alt"></i><span id="autoSaveText">Salvataggio automatico attivo — le risposte vengono salvate dopo ogni selezione.</span>
                     </div>
                     <button class="btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:16px;" onclick="salvaRisposte()">
                         <i class="fas fa-save"></i>Salva Tutte le Risposte
@@ -3187,6 +3187,8 @@ function renderFormStudente(num, tipo, classeDefault, giaEsistente = false) {
     </div>`;
 }
 
+let _autoSaveTimer = null;
+
 function selectAnswer(btn, group, val, studenteNum) {
     document.querySelectorAll(`[data-group="${group}"]`).forEach(b => {
         b.style.background = 'white';
@@ -3202,6 +3204,49 @@ function selectAnswer(btn, group, val, studenteNum) {
     btn.setAttribute('data-selected', 'true');
     aggiornaScoreStudente(studenteNum);
     salvaBozzaLocalStorage();
+    // Auto-save: parte 1.5s dopo l'ultima risposta cliccata
+    const txt = document.getElementById('autoSaveText');
+    if(txt) txt.textContent = '⏳ Salvataggio tra poco...';
+    clearTimeout(_autoSaveTimer);
+    _autoSaveTimer = setTimeout(()=>autoSalvaRisposte(), 1500);
+}
+
+async function autoSalvaRisposte(){
+    const sessId = document.getElementById('risposteSessione')?.value;
+    const tipo   = document.getElementById('risposteTipo')?.value;
+    if(!sessId||!tipo) return;
+    const numStudenti = parseInt(document.getElementById('risposteNumStudenti')?.value)||0;
+    if(!numStudenti) return;
+    const versioneGlobale = document.getElementById('risposteVersione')?.value||'A';
+    const righe=[];
+    for(let i=1;i<=numStudenti;i++){
+        const versione=versioneGlobale;
+        const classe_studente=document.getElementById('classe_'+i)?.value.trim()||'';
+        const sesso=document.getElementById('sesso_'+i)?.value||'NI';
+        const riga={classe_id:sessId,studente_num:i,tipo,versione,classe_studente,sesso};
+        let punti=0;
+        for(let d=1;d<=9;d++){
+            const campo='d'+d; const v=getSelectedAnswer('s'+i+'_'+campo);
+            riga[campo]=v;
+            if(v&&v===RISPOSTE_CORRETTE[campo]) punti++;
+        }
+        if(versione==='B'||versione==='C'){ riga.d10=getSelectedAnswer('s'+i+'_d10'); riga.d11=getSelectedAnswer('s'+i+'_d11'); }
+        if(versione==='C'){ riga.d12=getSelectedAnswer('s'+i+'_d12'); riga.d13=getSelectedAnswer('s'+i+'_d13'); }
+        if(tipo==='POST') riga.d_post=getSelectedAnswer('s'+i+'_d_post');
+        riga.punteggio=punti; riga.punteggio_max=9;
+        righe.push(riga);
+    }
+    const {error}=await db.from('risposte').upsert(righe,{onConflict:'classe_id,studente_num,tipo',ignoreDuplicates:false});
+    const txt=document.getElementById('autoSaveText');
+    if(error){ if(txt) txt.textContent='⚠️ Errore salvataggio — riprova o usa il tasto Salva.'; return; }
+    // Aggiorna score medio
+    const totalPunti=righe.reduce((a,r)=>a+(r.punteggio||0),0);
+    const mediaScore=righe.length>0?parseFloat(((totalPunti/righe.length/9)*10).toFixed(1)):null;
+    const scoreField=tipo==='PRE'?'score_pre':'score_post';
+    await db.from('classi').update({[scoreField]:mediaScore}).eq('id',sessId);
+    const ci=appState.classi.findIndex(c=>c.id===sessId);
+    if(ci!==-1) appState.classi[ci][scoreField]=mediaScore;
+    if(txt) txt.textContent=`✓ Salvato automaticamente — Score ${tipo}: ${mediaScore!=null?mediaScore+'/10':'—'}`;
 }
 
 function salvaBozzaLocalStorage(){
