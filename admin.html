@@ -1416,6 +1416,25 @@ function generaAttestato(scuolaId){
         return `${p.ore_totali?p.ore_totali+'h contrattate':''}${p.anno_scolastico?' · A.S. '+p.anno_scolastico:''}`.replace(/^· /,'');
     }).filter(t=>t).map(t=>`<li>${t}</li>`).join('') : '';
 
+    // Modalità compatta se ci sono tante classi (≥5)
+    const isCompact = cl.length >= 5;
+    const padBody   = isCompact ? '8mm'  : '14mm';
+    const padInner  = isCompact ? '8mm 10mm 8mm' : '14mm 14mm 10mm';
+    const logoH     = isCompact ? '72px' : '100px';
+    const dividerMb = isCompact ? '4mm'  : '7mm';
+    const titleFs   = isCompact ? '22px' : '28px';
+    const bodyFs    = isCompact ? '11px' : '13px';
+    const bodyLh    = isCompact ? '1.6'  : '1.9';
+    const bodyMb    = isCompact ? '3mm'  : '6mm';
+    const schoolFs  = isCompact ? '17px' : '20px';
+    const tdPad     = isCompact ? '5px 10px' : '9px 14px';
+    const thPad     = isCompact ? '6px 10px' : '9px 14px';
+    const tableMb   = isCompact ? '3mm 0 4mm' : '4mm 0 6mm';
+    const totalsMb  = isCompact ? '4mm'  : '8mm';
+    const sigPt     = isCompact ? '5mm'  : '8mm';
+    const headerGap = isCompact ? '20px' : '32px';
+    const headerMb  = isCompact ? '4mm'  : '7mm';
+
     const righe = cl.map(c=>{
         const ore=(c.m1_ore||0)+(c.m2_ore||0)+(c.m3_ore||0)+(c.m4_ore||0)+(c.m5_ore||0)+(c.m6_ore||0);
         return `<tr>
@@ -1434,33 +1453,29 @@ function generaAttestato(scuolaId){
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 @page{size:A4 portrait;margin:0;}
-body{font-family:'Inter',sans-serif;background:white;width:210mm;min-height:297mm;padding:14mm;display:flex;flex-direction:column;}
+body{font-family:'Inter',sans-serif;background:white;width:210mm;min-height:297mm;padding:${padBody};display:flex;flex-direction:column;}
 .border-outer{border:3px solid #0A2647;border-radius:4px;padding:2px;flex:1;display:flex;flex-direction:column;}
-.border-inner{border:1px solid #00A896;border-radius:2px;padding:14mm 14mm 10mm;flex:1;display:flex;flex-direction:column;}
-.logo-wrap{display:flex;justify-content:center;margin-bottom:8mm;}
-.logo-wrap img{height:56px;}
+.border-inner{border:1px solid #00A896;border-radius:2px;padding:${padInner};flex:1;display:flex;flex-direction:column;}
 .divider-top{border:none;border-top:2.5px solid #0A2647;margin-bottom:2mm;}
-.divider-teal{border:none;border-top:1.5px solid #00A896;margin-bottom:7mm;}
-.title-section{text-align:center;margin-bottom:7mm;}
-.title-section h1{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#0A2647;letter-spacing:0.15em;text-transform:uppercase;}
-.title-section p{font-size:10px;color:#64748b;letter-spacing:0.25em;text-transform:uppercase;margin-top:5px;}
-.body-text{font-size:13px;color:#334155;line-height:1.9;margin-bottom:6mm;text-align:center;}
-.school-name{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#0A2647;display:block;margin:3px 0;}
+.divider-teal{border:none;border-top:1.5px solid #00A896;margin-bottom:${dividerMb};}
+.title-section{text-align:center;margin-bottom:${dividerMb};}
+.title-section h1{font-family:'Syne',sans-serif;font-size:${titleFs};font-weight:800;color:#0A2647;letter-spacing:0.15em;text-transform:uppercase;}
+.body-text{font-size:${bodyFs};color:#334155;line-height:${bodyLh};margin-bottom:${bodyMb};text-align:center;}
+.school-name{font-family:'Syne',sans-serif;font-weight:800;font-size:${schoolFs};color:#0A2647;display:block;margin:2px 0;}
 .program-name{font-weight:700;color:#00A896;}
-table{width:100%;border-collapse:collapse;margin:4mm 0 6mm;font-size:12px;}
+table{width:100%;border-collapse:collapse;margin:${tableMb};font-size:${isCompact?'11px':'12px'};}
 thead tr{background:#0A2647;color:white;}
-thead th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;}
+thead th{padding:${thPad};text-align:left;font-size:${isCompact?'9px':'10px'};font-weight:700;letter-spacing:0.1em;text-transform:uppercase;}
 thead th:not(:first-child){text-align:center;}
 tbody tr:nth-child(even){background:#f8fafc;}
-tbody td{padding:9px 14px;color:#334155;border-bottom:1px solid #e2e8f0;}
-.totals{background:#f0fdf9;border:1.5px solid #bbf7d0;border-radius:8px;padding:10px 16px;margin-bottom:8mm;display:flex;gap:28px;justify-content:center;flex-wrap:wrap;font-size:12px;color:#475569;}
-.totals strong{color:#0A2647;font-family:'Syne',sans-serif;font-size:13px;}
-.sig-section{margin-top:auto;padding-top:8mm;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;}
+tbody td{padding:${tdPad};color:#334155;border-bottom:1px solid #e2e8f0;}
+.totals{background:#f0fdf9;border:1.5px solid #bbf7d0;border-radius:8px;padding:${isCompact?'7px 14px':'10px 16px'};margin-bottom:${totalsMb};display:flex;gap:${isCompact?'16px':'28px'};justify-content:center;flex-wrap:wrap;font-size:${isCompact?'11px':'12px'};color:#475569;}
+.totals strong{color:#0A2647;font-family:'Syne',sans-serif;font-size:${isCompact?'12px':'13px'};}
+.sig-section{page-break-inside:avoid;margin-top:auto;padding-top:${sigPt};border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;}
 .sig-block{text-align:center;flex:1;}
-.sig-line{border-bottom:1.5px dashed #0A2647;width:140px;margin:0 auto 5px;}
+.sig-line{border-bottom:1.5px dashed #0A2647;width:130px;margin:0 auto 5px;}
 .sig-label{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;}
 .sig-name{font-size:11px;font-weight:700;color:#0A2647;margin-top:3px;}
-.footer-cert{text-align:center;font-size:8.5px;color:#94a3b8;letter-spacing:0.1em;margin-top:6mm;text-transform:uppercase;white-space:nowrap;overflow:hidden;}
 @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}.toolbar{display:none !important;}}
 </style>
 </head>
@@ -1475,12 +1490,12 @@ tbody td{padding:9px 14px;color:#334155;border-bottom:1px solid #e2e8f0;}
 <div style="height:52px;"></div>
 <div class="border-outer"><div class="border-inner">
 
-    <div style="display:flex;justify-content:center;align-items:center;gap:32px;margin-bottom:7mm;">
-        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo3.webp" alt="Mangiare bene, crescere meglio" style="height:100px;">
-        <div style="width:1px;height:70px;background:#e2e8f0;"></div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:${headerGap};margin-bottom:${headerMb};">
+        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo3.webp" alt="Mangiare bene, crescere meglio" style="height:${logoH};">
+        <div style="width:1px;height:${isCompact?'52px':'70px'};background:#e2e8f0;"></div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-            <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" style="height:52px;">
-            <span style="font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:#0A2647;letter-spacing:0.05em;">S.A.N.E. Italia</span>
+            <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" style="height:${isCompact?'38px':'52px'};">
+            <span style="font-family:'Syne',sans-serif;font-size:${isCompact?'11px':'12px'};font-weight:800;color:#0A2647;letter-spacing:0.05em;">S.A.N.E. Italia</span>
         </div>
     </div>
     <hr class="divider-top"><hr class="divider-teal">
@@ -1492,13 +1507,13 @@ tbody td{padding:9px 14px;color:#334155;border-bottom:1px solid #e2e8f0;}
     <div class="body-text">
         Si attesta che l'Istituto<br>
         <span class="school-name">${s.nome||'—'}</span>
-        <span style="font-size:12px;color:#64748b;">${s.comune||''}</span><br><br>
+        <span style="font-size:${isCompact?'10px':'12px'};color:#64748b;">${s.comune||''}</span><br><br>
         ha partecipato al progetto <span class="program-name">Mangiare bene, crescere meglio</span><br>
-        <em style="color:#64748b;font-size:12px;">Progetto di Educazione Alimentare — un'iniziativa S.A.N.E. Italia</em><br>
+        <em style="color:#64748b;font-size:${isCompact?'10px':'12px'};">Progetto di Educazione Alimentare — un'iniziativa S.A.N.E. Italia</em><br>
         con le seguenti classi:
     </div>
 
-    ${pkHtml?`<div style="margin-bottom:5mm;font-size:11px;color:#475569;text-align:center;">
+    ${pkHtml?`<div style="margin-bottom:${isCompact?'3mm':'5mm'};font-size:11px;color:#475569;text-align:center;">
         <span style="font-weight:700;color:#0A2647;text-transform:uppercase;letter-spacing:0.08em;font-size:10px;">Pacchetti erogati</span>
         <ul style="list-style:none;margin-top:4px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">${pkHtml}</ul>
     </div>`:''}
@@ -1516,13 +1531,16 @@ tbody td{padding:9px 14px;color:#334155;border-bottom:1px solid #e2e8f0;}
     <div class="sig-section">
         <div class="sig-block">
             <div class="sig-label">Luogo e Data</div>
-            <div class="sig-name">${s.comune||'—'}, ${oggi}</div>
+            <div class="sig-name" style="margin-top:6px;">${s.comune||'—'}, ${oggi}</div>
         </div>
         <div class="sig-block">
+            <div style="height:32px;"></div>
             <div class="sig-line"></div>
-            <div class="sig-label">Firma e Timbro dell'Istituto</div>
+            <div class="sig-label">Biologo S.A.N.E. Italia</div>
+            <div class="sig-name">${b.nome}</div>
         </div>
         <div class="sig-block">
+            <div style="height:32px;"></div>
             <div class="sig-line"></div>
             <div class="sig-label">Responsabile S.A.N.E. Italia</div>
             <div class="sig-name">Serafina Cardaci</div>
