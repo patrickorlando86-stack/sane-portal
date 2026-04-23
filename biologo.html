@@ -1335,6 +1335,10 @@ function renderClasseDetail(c,scuola){
     const oreT=oreClasse(c).toFixed(1);
     const preOk=!!c.pre_data;
     const postOk=!!c.post_data;
+    const pacchetto=appState.pacchetti.find(p=>p.id===c.pacchetto_id);
+    const orePacchetto=pacchetto?(pacchetto.ore_totali||0):0;
+    const modFatti=moduliCompletati(c);
+    const oreInferiori=modFatti===6&&orePacchetto>0&&parseFloat(oreT)<orePacchetto;
     const haScore=c.score_pre!=null&&c.score_post!=null;
     const migVal=haScore?(parseFloat(c.score_post)-parseFloat(c.score_pre)).toFixed(1):null;
     const moduli=[1,2,3,4,5,6].map(i=>{
@@ -1375,6 +1379,13 @@ function renderClasseDetail(c,scuola){
                 <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--dark);">${c.score_pre!=null?c.score_pre:'—'} → ${c.score_post!=null?c.score_post:'—'}</div>
             </div>
         </div>
+        ${oreInferiori?`<div style="margin-top:12px;padding:10px 14px;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;display:flex;align-items:flex-start;gap:8px;">
+            <span style="font-size:14px;flex-shrink:0;">⚠️</span>
+            <div>
+                <div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:2px;">Ore inferiori al pacchetto</div>
+                <div style="font-size:11px;color:#78350f;line-height:1.4;">Ore registrate <strong>${oreT}h</strong> su <strong>${orePacchetto}h</strong> previste. Verifica se le ore mancanti vanno aggiunte ai moduli o aggiungi una nota esplicativa.</div>
+            </div>
+        </div>`:''}
         ${c.note?`<div style="font-size:12px;color:#64748b;padding:10px 14px;background:#fafafa;border-left:3px solid var(--teal);border-radius:0 9px 9px 0;font-style:italic;">${c.note}</div>`:''}
         ${(c.referente||c.materia)?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;${c.note?'padding-top:10px;border-top:1px solid #f1f5f9;':''}">
             ${c.referente?`<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-user-tie" style="font-size:9px;color:var(--teal);"></i>${c.referente}</span>`:''}
@@ -1706,6 +1717,7 @@ function aggiornaDashboard(){
                     </div>
                     <div class="progress-bar" style="height:4px;"><div class="progress-fill" style="width:${pct}%;background:${barCol};"></div></div>
                     ${pct>=80&&pct<100?'<div style="font-size:9px;color:#f97316;font-weight:600;margin-top:3px;">⚠️ Stai per esaurire le ore del pacchetto</div>':''}
+                    ${clsFinite===clsP.length&&clsP.length>0&&oreTot>0&&oreUsate<oreTot?`<div style="font-size:9px;color:#d97706;font-weight:600;margin-top:3px;">⚠️ Classi completate ma ore rendicontate (${oreUsate.toFixed(1)}h) inferiori al pacchetto (${oreTot}h)</div>`:''}
                     <div style="font-size:9px;color:#94a3b8;margin-top:3px;">${clsFinite}/${clsP.length} classi completate</div>
                 </div>`;
             }).join('');

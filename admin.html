@@ -1030,10 +1030,12 @@ async function aggiornaProntiAttestatoDashboard(){
     const list = document.getElementById('prontiAttestatoList');
     if(!wrap || !list) return;
 
-    // Carica classi aggregate per biologo per capire se tutte complete
-    const { data: classiAll } = await db.from('classi')
-        .select('biologo_id, score_pre, score_post')
-        .in('biologo_id', adminState.biologi.filter(b=>b.stato==='active'&&b.classi>0).map(b=>b.id));
+    const biologiIds = adminState.biologi.filter(b=>b.stato==='active'&&b.classi>0).map(b=>b.id);
+
+    const [{ data: classiAll }, { data: pacchettiAll }] = await Promise.all([
+        db.from('classi').select('biologo_id,pacchetto_id,score_pre,score_post,m1_ore,m2_ore,m3_ore,m4_ore,m5_ore,m6_ore,m1_data,m2_data,m3_data,m4_data,m5_data,m6_data').in('biologo_id', biologiIds),
+        db.from('pacchetti').select('id,biologo_id,ore_totali').in('biologo_id', biologiIds)
+    ]);
 
     if(!classiAll) return;
 
@@ -1047,19 +1049,34 @@ async function aggiornaProntiAttestatoDashboard(){
     if(pronti.length === 0){ wrap.style.display = 'none'; return; }
     wrap.style.display = 'block';
 
-    list.innerHTML = pronti.map(b => `
+    list.innerHTML = pronti.map(b => {
+        const cl = classiAll.filter(c => c.biologo_id === b.id);
+        const pk = (pacchettiAll||[]).filter(p => p.biologo_id === b.id);
+        const oreWarning = cl.some(c => {
+            const modDone = ['m1','m2','m3','m4','m5','m6'].every(m=>c[m+'_data']);
+            if(!modDone) return false;
+            const oreClasse = ['m1','m2','m3','m4','m5','m6'].reduce((a,m)=>a+(parseFloat(c[m+'_ore'])||0),0);
+            const pacchetto = pk.find(p=>p.id===c.pacchetto_id);
+            const oreTot = pacchetto?(pacchetto.ore_totali||0):0;
+            return oreTot>0 && oreClasse<oreTot;
+        });
+        return `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;gap:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="width:36px;height:36px;border-radius:10px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:#065f46;font-size:14px;">${b.nome.charAt(0)}</div>
                 <div>
-                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${b.nome}</div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="font-weight:700;font-size:13px;color:var(--dark);">${b.nome}</span>
+                        ${oreWarning?'<span title="Alcune classi hanno ore rendicontate inferiori al pacchetto" style="background:#fef3c7;color:#92400e;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;cursor:default;">⚠️ Ore incomplete</span>':''}
+                    </div>
                     <div style="font-size:11px;color:#94a3b8;">${b.regione} · ${b.classi} class${b.classi===1?'e':'i'} · ${b.studenti} studenti</div>
                 </div>
             </div>
             <button onclick="mostraDettaglioBiologo('${b.id}')" style="background:#d1fae5;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;color:#065f46;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;">
                 <i class="fas fa-certificate"></i> Genera Attestati
             </button>
-        </div>`).join('');
+        </div>`;
+    }).join('');
 }
 
 function aggiornaLicenze(){
@@ -1540,7 +1557,8 @@ tbody td{padding:${tdPad};color:#334155;border-bottom:1px solid #e2e8f0;}
             <div class="sig-name">${b.nome}</div>
         </div>
         <div class="sig-block">
-            <div style="height:32px;"></div>
+            <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/firma-serafina.png" alt="Firma" style="height:48px;object-fit:contain;display:block;margin:0 auto;" onerror="this.style.display='none';this.nextElementSibling.style.height='32px'">
+            <div style="height:0;"></div>
             <div class="sig-line"></div>
             <div class="sig-label">Responsabile S.A.N.E. Italia</div>
             <div class="sig-name">Serafina Cardaci</div>
