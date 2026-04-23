@@ -1278,6 +1278,27 @@ async function mostraDettaglioBiologo(id){
                         <div style="width:${pct}%;height:100%;background:${barCol};border-radius:99px;transition:width 0.4s;"></div>
                     </div>
                 </div>`:''}
+                ${(()=>{
+                    const clsOreWarning=cl.filter(c=>{
+                        const modDone=['m1','m2','m3','m4','m5','m6'].every(m=>c[m+'_data']);
+                        if(!modDone) return false;
+                        const oreC=['m1','m2','m3','m4','m5','m6'].reduce((a,m)=>a+(parseFloat(c[m+'_ore'])||0),0);
+                        const pk=pacchetti.find(p=>p.id===c.pacchetto_id);
+                        const oT=pk?(pk.ore_totali||0):0;
+                        return oT>0&&oreC<oT;
+                    });
+                    if(clsOreWarning.length===0) return '';
+                    const oreReg=clsOreWarning.reduce((a,c)=>a+['m1','m2','m3','m4','m5','m6'].reduce((b,m)=>b+(parseFloat(c[m+'_ore'])||0),0),0);
+                    const pk=pacchetti.find(p=>p.id===clsOreWarning[0].pacchetto_id);
+                    const oT=pk?(pk.ore_totali||0):0;
+                    return `<div style="margin-bottom:12px;padding:10px 14px;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;display:flex;align-items:flex-start;gap:8px;">
+                        <span style="font-size:14px;flex-shrink:0;">⚠️</span>
+                        <div>
+                            <div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:2px;">Ore inferiori al pacchetto</div>
+                            <div style="font-size:11px;color:#78350f;line-height:1.4;">${clsOreWarning.length} class${clsOreWarning.length===1?'e':'i'} con moduli completati ma ore rendicontate inferiori a ${oT}h previste. Verifica con il biologo.</div>
+                        </div>
+                    </div>`;
+                })()}
                 <div style="display:flex;align-items:center;gap:6px;margin-bottom:${cl.length>0?'10px':'0'};">
                     <span style="font-size:11px;color:#64748b;">Classi completate:</span>
                     <span style="font-size:12px;font-weight:700;color:${clComplete.length===cl.length&&cl.length>0?'#16a34a':'var(--dark)'};">${clComplete.length} / ${cl.length}</span>
