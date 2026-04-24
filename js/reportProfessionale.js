@@ -12,7 +12,7 @@
             new Promise((res, rej) => {
                 if (window.docx) return res();
                 const s = document.createElement('script');
-                s.src = 'https://unpkg.com/docx@8.5.0/build/index.umd.min.js';
+                s.src = 'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js';
                 s.onload = res; s.onerror = rej;
                 document.head.appendChild(s);
             }),
@@ -479,7 +479,8 @@
             window.saveAs(blob, nomeFile || 'report-sane.docx');
         } catch (e) {
             console.error('[SANE] Errore generazione report:', e);
-            alert('Errore nella generazione del report.\n\n' + (e?.message || e));
+            const msg = e instanceof Event ? 'Impossibile caricare le librerie Word (CDN non raggiungibile). Verifica la connessione internet e riprova.' : (e?.message || String(e));
+            alert('Errore nella generazione del report.\n\n' + msg);
         }
     }
 
