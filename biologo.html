@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/reportProfessionale.js"></script>
+    <script src="js/relazioneFull.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -1546,6 +1548,48 @@ function chiudiRisposteInline(){
 
 function apriGioco(){window.open('https://ilpiattosano.netlify.app/','_blank');}
 
+function avviaReportDocx(pacchettoId){
+    const pk=appState.pacchetti.find(p=>p.id===pacchettoId);
+    if(!pk){showToast('Pacchetto non trovato','error');return;}
+    const s=appState.scuole.find(sc=>sc.id===pk.scuola_id);
+    const classi=appState.classi.filter(c=>c.pacchetto_id===pacchettoId);
+    const u=appState.utente;
+    const data={
+        biologo:{nome:u.nome,titolo:'Biologo Nutrizionista',ordine:u.ordine||''},
+        scuola:{nome:s?.nome||'—',comune:s?.comune||''},
+        pacchetto:{tipo:pk.tipo,ore_totali:pk.ore_totali,anno_scolastico:pk.anno_scolastico,prezzo:pk.prezzo},
+        classi,
+    };
+    const nomeScuola=(s?.nome||'scuola').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+    const anno=(pk.anno_scolastico||new Date().getFullYear()).toString().replace('/','-');
+    showToast('Generazione report in corso…');
+    scaricaReportDocx(data,`Report_SANE_${nomeScuola}_${anno}.docx`);
+}
+
+async function avviaRelazioneHtml(pacchettoId){
+    if(typeof generaRelazioneFull!=='function'){
+        showToast('Modulo relazione non caricato','error');return;
+    }
+    const pk=appState.pacchetti.find(p=>p.id===pacchettoId);
+    if(!pk){showToast('Pacchetto non trovato','error');return;}
+    const s=appState.scuole.find(sc=>sc.id===pk.scuola_id);
+    const classi=appState.classi.filter(c=>c.pacchetto_id===pacchettoId);
+    const u=appState.utente;
+    showToast('Generazione relazione in corso…');
+    try{
+        await generaRelazioneFull({
+            biologo:{nome:u.nome,titolo:'Biologo Nutrizionista',ordine:u.ordine||''},
+            scuola:{nome:s?.nome||'—',comune:s?.comune||''},
+            pacchetto:{tipo:pk.tipo,ore_totali:pk.ore_totali,anno_scolastico:pk.anno_scolastico},
+            classi,
+            supabaseClient: window._supabase||supabase,
+        });
+    }catch(e){
+        console.error(e);
+        showToast('Errore generazione relazione','error');
+    }
+}
+
 function apriGeneraQuestionari(classeId){
     const c=appState.classi.find(cl=>cl.id===classeId);
     if(!c) return;
@@ -2418,8 +2462,14 @@ function aggiornaReport(){
                     </div>
                     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
                         <span style="font-size:10px;color:#64748b;background:#e2e8f0;border-radius:6px;padding:2px 8px;font-weight:700;">${cls.length} cl.</span>
-                        <button onclick="event.stopPropagation();generaReport('${s.id}','${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border:none;border-radius:7px;background:var(--teal);color:white;font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;">
+                        <button onclick="event.stopPropagation();generaReport('${s.id}','${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border:none;border-radius:7px;background:var(--teal);color:white;font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;" title="Report rapido HTML/PDF">
                             <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button onclick="event.stopPropagation();avviaReportDocx('${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border:1.5px solid #1e40af;border-radius:7px;background:#eff6ff;color:#1e40af;font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;" title="Report professionale Word (.docx)">
+                            <i class="fas fa-file-word"></i> .docx
+                        </button>
+                        <button onclick="event.stopPropagation();avviaRelazioneHtml('${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border:1.5px solid #065f46;border-radius:7px;background:#ecfdf5;color:#065f46;font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;" title="Relazione scientifica HTML (stampa PDF)">
+                            <i class="fas fa-chart-bar"></i> Relazione
                         </button>
                         <i class="fas fa-chevron-down" style="font-size:10px;color:#94a3b8;transition:transform 0.2s;transform:${isOpen?'rotate(180deg)':'rotate(0)'}"></i>
                     </div>
