@@ -3042,6 +3042,24 @@ document.getElementById('graficoModal').addEventListener('click', function(e) {
 // ============================================================
 const RISPOSTE_CORRETTE = {d1:'A',d2:'A',d3:'A',d4:'A',d5:'A',d6:'A',d7:'A',d8:'A',d9:'A'};
 
+// Testi completi delle opzioni per ogni domanda (A=corretta, ordine: A B C D)
+const DOMANDE_OPZIONI = {
+    d1:    ['50% frutta e verdura, 25% proteine, 25% carboidrati','50% carne, 50% carboidrati','Solo carboidrati','Non so'],
+    d2:    ['Cereali integrali + yogurt','Snack confezionati','Bevande zuccherate','Non so'],
+    d3:    ['Idrata il corpo','Fa ingrassare meno','Sostituisce il cibo','Non so'],
+    d4:    ['Tutti i giorni','3-5 volte / settimana','1-2 volte / settimana','Mai'],
+    d5:    ['Ogni giorno','Spesso','Raramente','Mai'],
+    d6:    ['Mai','1-2 volte / settimana','3-5 volte / settimana','Tutti i giorni'],
+    d7:    ['Una reazione del sistema immunitario','Un gusto personale','Una intolleranza lieve','Non so'],
+    d8:    ['Non condivido gli alimenti','Condivido comunque','Non so cosa fare','Non mi interessa'],
+    d9:    ['5 o più giorni','3-4 giorni','1-2 giorni','Nessuno'],
+    d10:   ['Sì, facilmente','In parte','No','Non so'],
+    d11:   ['Sì','In parte','No','—'],
+    d12:   ['Sì','Ci sto pensando','No','—'],
+    d13:   ["Sì, molto","Un po'",'È sufficiente','No'],
+    d_post:["Sì, molto","Un po'",'No','—'],
+};
+
 const DOMANDE = {
     d1:    'Il Piatto Sano è composto da',
     d2:    'Scelta più bilanciata al mattino',
@@ -3181,18 +3199,23 @@ function renderDomandeGruppo(lista, studenteNum) {
     return lista.map(d => {
         const group = 's' + studenteNum + '_' + d;
         const testoCompleto = DOMANDE[d] || d.toUpperCase();
-        return `<div style="margin-bottom:14px;">
-            <label class="form-label" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--dark);font-weight:600;margin-bottom:8px;">
+        const opzioni = DOMANDE_OPZIONI[d] || [];
+        return `<div style="margin-bottom:18px;">
+            <label class="form-label" style="font-size:12px;text-transform:none;letter-spacing:0;color:var(--dark);font-weight:600;margin-bottom:10px;display:block;">
                 <span style="color:var(--teal);font-family:'Syne',sans-serif;font-weight:700;margin-right:6px;">${d.toUpperCase()}</span>${testoCompleto}
             </label>
-            <div style="display:flex;gap:7px;">
-                ${['A','B','C','D'].map(op => `
-                    <button type="button"
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                ${['A','B','C','D'].map((op, i) => {
+                    const testoOp = opzioni[i] || op;
+                    const isCorretta = RISPOSTE_CORRETTE[d] === op;
+                    return `<button type="button"
                         data-group="${group}" data-val="${op}"
                         onclick="selectAnswer(this,'${group}','${op}',${studenteNum})"
-                        style="flex:1;padding:9px 4px;border:1.5px solid #e2e8f0;border-radius:10px;background:white;color:var(--dark);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.15s;">
-                        ${op}
-                    </button>`).join('')}
+                        style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:10px;background:white;color:var(--dark);font-size:12px;cursor:pointer;transition:all 0.15s;text-align:left;">
+                        <span style="flex-shrink:0;width:24px;height:24px;border-radius:6px;background:${isCorretta?'#d1fae5':'#f1f5f9'};color:${isCorretta?'#065f46':'#64748b'};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;">${op}</span>
+                        <span style="font-size:12px;color:#334155;line-height:1.3;">${testoOp}</span>
+                    </button>`;
+                }).join('')}
             </div>
         </div>`;
     }).join('');
