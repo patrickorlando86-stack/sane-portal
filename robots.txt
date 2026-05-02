@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /biologo
+
+Sitemap: https://sane-italia.it/sitemap.xml
