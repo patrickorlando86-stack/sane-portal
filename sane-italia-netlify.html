@@ -6,173 +6,186 @@
 <title>S.A.N.E. Italia – Sicurezza Alimentare Nutrizionale Educativa</title>
 <meta name="description" content="Il primo programma scolastico che integra educazione nutrizionale e gestione allergie e intolleranze alimentari.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--g:#2D5016;--gm:#4A7C2F;--gl:#8ABE6A;--cr:#F7F3EC;--tc:#C4622D;--or:#C9A84C;--wh:#FDFAF5;--gr:#6B6B6B}
+:root{
+  --g:#0A2647;        /* navy — primary brand */
+  --gm:#00A896;       /* teal */
+  --gl:#00C9B1;       /* teal-light */
+  --cr:#EEF5FA;       /* light blue-tint background */
+  --tc:#F4A261;       /* warm accent orange */
+  --or:#C9A84C;       /* gold for stat numbers */
+  --wh:#F5F9FC;       /* cool off-white */
+  --gr:#5A6A7A;       /* blue-gray body text */
+  --dn:#061828;       /* deep navy for footer */
+}
 html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--wh);color:var(--g);overflow-x:hidden}
+body{font-family:'Inter',sans-serif;background:var(--wh);color:var(--g);overflow-x:hidden}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1rem 3rem;background:rgba(253,250,245,.94);backdrop-filter:blur(14px);border-bottom:1px solid rgba(45,80,22,.1);gap:1rem}
-.logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;letter-spacing:.08em;color:var(--g);text-decoration:none}
-.logo span{color:var(--tc)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:.9rem 3rem;background:rgba(10,38,71,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(0,168,150,.2);gap:1rem}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo img{height:38px;width:auto}
+.logo-text{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:#fff;letter-spacing:.04em}
+.logo-text span{color:var(--gl)}
 .nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-size:.8rem;font-weight:500;letter-spacing:.06em;text-decoration:none;color:var(--g);text-transform:uppercase;transition:color .2s}
-.nav-links a:hover{color:var(--tc)}
-.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-links a{font-size:.76rem;font-weight:500;letter-spacing:.08em;text-decoration:none;color:rgba(255,255,255,.65);text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--gl)}
+.nav-right{display:flex;align-items:center;gap:.9rem}
 .lang-sw{display:flex;gap:.3rem}
-.lb{background:none;border:1.5px solid rgba(45,80,22,.25);color:var(--g);font-size:.7rem;font-weight:600;letter-spacing:.08em;padding:.25rem .6rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-transform:uppercase}
-.lb:hover,.lb.active{background:var(--g);color:var(--wh);border-color:var(--g)}
-.nav-cta{background:var(--g);color:var(--wh);padding:.5rem 1.2rem;font-size:.8rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:background .2s;white-space:nowrap}
-.nav-cta:hover{background:var(--tc)}
-.nav-portale{background:transparent;color:var(--g);border:1.5px solid var(--g);padding:.45rem 1.1rem;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:all .2s;white-space:nowrap}
-.nav-portale:hover{background:var(--g);color:var(--wh)}
+.lb{background:none;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.68rem;font-weight:600;letter-spacing:.08em;padding:.22rem .55rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;text-transform:uppercase;border-radius:3px}
+.lb:hover,.lb.active{background:var(--gm);color:#fff;border-color:var(--gm)}
+.nav-cta{background:var(--gm);color:#fff;padding:.48rem 1.2rem;font-size:.76rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:background .2s,transform .15s;border-radius:6px;white-space:nowrap}
+.nav-cta:hover{background:var(--gl);transform:translateY(-1px)}
+.nav-portale{background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.3);padding:.44rem 1rem;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:all .2s;border-radius:6px;white-space:nowrap}
+.nav-portale:hover{background:rgba(255,255,255,.1);border-color:var(--gl);color:#fff}
 
 /* HERO */
 .hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:4.5rem;overflow:hidden}
 .hero-l{display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem 4rem 4rem}
-.eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--tc);margin-bottom:1.2rem}
-.hero-title{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,5rem);line-height:1.05;font-weight:900;color:var(--g)}
-.hero-title .em{font-style:italic;color:var(--tc)}
-.hero-sub{font-size:1rem;font-weight:300;line-height:1.75;color:var(--gr);margin-top:1.5rem;max-width:460px}
-.hero-btns{display:flex;gap:.8rem;margin-top:2rem;flex-wrap:wrap}
-.btn-p{background:var(--g);color:var(--wh);padding:.8rem 2rem;font-size:.88rem;font-weight:500;letter-spacing:.04em;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s,transform .15s}
-.btn-p:hover{background:var(--tc);transform:translateY(-1px)}
-.btn-s{background:transparent;color:var(--g);padding:.8rem 2rem;font-size:.88rem;font-weight:500;letter-spacing:.04em;border:1.5px solid var(--g);cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s}
-.btn-s:hover{border-color:var(--tc);color:var(--tc)}
-.hero-r{background:var(--g);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-.hero-r::before{content:'';position:absolute;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(138,190,106,.15) 0%,transparent 70%);top:-80px;right:-80px}
-.hero-r::after{content:'';position:absolute;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.12) 0%,transparent 70%);bottom:-40px;left:40px}
-.stats{position:relative;z-index:2;padding:3rem;display:flex;flex-direction:column;gap:1.2rem}
-.stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);padding:1.5rem 1.8rem}
-.stat-n{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;color:var(--or);line-height:1}
-.stat-l{font-size:.82rem;color:rgba(255,255,255,.7);margin-top:.3rem;line-height:1.4}
+.eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gm);margin-bottom:1.2rem}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(2.6rem,5vw,4.8rem);line-height:1.05;font-weight:900;color:var(--g)}
+.hero-title .em{color:var(--gm)}
+.hero-sub{font-size:.98rem;font-weight:400;line-height:1.8;color:var(--gr);margin-top:1.5rem;max-width:460px}
+.hero-btns{display:flex;gap:.8rem;margin-top:2.2rem;flex-wrap:wrap}
+.btn-p{background:var(--g);color:#fff;padding:.8rem 2rem;font-size:.86rem;font-weight:600;letter-spacing:.04em;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;border-radius:8px}
+.btn-p:hover{background:var(--gm);transform:translateY(-2px)}
+.btn-s{background:transparent;color:var(--g);padding:.8rem 2rem;font-size:.86rem;font-weight:600;letter-spacing:.04em;border:2px solid var(--g);cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;border-radius:8px}
+.btn-s:hover{border-color:var(--gm);color:var(--gm)}
+.hero-r{background:linear-gradient(135deg,var(--g) 0%,#0d3460 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.hero-r::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,150,.18) 0%,transparent 70%);top:-120px;right:-120px}
+.hero-r::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.1) 0%,transparent 70%);bottom:-60px;left:30px}
+.stats{position:relative;z-index:2;padding:3rem;display:flex;flex-direction:column;gap:1.4rem;width:100%}
+.stat{background:rgba(255,255,255,.05);border:1px solid rgba(0,168,150,.25);padding:1.5rem 1.8rem;border-radius:12px;transition:border-color .2s}
+.stat:hover{border-color:rgba(0,168,150,.55)}
+.stat-n{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:900;color:var(--gl);line-height:1}
+.stat-l{font-size:.8rem;color:rgba(255,255,255,.65);margin-top:.4rem;line-height:1.5}
 
 /* ACRONYM */
-.acr{background:var(--cr);border-top:3px solid var(--or);border-bottom:3px solid var(--or);display:grid;grid-template-columns:repeat(4,1fr);padding:2rem 3rem;gap:.8rem}
+.acr{background:var(--g);border-top:3px solid var(--gm);border-bottom:3px solid var(--gm);display:grid;grid-template-columns:repeat(4,1fr);padding:2rem 3rem;gap:.8rem}
 .acr-item{text-align:center}
-.acr-l{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;color:var(--g);line-height:1}
-.acr-w{font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--tc);margin-top:.25rem}
-.acr-d{font-size:.74rem;color:var(--gr);margin-top:.25rem;line-height:1.4}
+.acr-l{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:900;color:var(--gl);line-height:1}
+.acr-w{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);margin-top:.25rem}
+.acr-d{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:.25rem;line-height:1.4}
 
 /* SECTIONS */
 section{padding:4.5rem 4rem}
-.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:700;line-height:1.15;color:var(--g);max-width:700px}
-.sec-title .em{font-style:italic}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3vw,2.7rem);font-weight:800;line-height:1.1;color:var(--g);max-width:700px}
+.sec-title em{font-style:normal;color:var(--gm)}
 
 /* ABOUT */
 .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
-.about-text p{font-size:.98rem;line-height:1.8;color:var(--gr);margin-top:1.2rem}
+.about-text p{font-size:.97rem;line-height:1.85;color:var(--gr);margin-top:1.2rem}
 .about-text strong{color:var(--g)}
-.badge{background:var(--g);color:var(--wh);padding:2rem;margin-bottom:1.2rem}
-.badge-label{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gl);margin-bottom:.4rem}
-.badge-val{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;line-height:1.3}
-.badge-sub{font-size:.82rem;color:rgba(255,255,255,.65);margin-top:.25rem}
-.badge-alt{background:var(--cr);color:var(--g);border-left:4px solid var(--or)}
-.badge-alt .badge-label{color:var(--tc)}
+.badge{background:var(--g);color:#fff;padding:2rem;margin-bottom:1.2rem;border-radius:12px}
+.badge-label{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gl);margin-bottom:.4rem}
+.badge-val{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;line-height:1.3}
+.badge-sub{font-size:.8rem;color:rgba(255,255,255,.6);margin-top:.25rem}
+.badge-alt{background:var(--cr);color:var(--g);border-left:4px solid var(--gm)}
+.badge-alt .badge-label{color:var(--gm)}
 .badge-alt .badge-val{color:var(--g)}
 .badge-alt .badge-sub{color:var(--gr)}
 
 /* GAME */
 .game-sec{background:var(--cr)}
-.game-intro{font-size:.98rem;color:var(--gr);margin-top:1rem;max-width:600px;line-height:1.7}
+.game-intro{font-size:.97rem;color:var(--gr);margin-top:1rem;max-width:600px;line-height:1.75}
 .game-inner{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;margin-top:2.5rem}
 .game-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.game-card{background:var(--wh);padding:1.5rem;border-top:3px solid var(--gl);transition:border-color .2s,transform .2s}
-.game-card:hover{border-color:var(--tc);transform:translateY(-3px)}
+.game-card{background:#fff;padding:1.5rem;border-top:3px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:0 0 8px 8px;box-shadow:0 2px 12px rgba(10,38,71,.06)}
+.game-card:hover{border-color:var(--gm);transform:translateY(-3px)}
 .game-icon{font-size:1.8rem;margin-bottom:.6rem}
-.game-card h4{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--g);margin-bottom:.4rem}
-.game-card p{font-size:.82rem;color:var(--gr);line-height:1.5}
-.allergen-box{background:var(--g);padding:2rem;color:var(--wh)}
-.allergen-box h4{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:.5rem}
-.allergen-box p{font-size:.82rem;color:rgba(255,255,255,.65);margin-bottom:1.2rem;line-height:1.5}
+.game-card h4{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--g);margin-bottom:.4rem}
+.game-card p{font-size:.8rem;color:var(--gr);line-height:1.5}
+.allergen-box{background:var(--g);padding:2rem;color:#fff;border-radius:12px}
+.allergen-box h4{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.allergen-box p{font-size:.8rem;color:rgba(255,255,255,.6);margin-bottom:1.2rem;line-height:1.5}
 .allergen-tags{display:flex;flex-wrap:wrap;gap:.4rem}
-.tag{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);padding:.3rem .7rem;font-size:.72rem;color:rgba(255,255,255,.85);letter-spacing:.04em;transition:background .2s}
-.tag:hover{background:var(--tc);border-color:var(--tc)}
+.tag{background:rgba(0,168,150,.15);border:1px solid rgba(0,168,150,.3);padding:.3rem .7rem;font-size:.7rem;color:var(--gl);letter-spacing:.04em;border-radius:4px;transition:background .2s}
+.tag:hover{background:var(--gm);border-color:var(--gm);color:#fff}
 
 /* TARGET */
-.target-sec{background:#F0EDE5}
+.target-sec{background:#fff}
 .cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem}
-.card{background:var(--wh);padding:2rem;border-top:3px solid var(--gl);transition:border-color .2s,transform .2s}
-.card:hover{border-color:var(--tc);transform:translateY(-4px)}
+.card{background:var(--wh);padding:2rem;border-top:3px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:0 0 10px 10px;box-shadow:0 2px 16px rgba(10,38,71,.06)}
+.card:hover{border-color:var(--gm);transform:translateY(-4px)}
 .card-icon{font-size:1.8rem;margin-bottom:.8rem}
-.card h3{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--g);margin-bottom:.6rem}
-.card p{font-size:.88rem;line-height:1.65;color:var(--gr)}
-.card ul{font-size:.84rem;color:var(--gr);margin-top:.7rem;padding-left:1.1rem}
+.card h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--g);margin-bottom:.6rem}
+.card p{font-size:.86rem;line-height:1.7;color:var(--gr)}
+.card ul{font-size:.82rem;color:var(--gr);margin-top:.7rem;padding-left:1.1rem}
 .card ul li{margin-bottom:.35rem;line-height:1.5}
 
 /* METHOD */
-.method-sec{background:var(--g);color:var(--wh)}
-.method-sec .sec-title{color:var(--wh);max-width:100%}
+.method-sec{background:var(--g);color:#fff}
+.method-sec .sec-title{color:#fff;max-width:100%}
 .method-sec .eyebrow{color:var(--gl)}
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:2.5rem}
-.step{background:rgba(255,255,255,.04);padding:2rem 1.5rem;border:1px solid rgba(255,255,255,.1)}
-.step-n{font-family:'Playfair Display',serif;font-size:3.5rem;font-weight:900;color:var(--or);opacity:.35;line-height:1;margin-bottom:.8rem}
-.step h4{font-size:.95rem;font-weight:500;color:var(--wh);margin-bottom:.5rem}
-.step p{font-size:.82rem;color:rgba(255,255,255,.58);line-height:1.6}
-
-/* SERAFINA */
-.ser-grid{display:grid;grid-template-columns:1fr 2fr;gap:5rem;align-items:start}
-.ser-card{background:var(--g);padding:2.5rem;text-align:center;color:var(--wh)}
-.ser-init{width:90px;height:90px;border-radius:50%;background:var(--or);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--g);margin:0 auto 1.2rem}
-.ser-name{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700}
-.ser-role{font-size:.82rem;color:var(--gl);margin-top:.25rem}
-.ser-creds{margin-top:1.2rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
-.ser-cred{font-size:.78rem;padding:.5rem .7rem;background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);border-left:2px solid var(--or)}
-.ser-content{padding-top:.5rem}
-.ser-content .sec-title{margin-bottom:1.2rem}
-.ser-content p{font-size:.98rem;line-height:1.8;color:var(--gr);margin-bottom:.9rem}
+.step{background:rgba(255,255,255,.04);padding:2rem 1.5rem;border:1px solid rgba(0,168,150,.15);transition:background .2s}
+.step:hover{background:rgba(0,168,150,.08)}
+.step-n{font-family:'Syne',sans-serif;font-size:3.2rem;font-weight:900;color:var(--gl);opacity:.4;line-height:1;margin-bottom:.8rem}
+.step h4{font-size:.92rem;font-weight:600;color:#fff;margin-bottom:.5rem}
+.step p{font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.65}
 
 /* TEAM */
+.ser-init{width:72px;height:72px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:900;color:var(--g);flex-shrink:0}
+.ser-name{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:800}
+.ser-role{font-size:.78rem;color:var(--gl);margin-top:.2rem;letter-spacing:.04em}
+.ser-creds{margin-top:1.2rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
+.ser-cred{font-size:.76rem;padding:.5rem .7rem;background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);border-left:2px solid var(--gl);border-radius:0 4px 4px 0}
 .team-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem}
-.team-card{background:var(--g);color:var(--wh);padding:2.5rem}
+.team-card{background:var(--g);color:#fff;padding:2.5rem;border-radius:16px}
 .team-card-alt{background:var(--cr);color:var(--g)}
 .team-top{display:flex;gap:1.2rem;align-items:center;margin-bottom:1.5rem}
-.team-card .ser-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700}
-.team-card .ser-role{font-size:.82rem;color:var(--gl);margin-top:.2rem}
-.team-card-alt .ser-role{color:var(--tc)}
-.team-card .ser-creds .ser-cred{border-left-color:var(--or)}
-.team-card-alt .ser-creds .ser-cred{background:rgba(45,80,22,.07);color:var(--g);border-left-color:var(--tc)}
-.pat-init{background:var(--tc)}
-.team-bio{font-size:.9rem;line-height:1.75;margin-top:.9rem}
-.team-card .team-bio{color:rgba(255,255,255,.72)}
+.team-card-alt .ser-init{background:var(--tc);color:#fff}
+.team-card-alt .ser-name{color:var(--g)}
+.team-card-alt .ser-role{color:var(--gm)}
+.team-card-alt .ser-creds .ser-cred{background:rgba(10,38,71,.07);color:var(--g);border-left-color:var(--gm)}
+.team-bio{font-size:.88rem;line-height:1.8;margin-top:.9rem}
+.team-card .team-bio{color:rgba(255,255,255,.7)}
 .team-card-alt .team-bio{color:var(--gr)}
 #team{background:var(--wh)}
 @media(max-width:860px){.team-grid{grid-template-columns:1fr}}
 
 /* PARTNER */
-.partner-sec{background:var(--cr);text-align:center}
+.partner-sec{background:var(--g);text-align:center}
+.partner-sec .sec-title{color:#fff;margin:0 auto}
+.partner-sec .eyebrow{color:var(--gl)}
 .partner-list{display:flex;gap:3rem;justify-content:center;flex-wrap:wrap;margin-top:2.5rem}
-.partner-item{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--g);opacity:.45;letter-spacing:.05em;cursor:default;transition:opacity .2s}
-.partner-item:hover{opacity:1}
+.partner-item{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.06em;cursor:default;transition:color .2s}
+.partner-item:hover{color:var(--gl)}
 
 /* CONTACT */
-.contact-sec{background:var(--g);color:var(--wh);display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
-.contact-sec .sec-title{color:var(--wh)}
-.contact-sec .eyebrow{color:var(--gl)}
-.contact-sec .desc{color:rgba(255,255,255,.65);margin-top:1.2rem;line-height:1.8;font-size:.98rem}
+.contact-sec{background:var(--cr);color:var(--g);display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.contact-sec .sec-title{color:var(--g)}
+.contact-sec .eyebrow{color:var(--gm)}
+.contact-sec .desc{color:var(--gr);margin-top:1.2rem;line-height:1.8;font-size:.97rem}
 .contact-items{display:flex;flex-direction:column;gap:.8rem}
-.ci{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);padding:1.2rem 1.5rem;display:flex;gap:1.2rem;align-items:center}
-.ci-link{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);padding:1.2rem 1.5rem;display:flex;gap:1.2rem;align-items:center;text-decoration:none;transition:background .2s,border-color .2s;cursor:pointer;}
-.ci-link:hover{background:rgba(255,255,255,.14);border-color:var(--gl);}
+.ci{background:#fff;border:1px solid rgba(10,38,71,.1);padding:1.2rem 1.5rem;display:flex;gap:1.2rem;align-items:center;border-radius:10px}
+.ci-link{background:#fff;border:1px solid rgba(10,38,71,.1);padding:1.2rem 1.5rem;display:flex;gap:1.2rem;align-items:center;text-decoration:none;transition:background .2s,border-color .2s;cursor:pointer;border-radius:10px}
+.ci-link:hover{background:var(--g);border-color:var(--g)}
+.ci-link:hover .ci-label{color:var(--gl)}
+.ci-link:hover .ci-value{color:#fff}
 .ci-icon{font-size:1.3rem}
-.ci-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gl)}
-.ci-value{font-size:.9rem;color:var(--wh);margin-top:.15rem}
+.ci-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.14em;color:var(--gm)}
+.ci-value{font-size:.88rem;color:var(--g);margin-top:.15rem;font-weight:500}
+.contact-sec .btn-p{background:var(--g)}
+.contact-sec .btn-p:hover{background:var(--gm)}
 
-footer{background:#1A2F0A;color:rgba(255,255,255,.38);padding:1.8rem 4rem;display:flex;justify-content:space-between;align-items:center;font-size:.75rem;letter-spacing:.04em}
-footer strong{color:rgba(255,255,255,.65)}
-footer a{color:rgba(255,255,255,.38);text-decoration:none}
+footer{background:var(--dn);color:rgba(255,255,255,.35);padding:1.8rem 4rem;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;letter-spacing:.05em}
+footer strong{color:rgba(255,255,255,.7)}
+footer a{color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s}
+footer a:hover{color:var(--gl)}
 
 @media(max-width:860px){
-  nav{padding:.9rem 1.2rem}
+  nav{padding:.8rem 1.2rem}
   .nav-links{display:none}
   .hero{grid-template-columns:1fr}
   .hero-r{display:none}
   .hero-l{padding:5.5rem 1.5rem 2.5rem}
   .acr{grid-template-columns:repeat(2,1fr);padding:1.5rem}
   section{padding:2.5rem 1.5rem}
-  .about-grid,.ser-grid,.contact-sec{grid-template-columns:1fr;gap:2rem}
+  .about-grid,.contact-sec{grid-template-columns:1fr;gap:2rem}
   .game-inner{grid-template-columns:1fr;gap:2rem}
   .game-cards{grid-template-columns:1fr 1fr}
   .cards-grid{grid-template-columns:1fr}
@@ -185,7 +198,10 @@ footer a{color:rgba(255,255,255,.38);text-decoration:none}
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="logo">S.A.N.E.<span>.</span></a>
+  <a href="#" class="logo">
+    <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
+    <span class="logo-text">S.A.N.E. <span>Italia</span></span>
+  </a>
   <ul class="nav-links">
     <li><a href="#about" data-k="nav0"></a></li>
     <li><a href="#game" data-k="nav1"></a></li>
@@ -336,13 +352,13 @@ const T = {
     hero_btn1:"Scopri il programma",hero_btn2:"Parla con noi",
     stat1_label:"studenti coinvolti nel primo pilota · I.C. Carducci–Fattori, Rosignano Marittimo",
     stat2_label:"allergeni gestiti nel gioco educativo «Il Piatto Sano»",
-    stat3_label:"Partnership istituzionale con la Federazione Nazionale Ordine Biologi",
+    stat3_label:"Programma accreditato e riconosciuto a livello istituzionale",
     acr:[{l:"S",w:"Scienza",d:"Basi scientifiche certificate"},{l:"A",w:"Alimentare",d:"Corretti comportamenti a tavola"},{l:"N",w:"Nutrizionale",d:"Expertise dei biologi nutrizionisti"},{l:"E",w:"Educativa",d:"Metodo ludico per scuola e famiglia"}],
     about_eyebrow:"Chi siamo",
     about_title:"Il primo programma scolastico che insegna a <em>gestire allergie e intolleranze.</em>",
     about_p1:"S.A.N.E. Italia nasce da una convinzione precisa: la sicurezza alimentare è un diritto di ogni bambino. Non solo nutrizione corretta, ma la capacità concreta di riconoscere allergeni, leggere le etichette e gestire le intolleranze in modo autonomo e sicuro.",
     about_p2:"Il nostro strumento distintivo è «Il Piatto Sano», l'unico gioco educativo digitale che integra la gestione personalizzata di allergie e intolleranze — utilizzabile da bambini dai 6 ai 13 anni, disponibile su Google Play, in italiano, inglese e spagnolo.",
-    about_p3:"Il modello S.A.N.E. si struttura su una rete nazionale di biologi nutrizionisti certificati, in partnership con FNOB, che portano il programma nelle scuole con un approccio scientifico, ludico e misurabile.",
+    about_p3:"Il modello S.A.N.E. si struttura su una rete di biologi nutrizionisti certificati che portano il programma nelle scuole con un approccio scientifico, ludico e misurabile.",
     b1_label:"Strumento flagship",b1_val:"«Il Piatto Sano»",b1_sub:"L'unico gioco educativo con gestione personalizzata degli allergeni",
     b2_label:"Disponibile su",b2_val:"Google Play · PWA",b2_sub:"IT / EN / ES — bambini 6–13 anni",
     b3_label:"Primo pilota",b3_val:'I.C. "Carducci–Fattori"',b3_sub:"Rosignano Marittimo — ~100 studenti coinvolti",
@@ -360,22 +376,22 @@ const T = {
     ser_eyebrow:"La nostra fondatrice scientifica",
     ser_heading:"Scienza, passione e <em>metodo.</em>",
     ser_role:"Co-fondatrice & Direttrice Scientifica",
-    ser_creds:["🔬 Biologa Nutrizionista","📚 Specialista in nutrizione pediatrica e allergie","🏛️ Referente scientifica FNOB","🏫 Autrice del programma «Il Piatto Sano»"],
+    ser_creds:["🔬 Biologa Nutrizionista","📚 Specialista in nutrizione pediatrica e allergie","🧠 Ideatrice del programma «Mangiare Bene e Crescere Meglio»","📋 Responsabile scientifica S.A.N.E. Italia"],
     ser_p1:"Serafina Cardaci ha co-fondato S.A.N.E. Italia con una visione precisa: portare nelle scuole italiane un programma che non si limiti alla nutrizione corretta, ma insegni ai bambini a vivere in sicurezza con le proprie allergie e intolleranze.",
     ser_p2:"Il primo pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — con circa 100 studenti — ha dimostrato che il gioco è lo strumento più efficace per rendere la sicurezza alimentare concreta e memorabile.",
     ser_cta:"Entra nella rete S.A.N.E.",
     team_eyebrow:"Il team fondatore",
     team_title:"Due competenze, <em>un'unica missione.</em>",
     pat_role:"Co-fondatore & Direttore Commerciale",
-    pat_creds:["🌍 Direttore Commerciale PRISMA GROUP","🇮🇹🇵🇪🇺🇸 Sviluppo internazionale (IT, PE, CL, US)","📻 Comunicatore — Radio PNR · Venerdì Tech","✍️ Autore e compositore — 7 libri pubblicati"],
-    pat_p1:"Patrick Orlando porta in S.A.N.E. Italia la visione commerciale e la capacità di costruire reti istituzionali e partnership internazionali, maturate in anni di sviluppo business nei mercati dell'acciaio, del mining e dell'industria.",
-    pat_p2:"Fondatore di DAOP APS — la community family-friendly di Alessandria e Asti — e co-host di Venerdì Tech su Radio PNR, Patrick crede che la comunicazione e l'educazione siano le leve più potenti per il cambiamento sociale.",
+    pat_creds:["🎮 Ideatore del gioco educativo «Il Piatto Sano»","🌍 Sviluppo commerciale e partnership","📻 Comunicatore — Radio PNR · Venerdì Tech","✍️ Autore — libri e musica"],
+    pat_p1:"Patrick Orlando è il co-fondatore e ideatore del gioco educativo «Il Piatto Sano». Si occupa dello sviluppo commerciale di S.A.N.E. Italia, della costruzione di reti di biologi nutrizionisti sul territorio e delle partnership istituzionali.",
+    pat_p2:"Fondatore di DAOP APS — community family-friendly di Alessandria e Asti — e co-host di Venerdì Tech su Radio PNR, Patrick crede che la comunicazione e l'educazione siano leve potenti per il cambiamento.",
     partner_eyebrow:"Riconoscimenti e partnership",partner_title:"Con il supporto delle istituzioni.",
-    partners:["FNOB","Senato della Repubblica","ENPAB","I.C. Carducci–Fattori","DAOP APS"],
+    partners:["Senato della Repubblica","ENPAB","I.C. Carducci–Fattori","DAOP APS","Google Play"],
     contact_eyebrow:"Contatti",
     contact_title:"Porta S.A.N.E. nella tua <em>scuola</em> o territorio.",
     contact_desc:"Sei un dirigente scolastico, un biologo nutrizionista, un genitore di un bambino con allergie o un ente locale? Scrivici.",
-    ci:[{icon:"🏛️",label:"Sede legale",value:"Italia"},{icon:"🔬",label:"Referente scientifica",value:"Serafina Cardaci — Biologa Nutrizionista"},{icon:"🤝",label:"Partnership istituzionale",value:"FNOB — Federazione Nazionale Ordine Biologi"},{icon:"📋",label:"Per i biologi",value:"Accedi al portale operativo S.A.N.E.",href:"portale.html"}],
+    ci:[{icon:"🏛️",label:"Sede",value:"Italia"},{icon:"🔬",label:"Referente scientifica",value:"Serafina Cardaci — Biologa Nutrizionista"},{icon:"🎮",label:"Il programma",value:"Mangiare Bene e Crescere Meglio"},{icon:"📋",label:"Per i biologi",value:"Accedi al portale operativo S.A.N.E.",href:"portale.html"}],
     footer:"Scienza Alimentare Nutrizionale Educativa"
   },
   es: {
@@ -387,13 +403,13 @@ const T = {
     hero_btn1:"Descubre el programa",hero_btn2:"Habla con nosotros",
     stat1_label:"estudiantes en el primer piloto · I.C. Carducci–Fattori, Rosignano Marittimo",
     stat2_label:"alérgenos gestionados en el juego educativo «Il Piatto Sano»",
-    stat3_label:"Alianza institucional con la Federación Nacional de Biólogos",
+    stat3_label:"Programa acreditado y reconocido institucionalmente",
     acr:[{l:"S",w:"Ciencia",d:"Bases científicas certificadas"},{l:"A",w:"Alimentaria",d:"Conductas alimenticias correctas"},{l:"N",w:"Nutricional",d:"Expertise de biólogos nutricionistas"},{l:"E",w:"Educativa",d:"Método lúdico para escuela y familia"}],
     about_eyebrow:"Quiénes somos",
     about_title:"El primer programa escolar que enseña a <em>gestionar alergias e intolerancias.</em>",
     about_p1:"S.A.N.E. Italia nace de una convicción clara: la seguridad alimentaria es un derecho de cada niño. No solo nutrición correcta, sino la capacidad real de reconocer alérgenos, leer etiquetas y gestionar intolerancias de forma autónoma y segura.",
     about_p2:"Nuestra herramienta distintiva es «Il Piatto Sano», el único juego educativo digital que integra la gestión personalizada de alergias e intolerancias — para niños de 6 a 13 años, disponible en Google Play, en italiano, inglés y español.",
-    about_p3:"El modelo S.A.N.E. se articula en una red nacional de biólogos nutricionistas certificados, en alianza con FNOB, que llevan el programa a las escuelas con un enfoque científico, lúdico y medible.",
+    about_p3:"El modelo S.A.N.E. se articula en una red de biólogos nutricionistas certificados que llevan el programa a las escuelas con un enfoque científico, lúdico y medible.",
     b1_label:"Herramienta insignia",b1_val:"«Il Piatto Sano»",b1_sub:"El único juego educativo con gestión personalizada de alérgenos",
     b2_label:"Disponible en",b2_val:"Google Play · PWA",b2_sub:"IT / EN / ES — niños 6–13 años",
     b3_label:"Primer piloto",b3_val:'I.C. "Carducci–Fattori"',b3_sub:"Rosignano Marittimo — ~100 estudiantes",
@@ -411,22 +427,22 @@ const T = {
     ser_eyebrow:"Nuestra fundadora científica",
     ser_heading:"Ciencia, pasión y <em>método.</em>",
     ser_role:"Cofundadora & Directora Científica",
-    ser_creds:["🔬 Bióloga Nutricionista","📚 Especialista en nutrición pediátrica y alergias","🏛️ Referente científica FNOB","🏫 Autora del programa «Il Piatto Sano»"],
+    ser_creds:["🔬 Bióloga Nutricionista","📚 Especialista en nutrición pediátrica y alergias","🧠 Creadora del programa «Mangiare Bene e Crescere Meglio»","📋 Responsable científica S.A.N.E. Italia"],
     ser_p1:"Serafina Cardaci cofundó S.A.N.E. Italia con una visión clara: llevar a las escuelas italianas un programa que enseñe a los niños a vivir con seguridad con sus alergias e intolerancias.",
     ser_p2:"El primer piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo — con cerca de 100 estudiantes — demostró que el juego es la herramienta más eficaz para hacer la seguridad alimentaria concreta y memorable.",
     ser_cta:"Únete a la red S.A.N.E.",
     team_eyebrow:"El equipo fundador",
     team_title:"Dos competencias, <em>una sola misión.</em>",
     pat_role:"Cofundador & Director Comercial",
-    pat_creds:["🌍 Director Comercial PRISMA GROUP","🇮🇹🇵🇪🇺🇸 Desarrollo internacional (IT, PE, CL, US)","📻 Comunicador — Radio PNR · Venerdì Tech","✍️ Autor y compositor — 7 libros publicados"],
-    pat_p1:"Patrick Orlando aporta a S.A.N.E. Italia la visión comercial y la capacidad de construir redes institucionales y alianzas internacionales, desarrolladas en años de expansión de negocios en los mercados del acero, la minería y la industria.",
-    pat_p2:"Fundador de DAOP APS — la comunidad family-friendly de Alessandria y Asti — y co-presentador de Venerdì Tech en Radio PNR, Patrick cree que la comunicación y la educación son las palancas más poderosas para el cambio social.",
+    pat_creds:["🎮 Creador del juego educativo «Il Piatto Sano»","🌍 Desarrollo comercial y alianzas","📻 Comunicador — Radio PNR · Venerdì Tech","✍️ Autor — libros y música"],
+    pat_p1:"Patrick Orlando es el cofundador y creador del juego educativo «Il Piatto Sano». Se ocupa del desarrollo comercial de S.A.N.E. Italia, la construcción de redes de biólogos nutricionistas y las alianzas institucionales.",
+    pat_p2:"Fundador de DAOP APS — comunidad family-friendly de Alessandria y Asti — y co-presentador de Venerdì Tech en Radio PNR, Patrick cree que la comunicación y la educación son herramientas poderosas para el cambio.",
     partner_eyebrow:"Reconocimientos y alianzas",partner_title:"Con el apoyo de las instituciones.",
-    partners:["FNOB","Senado de la República","ENPAB","I.C. Carducci–Fattori","DAOP APS"],
+    partners:["Senado de la República","ENPAB","I.C. Carducci–Fattori","DAOP APS","Google Play"],
     contact_eyebrow:"Contacto",
     contact_title:"Lleva S.A.N.E. a tu <em>escuela</em> o territorio.",
     contact_desc:"¿Eres director escolar, biólogo nutricionista, padre de un niño con alergias o entidad local? Escríbenos.",
-    ci:[{icon:"🏛️",label:"Sede legal",value:"Italia"},{icon:"🔬",label:"Referente científica",value:"Serafina Cardaci — Bióloga Nutricionista"},{icon:"🤝",label:"Alianza institucional",value:"FNOB — Federación Nacional de Biólogos"},{icon:"📋",label:"Para biólogos",value:"Accede al portal operativo S.A.N.E.",href:"portale.html"}],
+    ci:[{icon:"🏛️",label:"Sede",value:"Italia"},{icon:"🔬",label:"Referente científica",value:"Serafina Cardaci — Bióloga Nutricionista"},{icon:"🎮",label:"El programa",value:"Mangiare Bene e Crescere Meglio"},{icon:"📋",label:"Para biólogos",value:"Accede al portal operativo S.A.N.E.",href:"portale.html"}],
     footer:"Ciencia Alimentaria Nutricional Educativa"
   },
   en: {
@@ -438,13 +454,13 @@ const T = {
     hero_btn1:"Discover the programme",hero_btn2:"Talk to us",
     stat1_label:"students in the first pilot · I.C. Carducci–Fattori, Rosignano Marittimo",
     stat2_label:"allergens managed in the educational game «Il Piatto Sano»",
-    stat3_label:"Institutional partnership with the National Federation of Biologists",
+    stat3_label:"Accredited programme with institutional recognition",
     acr:[{l:"S",w:"Scientific",d:"Certified, up-to-date scientific bases"},{l:"A",w:"Alimentary",d:"Correct eating behaviours from an early age"},{l:"N",w:"Nutritional",d:"Expertise of certified nutritionist biologists"},{l:"E",w:"Education",d:"A playful method for school and family"}],
     about_eyebrow:"Who we are",
     about_title:"The first school programme that teaches children to <em>manage allergies and intolerances.</em>",
     about_p1:"S.A.N.E. Italia was born from a clear conviction: food safety is every child's right. Not just proper nutrition, but the concrete ability to recognise allergens, read labels and manage intolerances independently and safely.",
     about_p2:"Our distinctive tool is «Il Piatto Sano», the only digital educational game that integrates personalised allergy and intolerance management — for children aged 6 to 13, available on Google Play, in Italian, English and Spanish.",
-    about_p3:"The S.A.N.E. model is built on a national network of certified nutritionist biologists, in partnership with FNOB, bringing the programme to schools with a scientific, playful and measurable approach.",
+    about_p3:"The S.A.N.E. model is built on a network of certified nutritionist biologists bringing the programme to schools with a scientific, playful and measurable approach.",
     b1_label:"Flagship tool",b1_val:"«Il Piatto Sano»",b1_sub:"The only educational game with personalised allergen management",
     b2_label:"Available on",b2_val:"Google Play · PWA",b2_sub:"IT / EN / ES — children aged 6–13",
     b3_label:"First pilot",b3_val:'I.C. "Carducci–Fattori"',b3_sub:"Rosignano Marittimo — ~100 students involved",
@@ -462,22 +478,22 @@ const T = {
     ser_eyebrow:"Our scientific founder",
     ser_heading:"Science, passion and <em>method.</em>",
     ser_role:"Co-founder & Scientific Director",
-    ser_creds:["🔬 Nutritionist Biologist","📚 Specialist in paediatric nutrition & allergies","🏛️ FNOB scientific representative","🏫 Author of the «Il Piatto Sano» programme"],
+    ser_creds:["🔬 Nutritionist Biologist","📚 Specialist in paediatric nutrition & allergies","🧠 Creator of the «Mangiare Bene e Crescere Meglio» programme","📋 Scientific Director, S.A.N.E. Italia"],
     ser_p1:"Serafina Cardaci co-founded S.A.N.E. Italia with a clear vision: to bring Italian schools a programme that teaches children not just about good nutrition, but how to live safely with their allergies and intolerances.",
     ser_p2:"The first pilot at I.C. «Carducci–Fattori» in Rosignano Marittimo — with around 100 students — proved that play is the most effective tool for making food safety concrete and memorable.",
     ser_cta:"Join the S.A.N.E. network",
     team_eyebrow:"The founding team",
     team_title:"Two expertises, <em>one mission.</em>",
     pat_role:"Co-founder & Commercial Director",
-    pat_creds:["🌍 Commercial Director, PRISMA GROUP","🇮🇹🇵🇪🇺🇸 International development (IT, PE, CL, US)","📻 Communicator — Radio PNR · Venerdì Tech","✍️ Author & composer — 7 published books"],
-    pat_p1:"Patrick Orlando brings to S.A.N.E. Italia a commercial vision and the ability to build institutional networks and international partnerships, developed through years of business development in steel, mining and industrial markets.",
-    pat_p2:"Founder of DAOP APS — the family-friendly community of Alessandria and Asti — and co-host of Venerdì Tech on Radio PNR, Patrick believes that communication and education are the most powerful levers for social change.",
+    pat_creds:["🎮 Creator of the «Il Piatto Sano» educational game","🌍 Commercial development & partnerships","📻 Communicator — Radio PNR · Venerdì Tech","✍️ Author — books and music"],
+    pat_p1:"Patrick Orlando is the co-founder and creator of the «Il Piatto Sano» educational game. He leads the commercial development of S.A.N.E. Italia, building networks of nutritionist biologists across Italy and institutional partnerships.",
+    pat_p2:"Founder of DAOP APS — the family-friendly community of Alessandria and Asti — and co-host of Venerdì Tech on Radio PNR, Patrick believes that communication and education are powerful tools for social change.",
     partner_eyebrow:"Recognition & partnerships",partner_title:"Backed by institutions.",
-    partners:["FNOB","Italian Senate","ENPAB","I.C. Carducci–Fattori","DAOP APS"],
+    partners:["Italian Senate","ENPAB","I.C. Carducci–Fattori","DAOP APS","Google Play"],
     contact_eyebrow:"Contact",
     contact_title:"Bring S.A.N.E. to your <em>school</em> or area.",
     contact_desc:"Are you a school principal, a nutritionist biologist, a parent of an allergic child, or a local authority? Write to us.",
-    ci:[{icon:"🏛️",label:"Registered office",value:"Italy"},{icon:"🔬",label:"Scientific representative",value:"Serafina Cardaci — Nutritionist Biologist"},{icon:"🤝",label:"Institutional partnership",value:"FNOB — National Federation of Biologists"},{icon:"📋",label:"For biologists",value:"Access the S.A.N.E. operational portal",href:"portale.html"}],
+    ci:[{icon:"🏛️",label:"Office",value:"Italy"},{icon:"🔬",label:"Scientific director",value:"Serafina Cardaci — Nutritionist Biologist"},{icon:"🎮",label:"The programme",value:"Mangiare Bene e Crescere Meglio"},{icon:"📋",label:"For biologists",value:"Access the S.A.N.E. operational portal",href:"portale.html"}],
     footer:"Scientific Alimentary Nutritional Education"
   }
 };
