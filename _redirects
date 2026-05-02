@@ -1,0 +1,12 @@
+# Netlify Redirects — S.A.N.E. Italia
+# https://sane-italia.it
+
+# Vecchio index → ora è portale
+/hub            /portale.html   200
+/login          /portale.html   200
+
+# Rotte dirette portali
+/biologo        /biologo.html   200
+/admin          /admin.html     200
+/questionario   /questionario.html  200
+/demo           /demo.html      200
