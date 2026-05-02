@@ -120,7 +120,7 @@ section{padding:4.5rem 4rem}
 .method-sec{background:var(--g);color:#fff}
 .method-sec .sec-title{color:#fff;max-width:100%}
 .method-sec .eyebrow{color:var(--gl)}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:2.5rem}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2.5rem}
 .step{background:rgba(255,255,255,.04);padding:2rem 1.5rem;border:1px solid rgba(0,168,150,.15);transition:background .2s}
 .step:hover{background:rgba(0,168,150,.08)}
 .step-n{font-family:'Inter',sans-serif;font-size:2.8rem;font-weight:800;color:var(--gl);opacity:.35;line-height:1;margin-bottom:.8rem}
@@ -229,15 +229,15 @@ footer a:hover{color:var(--gl)}
     <h1 class="hero-title" data-k="hero_title"></h1>
     <p class="hero-sub" data-k="hero_sub"></p>
     <div class="hero-btns">
-      <a href="#game" class="btn-p" data-k="hero_btn1"></a>
+      <a href="https://ilpiattosano.netlify.app" target="_blank" class="btn-p" data-k="hero_btn1"></a>
       <a href="#contact" class="btn-s" data-k="hero_btn2"></a>
     </div>
   </div>
   <div class="hero-r">
     <div class="stats">
-      <div class="stat"><div class="stat-n">~100</div><div class="stat-l" data-k="stat1_label"></div></div>
-      <div class="stat"><div class="stat-n">14+</div><div class="stat-l" data-k="stat2_label"></div></div>
-      <div class="stat"><div class="stat-n">3</div><div class="stat-l" data-k="stat3_label"></div></div>
+      <div class="stat"><div class="stat-n">6</div><div class="stat-l" data-k="stat1_label"></div></div>
+      <div class="stat"><div class="stat-n">14</div><div class="stat-l" data-k="stat2_label"></div></div>
+      <div class="stat"><div class="stat-n">6–13</div><div class="stat-l" data-k="stat3_label"></div></div>
     </div>
   </div>
 </section>
@@ -320,9 +320,6 @@ footer a:hover{color:var(--gl)}
       <p class="team-bio" data-k="pat_p2"></p>
     </div>
   </div>
-  <div style="text-align:center;margin-top:2.5rem">
-    <a href="#contact" class="btn-p" data-k="ser_cta"></a>
-  </div>
 </section>
 
 <!-- CONTACT -->
@@ -338,68 +335,69 @@ footer a:hover{color:var(--gl)}
 
 <footer>
   <div><strong>S.A.N.E. Italia</strong> — <span data-k="footer"></span></div>
-  <div>© 2025 S.A.N.E. Italia · <a href="#">Privacy Policy</a> · <a href="#">Cookie Policy</a></div>
+  <div>© 2025–2026 Dott.ssa Serafina Cardaci &amp; Ing. Patrick Orlando — Tutti i diritti riservati</div>
 </footer>
 
 <script>
 const T = {
   it: {
-    nav:["Chi siamo","Il programma","Il metodo","Il team"],
+    nav:["Il programma","L'app","I moduli","Il team"],
     nav_cta:"Contattaci",
-    hero_eyebrow:"Scienza Alimentare Nutrizionale Educativa",
-    hero_title:"<span class='em'>Sicurezza</span><br>alimentare<br>per ogni bambino.",
-    hero_sub:"S.A.N.E. Italia porta nelle scuole il primo programma scientifico che integra educazione nutrizionale e gestione delle allergie e intolleranze alimentari, guidato da biologi nutrizionisti certificati.",
-    hero_btn1:"Scopri il programma",hero_btn2:"Parla con noi",
-    stat1_label:"studenti coinvolti nel primo pilota · I.C. Carducci–Fattori, Rosignano Marittimo",
-    stat2_label:"allergeni gestiti nel gioco educativo «Il Piatto Sano»",
-    stat3_label:"lingue supportate dal gioco «Il Piatto Sano» — IT, EN, ES",
-    acr:[{l:"S",w:"Scienza",d:"Basi scientifiche certificate"},{l:"A",w:"Alimentare",d:"Corretti comportamenti a tavola"},{l:"N",w:"Nutrizionale",d:"Expertise dei biologi nutrizionisti"},{l:"E",w:"Educativa",d:"Metodo ludico per scuola e famiglia"}],
-    about_eyebrow:"Chi siamo",
-    about_title:"Il primo programma scolastico che insegna a <em>gestire allergie e intolleranze.</em>",
-    about_p1:"S.A.N.E. Italia nasce da una convinzione precisa: la sicurezza alimentare è un diritto di ogni bambino. Non solo nutrizione corretta, ma la capacità concreta di riconoscere allergeni, leggere le etichette e gestire le intolleranze in modo autonomo e sicuro.",
-    about_p2:"Il nostro strumento distintivo è «Il Piatto Sano», l'unico gioco educativo digitale che integra la gestione personalizzata di allergie e intolleranze — utilizzabile da bambini dai 6 ai 13 anni, disponibile su Google Play, in italiano, inglese e spagnolo.",
-    about_p3:"Il modello S.A.N.E. si struttura su una rete di biologi nutrizionisti certificati che portano il programma nelle scuole con un approccio scientifico, ludico e misurabile.",
-    b1_label:"Strumento flagship",b1_val:"«Il Piatto Sano»",b1_sub:"L'unico gioco educativo con gestione personalizzata degli allergeni",
-    b2_label:"Disponibile su",b2_val:"Google Play · PWA",b2_sub:"IT / EN / ES — bambini 6–13 anni",
+    hero_eyebrow:"Programma di Educazione Alimentare · Scuole Elementari e Medie",
+    hero_title:"Mangiare Bene,<br><em>Crescere Meglio.</em>",
+    hero_sub:"Un percorso strutturato in 6 moduli tematici, progettato da una Biologa Nutrizionista qualificata, che integra interventi in presenza, strumenti digitali interattivi e coinvolgimento attivo delle famiglie. Rivolto a bambini dai 6 ai 13 anni.",
+    hero_btn1:"Prova l'app gratuita",hero_btn2:"Parla con noi",
+    stat1_label:"moduli tematici del programma — dalla nutrizione alle allergie",
+    stat2_label:"allergeni EU gestiti nell'app «Il Piatto Sano»",
+    stat3_label:"anni — fascia d'età a cui è rivolto il programma",
+    acr:[{l:"S",w:"Sicurezza",d:"Sicurezza alimentare in classe"},{l:"A",w:"Alimentazione",d:"Corrette abitudini a tavola"},{l:"N",w:"Nutrizione",d:"Expertise della Biologa Nutrizionista"},{l:"E",w:"Educazione",d:"Metodo ludico e misurabile"}],
+    about_eyebrow:"Il programma",
+    about_title:"<em>Mangiare Bene, Crescere Meglio</em> — educazione alimentare strutturata.",
+    about_p1:"Un percorso in 6 moduli tematici pensato per scuole elementari e medie, progettato dalla Dott.ssa Serafina Cardaci, Biologa Nutrizionista. Ogni modulo combina lezioni in presenza, strumenti digitali e attività per coinvolgere attivamente le famiglie.",
+    about_p2:"Il programma include l'app <strong>«Il Piatto Sano»</strong> — disponibile su browser, tablet, LIM e Google Play — con 4 mini-giochi educativi, gestione personalizzata dei 14 allergeni EU e modalità multilingua (IT/EN/ES).",
+    about_p3:"S.A.N.E. Italia è la piattaforma digitale che supporta i professionisti della nutrizione, le istituzioni scolastiche e la valutazione dell'impatto educativo del programma.",
+    b1_label:"Il programma",b1_val:"Mangiare Bene, Crescere Meglio",b1_sub:"6 moduli · scuole elementari e medie · bambini 6–13 anni",
+    b2_label:"L'app del programma",b2_val:"«Il Piatto Sano»",b2_sub:"Browser · Tablet · LIM · Google Play · IT/EN/ES",
     b3_label:"Primo pilota",b3_val:'I.C. "Carducci–Fattori"',b3_sub:"Rosignano Marittimo — ~100 studenti coinvolti",
-    game_eyebrow:"Lo strumento flagship",
-    game_title:"<em>«Il Piatto Sano»</em> — l'unico gioco che gestisce allergie.",
-    game_sub:"Quattro mini-giochi educativi, gestione personalizzata degli allergeni, cartoon guida «Serafina», disponibile su Google Play. Sviluppato come PWA multilingue (IT/EN/ES).",
-    games:[{icon:"🍽️",name:"Il Piatto Sano",desc:"Componi il pasto equilibrato rispettando le tue allergie"},{icon:"🔍",name:"Detective Etichette",desc:"Impara a leggere le etichette e riconoscere gli allergeni"},{icon:"🚦",name:"Semaforo",desc:"Categorizza gli alimenti per frequenza di consumo"},{icon:"🌱",name:"Stagionalità",desc:"Scopri i cibi di stagione e la loro origine"}],
-    allergens_title:"Gestione allergeni integrata",
-    allergens_sub:"Il primo gioco scolastico a gestire i 14 allergeni obbligatori EU in modo personalizzato per ogni bambino.",
+    game_eyebrow:"Lo strumento digitale del programma",
+    game_title:"L'app <em>«Il Piatto Sano»</em> — 4 mini-giochi educativi.",
+    game_sub:"L'app è il cuore digitale del programma «Mangiare Bene, Crescere Meglio». Disponibile su browser, tablet, LIM e Google Play. Multilingua (IT/EN/ES), con 2 livelli di difficoltà e modalità classe.",
+    games:[{icon:"🍽️",name:"Il Piatto Sano",desc:"Componi il piatto equilibrato (proporzioni Harvard 50/25/25) rispettando le tue allergie"},{icon:"🔺",name:"Piramide Alimentare",desc:"Posiziona gli alimenti nella piramide alimentare"},{icon:"📋",name:"Quiz Nutrizionale",desc:"Metti alla prova le conoscenze con domande interattive"},{icon:"🌿",name:"A Tavola con le Stagioni",desc:"Scopri la stagionalità degli alimenti e la loro origine"}],
+    allergens_title:"Gestione 14 allergeni EU",
+    allergens_sub:"L'app gestisce in modo personalizzato tutti i 14 allergeni obbligatori EU per ogni bambino, con 2 livelli di difficoltà e modalità LIM per la classe.",
     allergens:["Glutine","Crostacei","Uova","Pesce","Arachidi","Soia","Latte","Frutta a guscio","Sedano","Senape","Sesamo","Anidride solforosa","Lupini","Molluschi"],
     target_eyebrow:"A chi ci rivolgiamo",target_title:"Un programma che parla a tutti.",
     cards:[{icon:"🏫",title:"Scuole e istituti",desc:"Programma strutturato con gestione allergeni per ogni studente, integrabile nel curriculo.",li:["Percorsi per primaria e secondaria","Gestione allergeni personalizzata per classe","Formazione docenti inclusa","Compatibile con MIUR / Carta del Docente"]},{icon:"👨‍👩‍👧",title:"Famiglie",desc:"Strumenti concreti per genitori di bambini con allergie e intolleranze, in sinergia con la scuola.",li:["Workshop su allergie e lettura etichette","Accesso al gioco «Il Piatto Sano»","Guide pratiche per la spesa sicura","Supporto nutrizionista certificato"]},{icon:"🔬",title:"Biologi nutrizionisti",desc:"Network professionale certificato con strumenti operativi per portare S.A.N.E. nel proprio territorio.",li:["Certificazione S.A.N.E. Educator","Crediti ECM via FNOB","Portale operativo dedicato","Supporto commerciale e marketing"]}],
-    method_eyebrow:"Come funziona",method_title:"Il metodo S.A.N.E. in quattro fasi.",
-    steps:[{n:"01",t:"Valutazione",d:"Raccolta delle allergie e intolleranze di ogni studente tramite questionario standardizzato e sicuro."},{n:"02",t:"Programma",d:"Percorso educativo personalizzato con «Il Piatto Sano» adattato per gli allergeni di ogni bambino."},{n:"03",t:"Coinvolgimento",d:"Workshop per famiglie su lettura etichette, spesa sicura e gestione delle intolleranze in casa."},{n:"04",t:"Misurazione",d:"Report di impatto per l'istituto con indicatori qualitativi e quantitativi documentati."}],
+    method_eyebrow:"I 6 moduli del programma",method_title:"Un percorso completo, <em>dalla nutrizione alla sicurezza.</em>",
+    steps:[{n:"01",t:"Conosciamo gli Alimenti",d:"Scopriamo i gruppi alimentari, le proprietà nutrizionali e come costruire un'alimentazione equilibrata."},{n:"02",t:"Il Piatto Equilibrato",d:"Le proporzioni Harvard (50/25/25), la varietà e la qualità nel piatto quotidiano — con l'app «Il Piatto Sano»."},{n:"03",t:"Energia in Movimento",d:"Il legame tra alimentazione, attività fisica e benessere: come il cibo diventa carburante."},{n:"04",t:"Lo Zaino della Salute",d:"Cosa portare a scuola, come fare spesa consapevole e leggere le etichette degli alimenti."},{n:"05",t:"Cibo, Ambiente e Cultura",d:"Stagionalità, filiera corta, tradizioni alimentari e impatto ambientale delle nostre scelte."},{n:"06",t:"Allergie e Sicurezza",d:"Riconoscere i 14 allergeni EU, gestire le intolleranze in sicurezza a scuola e in famiglia."}],
     ser_eyebrow:"La nostra fondatrice scientifica",
     ser_heading:"Scienza, passione e <em>metodo.</em>",
-    ser_role:"Co-fondatrice & Direttrice Scientifica",
-    ser_creds:["🔬 Biologa Nutrizionista","📚 Specialista in nutrizione pediatrica e allergie","🧠 Ideatrice del programma «Mangiare Bene e Crescere Meglio»","📋 Responsabile scientifica S.A.N.E. Italia"],
-    ser_p1:"Serafina Cardaci ha co-fondato S.A.N.E. Italia con una visione precisa: portare nelle scuole italiane un programma che non si limiti alla nutrizione corretta, ma insegni ai bambini a vivere in sicurezza con le proprie allergie e intolleranze.",
-    ser_p2:"Il primo pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — con circa 100 studenti — ha dimostrato che il gioco è lo strumento più efficace per rendere la sicurezza alimentare concreta e memorabile.",
+    ser_role:"Biologa Nutrizionista · Responsabile Scientifica",
+    ser_creds:["🔬 Biologa Nutrizionista","📚 Ideatrice del programma «Mangiare Bene e Crescere Meglio»","🏫 Responsabile Scientifica S.A.N.E. Italia","🌐 www.serafinacardacinutrizione.com"],
+    ser_p1:"La Dott.ssa Serafina Cardaci è la mente scientifica del programma. Ha progettato i 6 moduli di «Mangiare Bene, Crescere Meglio» integrando le più recenti evidenze in nutrizione pediatrica con un approccio pratico, ludico e misurabile.",
+    ser_p2:"Il primo pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — con circa 100 studenti — ha dimostrato l'efficacia del programma nel migliorare consapevolezza alimentare e gestione delle allergie.",
     ser_cta:"Entra nella rete S.A.N.E.",
     team_eyebrow:"Il team fondatore",
     team_title:"Due competenze, <em>un'unica missione.</em>",
-    pat_role:"Co-fondatore & Direttore Commerciale",
-    pat_creds:["🎮 Ideatore del gioco educativo «Il Piatto Sano»","🌍 Sviluppo commerciale e partnership","📻 Comunicatore — Radio PNR · Venerdì Tech","✍️ Autore — libri e musica"],
-    pat_p1:"Patrick Orlando è il co-fondatore e ideatore del gioco educativo «Il Piatto Sano». Si occupa dello sviluppo commerciale di S.A.N.E. Italia, della costruzione di reti di biologi nutrizionisti sul territorio e delle partnership istituzionali.",
-    pat_p2:"Fondatore di DAOP APS — community family-friendly di Alessandria e Asti — e co-host di Venerdì Tech su Radio PNR, Patrick crede che la comunicazione e l'educazione siano leve potenti per il cambiamento.",
+    pat_role:"Sviluppatore App · Partner Tecnologico e Media",
+    pat_creds:["🎮 Sviluppatore dell'app «Il Piatto Sano»","💻 Partner Tecnologico e Media S.A.N.E. Italia","📻 Comunicatore — Radio PNR · Venerdì Tech","✍️ Autore — libri e musica"],
+    pat_p1:"L'Ing. Patrick Orlando è il co-fondatore e sviluppatore dell'app «Il Piatto Sano», il cuore digitale del programma. Progettata per browser, tablet, LIM e Google Play, l'app rende l'educazione alimentare interattiva, personalizzata e multilingua.",
+    pat_p2:"Si occupa della parte tecnologica e media di S.A.N.E. Italia: sviluppo della piattaforma, comunicazione e diffusione del programma sul territorio.",
     partner_eyebrow:"Riconoscimenti e partnership",partner_title:"Con il supporto delle istituzioni.",
     partners:["Senato della Repubblica","ENPAB","I.C. Carducci–Fattori","DAOP APS","Google Play"],
     contact_eyebrow:"Contatti",
     contact_title:"Porta S.A.N.E. nella tua <em>scuola</em> o territorio.",
     contact_desc:"Sei un dirigente scolastico, un biologo nutrizionista, un genitore di un bambino con allergie o un ente locale? Scrivici.",
     ci:[
-      {icon:"📧",label:"Email",value:"serafinacardaci@gmail.com",href:"mailto:serafinacardaci@gmail.com"},
-      {icon:"📞",label:"Telefono",value:"+39 347 375 0087",href:"tel:+393473750087"},
-      {icon:"📍",label:"Studio",value:"Via Mazzini 129 — Novi Ligure"},
+      {icon:"🔬",label:"Dott.ssa Serafina Cardaci",value:"serafinacardaci@gmail.com · +39 347 375 0087",href:"mailto:serafinacardaci@gmail.com"},
+      {icon:"💻",label:"Ing. Patrick Orlando",value:"patrick.orlando@libero.it · +39 347 183 4091",href:"mailto:patrick.orlando@libero.it"},
+      {icon:"📍",label:"Studio",value:"Via Mazzini 129 — Novi Ligure (AL)"},
       {icon:"🌐",label:"Sito Serafina",value:"serafinacardacinutrizione.com",href:"https://www.serafinacardacinutrizione.com/"},
-      {icon:"📱",label:"Social",value:"Instagram · Facebook",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/"},
+      {icon:"📱",label:"Social Serafina",value:"Instagram · Facebook · LinkedIn",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
+      {icon:"💼",label:"LinkedIn Patrick",value:"linkedin.com/in/patrickorlando86",href:"https://www.linkedin.com/in/patrickorlando86/?locale=it"},
       {icon:"📋",label:"Per i biologi",value:"Accedi al portale operativo S.A.N.E.",href:"portale.html"}
     ],
-    footer:"Scienza Alimentare Nutrizionale Educativa"
+    footer:"Sicurezza · Alimentazione · Nutrizione · Educazione"
   },
   es: {
     nav:["Quiénes somos","El programa","El método","El equipo"],
@@ -408,9 +406,9 @@ const T = {
     hero_title:"<span class='em'>Seguridad</span><br>alimentaria<br>para cada niño.",
     hero_sub:"S.A.N.E. Italia lleva a las escuelas el primer programa científico que integra educación nutricional y gestión de alergias e intolerancias alimentarias, guiado por biólogos nutricionistas certificados.",
     hero_btn1:"Descubre el programa",hero_btn2:"Habla con nosotros",
-    stat1_label:"estudiantes en el primer piloto · I.C. Carducci–Fattori, Rosignano Marittimo",
-    stat2_label:"alérgenos gestionados en el juego educativo «Il Piatto Sano»",
-    stat3_label:"idiomas disponibles en el juego «Il Piatto Sano» — IT, EN, ES",
+    stat1_label:"módulos temáticos del programa — de la nutrición a las alergias",
+    stat2_label:"alérgenos EU gestionados en la app «Il Piatto Sano»",
+    stat3_label:"años — franja de edad a la que va dirigido el programa",
     acr:[{l:"S",w:"Ciencia",d:"Bases científicas certificadas"},{l:"A",w:"Alimentaria",d:"Conductas alimenticias correctas"},{l:"N",w:"Nutricional",d:"Expertise de biólogos nutricionistas"},{l:"E",w:"Educativa",d:"Método lúdico para escuela y familia"}],
     about_eyebrow:"Quiénes somos",
     about_title:"El primer programa escolar que enseña a <em>gestionar alergias e intolerancias.</em>",
@@ -454,7 +452,8 @@ const T = {
       {icon:"📞",label:"Teléfono",value:"+39 347 375 0087",href:"tel:+393473750087"},
       {icon:"📍",label:"Estudio",value:"Via Mazzini 129 — Novi Ligure"},
       {icon:"🌐",label:"Web Serafina",value:"serafinacardacinutrizione.com",href:"https://www.serafinacardacinutrizione.com/"},
-      {icon:"📱",label:"Social",value:"Instagram · Facebook",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/"},
+      {icon:"📱",label:"Social Serafina",value:"Instagram · Facebook · LinkedIn",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
+      {icon:"💼",label:"LinkedIn Patrick",value:"linkedin.com/in/patrickorlando86",href:"https://www.linkedin.com/in/patrickorlando86/?locale=it"},
       {icon:"📋",label:"Para biólogos",value:"Accede al portal operativo S.A.N.E.",href:"portale.html"}
     ],
     footer:"Ciencia Alimentaria Nutricional Educativa"
@@ -466,9 +465,9 @@ const T = {
     hero_title:"<span class='em'>Food safety</span><br>for every<br>child.",
     hero_sub:"S.A.N.E. Italia brings to schools the first scientific programme integrating nutritional education and allergy & food intolerance management, led by certified nutritionist biologists.",
     hero_btn1:"Discover the programme",hero_btn2:"Talk to us",
-    stat1_label:"students in the first pilot · I.C. Carducci–Fattori, Rosignano Marittimo",
-    stat2_label:"allergens managed in the educational game «Il Piatto Sano»",
-    stat3_label:"languages supported in «Il Piatto Sano» — IT, EN, ES",
+    stat1_label:"thematic modules — from nutrition to allergy management",
+    stat2_label:"EU allergens managed in the «Il Piatto Sano» app",
+    stat3_label:"years old — the age range the programme is designed for",
     acr:[{l:"S",w:"Scientific",d:"Certified, up-to-date scientific bases"},{l:"A",w:"Alimentary",d:"Correct eating behaviours from an early age"},{l:"N",w:"Nutritional",d:"Expertise of certified nutritionist biologists"},{l:"E",w:"Education",d:"A playful method for school and family"}],
     about_eyebrow:"Who we are",
     about_title:"The first school programme that teaches children to <em>manage allergies and intolerances.</em>",
@@ -512,7 +511,8 @@ const T = {
       {icon:"📞",label:"Phone",value:"+39 347 375 0087",href:"tel:+393473750087"},
       {icon:"📍",label:"Office",value:"Via Mazzini 129 — Novi Ligure"},
       {icon:"🌐",label:"Serafina's website",value:"serafinacardacinutrizione.com",href:"https://www.serafinacardacinutrizione.com/"},
-      {icon:"📱",label:"Social",value:"Instagram · Facebook",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/"},
+      {icon:"📱",label:"Social Serafina",value:"Instagram · Facebook · LinkedIn",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
+      {icon:"💼",label:"LinkedIn Patrick",value:"linkedin.com/in/patrickorlando86",href:"https://www.linkedin.com/in/patrickorlando86/?locale=it"},
       {icon:"📋",label:"For biologists",value:"Access the S.A.N.E. operational portal",href:"portale.html"}
     ],
     footer:"Scientific Alimentary Nutritional Education"
@@ -576,9 +576,10 @@ function render(l) {
   // contact items
   document.getElementById('contact-items').innerHTML = t.ci.map(c => {
     if (c.ig) {
-      return `<div class="ci"><div class="ci-icon">${c.icon}</div><div><div class="ci-label">${c.label}</div><div class="ci-value" style="display:flex;gap:.7rem;margin-top:.2rem">
+      return `<div class="ci"><div class="ci-icon">${c.icon}</div><div><div class="ci-label">${c.label}</div><div class="ci-value" style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.2rem">
         <a href="${c.ig}" target="_blank" class="ci-social"><i class="fab fa-instagram"></i> Instagram</a>
         <a href="${c.fb}" target="_blank" class="ci-social"><i class="fab fa-facebook"></i> Facebook</a>
+        ${c.li ? `<a href="${c.li}" target="_blank" class="ci-social"><i class="fab fa-linkedin"></i> LinkedIn</a>` : ''}
       </div></div></div>`;
     }
     if (c.href) {
