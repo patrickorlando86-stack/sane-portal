@@ -111,6 +111,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .btn-p:hover{background:var(--gm);transform:translateY(-2px)}
 .btn-s{background:transparent;color:var(--g);padding:.8rem 2rem;font-size:.86rem;font-weight:600;letter-spacing:.04em;border:2px solid var(--g);cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;border-radius:8px}
 .btn-s:hover{border-color:var(--gm);color:var(--gm)}
+.hero-dl{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;font-size:.78rem;color:var(--gr);text-decoration:none;transition:color .2s;font-weight:500}
+.hero-dl::before{content:"↓";font-size:.9rem;color:var(--gm)}
+.hero-dl:hover{color:var(--gm)}
 .hero-r{background:linear-gradient(135deg,var(--g) 0%,#0d3460 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
 .hero-r::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,150,.18) 0%,transparent 70%);top:-120px;right:-120px}
 .hero-r::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.1) 0%,transparent 70%);bottom:-60px;left:30px}
@@ -214,23 +217,30 @@ section{padding:4.5rem 4rem}
 .partner-item:hover{color:var(--gl)}
 
 /* CONTACT */
-.contact-sec{background:var(--cr);color:var(--g);display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
-.contact-sec .sec-title{color:var(--g)}
-.contact-sec .eyebrow{color:var(--gm)}
-.contact-sec .desc{color:var(--gr);margin-top:1.2rem;line-height:1.8;font-size:.97rem}
-.contact-items{display:flex;flex-direction:column;gap:.8rem}
-.ci{background:#fff;border:1px solid rgba(10,38,71,.1);padding:1.2rem 1.5rem;display:flex;gap:1.2rem;align-items:center;border-radius:10px}
-.ci-link{background:#fff;border:1px solid rgba(10,38,71,.1);padding:1.2rem 1.5rem;display:flex;gap:1.2rem;align-items:center;text-decoration:none;transition:background .2s,border-color .2s;cursor:pointer;border-radius:10px}
-.ci-link:hover{background:var(--g);border-color:var(--g)}
-.ci-link:hover .ci-label{color:var(--gl)}
-.ci-link:hover .ci-value{color:#fff}
-.ci-icon{font-size:1.3rem}
-.ci-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.14em;color:var(--gm)}
-.ci-value{font-size:.88rem;color:var(--g);margin-top:.15rem;font-weight:500}
-.ci-social{font-size:.82rem;color:var(--gm);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:.3rem;transition:color .2s}
-.ci-social:hover{color:var(--g)}
-.contact-sec .btn-p{background:var(--g)}
-.contact-sec .btn-p:hover{background:var(--gm)}
+.contact-sec{background:var(--g);color:#fff;padding:4.5rem 4rem}
+.contact-sec .sec-title{color:#fff;max-width:100%}
+.contact-sec .eyebrow{color:var(--gl)}
+.contact-sec .desc{color:rgba(255,255,255,.6);margin-top:1rem;line-height:1.8;font-size:.95rem;max-width:600px}
+.contact-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2.5rem}
+.cc{background:rgba(255,255,255,.06);border:1px solid rgba(0,201,177,.2);border-radius:16px;padding:1.8rem 2rem;transition:border-color .2s,background .2s}
+.cc:hover{background:rgba(255,255,255,.1);border-color:var(--gl)}
+.cc-head{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem}
+.cc-avatar{width:44px;height:44px;border-radius:50%;overflow:hidden;background:var(--gl);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:var(--g);flex-shrink:0}
+.cc-avatar img{width:100%;height:100%;object-fit:cover;object-position:top}
+.cc-name{font-size:.95rem;font-weight:700;color:#fff;line-height:1.2}
+.cc-role{font-size:.7rem;color:var(--gl);margin-top:.15rem;letter-spacing:.03em}
+.cc-lines{display:flex;flex-direction:column;gap:.5rem}
+.cc-line{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:rgba(255,255,255,.75)}
+.cc-line a{color:rgba(255,255,255,.75);text-decoration:none;transition:color .2s}
+.cc-line a:hover{color:var(--gl)}
+.cc-socials{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.1)}
+.cc-social{font-size:.78rem;color:rgba(255,255,255,.6);text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;transition:color .2s;font-weight:500}
+.cc-social:hover{color:var(--gl)}
+.cc-portal{grid-column:1/-1;background:rgba(0,201,177,.12);border-color:var(--gl);text-decoration:none;display:flex;align-items:center;justify-content:space-between;padding:1.4rem 2rem}
+.cc-portal:hover{background:rgba(0,201,177,.22)}
+.cc-portal-text{font-size:.95rem;font-weight:600;color:#fff}
+.cc-portal-sub{font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.2rem}
+.cc-arrow{font-size:1.4rem;color:var(--gl)}
 
 footer{background:var(--dn);color:rgba(255,255,255,.35);padding:1.8rem 4rem;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;letter-spacing:.05em}
 footer strong{color:rgba(255,255,255,.7)}
@@ -245,7 +255,9 @@ footer a:hover{color:var(--gl)}
   .hero-l{padding:5.5rem 1.5rem 2.5rem}
   .acr{grid-template-columns:repeat(2,1fr);padding:1.5rem}
   section{padding:2.5rem 1.5rem}
-  .about-grid,.contact-sec{grid-template-columns:1fr;gap:2rem}
+  .contact-sec{padding:2.5rem 1.5rem}
+  .contact-cards{grid-template-columns:1fr}
+  .about-grid{grid-template-columns:1fr;gap:2rem}
   .game-inner{grid-template-columns:1fr;gap:2rem}
   .game-cards{grid-template-columns:1fr 1fr}
   .cards-grid{grid-template-columns:1fr}
@@ -289,6 +301,7 @@ footer a:hover{color:var(--gl)}
       <a href="https://ilpiattosano.netlify.app" target="_blank" class="btn-p" data-k="hero_btn1"></a>
       <a href="#contact" class="btn-s" data-k="hero_btn2"></a>
     </div>
+    <a href="locandina.pdf" download class="hero-dl" data-k="hero_dl"></a>
   </div>
   <div class="hero-r">
     <div class="stats">
@@ -381,13 +394,10 @@ footer a:hover{color:var(--gl)}
 
 <!-- CONTACT -->
 <section id="contact" class="contact-sec">
-  <div>
-    <p class="eyebrow" data-k="contact_eyebrow"></p>
-    <h2 class="sec-title" data-k="contact_title"></h2>
-    <p class="desc" data-k="contact_desc"></p>
-    <a href="mailto:serafinacardaci@gmail.com" class="btn-p" style="margin-top:1.5rem;display:inline-block">serafinacardaci@gmail.com</a>
-  </div>
-  <div class="contact-items" id="contact-items"></div>
+  <p class="eyebrow" data-k="contact_eyebrow"></p>
+  <h2 class="sec-title" data-k="contact_title"></h2>
+  <p class="desc" data-k="contact_desc"></p>
+  <div class="contact-cards" id="contact-cards"></div>
 </section>
 
 <footer>
@@ -403,7 +413,7 @@ const T = {
     hero_eyebrow:"Programma di Educazione Alimentare · Scuole Elementari e Medie",
     hero_title:"Mangiare Bene,<br><em>Crescere Meglio.</em>",
     hero_sub:"Un percorso strutturato in 6 moduli tematici, progettato da una Biologa Nutrizionista qualificata, che integra interventi in presenza, strumenti digitali interattivi e coinvolgimento attivo delle famiglie. Rivolto a bambini dai 6 ai 13 anni.",
-    hero_btn1:"Prova l'app gratuita",hero_btn2:"Parla con noi",
+    hero_btn1:"Prova l'app gratuita",hero_btn2:"Parla con noi",hero_dl:"Scarica la locandina (PDF)",
     stat1_label:"moduli tematici del programma — dalla nutrizione alle allergie",
     stat2_label:"allergeni EU gestiti nell'app «Il Piatto Sano»",
     stat3_label:"anni — fascia d'età a cui è rivolto il programma",
@@ -446,13 +456,9 @@ const T = {
     contact_title:"Porta S.A.N.E. nella tua <em>scuola</em> o territorio.",
     contact_desc:"Sei un dirigente scolastico, un biologo nutrizionista, un genitore di un bambino con allergie o un ente locale? Scrivici.",
     ci:[
-      {icon:"🔬",label:"Dott.ssa Serafina Cardaci",value:"serafinacardaci@gmail.com · +39 347 375 0087",href:"mailto:serafinacardaci@gmail.com"},
-      {icon:"💻",label:"Ing. Patrick Orlando",value:"patrick.orlando@libero.it · +39 347 183 4091",href:"mailto:patrick.orlando@libero.it"},
-      {icon:"📍",label:"Studio",value:"Via Mazzini 129 — Novi Ligure (AL)"},
-      {icon:"🌐",label:"Sito Serafina",value:"serafinacardacinutrizione.com",href:"https://www.serafinacardacinutrizione.com/"},
-      {icon:"📱",label:"Social Serafina",value:"Instagram · Facebook · LinkedIn",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
-      {icon:"💼",label:"LinkedIn Patrick",value:"linkedin.com/in/patrickorlando86",href:"https://www.linkedin.com/in/patrickorlando86/?locale=it"},
-      {icon:"📋",label:"Per i biologi",value:"Accedi al portale operativo S.A.N.E.",href:"portale.html"}
+      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Biologa Nutrizionista · Responsabile Scientifica",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
+      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"Sviluppatore App · Partner Tecnologico e Media",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"},
+      {type:"portal",label:"Per i biologi",sub:"Portale operativo S.A.N.E. Italia",href:"portale.html"}
     ],
     footer:"Sicurezza · Alimentazione · Nutrizione · Educazione"
   },
@@ -462,7 +468,7 @@ const T = {
     hero_eyebrow:"Ciencia Alimentaria Nutricional Educativa",
     hero_title:"<span class='em'>Seguridad</span><br>alimentaria<br>para cada niño.",
     hero_sub:"S.A.N.E. Italia lleva a las escuelas el primer programa científico que integra educación nutricional y gestión de alergias e intolerancias alimentarias, guiado por biólogos nutricionistas certificados.",
-    hero_btn1:"Descubre el programa",hero_btn2:"Habla con nosotros",
+    hero_btn1:"Descubre el programa",hero_btn2:"Habla con nosotros",hero_dl:"Descargar el folleto (PDF)",
     stat1_label:"módulos temáticos del programa — de la nutrición a las alergias",
     stat2_label:"alérgenos EU gestionados en la app «Il Piatto Sano»",
     stat3_label:"años — franja de edad a la que va dirigido el programa",
@@ -505,13 +511,9 @@ const T = {
     contact_title:"Lleva S.A.N.E. a tu <em>escuela</em> o territorio.",
     contact_desc:"¿Eres director escolar, biólogo nutricionista, padre de un niño con alergias o entidad local? Escríbenos.",
     ci:[
-      {icon:"📧",label:"Email",value:"serafinacardaci@gmail.com",href:"mailto:serafinacardaci@gmail.com"},
-      {icon:"📞",label:"Teléfono",value:"+39 347 375 0087",href:"tel:+393473750087"},
-      {icon:"📍",label:"Estudio",value:"Via Mazzini 129 — Novi Ligure"},
-      {icon:"🌐",label:"Web Serafina",value:"serafinacardacinutrizione.com",href:"https://www.serafinacardacinutrizione.com/"},
-      {icon:"📱",label:"Social Serafina",value:"Instagram · Facebook · LinkedIn",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
-      {icon:"💼",label:"LinkedIn Patrick",value:"linkedin.com/in/patrickorlando86",href:"https://www.linkedin.com/in/patrickorlando86/?locale=it"},
-      {icon:"📋",label:"Para biólogos",value:"Accede al portal operativo S.A.N.E.",href:"portale.html"}
+      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Bióloga Nutricionista · Responsable Científica",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
+      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"Desarrollador App · Partner Tecnológico y Media",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"},
+      {type:"portal",label:"Para biólogos",sub:"Portal operativo S.A.N.E. Italia",href:"portale.html"}
     ],
     footer:"Ciencia Alimentaria Nutricional Educativa"
   },
@@ -521,7 +523,7 @@ const T = {
     hero_eyebrow:"Scientific Alimentary Nutritional Education",
     hero_title:"<span class='em'>Food safety</span><br>for every<br>child.",
     hero_sub:"S.A.N.E. Italia brings to schools the first scientific programme integrating nutritional education and allergy & food intolerance management, led by certified nutritionist biologists.",
-    hero_btn1:"Discover the programme",hero_btn2:"Talk to us",
+    hero_btn1:"Discover the programme",hero_btn2:"Talk to us",hero_dl:"Download the brochure (PDF)",
     stat1_label:"thematic modules — from nutrition to allergy management",
     stat2_label:"EU allergens managed in the «Il Piatto Sano» app",
     stat3_label:"years old — the age range the programme is designed for",
@@ -564,13 +566,9 @@ const T = {
     contact_title:"Bring S.A.N.E. to your <em>school</em> or area.",
     contact_desc:"Are you a school principal, a nutritionist biologist, a parent of an allergic child, or a local authority? Write to us.",
     ci:[
-      {icon:"📧",label:"Email",value:"serafinacardaci@gmail.com",href:"mailto:serafinacardaci@gmail.com"},
-      {icon:"📞",label:"Phone",value:"+39 347 375 0087",href:"tel:+393473750087"},
-      {icon:"📍",label:"Office",value:"Via Mazzini 129 — Novi Ligure"},
-      {icon:"🌐",label:"Serafina's website",value:"serafinacardacinutrizione.com",href:"https://www.serafinacardacinutrizione.com/"},
-      {icon:"📱",label:"Social Serafina",value:"Instagram · Facebook · LinkedIn",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
-      {icon:"💼",label:"LinkedIn Patrick",value:"linkedin.com/in/patrickorlando86",href:"https://www.linkedin.com/in/patrickorlando86/?locale=it"},
-      {icon:"📋",label:"For biologists",value:"Access the S.A.N.E. operational portal",href:"portale.html"}
+      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Nutritionist Biologist · Scientific Director",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
+      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"App Developer · Technology & Media Partner",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"},
+      {type:"portal",label:"For biologists",sub:"S.A.N.E. Italia operational portal",href:"portale.html"}
     ],
     footer:"Scientific Alimentary Nutritional Education"
   }
@@ -630,19 +628,34 @@ function render(l) {
     `<div class="ser-cred">${c}</div>`
   ).join('');
 
-  // contact items
-  document.getElementById('contact-items').innerHTML = t.ci.map(c => {
-    if (c.ig) {
-      return `<div class="ci"><div class="ci-icon">${c.icon}</div><div><div class="ci-label">${c.label}</div><div class="ci-value" style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.2rem">
-        <a href="${c.ig}" target="_blank" class="ci-social"><i class="fab fa-instagram"></i> Instagram</a>
-        <a href="${c.fb}" target="_blank" class="ci-social"><i class="fab fa-facebook"></i> Facebook</a>
-        ${c.li ? `<a href="${c.li}" target="_blank" class="ci-social"><i class="fab fa-linkedin"></i> LinkedIn</a>` : ''}
-      </div></div></div>`;
+  // contact cards
+  document.getElementById('contact-cards').innerHTML = t.ci.map(c => {
+    if (c.type === 'person') {
+      return `<div class="cc">
+        <div class="cc-head">
+          <div class="cc-avatar"><img src="${c.img}" alt="${c.name}"></div>
+          <div><div class="cc-name">${c.name}</div><div class="cc-role">${c.role}</div></div>
+        </div>
+        <div class="cc-lines">
+          <div class="cc-line">📧 <a href="mailto:${c.email}">${c.email}</a></div>
+          <div class="cc-line">📞 <a href="tel:${c.tel.replace(/\s/g,'')}">${c.tel}</a></div>
+          ${c.address ? `<div class="cc-line">📍 ${c.address}</div>` : ''}
+          ${c.site ? `<div class="cc-line">🌐 <a href="${c.site}" target="_blank">${c.sitelabel}</a></div>` : ''}
+        </div>
+        <div class="cc-socials">
+          ${c.ig ? `<a href="${c.ig}" target="_blank" class="cc-social"><i class="fab fa-instagram"></i> Instagram</a>` : ''}
+          ${c.fb ? `<a href="${c.fb}" target="_blank" class="cc-social"><i class="fab fa-facebook"></i> Facebook</a>` : ''}
+          ${c.li ? `<a href="${c.li}" target="_blank" class="cc-social"><i class="fab fa-linkedin"></i> LinkedIn</a>` : ''}
+        </div>
+      </div>`;
     }
-    if (c.href) {
-      return `<a href="${c.href}" target="${c.href.startsWith('http')?'_blank':'_self'}" class="ci ci-link"><div class="ci-icon">${c.icon}</div><div><div class="ci-label">${c.label}</div><div class="ci-value">${c.value} →</div></div></a>`;
+    if (c.type === 'portal') {
+      return `<a href="${c.href}" class="cc cc-portal">
+        <div><div class="cc-portal-text">🔐 ${c.label}</div><div class="cc-portal-sub">${c.sub}</div></div>
+        <div class="cc-arrow">→</div>
+      </a>`;
     }
-    return `<div class="ci"><div class="ci-icon">${c.icon}</div><div><div class="ci-label">${c.label}</div><div class="ci-value">${c.value}</div></div></div>`;
+    return '';
   }).join('');
 }
 

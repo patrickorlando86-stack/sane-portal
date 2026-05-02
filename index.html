@@ -111,6 +111,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .btn-p:hover{background:var(--gm);transform:translateY(-2px)}
 .btn-s{background:transparent;color:var(--g);padding:.8rem 2rem;font-size:.86rem;font-weight:600;letter-spacing:.04em;border:2px solid var(--g);cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;border-radius:8px}
 .btn-s:hover{border-color:var(--gm);color:var(--gm)}
+.hero-dl{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;font-size:.78rem;color:var(--gr);text-decoration:none;transition:color .2s;font-weight:500}
+.hero-dl::before{content:"↓";font-size:.9rem;color:var(--gm)}
+.hero-dl:hover{color:var(--gm)}
 .hero-r{background:linear-gradient(135deg,var(--g) 0%,#0d3460 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
 .hero-r::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,150,.18) 0%,transparent 70%);top:-120px;right:-120px}
 .hero-r::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.1) 0%,transparent 70%);bottom:-60px;left:30px}
@@ -298,6 +301,7 @@ footer a:hover{color:var(--gl)}
       <a href="https://ilpiattosano.netlify.app" target="_blank" class="btn-p" data-k="hero_btn1"></a>
       <a href="#contact" class="btn-s" data-k="hero_btn2"></a>
     </div>
+    <a href="locandina.pdf" download class="hero-dl" data-k="hero_dl"></a>
   </div>
   <div class="hero-r">
     <div class="stats">
@@ -409,7 +413,7 @@ const T = {
     hero_eyebrow:"Programma di Educazione Alimentare · Scuole Elementari e Medie",
     hero_title:"Mangiare Bene,<br><em>Crescere Meglio.</em>",
     hero_sub:"Un percorso strutturato in 6 moduli tematici, progettato da una Biologa Nutrizionista qualificata, che integra interventi in presenza, strumenti digitali interattivi e coinvolgimento attivo delle famiglie. Rivolto a bambini dai 6 ai 13 anni.",
-    hero_btn1:"Prova l'app gratuita",hero_btn2:"Parla con noi",
+    hero_btn1:"Prova l'app gratuita",hero_btn2:"Parla con noi",hero_dl:"Scarica la locandina (PDF)",
     stat1_label:"moduli tematici del programma — dalla nutrizione alle allergie",
     stat2_label:"allergeni EU gestiti nell'app «Il Piatto Sano»",
     stat3_label:"anni — fascia d'età a cui è rivolto il programma",
@@ -464,7 +468,7 @@ const T = {
     hero_eyebrow:"Ciencia Alimentaria Nutricional Educativa",
     hero_title:"<span class='em'>Seguridad</span><br>alimentaria<br>para cada niño.",
     hero_sub:"S.A.N.E. Italia lleva a las escuelas el primer programa científico que integra educación nutricional y gestión de alergias e intolerancias alimentarias, guiado por biólogos nutricionistas certificados.",
-    hero_btn1:"Descubre el programa",hero_btn2:"Habla con nosotros",
+    hero_btn1:"Descubre el programa",hero_btn2:"Habla con nosotros",hero_dl:"Descargar el folleto (PDF)",
     stat1_label:"módulos temáticos del programa — de la nutrición a las alergias",
     stat2_label:"alérgenos EU gestionados en la app «Il Piatto Sano»",
     stat3_label:"años — franja de edad a la que va dirigido el programa",
@@ -519,7 +523,7 @@ const T = {
     hero_eyebrow:"Scientific Alimentary Nutritional Education",
     hero_title:"<span class='em'>Food safety</span><br>for every<br>child.",
     hero_sub:"S.A.N.E. Italia brings to schools the first scientific programme integrating nutritional education and allergy & food intolerance management, led by certified nutritionist biologists.",
-    hero_btn1:"Discover the programme",hero_btn2:"Talk to us",
+    hero_btn1:"Discover the programme",hero_btn2:"Talk to us",hero_dl:"Download the brochure (PDF)",
     stat1_label:"thematic modules — from nutrition to allergy management",
     stat2_label:"EU allergens managed in the «Il Piatto Sano» app",
     stat3_label:"years old — the age range the programme is designed for",
