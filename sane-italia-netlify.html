@@ -573,11 +573,6 @@ function render(l) {
     `<div class="ser-cred">${c}</div>`
   ).join('');
 
-  // partners
-  document.getElementById('partner-list').innerHTML = t.partners.map(p =>
-    `<div class="partner-item">${p}</div>`
-  ).join('');
-
   // contact items
   document.getElementById('contact-items').innerHTML = t.ci.map(c => {
     if (c.ig) {
