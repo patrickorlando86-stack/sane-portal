@@ -128,7 +128,8 @@ section{padding:4.5rem 4rem}
 .step p{font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.65}
 
 /* TEAM */
-.ser-init{width:72px;height:72px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:1.4rem;font-weight:800;color:var(--g);flex-shrink:0}
+.ser-init{width:68px;height:68px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:1.4rem;font-weight:800;color:var(--g);flex-shrink:0;overflow:hidden;border:3px solid rgba(255,255,255,.15)}
+.ser-init img{width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:50%}
 .ser-name{font-family:'Inter',sans-serif;font-size:1.2rem;font-weight:700}
 .ser-role{font-size:.78rem;color:var(--gl);margin-top:.2rem;letter-spacing:.04em}
 .ser-creds{margin-top:1.2rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
@@ -298,7 +299,9 @@ footer a:hover{color:var(--gl)}
   <div class="team-grid">
     <div class="team-card">
       <div class="team-top">
-        <div class="ser-init">SC</div>
+        <div class="ser-init">
+          <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/serafina.webp" alt="Serafina Cardaci">
+        </div>
         <div><div class="ser-name">Serafina Cardaci</div><div class="ser-role" data-k="ser_role"></div></div>
       </div>
       <div class="ser-creds" id="ser-creds"></div>
@@ -307,7 +310,9 @@ footer a:hover{color:var(--gl)}
     </div>
     <div class="team-card team-card-alt">
       <div class="team-top">
-        <div class="ser-init pat-init">PO</div>
+        <div class="ser-init" style="border-color:rgba(10,38,71,.12)">
+          <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/patrick.webp" alt="Patrick Orlando">
+        </div>
         <div><div class="ser-name">Patrick Orlando</div><div class="ser-role" data-k="pat_role"></div></div>
       </div>
       <div class="ser-creds" id="pat-creds"></div>
