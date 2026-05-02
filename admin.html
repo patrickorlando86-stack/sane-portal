@@ -251,7 +251,7 @@
         </div>
 
         <div style="margin-top:16px;text-align:center;">
-            <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
+            <a href="portale.html" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
                 <i class="fas fa-arrow-left" style="font-size:10px;"></i> Torna alla pagina iniziale
             </a>
         </div>
@@ -681,7 +681,7 @@ async function doLogin(){
 
 function doLogout(){
     adminState = { biologi:[], role:'admin', regioneAdmin:null, nomeAdmin:'' };
-    db.auth.signOut().then(()=>{ window.location.href='index.html'; });
+    db.auth.signOut().then(()=>{ window.location.href='portale.html'; });
 }
 
 async function caricaDati(){
@@ -2395,7 +2395,7 @@ db.auth.onAuthStateChange(async (event, session) => {
         try { await avviaAdmin(session.user); clearTimeout(_t); }
         catch(err){ clearTimeout(_t); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
     } else if(event === 'SIGNED_OUT'){
-        window.location.href='index.html';
+        window.location.href='portale.html';
     }
 });
 

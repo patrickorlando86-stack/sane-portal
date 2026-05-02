@@ -321,7 +321,7 @@
             <button onclick="tornaAlLogin()" style="width:100%;background:var(--teal);color:white;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;">Torna al Login</button>
         </div>
         <div style="margin-top:20px;text-align:center;">
-            <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
+            <a href="portale.html" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
                 <i class="fas fa-arrow-left" style="font-size:10px;"></i> Torna alla pagina iniziale
             </a>
         </div>
@@ -1231,7 +1231,7 @@ async function doLogout(){
     Object.keys(localStorage).filter(k=>k.startsWith('sane_')).forEach(k=>localStorage.removeItem(k));
     document.getElementById('appShell').style.opacity='0';
     await db.auth.signOut();
-    window.location.href='index.html';
+    window.location.href='portale.html';
 }
 
 async function caricaDati(targetId=null){
