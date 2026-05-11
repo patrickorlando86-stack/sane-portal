@@ -41,7 +41,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -349,41 +349,25 @@ footer a:hover{color:var(--gl)}
   <div>&copy; 2025&ndash;2026 Dott.ssa Serafina Cardaci &amp; Ing. Patrick Orlando &mdash; Tutti i diritti riservati</div>
 </footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WPnI=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 // =====================
 // DATI SCUOLE
 // =====================
 const scuoleAderenti = [
   {
-    nome: "Scuola Primaria di Rosignano Marittimo",
+    nome: "I.C. Carducci-Fattori di Rosignano Marittimo",
     comune: "Rosignano Marittimo",
     provincia: "LI",
     regione: "Toscana",
     lat: 43.4076,
     lng: 10.4731,
-    bambini: 25,
-    classi: 1,
+    bambini: 100,
+    classi: 5,
     dataAttivazione: "2026-01",
     tipoAdesione: "Programma Completo",
     miglioramentoPrePost: 117,
     raccomandazioneInsegnanti: 100,
-    testimonianza: "",
-    foto: ""
-  },
-  {
-    nome: "Scuola Primaria di Belluno",
-    comune: "Belluno",
-    provincia: "BL",
-    regione: "Veneto",
-    lat: 46.1391,
-    lng: 12.2158,
-    bambini: null,
-    classi: 1,
-    dataAttivazione: "2026-05",
-    tipoAdesione: "Kit Classe",
-    miglioramentoPrePost: null,
-    raccomandazioneInsegnanti: null,
     testimonianza: "",
     foto: ""
   }
@@ -438,13 +422,12 @@ observer.observe(document.querySelector('.stats-sec'));
 // =====================
 // MAPPA LEAFLET
 // =====================
-const map = L.map('mappa-italia', { scrollWheelZoom: false }).setView([42.5, 12.5], 5);
-
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-  subdomains: 'abcd',
-  maxZoom: 19
-}).addTo(map);
+function formatData(str) {
+  if (!str) return 'N.d.';
+  const [y, m] = str.split('-');
+  const mesi = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+  return mesi[parseInt(m, 10) - 1] + ' ' + y;
+}
 
 function makeIcon(color) {
   return L.divIcon({
@@ -456,32 +439,36 @@ function makeIcon(color) {
   });
 }
 
-const iconCompleto = makeIcon('#00A896');
-const iconKit = makeIcon('#3b82f6');
+document.addEventListener('DOMContentLoaded', function() {
+  const map = L.map('mappa-italia', { scrollWheelZoom: false }).setView([42.5, 12.5], 5);
 
-function formatData(str) {
-  if (!str) return 'N.d.';
-  const [y, m] = str.split('-');
-  const mesi = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
-  return mesi[parseInt(m, 10) - 1] + ' ' + y;
-}
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
 
-scuoleAderenti.forEach(s => {
-  const icon = s.tipoAdesione === 'Programma Completo' ? iconCompleto : iconKit;
-  const badgeClass = s.tipoAdesione === 'Programma Completo' ? 'completo' : 'kit';
+  const iconCompleto = makeIcon('#00A896');
+  const iconKit = makeIcon('#3b82f6');
 
-  const popupHtml = `
-    <div class="popup-nome">${s.nome}</div>
-    <div class="popup-luogo">📍 ${s.comune} (${s.provincia}) &middot; ${s.regione}</div>
-    <span class="popup-badge ${badgeClass}">${s.tipoAdesione}</span>
-    <div class="popup-meta">
-      <span><strong>Bambini:</strong> ${s.bambini !== null ? s.bambini : 'N.d.'}</span>
-      <span><strong>Classi:</strong> ${s.classi}</span>
-      <span><strong>Attivazione:</strong> ${formatData(s.dataAttivazione)}</span>
-      ${s.miglioramentoPrePost !== null ? `<span><strong>Miglioramento PRE/POST:</strong> +${s.miglioramentoPrePost}%</span>` : ''}
-    </div>
-  `;
-  L.marker([s.lat, s.lng], { icon }).addTo(map).bindPopup(popupHtml, { maxWidth: 260 });
+  scuoleAderenti.forEach(s => {
+    const icon = s.tipoAdesione === 'Programma Completo' ? iconCompleto : iconKit;
+    const badgeClass = s.tipoAdesione === 'Programma Completo' ? 'completo' : 'kit';
+
+    const popupHtml = `
+      <div class="popup-nome">${s.nome}</div>
+      <div class="popup-luogo">📍 ${s.comune} (${s.provincia}) &middot; ${s.regione}</div>
+      <span class="popup-badge ${badgeClass}">${s.tipoAdesione}</span>
+      <div class="popup-meta">
+        <span><strong>Bambini:</strong> ${s.bambini !== null ? s.bambini : 'N.d.'}</span>
+        <span><strong>Classi:</strong> ${s.classi}</span>
+        <span><strong>Attivazione:</strong> ${formatData(s.dataAttivazione)}</span>
+        ${s.miglioramentoPrePost !== null ? `<span><strong>Miglioramento PRE/POST:</strong> +${s.miglioramentoPrePost}%</span>` : ''}
+      </div>
+    `;
+    L.marker([s.lat, s.lng], { icon }).addTo(map).bindPopup(popupHtml, { maxWidth: 260 });
+  });
+
+  setTimeout(() => map.invalidateSize(), 300);
 });
 
 // =====================
