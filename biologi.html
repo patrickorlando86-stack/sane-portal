@@ -196,7 +196,7 @@ footer a:hover{color:var(--gl)}
   <h2 class="sec-title" data-k="stats_title"></h2>
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-num">2</div>
+      <div class="stat-num">3</div>
       <div class="stat-label" data-k="stat1_label"></div>
     </div>
     <div class="stat-card">
@@ -222,12 +222,12 @@ footer a:hover{color:var(--gl)}
   <div id="mappa-biologi"></div>
 </section>
 
-<!-- BIOLOGI GRID -->
+<!-- LA RETE -->
 <section class="biologi-sec">
   <p class="eyebrow" data-k="biologi_eyebrow"></p>
   <h2 class="sec-title" data-k="biologi_title"></h2>
   <p class="sec-desc" data-k="biologi_desc"></p>
-  <div class="biologi-grid" id="biologi-grid"></div>
+  <p class="sec-desc" data-k="biologi_desc2" style="margin-top:1rem"></p>
 </section>
 
 <!-- NOTA CONTATTI -->
@@ -273,29 +273,7 @@ footer a:hover{color:var(--gl)}
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
-// =====================
-// DATI BIOLOGI (invarianti)
-// =====================
-const biologiSane = [
-  {
-    nome: "Dott.ssa Serafina Cardaci",
-    titolo: "Biologa Nutrizionista",
-    ruolo_key: "biologo_ruolo_direttrice",
-    regione: "Piemonte",
-    spec_key: "biologo_spec_serafina",
-    foto: "https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/serafina.webp"
-  },
-  {
-    nome: "Biologa S.A.N.E.",
-    titolo: "Biologa Nutrizionista",
-    ruolo_key: "biologo_ruolo_certificata",
-    regione: "Piemonte",
-    spec_key: "biologo_spec_generica",
-    foto: ""
-  }
-];
-
-const regioniAttive = ["Piemonte"];
+const regioniAttive = ["Piemonte", "Toscana"];
 
 // =====================
 // TRADUZIONI
@@ -320,14 +298,10 @@ const T = {
     legend_espansione: "In espansione",
     map_tooltip_attivo: "Biologo S.A.N.E. attivo",
     map_tooltip_espansione: "In espansione",
-    biologi_eyebrow: "I professionisti della rete",
+    biologi_eyebrow: "La rete di professionisti",
     biologi_title: "Chi porta S.A.N.E. <em>nelle scuole</em>",
-    biologi_desc: "Ogni biologo della rete ha seguito la formazione specifica S.A.N.E. Italia e opera secondo il metodo scientifico sviluppato dalla Dott.ssa Cardaci.",
-    cert_badge: "Certificato S.A.N.E.",
-    biologo_ruolo_direttrice: "Direttrice Scientifica S.A.N.E. Italia",
-    biologo_ruolo_certificata: "Biologa Certificata S.A.N.E.",
-    biologo_spec_serafina: "Educazione alimentare infantile, allergie e intolleranze alimentari",
-    biologo_spec_generica: "Educazione alimentare scolastica",
+    biologi_desc: "La rete S.A.N.E. Italia e composta da biologi nutrizionisti selezionati e formati direttamente dalla Dott.ssa Serafina Cardaci. Ogni professionista ha completato il percorso di certificazione S.A.N.E. e opera nelle scuole del proprio territorio secondo il metodo scientifico del programma.",
+    biologi_desc2: "I contatti con la rete avvengono esclusivamente tramite S.A.N.E. Italia, per garantire la qualita e la coerenza del programma in ogni scuola.",
     nota_text: "<strong>I contatti con i biologi della rete passano esclusivamente attraverso S.A.N.E. Italia.</strong> Questo garantisce la qualita e la coerenza del programma in ogni scuola. Non vengono forniti contatti diretti dei singoli professionisti: ogni richiesta viene gestita centralmente per assicurare il miglior abbinamento tra scuola e biologo sul territorio.",
     cand_eyebrow: "Per i professionisti",
     cand_title: "Sei un biologo nutrizionista?",
@@ -369,14 +343,10 @@ const T = {
     legend_espansione: "En expansion",
     map_tooltip_attivo: "Biologo S.A.N.E. activo",
     map_tooltip_espansione: "En expansion",
-    biologi_eyebrow: "Los profesionales de la red",
+    biologi_eyebrow: "La red de profesionales",
     biologi_title: "Quien lleva S.A.N.E. <em>a las escuelas</em>",
-    biologi_desc: "Cada biologo de la red ha completado la formacion especifica S.A.N.E. Italia y opera segun el metodo cientifico desarrollado por la Dott.ssa Cardaci.",
-    cert_badge: "Certificado S.A.N.E.",
-    biologo_ruolo_direttrice: "Directora Cientifica S.A.N.E. Italia",
-    biologo_ruolo_certificata: "Biologa Certificada S.A.N.E.",
-    biologo_spec_serafina: "Educacion alimentaria infantil, alergias e intolerancias alimentarias",
-    biologo_spec_generica: "Educacion alimentaria escolar",
+    biologi_desc: "La red S.A.N.E. Italia esta compuesta por biologos nutricionistas seleccionados y formados directamente por la Dott.ssa Serafina Cardaci. Cada profesional ha completado la certificacion S.A.N.E. y opera en las escuelas de su territorio segun el metodo cientifico del programa.",
+    biologi_desc2: "Los contactos con la red se realizan exclusivamente a traves de S.A.N.E. Italia, para garantizar la calidad y coherencia del programa en cada escuela.",
     nota_text: "<strong>Los contactos con los biologos de la red pasan exclusivamente a traves de S.A.N.E. Italia.</strong> Esto garantiza la calidad y coherencia del programa en cada escuela. No se facilitan contactos directos de los profesionales individuales: cada solicitud se gestiona de forma centralizada para asegurar el mejor enlace entre escuela y biologo en el territorio.",
     cand_eyebrow: "Para los profesionales",
     cand_title: "¿Eres biologo nutricionista?",
@@ -418,14 +388,10 @@ const T = {
     legend_espansione: "Expanding",
     map_tooltip_attivo: "Active S.A.N.E. biologist",
     map_tooltip_espansione: "Expanding",
-    biologi_eyebrow: "The network's professionals",
+    biologi_eyebrow: "The professional network",
     biologi_title: "Who brings S.A.N.E. <em>into schools</em>",
-    biologi_desc: "Every network biologist has completed the S.A.N.E. Italia specific training and operates according to the scientific method developed by Dott.ssa Cardaci.",
-    cert_badge: "S.A.N.E. Certified",
-    biologo_ruolo_direttrice: "Scientific Director, S.A.N.E. Italia",
-    biologo_ruolo_certificata: "S.A.N.E. Certified Biologist",
-    biologo_spec_serafina: "Children's food education, food allergies and intolerances",
-    biologo_spec_generica: "School food education",
+    biologi_desc: "The S.A.N.E. Italia network is made up of nutritionist biologists selected and trained directly by Dott.ssa Serafina Cardaci. Each professional has completed the S.A.N.E. certification and works in schools in their area according to the programme's scientific method.",
+    biologi_desc2: "All contact with the network goes exclusively through S.A.N.E. Italia, to guarantee programme quality and consistency in every school.",
     nota_text: "<strong>All contact with network biologists goes exclusively through S.A.N.E. Italia.</strong> This guarantees programme quality and consistency in every school. Direct contacts of individual professionals are not provided: every request is managed centrally to ensure the best match between school and biologist in the area.",
     cand_eyebrow: "For professionals",
     cand_title: "Are you a nutritionist biologist?",
@@ -511,32 +477,6 @@ function buildGeoLayer(data) {
 }
 
 // =====================
-// RENDER BIOLOGI
-// =====================
-function renderBiologi(t) {
-  document.getElementById('biologi-grid').innerHTML = biologiSane.map(b => {
-    const iniziali = b.nome.replace(/Dott\.\s*ssa\s*/i, '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-    return `
-      <div class="biologo-card">
-        <div class="biologo-top">
-          <div class="biologo-avatar">${b.foto ? `<img src="${b.foto}" alt="${b.nome}">` : iniziali}</div>
-          <div>
-            <div class="biologo-nome">${b.nome}</div>
-            <div class="biologo-titolo">${b.titolo}</div>
-          </div>
-        </div>
-        <div class="biologo-body">
-          <div class="biologo-ruolo">${t[b.ruolo_key]}</div>
-          <div class="biologo-regione">📍 ${b.regione}</div>
-          <div class="biologo-spec">${t[b.spec_key]}</div>
-          <span class="cert-badge">✓ ${t.cert_badge}</span>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-// =====================
 // RENDER PRINCIPALE
 // =====================
 function render(l) {
@@ -562,8 +502,6 @@ function render(l) {
 
   document.getElementById('cand-cta-btn').href = t.cand_cta_href;
   document.getElementById('cta-scuole-btn').href = t.cta_scuole_href;
-
-  renderBiologi(t);
 
   if (window._geojsonData && geoLayer) {
     buildGeoLayer(window._geojsonData);
