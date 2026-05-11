@@ -5,11 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scuole Aderenti | S.A.N.E. Italia — Educazione Alimentare nelle Scuole</title>
 <meta name="description" content="Le scuole italiane che hanno scelto il programma S.A.N.E. Italia per l'educazione alimentare. Kit Classe Il Piatto Sano e Programma Completo con biologa nutrizionista.">
-<meta name="keywords" content="scuole aderenti SANE Italia, educazione alimentare scuole, Kit Classe Il Piatto Sano, programma nutrizione scuole primarie, mappa scuole educazione alimentare">
 <meta name="author" content="Dott.ssa Serafina Cardaci, Ing. Patrick Orlando">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://sane-italia.it/scuole.html">
-
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sane-italia.it/scuole.html">
 <meta property="og:title" content="Scuole Aderenti | S.A.N.E. Italia">
@@ -17,44 +15,21 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
 <meta property="og:locale" content="it_IT">
 <meta property="og:site_name" content="S.A.N.E. Italia">
-
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Scuole Aderenti | S.A.N.E. Italia">
-<meta name="twitter:description" content="Le scuole italiane che hanno scelto il programma S.A.N.E. Italia per l'educazione alimentare in classe.">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
-
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Scuole Aderenti S.A.N.E. Italia",
-  "url": "https://sane-italia.it/scuole.html",
-  "description": "Le scuole italiane che hanno aderito al programma di educazione alimentare S.A.N.E. Italia.",
-  "isPartOf": {
-    "@type": "WebSite",
-    "name": "S.A.N.E. Italia",
-    "url": "https://sane-italia.it"
-  }
-}
+{"@context":"https://schema.org","@type":"WebPage","name":"Scuole Aderenti S.A.N.E. Italia","url":"https://sane-italia.it/scuole.html","isPartOf":{"@type":"WebSite","name":"S.A.N.E. Italia","url":"https://sane-italia.it"}}
 </script>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --g:#0A2647;
-  --gm:#00A896;
-  --gl:#00C9B1;
-  --cr:#EEF5FA;
-  --tc:#F4A261;
-  --or:#C9A84C;
-  --wh:#F5F9FC;
-  --gr:#5A6A7A;
-  --dn:#061828;
+  --g:#0A2647;--gm:#00A896;--gl:#00C9B1;--cr:#EEF5FA;
+  --tc:#F4A261;--wh:#F5F9FC;--gr:#5A6A7A;--dn:#061828;
 }
 html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:var(--wh);color:var(--g);overflow-x:hidden}
@@ -65,7 +40,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .logo img{height:38px;width:auto}
 .logo-text{font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:.03em}
 .logo-text span{color:var(--gl)}
-.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
 .nav-links a{font-size:.76rem;font-weight:500;letter-spacing:.08em;text-decoration:none;color:rgba(255,255,255,.65);text-transform:uppercase;transition:color .2s}
 .nav-links a:hover,.nav-links a.active{color:var(--gl)}
 .nav-right{display:flex;align-items:center;gap:.9rem}
@@ -89,20 +64,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .page-hero-sub{font-size:1.05rem;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:.9rem;line-height:1.5}
 .page-hero-desc{font-size:.95rem;color:rgba(255,255,255,.6);line-height:1.85;max-width:640px}
 
-/* STATS SECTION */
+/* STATS */
 .stats-sec{background:#fff;padding:3.5rem 4rem}
+.sec-title{font-family:'Inter',sans-serif;font-size:clamp(1.6rem,2.8vw,2.4rem);font-weight:700;line-height:1.15;color:var(--g);max-width:700px}
+.sec-title em{font-style:normal;color:var(--gm)}
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
 .stat-card{background:var(--g);padding:2.2rem 2rem;border-radius:14px;text-align:center;position:relative;overflow:hidden}
 .stat-card::before{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(0,201,177,.08);top:-30px;right:-30px;pointer-events:none}
 .stat-num{font-family:'Inter',sans-serif;font-size:3rem;font-weight:800;color:var(--gl);line-height:1;margin-bottom:.5rem}
-.stat-label{font-size:.82rem;color:rgba(255,255,255,.65);line-height:1.5;font-weight:500}
 .stat-unit{font-size:1.2rem;font-weight:800;color:var(--gl)}
+.stat-label{font-size:.82rem;color:rgba(255,255,255,.65);line-height:1.5;font-weight:500}
 
-/* MAP SECTION */
-.map-sec{background:var(--cr);padding:4rem 4rem}
-.sec-title{font-family:'Inter',sans-serif;font-size:clamp(1.6rem,2.8vw,2.4rem);font-weight:700;line-height:1.15;color:var(--g);max-width:700px}
-.sec-title em{font-style:normal;color:var(--gm)}
-.map-desc{font-size:.92rem;color:var(--gr);margin-top:.8rem;margin-bottom:1.8rem;line-height:1.7}
+/* MAPPA */
+.map-sec{background:var(--cr);padding:4rem}
+.sec-desc{font-size:.92rem;color:var(--gr);margin-top:.8rem;margin-bottom:1.5rem;line-height:1.8;max-width:640px}
 .map-legend{display:flex;gap:1.5rem;margin-bottom:1.2rem;flex-wrap:wrap}
 .legend-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--g)}
 .legend-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.5)}
@@ -111,19 +86,19 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 #mappa-italia{width:100%;height:480px;border-radius:14px;border:1px solid rgba(10,38,71,.1);box-shadow:0 4px 24px rgba(10,38,71,.08)}
 
 /* SCUOLE GRID */
-.scuole-sec{padding:4rem 4rem;background:#fff}
+.scuole-sec{padding:4rem;background:#fff}
 .scuole-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
 .scuola-card{background:var(--wh);border-radius:12px;overflow:hidden;border:1px solid rgba(10,38,71,.08);box-shadow:0 2px 16px rgba(10,38,71,.05);transition:transform .2s,box-shadow .2s}
 .scuola-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(10,38,71,.12)}
-.scuola-card-top{height:120px;background:linear-gradient(135deg,var(--g),#0d3460);display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative}
+.scuola-card-top{height:120px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative}
 .scuola-badge{position:absolute;top:.8rem;right:.8rem;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .6rem;border-radius:20px}
 .scuola-badge.completo{background:var(--gm);color:#fff}
 .scuola-badge.kit{background:#3b82f6;color:#fff}
 .scuola-body{padding:1.4rem}
 .scuola-nome{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;color:var(--g);margin-bottom:.4rem;line-height:1.3}
-.scuola-luogo{font-size:.78rem;color:var(--gr);margin-bottom:.9rem;display:flex;align-items:center;gap:.3rem}
+.scuola-luogo{font-size:.78rem;color:var(--gr);margin-bottom:.9rem}
 .scuola-meta{display:flex;flex-direction:column;gap:.3rem}
-.scuola-meta-row{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--gr)}
+.scuola-meta-row{font-size:.75rem;color:var(--gr);display:flex;align-items:center;gap:.4rem;line-height:1.4}
 .scuola-meta-row strong{color:var(--g);font-weight:600}
 .scuola-testimonianza{margin-top:1rem;padding:.9rem;background:var(--cr);border-left:3px solid var(--gm);border-radius:0 6px 6px 0;font-size:.78rem;color:var(--gr);line-height:1.6;font-style:italic}
 
@@ -131,7 +106,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .aderire-sec{background:var(--g);padding:4.5rem 4rem}
 .aderire-sec .sec-title{color:#fff}
 .aderire-sec .eyebrow{color:var(--gl)}
-.aderire-desc{font-size:.95rem;color:rgba(255,255,255,.6);margin-top:.8rem;margin-bottom:2.5rem;line-height:1.8;max-width:620px}
+.aderire-intro{font-size:.95rem;color:rgba(255,255,255,.6);margin-top:.8rem;margin-bottom:2.5rem;line-height:1.8;max-width:620px}
 .aderire-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
 .aderire-card{background:rgba(255,255,255,.05);border:1px solid rgba(0,201,177,.2);border-radius:16px;padding:2.4rem;transition:border-color .2s,background .2s;display:flex;flex-direction:column}
 .aderire-card:hover{background:rgba(255,255,255,.08);border-color:var(--gl)}
@@ -143,14 +118,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .completo-card .aderire-tipo{color:var(--gl)}
 .aderire-nome{font-family:'Inter',sans-serif;font-size:1.25rem;font-weight:700;color:#fff;margin-bottom:.8rem;line-height:1.25}
 .aderire-desc-card{font-size:.86rem;color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:1.4rem}
-.aderire-include{margin-bottom:1.4rem}
 .aderire-include-title{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.7rem}
-.aderire-include ul{list-style:none;display:flex;flex-direction:column;gap:.45rem}
-.aderire-include li{font-size:.82rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
-.aderire-include li::before{content:"✓";color:var(--gl);font-weight:700;font-size:.8rem;flex-shrink:0;margin-top:.05rem}
-.kit-card .aderire-include li::before{color:#60a5fa}
+.aderire-items{list-style:none;display:flex;flex-direction:column;gap:.45rem;margin-bottom:1.4rem}
+.aderire-items li{font-size:.82rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
+.aderire-items li::before{content:"✓";font-weight:700;font-size:.8rem;flex-shrink:0;margin-top:.05rem}
+.kit-card .aderire-items li::before{color:#60a5fa}
+.completo-card .aderire-items li::before{color:var(--gl)}
 .aderire-ideale{background:rgba(255,255,255,.06);border-radius:8px;padding:.8rem 1rem;font-size:.78rem;color:rgba(255,255,255,.55);line-height:1.55;margin-bottom:1.6rem}
-.aderire-ideale strong{color:rgba(255,255,255,.75);font-weight:600}
+.aderire-ideale strong{color:rgba(255,255,255,.75)}
 .aderire-cta{margin-top:auto;display:inline-block;text-align:center;padding:.75rem 1.5rem;border-radius:8px;font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;transition:all .2s}
 .kit-card .aderire-cta{background:#3b82f6;color:#fff}
 .kit-card .aderire-cta:hover{background:#2563eb;transform:translateY(-2px)}
@@ -161,7 +136,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .cta-finale{background:linear-gradient(135deg,var(--gm) 0%,var(--gl) 100%);padding:4rem;text-align:center}
 .cta-finale h2{font-family:'Inter',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:#fff;margin-bottom:1rem;line-height:1.2}
 .cta-finale p{font-size:.97rem;color:rgba(255,255,255,.85);margin-bottom:2rem;line-height:1.75;max-width:560px;margin-left:auto;margin-right:auto}
-.cta-finale-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
 .btn-white{background:#fff;color:var(--g);padding:.85rem 2.2rem;font-size:.9rem;font-weight:700;letter-spacing:.04em;text-decoration:none;border-radius:8px;transition:all .2s;display:inline-block}
 .btn-white:hover{background:var(--cr);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15)}
 .btn-outline-white{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.6);padding:.82rem 2.2rem;font-size:.9rem;font-weight:700;letter-spacing:.04em;text-decoration:none;border-radius:8px;transition:all .2s;display:inline-block}
@@ -173,56 +148,42 @@ footer strong{color:rgba(255,255,255,.7)}
 footer a{color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s}
 footer a:hover{color:var(--gl)}
 
-/* LEAFLET POPUP CUSTOM */
-.leaflet-popup-content-wrapper{border-radius:10px;box-shadow:0 4px 20px rgba(10,38,71,.2);border:none}
+/* LEAFLET POPUP */
+.leaflet-popup-content-wrapper{border-radius:10px;box-shadow:0 4px 20px rgba(10,38,71,.2)}
 .leaflet-popup-content{margin:14px 18px;font-family:'Inter',sans-serif}
-.popup-nome{font-size:.9rem;font-weight:700;color:var(--g);margin-bottom:.35rem;line-height:1.3}
-.popup-luogo{font-size:.75rem;color:var(--gr);margin-bottom:.6rem}
-.popup-badge{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .55rem;border-radius:20px;margin-bottom:.6rem}
+.popup-nome{font-size:.9rem;font-weight:700;color:var(--g);margin-bottom:.3rem;line-height:1.3}
+.popup-luogo{font-size:.75rem;color:var(--gr);margin-bottom:.5rem}
+.popup-badge{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .55rem;border-radius:20px;margin-bottom:.5rem}
 .popup-badge.completo{background:var(--gm);color:#fff}
 .popup-badge.kit{background:#3b82f6;color:#fff}
-.popup-meta{font-size:.74rem;color:var(--gr);display:flex;flex-direction:column;gap:.25rem}
+.popup-meta{font-size:.74rem;color:var(--gr);display:flex;flex-direction:column;gap:.2rem}
 .popup-meta span strong{color:var(--g)}
 
 /* RESPONSIVE */
-@media(max-width:900px){
-  .stats-grid{grid-template-columns:1fr 1fr}
-  .scuole-grid{grid-template-columns:1fr 1fr}
-  .aderire-grid{grid-template-columns:1fr}
-}
+@media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}.scuole-grid{grid-template-columns:1fr 1fr}.aderire-grid{grid-template-columns:1fr}}
 @media(max-width:860px){
-  nav{padding:.8rem 1.2rem}
-  .nav-links{display:none}
+  nav{padding:.8rem 1.2rem}.nav-links{display:none}
   .page-hero{padding:6rem 1.5rem 3.5rem}
-  .stats-sec{padding:2.5rem 1.5rem}
-  .map-sec{padding:2.5rem 1.5rem}
-  .scuole-sec{padding:2.5rem 1.5rem}
-  .aderire-sec{padding:2.5rem 1.5rem}
-  .cta-finale{padding:2.5rem 1.5rem}
+  .stats-sec,.scuole-sec,.aderire-sec,.map-sec,.cta-finale{padding:2.5rem 1.5rem}
   footer{flex-direction:column;gap:.8rem;text-align:center;padding:1.5rem}
 }
-@media(max-width:600px){
-  .stats-grid{grid-template-columns:1fr}
-  .scuole-grid{grid-template-columns:1fr}
-  #mappa-italia{height:340px}
-}
+@media(max-width:600px){.stats-grid{grid-template-columns:1fr}.scuole-grid{grid-template-columns:1fr}#mappa-italia{height:320px}}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a href="index.html" class="logo">
     <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
     <span class="logo-text">S.A.N.E. <span>Italia</span></span>
   </a>
   <ul class="nav-links">
-    <li><a href="index.html#about">Il programma</a></li>
-    <li><a href="index.html#game">L'app</a></li>
-    <li><a href="index.html#method">I moduli</a></li>
-    <li><a href="index.html#team">Il team</a></li>
-    <li><a href="scuole.html" class="active">Scuole Aderenti</a></li>
-    <li><a href="biologi.html">I Biologi</a></li>
+    <li><a href="index.html#about" data-k="nav0"></a></li>
+    <li><a href="index.html#game" data-k="nav1"></a></li>
+    <li><a href="index.html#method" data-k="nav2"></a></li>
+    <li><a href="index.html#team" data-k="nav3"></a></li>
+    <li><a href="scuole.html" class="active" data-k="nav4"></a></li>
+    <li><a href="biologi.html" data-k="nav5"></a></li>
   </ul>
   <div class="nav-right">
     <div class="lang-sw">
@@ -231,129 +192,86 @@ footer a:hover{color:var(--gl)}
       <button class="lb" onclick="setLang('en')">EN</button>
     </div>
     <a href="portale.html" class="nav-portale">🔐 Portale</a>
-    <a href="index.html#contact" class="nav-cta">Contattaci</a>
+    <a href="index.html#contact" class="nav-cta" data-k="nav_cta"></a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="page-hero">
   <div class="hero-inner">
-    <p class="eyebrow">Rete nazionale S.A.N.E. Italia · Educazione Alimentare</p>
-    <h1 class="page-hero-title">Il SANE <em>in Italia</em></h1>
-    <p class="page-hero-sub">Le scuole che hanno scelto di portare l'educazione alimentare in classe</p>
-    <p class="page-hero-desc">Un numero crescente di istituti scolastici italiani ha scelto di aderire alla rete S.A.N.E. Italia, portando ai propri studenti un percorso di educazione alimentare scientificamente validato. Ogni scuola contribuisce a costruire una generazione piu consapevole delle proprie scelte a tavola.</p>
+    <p class="eyebrow" data-k="hero_eyebrow"></p>
+    <h1 class="page-hero-title" data-k="hero_title"></h1>
+    <p class="page-hero-sub" data-k="hero_sub"></p>
+    <p class="page-hero-desc" data-k="hero_desc"></p>
   </div>
 </section>
 
 <!-- STATISTICHE -->
 <section class="stats-sec">
-  <p class="eyebrow">I numeri della rete</p>
-  <h2 class="sec-title">L'impatto <em>misurabile</em> del programma nelle scuole italiane.</h2>
+  <p class="eyebrow" data-k="stats_eyebrow"></p>
+  <h2 class="sec-title" data-k="stats_title"></h2>
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-num" id="counter-scuole">0</div>
-      <div class="stat-label">scuole aderenti alla rete S.A.N.E. Italia in tutta Italia</div>
+      <div class="stat-label" data-k="stat1_label"></div>
     </div>
     <div class="stat-card">
       <div class="stat-num" id="counter-bambini">0</div>
-      <div class="stat-label">bambini coinvolti nel programma di educazione alimentare</div>
+      <div class="stat-label" data-k="stat2_label"></div>
     </div>
     <div class="stat-card">
       <div class="stat-num" id="counter-migliora">0<span class="stat-unit">%</span></div>
-      <div class="stat-label">miglioramento medio PRE/POST nei test di consapevolezza alimentare</div>
+      <div class="stat-label" data-k="stat3_label"></div>
     </div>
   </div>
 </section>
 
 <!-- MAPPA -->
 <section class="map-sec">
-  <p class="eyebrow">Distribuzione geografica</p>
-  <h2 class="sec-title">Le scuole <em>sulla mappa</em> d'Italia</h2>
-  <p class="map-desc">Ogni pin rappresenta una scuola che ha scelto di investire nell'educazione alimentare dei propri studenti. Clicca su un pin per vedere i dettagli della scuola.</p>
+  <p class="eyebrow" data-k="map_eyebrow"></p>
+  <h2 class="sec-title" data-k="map_title"></h2>
+  <p class="sec-desc" data-k="map_desc"></p>
   <div class="map-legend">
-    <div class="legend-item"><div class="legend-dot completo"></div> Programma SANE Completo</div>
-    <div class="legend-item"><div class="legend-dot kit"></div> Kit Classe Il Piatto Sano</div>
+    <div class="legend-item"><div class="legend-dot completo"></div> <span data-k="legend_completo"></span></div>
+    <div class="legend-item"><div class="legend-dot kit"></div> <span data-k="legend_kit"></span></div>
   </div>
   <div id="mappa-italia"></div>
 </section>
 
 <!-- LISTA SCUOLE -->
 <section class="scuole-sec">
-  <p class="eyebrow">Le scuole della rete</p>
-  <h2 class="sec-title">Ogni scuola, <em>una storia di impatto.</em></h2>
+  <p class="eyebrow" data-k="scuole_eyebrow"></p>
+  <h2 class="sec-title" data-k="scuole_title"></h2>
   <div class="scuole-grid" id="scuole-grid"></div>
 </section>
 
 <!-- COME ADERIRE -->
 <section class="aderire-sec">
-  <p class="eyebrow">Due modalita di adesione</p>
-  <h2 class="sec-title">Come portare S.A.N.E. nella tua scuola</h2>
-  <p class="aderire-desc">Il programma S.A.N.E. Italia si adatta alle esigenze di ogni istituto. Due percorsi distinti, entrambi fondati sulla stessa base scientifica, con livelli diversi di coinvolgimento e supporto.</p>
-  <div class="aderire-grid">
-
-    <!-- CARD KIT CLASSE -->
-    <div class="aderire-card kit-card">
-      <div class="aderire-icon">📦</div>
-      <div class="aderire-tipo">Modalita autonoma</div>
-      <div class="aderire-nome">Kit Classe<br>Il Piatto Sano</div>
-      <p class="aderire-desc-card">Lo strumento didattico digitale per insegnanti che vogliono portare l'educazione alimentare in classe in autonomia, senza la presenza fisica di un professionista esterno.</p>
-      <div class="aderire-include">
-        <div class="aderire-include-title">Cosa include</div>
-        <ul>
-          <li>Accesso completo al gioco «Il Piatto Sano» per tutta la classe</li>
-          <li>Questionario PRE/POST validato scientificamente</li>
-          <li>Guida per l'insegnante con schede didattiche</li>
-          <li>Schede di rinforzo stampabili per ogni modulo</li>
-          <li>La scuola entra nella mappa nazionale S.A.N.E. Italia</li>
-        </ul>
-      </div>
-      <div class="aderire-ideale"><strong>Ideale per:</strong> insegnanti motivati che vogliono integrare l'educazione alimentare nel curriculo in autonomia, e scuole che non hanno ancora un biologo nutrizionista di riferimento nel territorio.</div>
-      <a href="mailto:serafinacardaci@gmail.com?subject=Richiesta%20Kit%20Classe%20Il%20Piatto%20Sano&body=Buongiorno%2C%20sono%20interessato%2Fa%20al%20Kit%20Classe%20Il%20Piatto%20Sano%20per%20la%20mia%20scuola.%20Potete%20fornirmi%20maggiori%20informazioni%3F" class="aderire-cta">Richiedi il Kit Classe</a>
-    </div>
-
-    <!-- CARD PROGRAMMA COMPLETO -->
-    <div class="aderire-card completo-card">
-      <div class="aderire-icon">🎓</div>
-      <div class="aderire-tipo">Programma strutturato</div>
-      <div class="aderire-nome">Programma SANE<br>Completo</div>
-      <p class="aderire-desc-card">Il percorso completo di 6 moduli tematici con la biologa nutrizionista direttamente in classe. Validato scientificamente, con report finale per la scuola e certificazione S.A.N.E. Italia.</p>
-      <div class="aderire-include">
-        <div class="aderire-include-title">Cosa include</div>
-        <ul>
-          <li>6 moduli tematici (M1 – M6) in presenza con la biologa</li>
-          <li>Biologa Nutrizionista presente in ogni sessione</li>
-          <li>Gestione personalizzata allergie e intolleranze per ogni bambino</li>
-          <li>Accesso completo al gioco «Il Piatto Sano»</li>
-          <li>Report scientifico finale per la scuola</li>
-          <li>Validazione e certificazione S.A.N.E. Italia</li>
-        </ul>
-      </div>
-      <div class="aderire-ideale"><strong>Ideale per:</strong> scuole che vogliono un percorso strutturato, misurabile e certificato, con il supporto diretto di una professionista della nutrizione in classe.</div>
-      <a href="mailto:serafinacardaci@gmail.com?subject=Richiesta%20Programma%20SANE%20Completo&body=Buongiorno%2C%20sono%20interessato%2Fa%20al%20Programma%20SANE%20Completo%20per%20la%20mia%20scuola.%20Potete%20fornirmi%20maggiori%20informazioni%3F" class="aderire-cta">Richiedi il Programma Completo</a>
-    </div>
-
-  </div>
+  <p class="eyebrow" data-k="aderire_eyebrow"></p>
+  <h2 class="sec-title" data-k="aderire_title"></h2>
+  <p class="aderire-intro" data-k="aderire_desc"></p>
+  <div class="aderire-grid" id="aderire-grid"></div>
 </section>
 
 <!-- CTA FINALE -->
 <section class="cta-finale">
-  <h2>La tua scuola vuole far parte della rete S.A.N.E. Italia?</h2>
-  <p>Unisciti alle scuole italiane che hanno scelto di investire nella consapevolezza alimentare dei propri studenti. Ogni adesione conta per costruire una generazione piu sana.</p>
-  <div class="cta-finale-btns">
-    <a href="mailto:serafinacardaci@gmail.com?subject=Adesione%20rete%20SANE%20Italia&body=Buongiorno%2C%20vorrei%20informazioni%20per%20aderire%20al%20programma%20S.A.N.E.%20Italia%20nella%20mia%20scuola." class="btn-white">Scrivi alla Biologa Nutrizionista</a>
-    <a href="index.html#contact" class="btn-outline-white">Tutti i contatti</a>
+  <h2 data-k="cta_title"></h2>
+  <p data-k="cta_desc"></p>
+  <div class="cta-btns">
+    <a id="cta-btn1" href="#" class="btn-white" data-k="cta_btn1"></a>
+    <a href="index.html#contact" class="btn-outline-white" data-k="cta_btn2"></a>
   </div>
 </section>
 
 <footer>
-  <div><strong>S.A.N.E. Italia</strong> &mdash; Sicurezza &middot; Alimentazione &middot; Nutrizione &middot; Educazione</div>
+  <div><strong>S.A.N.E. Italia</strong> &mdash; <span data-k="footer"></span></div>
   <div>&copy; 2025&ndash;2026 Dott.ssa Serafina Cardaci &amp; Ing. Patrick Orlando &mdash; Tutti i diritti riservati</div>
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 // =====================
-// DATI SCUOLE
+// DATI SCUOLE (invarianti)
 // =====================
 const scuoleAderenti = [
   {
@@ -366,7 +284,7 @@ const scuoleAderenti = [
     bambini: 100,
     classi: 5,
     dataAttivazione: "2026-01",
-    tipoAdesione: "Programma Completo",
+    tipoAdesione: "completo",
     miglioramentoPrePost: 117,
     raccomandazioneInsegnanti: 100,
     testimonianza: "",
@@ -375,58 +293,310 @@ const scuoleAderenti = [
 ];
 
 // =====================
-// CALCOLO STATISTICHE
+// TRADUZIONI
+// =====================
+const T = {
+  it: {
+    nav: ["Il programma", "L'app", "I moduli", "Il team", "Scuole Aderenti", "I Biologi"],
+    nav_cta: "Contattaci",
+    hero_eyebrow: "Rete nazionale S.A.N.E. Italia · Educazione Alimentare",
+    hero_title: "Il SANE <em>in Italia</em>",
+    hero_sub: "Le scuole che hanno scelto di portare l'educazione alimentare in classe",
+    hero_desc: "Un numero crescente di istituti scolastici italiani ha scelto di aderire alla rete S.A.N.E. Italia, portando ai propri studenti un percorso di educazione alimentare scientificamente validato. Ogni scuola contribuisce a costruire una generazione piu consapevole delle proprie scelte a tavola.",
+    stats_eyebrow: "I numeri della rete",
+    stats_title: "L'impatto <em>misurabile</em> del programma nelle scuole italiane.",
+    stat1_label: "scuola aderente alla rete S.A.N.E. Italia",
+    stat2_label: "bambini coinvolti nel programma di educazione alimentare",
+    stat3_label: "miglioramento medio PRE/POST nei test di consapevolezza alimentare",
+    map_eyebrow: "Distribuzione geografica",
+    map_title: "Le scuole <em>sulla mappa</em> d'Italia",
+    map_desc: "Ogni pin rappresenta una scuola che ha scelto di investire nell'educazione alimentare dei propri studenti. Clicca su un pin per vedere i dettagli della scuola.",
+    legend_completo: "Programma SANE Completo",
+    legend_kit: "Kit Classe Il Piatto Sano",
+    scuole_eyebrow: "Le scuole della rete",
+    scuole_title: "Ogni scuola, <em>una storia di impatto.</em>",
+    labels: {
+      bambini: "bambini coinvolti",
+      classi: "classe",
+      classi_pl: "classi",
+      aderente: "aderente",
+      attivazione: "Attivazione",
+      miglioramento: "Miglioramento PRE/POST",
+      raccomandazione: "Raccomandazione insegnanti",
+      tipo_completo: "Programma Completo",
+      tipo_kit: "Kit Classe",
+      nd: "N.d.",
+      popup_bambini: "Bambini",
+      popup_classi: "Classi",
+      popup_attivazione: "Attivazione"
+    },
+    aderire_eyebrow: "Due modalita di adesione",
+    aderire_title: "Come portare S.A.N.E. nella tua scuola",
+    aderire_desc: "Il programma S.A.N.E. Italia si adatta alle esigenze di ogni istituto. Due percorsi distinti, entrambi fondati sulla stessa base scientifica, con livelli diversi di coinvolgimento e supporto.",
+    modalita: [
+      {
+        tipo: "Modalita autonoma",
+        icona: "📦",
+        classe: "kit",
+        nome: "Kit Classe<br>Il Piatto Sano",
+        desc: "Lo strumento didattico digitale per insegnanti che vogliono portare l'educazione alimentare in classe in autonomia, senza la presenza fisica di un professionista esterno.",
+        include_title: "Cosa include",
+        items: [
+          "Accesso completo al gioco «Il Piatto Sano» per tutta la classe",
+          "Questionario PRE/POST validato scientificamente",
+          "Guida per l'insegnante con schede didattiche",
+          "Schede di rinforzo stampabili per ogni modulo",
+          "La scuola entra nella mappa nazionale S.A.N.E. Italia"
+        ],
+        ideale: "<strong>Ideale per:</strong> insegnanti motivati che vogliono integrare l'educazione alimentare nel curriculo in autonomia, e scuole che non hanno ancora un biologo nutrizionista di riferimento nel territorio.",
+        cta: "Richiedi il Kit Classe",
+        mailto: "mailto:serafinacardaci@gmail.com?subject=Richiesta%20Kit%20Classe%20Il%20Piatto%20Sano&body=Buongiorno%2C%20sono%20interessato%2Fa%20al%20Kit%20Classe%20Il%20Piatto%20Sano%20per%20la%20mia%20scuola.%20Potete%20fornirmi%20maggiori%20informazioni%3F"
+      },
+      {
+        tipo: "Programma strutturato",
+        icona: "🎓",
+        classe: "completo",
+        nome: "Programma SANE<br>Completo",
+        desc: "Il percorso completo di 6 moduli tematici con la biologa nutrizionista direttamente in classe. Validato scientificamente, con report finale per la scuola e certificazione S.A.N.E. Italia.",
+        include_title: "Cosa include",
+        items: [
+          "6 moduli tematici (M1 – M6) in presenza con la biologa",
+          "Biologa Nutrizionista presente in ogni sessione",
+          "Gestione personalizzata allergie e intolleranze per ogni bambino",
+          "Accesso completo al gioco «Il Piatto Sano»",
+          "Report scientifico finale per la scuola",
+          "Validazione e certificazione S.A.N.E. Italia"
+        ],
+        ideale: "<strong>Ideale per:</strong> scuole che vogliono un percorso strutturato, misurabile e certificato, con il supporto diretto di una professionista della nutrizione in classe.",
+        cta: "Richiedi il Programma Completo",
+        mailto: "mailto:serafinacardaci@gmail.com?subject=Richiesta%20Programma%20SANE%20Completo&body=Buongiorno%2C%20sono%20interessato%2Fa%20al%20Programma%20SANE%20Completo%20per%20la%20mia%20scuola.%20Potete%20fornirmi%20maggiori%20informazioni%3F"
+      }
+    ],
+    cta_title: "La tua scuola vuole far parte della rete S.A.N.E. Italia?",
+    cta_desc: "Unisciti alle scuole italiane che hanno scelto di investire nella consapevolezza alimentare dei propri studenti. Ogni adesione conta per costruire una generazione piu sana.",
+    cta_btn1: "Scrivi alla Biologa Nutrizionista",
+    cta_btn1_href: "mailto:serafinacardaci@gmail.com?subject=Adesione%20rete%20SANE%20Italia&body=Buongiorno%2C%20vorrei%20informazioni%20per%20aderire%20al%20programma%20S.A.N.E.%20Italia%20nella%20mia%20scuola.",
+    cta_btn2: "Tutti i contatti",
+    footer: "Sicurezza · Alimentazione · Nutrizione · Educazione"
+  },
+  es: {
+    nav: ["El programa", "La app", "Los modulos", "El equipo", "Escuelas Adheridas", "Los Biologos"],
+    nav_cta: "Contactanos",
+    hero_eyebrow: "Red nacional S.A.N.E. Italia · Educacion Alimentaria",
+    hero_title: "El SANE <em>en Italia</em>",
+    hero_sub: "Las escuelas que han elegido llevar la educacion alimentaria al aula",
+    hero_desc: "Un numero creciente de centros escolares italianos ha elegido adherirse a la red S.A.N.E. Italia, ofreciendo a sus estudiantes un recorrido de educacion alimentaria validado cientificamente. Cada escuela contribuye a construir una generacion mas consciente de sus elecciones en la mesa.",
+    stats_eyebrow: "Los numeros de la red",
+    stats_title: "El impacto <em>medible</em> del programa en las escuelas italianas.",
+    stat1_label: "escuela adherida a la red S.A.N.E. Italia",
+    stat2_label: "ninos involucrados en el programa de educacion alimentaria",
+    stat3_label: "mejora media PRE/POST en los tests de consciencia alimentaria",
+    map_eyebrow: "Distribucion geografica",
+    map_title: "Las escuelas <em>en el mapa</em> de Italia",
+    map_desc: "Cada marcador representa una escuela que ha elegido invertir en la educacion alimentaria de sus estudiantes. Haz clic en un marcador para ver los detalles.",
+    legend_completo: "Programa SANE Completo",
+    legend_kit: "Kit Clase El Plato Sano",
+    scuole_eyebrow: "Las escuelas de la red",
+    scuole_title: "Cada escuela, <em>una historia de impacto.</em>",
+    labels: {
+      bambini: "ninos involucrados",
+      classi: "clase",
+      classi_pl: "clases",
+      aderente: "adherida",
+      attivazione: "Activacion",
+      miglioramento: "Mejora PRE/POST",
+      raccomandazione: "Recomendacion docentes",
+      tipo_completo: "Programa Completo",
+      tipo_kit: "Kit Clase",
+      nd: "N.d.",
+      popup_bambini: "Ninos",
+      popup_classi: "Clases",
+      popup_attivazione: "Activacion"
+    },
+    aderire_eyebrow: "Dos modalidades de adhesion",
+    aderire_title: "Como llevar S.A.N.E. a tu escuela",
+    aderire_desc: "El programa S.A.N.E. Italia se adapta a las necesidades de cada centro. Dos recorridos distintos, ambos basados en la misma base cientifica, con distintos niveles de implicacion y apoyo.",
+    modalita: [
+      {
+        tipo: "Modalidad autonoma",
+        icona: "📦",
+        clase: "kit",
+        nome: "Kit Clase<br>El Plato Sano",
+        desc: "La herramienta didactica digital para docentes que quieren llevar la educacion alimentaria al aula de forma autonoma, sin la presencia fisica de un profesional externo.",
+        include_title: "Que incluye",
+        items: [
+          "Acceso completo al juego «Il Piatto Sano» para toda la clase",
+          "Cuestionario PRE/POST validado cientificamente",
+          "Guia para el docente con fichas didacticas",
+          "Fichas de refuerzo imprimibles para cada modulo",
+          "La escuela entra en el mapa nacional S.A.N.E. Italia"
+        ],
+        ideale: "<strong>Ideal para:</strong> docentes motivados que quieren integrar la educacion alimentaria en el curriculo de forma autonoma, y escuelas sin biologo nutricionista de referencia en el territorio.",
+        cta: "Solicita el Kit Clase",
+        mailto: "mailto:serafinacardaci@gmail.com?subject=Solicitud%20Kit%20Clase%20El%20Plato%20Sano&body=Buenos%20dias%2C%20estoy%20interesado%2Fa%20en%20el%20Kit%20Clase%20para%20mi%20escuela."
+      },
+      {
+        tipo: "Programa estructurado",
+        icona: "🎓",
+        clase: "completo",
+        nome: "Programa SANE<br>Completo",
+        desc: "El recorrido completo de 6 modulos tematicos con la biologa nutricionista directamente en el aula. Validado cientificamente, con informe final para el centro y certificacion S.A.N.E. Italia.",
+        include_title: "Que incluye",
+        items: [
+          "6 modulos tematicos (M1 – M6) presenciales con la biologa",
+          "Biologa Nutricionista presente en cada sesion",
+          "Gestion personalizada de alergias e intolerancias para cada nino",
+          "Acceso completo al juego «Il Piatto Sano»",
+          "Informe cientifico final para el centro",
+          "Validacion y certificacion S.A.N.E. Italia"
+        ],
+        ideale: "<strong>Ideal para:</strong> escuelas que quieren un recorrido estructurado, medible y certificado, con el apoyo directo de una profesional de la nutricion en clase.",
+        cta: "Solicita el Programa Completo",
+        mailto: "mailto:serafinacardaci@gmail.com?subject=Solicitud%20Programa%20SANE%20Completo&body=Buenos%20dias%2C%20estoy%20interesado%2Fa%20en%20el%20Programa%20SANE%20Completo%20para%20mi%20escuela."
+      }
+    ],
+    cta_title: "¿Tu escuela quiere formar parte de la red S.A.N.E. Italia?",
+    cta_desc: "Unete a las escuelas italianas que han elegido invertir en la consciencia alimentaria de sus estudiantes. Cada adhesion cuenta para construir una generacion mas saludable.",
+    cta_btn1: "Escribe a la Biologa Nutricionista",
+    cta_btn1_href: "mailto:serafinacardaci@gmail.com?subject=Adhesion%20red%20SANE%20Italia",
+    cta_btn2: "Todos los contactos",
+    footer: "Ciencia Alimentaria Nutricional Educativa"
+  },
+  en: {
+    nav: ["The programme", "The app", "The modules", "The team", "Partner Schools", "The Biologists"],
+    nav_cta: "Contact us",
+    hero_eyebrow: "S.A.N.E. Italia National Network · Food Education",
+    hero_title: "S.A.N.E. <em>in Italy</em>",
+    hero_sub: "The schools that have chosen to bring food education into the classroom",
+    hero_desc: "A growing number of Italian schools have joined the S.A.N.E. Italia network, offering their students a scientifically validated food education programme. Each school contributes to building a generation more aware of their food choices.",
+    stats_eyebrow: "The network in numbers",
+    stats_title: "The <em>measurable</em> impact of the programme in Italian schools.",
+    stat1_label: "school part of the S.A.N.E. Italia network",
+    stat2_label: "children involved in the food education programme",
+    stat3_label: "average PRE/POST improvement in food awareness tests",
+    map_eyebrow: "Geographic distribution",
+    map_title: "Schools <em>on the map</em> of Italy",
+    map_desc: "Each pin represents a school that has chosen to invest in the food education of its students. Click a pin to see the school's details.",
+    legend_completo: "Full S.A.N.E. Programme",
+    legend_kit: "Class Kit The Healthy Plate",
+    scuole_eyebrow: "Schools in the network",
+    scuole_title: "Every school, <em>a story of impact.</em>",
+    labels: {
+      bambini: "children involved",
+      classi: "class",
+      classi_pl: "classes",
+      aderente: "participating",
+      attivazione: "Start date",
+      miglioramento: "PRE/POST improvement",
+      raccomandazione: "Teacher recommendation",
+      tipo_completo: "Full Programme",
+      tipo_kit: "Class Kit",
+      nd: "N/a",
+      popup_bambini: "Children",
+      popup_classi: "Classes",
+      popup_attivazione: "Start date"
+    },
+    aderire_eyebrow: "Two ways to join",
+    aderire_title: "How to bring S.A.N.E. to your school",
+    aderire_desc: "The S.A.N.E. Italia programme adapts to each school's needs. Two distinct pathways, both grounded in the same scientific foundation, with different levels of involvement and support.",
+    modalita: [
+      {
+        tipo: "Autonomous mode",
+        icona: "📦",
+        classe: "kit",
+        nome: "Class Kit<br>The Healthy Plate",
+        desc: "The digital teaching tool for teachers who want to bring food education into the classroom independently, without the physical presence of an external professional.",
+        include_title: "What's included",
+        items: [
+          "Full access to the «Il Piatto Sano» game for the whole class",
+          "Scientifically validated PRE/POST questionnaire",
+          "Teacher guide with lesson plans",
+          "Printable reinforcement worksheets for each module",
+          "The school joins the S.A.N.E. Italia national map"
+        ],
+        ideale: "<strong>Best for:</strong> motivated teachers who want to integrate food education into the curriculum independently, and schools without a local nutritionist biologist.",
+        cta: "Request the Class Kit",
+        mailto: "mailto:serafinacardaci@gmail.com?subject=Class%20Kit%20Request&body=Hello%2C%20I%20am%20interested%20in%20the%20Class%20Kit%20for%20my%20school."
+      },
+      {
+        tipo: "Structured programme",
+        icona: "🎓",
+        classe: "completo",
+        nome: "Full S.A.N.E.<br>Programme",
+        desc: "The complete 6-module thematic programme with the nutritionist biologist directly in the classroom. Scientifically validated, with a final report for the school and S.A.N.E. Italia certification.",
+        include_title: "What's included",
+        items: [
+          "6 thematic modules (M1 – M6) in-person with the biologist",
+          "Nutritionist Biologist present at every session",
+          "Personalised allergy and intolerance management for each child",
+          "Full access to the «Il Piatto Sano» game",
+          "Scientific final report for the school",
+          "S.A.N.E. Italia validation and certification"
+        ],
+        ideale: "<strong>Best for:</strong> schools seeking a structured, measurable and certified pathway with direct support from a nutrition professional in the classroom.",
+        cta: "Request the Full Programme",
+        mailto: "mailto:serafinacardaci@gmail.com?subject=Full%20SANE%20Programme%20Request&body=Hello%2C%20I%20am%20interested%20in%20the%20Full%20S.A.N.E.%20Programme%20for%20my%20school."
+      }
+    ],
+    cta_title: "Does your school want to join the S.A.N.E. Italia network?",
+    cta_desc: "Join the Italian schools that have chosen to invest in their students' food awareness. Every partnership helps build a healthier generation.",
+    cta_btn1: "Write to the Nutritionist Biologist",
+    cta_btn1_href: "mailto:serafinacardaci@gmail.com?subject=S.A.N.E.%20Italia%20Network%20Join",
+    cta_btn2: "All contacts",
+    footer: "Scientific Alimentary Nutritional Education"
+  }
+};
+
+// =====================
+// STATS
 // =====================
 const totScuole = scuoleAderenti.length;
-const totBambini = scuoleAderenti.reduce((acc, s) => acc + (s.bambini || 0), 0);
-const valoriMiglioramento = scuoleAderenti.map(s => s.miglioramentoPrePost).filter(v => v !== null);
-const mediaM = valoriMiglioramento.length
-  ? Math.round(valoriMiglioramento.reduce((a, b) => a + b, 0) / valoriMiglioramento.length)
-  : 0;
+const totBambini = scuoleAderenti.reduce((a, s) => a + (s.bambini || 0), 0);
+const valsM = scuoleAderenti.map(s => s.miglioramentoPrePost).filter(v => v !== null);
+const mediaM = valsM.length ? Math.round(valsM.reduce((a, b) => a + b, 0) / valsM.length) : 0;
 
-// =====================
-// COUNTER ANIMATION
-// =====================
-function animateCounter(el, target, suffix, duration) {
-  let start = 0;
-  const step = Math.ceil(target / (duration / 16));
-  const timer = setInterval(() => {
-    start += step;
-    if (start >= target) {
-      start = target;
-      clearInterval(timer);
-    }
-    el.innerHTML = start + suffix;
+function animateCounter(el, target, suffix) {
+  let v = 0;
+  const step = Math.ceil(target / 60);
+  const t = setInterval(() => {
+    v += step;
+    if (v >= target) { v = target; clearInterval(t); }
+    el.innerHTML = v + suffix;
   }, 16);
 }
 
-function startCounters() {
-  animateCounter(document.getElementById('counter-scuole'), totScuole, '', 1200);
-  animateCounter(document.getElementById('counter-bambini'), totBambini, '', 1400);
-  const mEl = document.getElementById('counter-migliora');
-  let start = 0;
-  const step = Math.ceil(mediaM / (1600 / 16));
-  const timer = setInterval(() => {
-    start += step;
-    if (start >= mediaM) { start = mediaM; clearInterval(timer); }
-    mEl.innerHTML = start + '<span class="stat-unit">%</span>';
-  }, 16);
-}
-
-const observer = new IntersectionObserver((entries) => {
+const obs = new IntersectionObserver(entries => {
   entries.forEach(e => {
-    if (e.isIntersecting) { startCounters(); observer.disconnect(); }
+    if (e.isIntersecting) {
+      animateCounter(document.getElementById('counter-scuole'), totScuole, '');
+      animateCounter(document.getElementById('counter-bambini'), totBambini, '');
+      const mEl = document.getElementById('counter-migliora');
+      let v = 0;
+      const step = Math.ceil(mediaM / 60);
+      const t = setInterval(() => {
+        v += step;
+        if (v >= mediaM) { v = mediaM; clearInterval(t); }
+        mEl.innerHTML = v + '<span class="stat-unit">%</span>';
+      }, 16);
+      obs.disconnect();
+    }
   });
 }, { threshold: 0.3 });
-observer.observe(document.querySelector('.stats-sec'));
+obs.observe(document.querySelector('.stats-sec'));
 
 // =====================
 // MAPPA LEAFLET
 // =====================
-function formatData(str) {
-  if (!str) return 'N.d.';
+let leafletMap = null;
+let currentLang = 'it';
+
+function formatData(str, lang) {
+  if (!str) return T[lang].labels.nd;
   const [y, m] = str.split('-');
-  const mesi = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+  const mesiIT = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+  const mesiES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const mesiEN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const mesi = lang === 'es' ? mesiES : lang === 'en' ? mesiEN : mesiIT;
   return mesi[parseInt(m, 10) - 1] + ' ' + y;
 }
 
@@ -434,71 +604,75 @@ function makeIcon(color) {
   return L.divIcon({
     className: '',
     html: `<div style="width:18px;height:18px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>`,
-    iconSize: [18, 18],
-    iconAnchor: [9, 9],
-    popupAnchor: [0, -12]
+    iconSize: [18, 18], iconAnchor: [9, 9], popupAnchor: [0, -12]
   });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  const map = L.map('mappa-italia', { scrollWheelZoom: false }).setView([42.5, 12.5], 6);
-
+  leafletMap = L.map('mappa-italia', { scrollWheelZoom: false }).setView([42.5, 12.5], 6);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom: 19
-  }).addTo(map);
+  }).addTo(leafletMap);
 
   const iconCompleto = makeIcon('#00A896');
   const iconKit = makeIcon('#3b82f6');
 
   scuoleAderenti.forEach(s => {
-    const icon = s.tipoAdesione === 'Programma Completo' ? iconCompleto : iconKit;
-    const badgeClass = s.tipoAdesione === 'Programma Completo' ? 'completo' : 'kit';
-
-    const popupHtml = `
-      <div class="popup-nome">${s.nome}</div>
-      <div class="popup-luogo">📍 ${s.comune} (${s.provincia}) &middot; ${s.regione}</div>
-      <span class="popup-badge ${badgeClass}">${s.tipoAdesione}</span>
-      <div class="popup-meta">
-        <span><strong>Bambini:</strong> ${s.bambini !== null ? s.bambini : 'N.d.'}</span>
-        <span><strong>Classi:</strong> ${s.classi}</span>
-        <span><strong>Attivazione:</strong> ${formatData(s.dataAttivazione)}</span>
-        ${s.miglioramentoPrePost !== null ? `<span><strong>Miglioramento PRE/POST:</strong> +${s.miglioramentoPrePost}%</span>` : ''}
-      </div>
-    `;
-    L.marker([s.lat, s.lng], { icon }).addTo(map).bindPopup(popupHtml, { maxWidth: 260 });
+    const icon = s.tipoAdesione === 'completo' ? iconCompleto : iconKit;
+    const marker = L.marker([s.lat, s.lng], { icon }).addTo(leafletMap);
+    marker.bindPopup(() => {
+      const t = T[currentLang];
+      const lb = t.labels;
+      const badgeClass = s.tipoAdesione === 'completo' ? 'completo' : 'kit';
+      const badgeTxt = s.tipoAdesione === 'completo' ? lb.tipo_completo : lb.tipo_kit;
+      return `
+        <div class="popup-nome">${s.nome}</div>
+        <div class="popup-luogo">📍 ${s.comune} (${s.provincia}) · ${s.regione}</div>
+        <span class="popup-badge ${badgeClass}">${badgeTxt}</span>
+        <div class="popup-meta">
+          <span><strong>${lb.popup_bambini}:</strong> ${s.bambini !== null ? s.bambini : lb.nd}</span>
+          <span><strong>${lb.popup_classi}:</strong> ${s.classi}</span>
+          <span><strong>${lb.popup_attivazione}:</strong> ${formatData(s.dataAttivazione, currentLang)}</span>
+          ${s.miglioramentoPrePost !== null ? `<span><strong>${lb.miglioramento}:</strong> +${s.miglioramentoPrePost}%</span>` : ''}
+        </div>
+      `;
+    }, { maxWidth: 260 });
   });
 
-  setTimeout(() => map.invalidateSize(), 300);
+  setTimeout(() => leafletMap.invalidateSize(), 300);
 });
 
 // =====================
-// GRIGLIA SCUOLE
+// RENDER
 // =====================
-function renderScuole() {
-  const grid = document.getElementById('scuole-grid');
-  grid.innerHTML = scuoleAderenti.map(s => {
-    const badgeClass = s.tipoAdesione === 'Programma Completo' ? 'completo' : 'kit';
-    const topBg = s.tipoAdesione === 'Programma Completo'
+function renderScuole(t) {
+  const lb = t.labels;
+  document.getElementById('scuole-grid').innerHTML = scuoleAderenti.map(s => {
+    const isCompleto = s.tipoAdesione === 'completo';
+    const topBg = isCompleto
       ? 'linear-gradient(135deg,#0A2647,#00A896)'
       : 'linear-gradient(135deg,#0A2647,#3b82f6)';
-    const icon = s.tipoAdesione === 'Programma Completo' ? '🎓' : '📦';
+    const badgeClass = isCompleto ? 'completo' : 'kit';
+    const badgeTxt = isCompleto ? lb.tipo_completo : lb.tipo_kit;
+    const icon = isCompleto ? '🎓' : '📦';
+    const classiLabel = s.classi === 1 ? lb.classi : lb.classi_pl;
 
     return `
       <div class="scuola-card">
         <div class="scuola-card-top" style="background:${topBg}">
-          <span style="font-size:2.8rem">${icon}</span>
-          <span class="scuola-badge ${badgeClass}">${s.tipoAdesione}</span>
+          <span>${icon}</span>
+          <span class="scuola-badge ${badgeClass}">${badgeTxt}</span>
         </div>
         <div class="scuola-body">
           <div class="scuola-nome">${s.nome}</div>
-          <div class="scuola-luogo">📍 ${s.comune} (${s.provincia}) &middot; ${s.regione}</div>
+          <div class="scuola-luogo">📍 ${s.comune} (${s.provincia}) · ${s.regione}</div>
           <div class="scuola-meta">
-            ${s.bambini !== null ? `<div class="scuola-meta-row">👧 <strong>${s.bambini}</strong> bambini coinvolti</div>` : ''}
-            <div class="scuola-meta-row">🏛️ <strong>${s.classi}</strong> classe${s.classi > 1 ? 'i' : ''} aderente${s.classi > 1 ? 'i' : ''}</div>
-            <div class="scuola-meta-row">📅 Attivazione: <strong>${formatData(s.dataAttivazione)}</strong></div>
-            ${s.miglioramentoPrePost !== null ? `<div class="scuola-meta-row">📈 Miglioramento PRE/POST: <strong>+${s.miglioramentoPrePost}%</strong></div>` : ''}
-            ${s.raccomandazioneInsegnanti !== null ? `<div class="scuola-meta-row">⭐ Raccomandazione insegnanti: <strong>${s.raccomandazioneInsegnanti}%</strong></div>` : ''}
+            ${s.bambini !== null ? `<div class="scuola-meta-row">👧 <strong>${s.bambini}</strong> ${lb.bambini}</div>` : ''}
+            <div class="scuola-meta-row">🏛️ <strong>${s.classi}</strong> ${classiLabel} ${lb.aderente}</div>
+            <div class="scuola-meta-row">📅 ${lb.attivazione}: <strong>${formatData(s.dataAttivazione, currentLang)}</strong></div>
+            ${s.miglioramentoPrePost !== null ? `<div class="scuola-meta-row">📈 ${lb.miglioramento}: <strong>+${s.miglioramentoPrePost}%</strong></div>` : ''}
+            ${s.raccomandazioneInsegnanti !== null ? `<div class="scuola-meta-row">⭐ ${lb.raccomandazione}: <strong>${s.raccomandazioneInsegnanti}%</strong></div>` : ''}
           </div>
           ${s.testimonianza ? `<div class="scuola-testimonianza">"${s.testimonianza}"</div>` : ''}
         </div>
@@ -506,16 +680,49 @@ function renderScuole() {
     `;
   }).join('');
 }
-renderScuole();
 
-// =====================
-// LINGUA (predisposto)
-// =====================
-function setLang(l) {
+function renderAderire(t) {
+  document.getElementById('aderire-grid').innerHTML = t.modalita.map(m => `
+    <div class="aderire-card ${m.classe || m.clase}-card">
+      <div class="aderire-icon">${m.icona}</div>
+      <div class="aderire-tipo">${m.tipo}</div>
+      <div class="aderire-nome">${m.nome}</div>
+      <p class="aderire-desc-card">${m.desc}</p>
+      <div class="aderire-include-title">${m.include_title}</div>
+      <ul class="aderire-items">${m.items.map(i => `<li>${i}</li>`).join('')}</ul>
+      <div class="aderire-ideale">${m.ideale}</div>
+      <a href="${m.mailto}" class="aderire-cta">${m.cta}</a>
+    </div>
+  `).join('');
+}
+
+function render(l) {
+  currentLang = l;
+  const t = T[l];
+  document.documentElement.lang = l;
+
+  document.querySelectorAll('[data-k]').forEach(el => {
+    const k = el.getAttribute('data-k');
+    if (k.startsWith('nav') && k !== 'nav_cta') {
+      const i = parseInt(k.replace('nav', ''));
+      if (!isNaN(i) && t.nav[i] !== undefined) { el.textContent = t.nav[i]; return; }
+    }
+    if (t[k] !== undefined) el.innerHTML = t[k];
+  });
+
   document.querySelectorAll('.lb').forEach(b =>
     b.classList.toggle('active', b.textContent.toLowerCase() === l)
   );
+
+  document.getElementById('cta-btn1').href = t.cta_btn1_href;
+
+  renderScuole(t);
+  renderAderire(t);
 }
+
+function setLang(l) { render(l); }
+
+render('it');
 </script>
 </body>
 </html>
