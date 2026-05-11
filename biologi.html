@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Biologi S.A.N.E. | S.A.N.E. Italia — Rete Biologi Nutrizionisti</title>
+<meta name="description" content="I biologi nutrizionisti certificati S.A.N.E. Italia. Professionisti selezionati e formati dalla Dott.ssa Serafina Cardaci per portare l'educazione alimentare nelle scuole italiane.">
+<meta name="keywords" content="biologi nutrizionisti SANE Italia, rete biologi educazione alimentare, biologo nutrizionista scuole, certificazione SANE, Serafina Cardaci">
+<meta name="author" content="Dott.ssa Serafina Cardaci, Ing. Patrick Orlando">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://sane-italia.it/biologi.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sane-italia.it/biologi.html">
+<meta property="og:title" content="I Biologi S.A.N.E. | S.A.N.E. Italia">
+<meta property="og:description" content="Professionisti certificati per l'educazione alimentare nelle scuole. Selezionati e formati dalla Dott.ssa Serafina Cardaci.">
+<meta property="og:image" content="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="S.A.N.E. Italia">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="I Biologi S.A.N.E. | S.A.N.E. Italia">
+<meta name="twitter:description" content="Professionisti certificati per l'educazione alimentare nelle scuole italiane.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "I Biologi S.A.N.E. Italia",
+  "url": "https://sane-italia.it/biologi.html",
+  "description": "La rete di biologi nutrizionisti certificati S.A.N.E. Italia per l'educazione alimentare nelle scuole.",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "S.A.N.E. Italia",
+    "url": "https://sane-italia.it"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#0A2647;
+  --gm:#00A896;
+  --gl:#00C9B1;
+  --cr:#EEF5FA;
+  --tc:#F4A261;
+  --wh:#F5F9FC;
+  --gr:#5A6A7A;
+  --dn:#061828;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--wh);color:var(--g);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:.9rem 3rem;background:rgba(10,38,71,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(0,168,150,.2);gap:1rem}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo img{height:38px;width:auto}
+.logo-text{font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:.03em}
+.logo-text span{color:var(--gl)}
+.nav-links{display:flex;gap:1.6rem;list-style:none}
+.nav-links a{font-size:.76rem;font-weight:500;letter-spacing:.08em;text-decoration:none;color:rgba(255,255,255,.65);text-transform:uppercase;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--gl)}
+.nav-right{display:flex;align-items:center;gap:.9rem}
+.lang-sw{display:flex;gap:.3rem}
+.lb{background:none;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.68rem;font-weight:600;letter-spacing:.08em;padding:.22rem .55rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;text-transform:uppercase;border-radius:3px}
+.lb:hover,.lb.active{background:var(--gm);color:#fff;border-color:var(--gm)}
+.nav-cta{background:var(--gm);color:#fff;padding:.48rem 1.2rem;font-size:.76rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:background .2s,transform .15s;border-radius:6px;white-space:nowrap}
+.nav-cta:hover{background:var(--gl);transform:translateY(-1px)}
+.nav-portale{background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.3);padding:.44rem 1rem;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:all .2s;border-radius:6px;white-space:nowrap}
+.nav-portale:hover{background:rgba(255,255,255,.1);border-color:var(--gl);color:#fff}
+
+/* HERO */
+.page-hero{background:linear-gradient(135deg,var(--g) 0%,#0d3460 100%);padding:8rem 4rem 5rem;position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,150,.14) 0%,transparent 70%);top:-200px;right:-100px;pointer-events:none}
+.page-hero::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.08) 0%,transparent 70%);bottom:-100px;left:5%;pointer-events:none}
+.hero-inner{position:relative;z-index:2;max-width:760px}
+.eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gm);margin-bottom:1.2rem}
+.page-hero .eyebrow{color:var(--gl)}
+.page-hero-title{font-family:'Inter',sans-serif;font-size:clamp(2.2rem,4vw,3.8rem);line-height:1.08;font-weight:800;color:#fff;margin-bottom:1.2rem}
+.page-hero-title em{font-style:normal;color:var(--gl)}
+.page-hero-sub{font-size:1.05rem;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:.9rem;line-height:1.5}
+.page-hero-desc{font-size:.95rem;color:rgba(255,255,255,.6);line-height:1.85;max-width:640px}
+
+/* STATS */
+.stats-sec{background:#fff;padding:3.5rem 4rem}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
+.stat-card{background:var(--g);padding:2.2rem 2rem;border-radius:14px;text-align:center;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(0,201,177,.08);top:-30px;right:-30px;pointer-events:none}
+.stat-num{font-family:'Inter',sans-serif;font-size:3rem;font-weight:800;color:var(--gl);line-height:1;margin-bottom:.5rem}
+.stat-label{font-size:.82rem;color:rgba(255,255,255,.65);line-height:1.5;font-weight:500}
+
+/* SECTIONS */
+section{padding:4rem 4rem}
+.sec-title{font-family:'Inter',sans-serif;font-size:clamp(1.6rem,2.8vw,2.4rem);font-weight:700;line-height:1.15;color:var(--g);max-width:700px}
+.sec-title em{font-style:normal;color:var(--gm)}
+.sec-title-white{color:#fff}
+.sec-title-white em{color:var(--gl)}
+.sec-desc{font-size:.92rem;color:var(--gr);margin-top:.8rem;line-height:1.8;max-width:640px}
+
+/* MAPPA */
+.map-sec{background:var(--cr);padding:4rem 4rem}
+.map-legend{display:flex;gap:1.5rem;margin:1.2rem 0;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--g)}
+.legend-dot{width:14px;height:14px;border-radius:2px;flex-shrink:0}
+.legend-dot.attivo{background:var(--gm)}
+.legend-dot.espansione{background:#94a3b8}
+#mappa-biologi{width:100%;height:500px;border-radius:14px;border:1px solid rgba(10,38,71,.1);box-shadow:0 4px 24px rgba(10,38,71,.08)}
+
+/* BIOLOGI GRID */
+.biologi-sec{background:#fff;padding:4rem 4rem}
+.biologi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
+.biologo-card{background:var(--wh);border-radius:12px;overflow:hidden;border:1px solid rgba(10,38,71,.08);box-shadow:0 2px 16px rgba(10,38,71,.05);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column}
+.biologo-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(10,38,71,.12)}
+.biologo-top{background:linear-gradient(135deg,var(--g),#0d3460);padding:2rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.8rem}
+.biologo-avatar{width:72px;height:72px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:800;color:var(--g);overflow:hidden;border:3px solid rgba(255,255,255,.2)}
+.biologo-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:50%}
+.biologo-nome{font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;color:#fff;line-height:1.3}
+.biologo-titolo{font-size:.75rem;color:var(--gl);font-weight:500;letter-spacing:.03em}
+.biologo-body{padding:1.4rem;flex:1;display:flex;flex-direction:column;gap:.6rem}
+.biologo-ruolo{font-size:.82rem;font-weight:600;color:var(--g);line-height:1.4}
+.biologo-regione{font-size:.76rem;color:var(--gr);display:flex;align-items:center;gap:.4rem}
+.biologo-spec{font-size:.76rem;color:var(--gr);line-height:1.55;padding-top:.4rem;border-top:1px solid rgba(10,38,71,.07)}
+.cert-badge{display:inline-flex;align-items:center;gap:.35rem;background:rgba(0,168,150,.1);border:1px solid rgba(0,168,150,.25);color:var(--gm);font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .7rem;border-radius:20px;margin-top:auto;align-self:flex-start}
+
+/* BOX CONTATTI NOTA */
+.nota-sec{background:var(--g);padding:2.5rem 4rem}
+.nota-box{background:rgba(0,201,177,.1);border:1.5px solid var(--gl);border-radius:14px;padding:1.8rem 2.2rem;display:flex;gap:1.4rem;align-items:flex-start}
+.nota-icon{font-size:1.8rem;flex-shrink:0;margin-top:.1rem}
+.nota-text{font-size:.9rem;color:rgba(255,255,255,.8);line-height:1.8}
+.nota-text strong{color:#fff}
+
+/* CANDIDATURA */
+.candidatura-sec{background:var(--cr);padding:4rem 4rem}
+.candidatura-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.candidatura-text .sec-title{max-width:100%}
+.candidatura-text p{font-size:.95rem;color:var(--gr);margin-top:1rem;line-height:1.85}
+.candidatura-text p strong{color:var(--g)}
+.candidatura-card{background:var(--g);border-radius:16px;padding:2.4rem;color:#fff}
+.candidatura-card-title{font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:.6rem}
+.candidatura-card-sub{font-size:.83rem;color:rgba(255,255,255,.6);margin-bottom:1.6rem;line-height:1.7}
+.req-list{list-style:none;display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.8rem}
+.req-list li{font-size:.82rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
+.req-list li::before{content:"→";color:var(--gl);font-weight:700;flex-shrink:0}
+.btn-cta{display:inline-block;background:var(--gm);color:#fff;padding:.8rem 1.8rem;font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;border-radius:8px;transition:all .2s}
+.btn-cta:hover{background:var(--gl);transform:translateY(-2px)}
+.btn-cta-outline{display:inline-block;background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.3);padding:.78rem 1.8rem;font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;border-radius:8px;transition:all .2s}
+.btn-cta-outline:hover{border-color:var(--gl);color:#fff;background:rgba(255,255,255,.07)}
+
+/* CTA SCUOLE */
+.cta-scuole-sec{background:linear-gradient(135deg,var(--gm) 0%,var(--gl) 100%);padding:4rem;text-align:center}
+.cta-scuole-sec h2{font-family:'Inter',sans-serif;font-size:clamp(1.4rem,2.8vw,2rem);font-weight:800;color:#fff;margin-bottom:.9rem;line-height:1.2}
+.cta-scuole-sec p{font-size:.95rem;color:rgba(255,255,255,.85);margin-bottom:2rem;line-height:1.75;max-width:520px;margin-left:auto;margin-right:auto}
+.btn-white{background:#fff;color:var(--g);padding:.85rem 2.2rem;font-size:.9rem;font-weight:700;letter-spacing:.04em;text-decoration:none;border-radius:8px;transition:all .2s;display:inline-block}
+.btn-white:hover{background:var(--cr);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15)}
+
+/* FOOTER */
+footer{background:var(--dn);color:rgba(255,255,255,.35);padding:1.8rem 4rem;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;letter-spacing:.05em}
+footer strong{color:rgba(255,255,255,.7)}
+footer a{color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s}
+footer a:hover{color:var(--gl)}
+
+/* LEAFLET POPUP */
+.leaflet-popup-content-wrapper{border-radius:10px;box-shadow:0 4px 20px rgba(10,38,71,.2)}
+.leaflet-popup-content{margin:12px 16px;font-family:'Inter',sans-serif;font-size:.82rem;color:var(--g)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .biologi-grid{grid-template-columns:1fr 1fr}
+  .candidatura-inner{grid-template-columns:1fr}
+}
+@media(max-width:860px){
+  nav{padding:.8rem 1.2rem}
+  .nav-links{display:none}
+  .page-hero{padding:6rem 1.5rem 3.5rem}
+  .stats-sec{padding:2.5rem 1.5rem}
+  section{padding:2.5rem 1.5rem}
+  .map-sec{padding:2.5rem 1.5rem}
+  .biologi-sec{padding:2.5rem 1.5rem}
+  .nota-sec{padding:2rem 1.5rem}
+  .candidatura-sec{padding:2.5rem 1.5rem}
+  .cta-scuole-sec{padding:2.5rem 1.5rem}
+  footer{flex-direction:column;gap:.8rem;text-align:center;padding:1.5rem}
+}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr}
+  .biologi-grid{grid-template-columns:1fr}
+  #mappa-biologi{height:360px}
+  .nota-box{flex-direction:column;gap:.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
+    <span class="logo-text">S.A.N.E. <span>Italia</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html#about">Il programma</a></li>
+    <li><a href="index.html#game">L'app</a></li>
+    <li><a href="index.html#method">I moduli</a></li>
+    <li><a href="index.html#team">Il team</a></li>
+    <li><a href="scuole.html">Scuole Aderenti</a></li>
+    <li><a href="biologi.html" class="active">I Biologi</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="lang-sw">
+      <button class="lb active" onclick="setLang('it')">IT</button>
+      <button class="lb" onclick="setLang('es')">ES</button>
+      <button class="lb" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="portale.html" class="nav-portale">🔐 Portale</a>
+    <a href="index.html#contact" class="nav-cta">Contattaci</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Rete professionale S.A.N.E. Italia · Biologi Nutrizionisti Certificati</p>
+    <h1 class="page-hero-title">I Biologi <em>S.A.N.E.</em></h1>
+    <p class="page-hero-sub">Professionisti certificati per l'educazione alimentare nelle scuole</p>
+    <p class="page-hero-desc">Ogni biologo della rete S.A.N.E. e selezionato e formato direttamente dalla Dott.ssa Serafina Cardaci. Garanti della qualita scientifica del programma in ogni scuola italiana.</p>
+  </div>
+</section>
+
+<!-- STATISTICHE -->
+<section class="stats-sec">
+  <p class="eyebrow">La rete in numeri</p>
+  <h2 class="sec-title">Professionisti <em>selezionati</em>, metodo unico.</h2>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num">2</div>
+      <div class="stat-label">biologi nutrizionisti certificati nella rete S.A.N.E. Italia</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">2</div>
+      <div class="stat-label">regioni italiane con copertura attiva del programma</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">1</div>
+      <div class="stat-label">programma, un metodo scientifico unico in tutta Italia</div>
+    </div>
+  </div>
+</section>
+
+<!-- MAPPA REGIONI -->
+<section class="map-sec">
+  <p class="eyebrow">Copertura territoriale</p>
+  <h2 class="sec-title">Dove siamo <em>presenti</em></h2>
+  <p class="sec-desc">Le regioni evidenziate hanno gia un biologo S.A.N.E. attivo sul territorio. La rete e in espansione: nuovi professionisti vengono selezionati ogni anno.</p>
+  <div class="map-legend">
+    <div class="legend-item"><div class="legend-dot attivo"></div> Regione con biologo S.A.N.E. attivo</div>
+    <div class="legend-item"><div class="legend-dot espansione"></div> In espansione</div>
+  </div>
+  <div id="mappa-biologi"></div>
+</section>
+
+<!-- BIOLOGI GRID -->
+<section class="biologi-sec">
+  <p class="eyebrow">I professionisti della rete</p>
+  <h2 class="sec-title">Chi porta S.A.N.E. <em>nelle scuole</em></h2>
+  <p class="sec-desc">Ogni biologo della rete ha seguito la formazione specifica S.A.N.E. Italia e opera secondo il metodo scientifico sviluppato dalla Dott.ssa Cardaci.</p>
+  <div class="biologi-grid" id="biologi-grid"></div>
+</section>
+
+<!-- NOTA CONTATTI -->
+<section class="nota-sec">
+  <div class="nota-box">
+    <div class="nota-icon">🔒</div>
+    <div class="nota-text">
+      <strong>I contatti con i biologi della rete passano esclusivamente attraverso S.A.N.E. Italia.</strong>
+      Questo garantisce la qualita e la coerenza del programma in ogni scuola. Non vengono forniti contatti diretti dei singoli professionisti: ogni richiesta viene gestita centralmente per assicurare il miglior abbinamento tra scuola e biologo sul territorio.
+    </div>
+  </div>
+</section>
+
+<!-- CANDIDATURA BIOLOGI -->
+<section class="candidatura-sec">
+  <div class="candidatura-inner">
+    <div class="candidatura-text">
+      <p class="eyebrow">Per i professionisti</p>
+      <h2 class="sec-title">Sei un biologo nutrizionista?</h2>
+      <p>Se sei un biologo nutrizionista e vuoi portare il metodo S.A.N.E. nelle scuole del tuo territorio, scrivici. Selezioniamo professionisti motivati e qualificati in tutta Italia.</p>
+      <p style="margin-top:.8rem">La formazione S.A.N.E. ti fornisce tutti gli strumenti per gestire il programma in autonomia: moduli didattici, app «Il Piatto Sano», questionari PRE/POST e supporto scientifico continuo dalla Responsabile Scientifica.</p>
+    </div>
+    <div class="candidatura-card">
+      <div class="candidatura-card-title">Vuoi entrare nella rete S.A.N.E.?</div>
+      <div class="candidatura-card-sub">Cerchiamo biologi nutrizionisti che condividano la nostra visione: educazione alimentare scientifica, accessibile e misurabile in ogni scuola italiana.</div>
+      <ul class="req-list">
+        <li>Laurea in Biologia o titolo equipollente</li>
+        <li>Iscrizione all'Ordine Nazionale dei Biologi</li>
+        <li>Esperienza o forte interesse in nutrizione pediatrica</li>
+        <li>Disponibilita a operare nelle scuole del proprio territorio</li>
+      </ul>
+      <div style="display:flex;flex-direction:column;gap:.7rem">
+        <a href="mailto:serafinacardaci@gmail.com?subject=Candidatura%20biologo%20rete%20S.A.N.E.&body=Buongiorno%20Dott.ssa%20Cardaci%2C%0Asono%20un%20biologo%20nutrizionista%20e%20vorrei%20candidarmi%20alla%20rete%20S.A.N.E.%20Italia.%0AMi%20chiamo%20___%20e%20opero%20nella%20regione%20___.%0A%0ALa%20ringrazio%20per%20l%27attenzione." class="btn-cta">Candidati alla rete S.A.N.E.</a>
+        <a href="portale.html" class="btn-cta-outline">Accedi al Portale Biologi</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA SCUOLE -->
+<section class="cta-scuole-sec">
+  <h2>La tua scuola cerca un biologo S.A.N.E. nel tuo territorio?</h2>
+  <p>Verifica se e disponibile un professionista S.A.N.E. nella tua regione. Gestiamo direttamente ogni richiesta per garantire la qualita del programma.</p>
+  <a href="mailto:serafinacardaci@gmail.com?subject=Richiesta%20biologo%20S.A.N.E.%20-%20%5Binserire%20regione%5D&body=Buongiorno%2C%0Avorrei%20sapere%20se%20e%20disponibile%20un%20biologo%20S.A.N.E.%20nella%20mia%20regione.%0AProvincia%3A%20___%0AScuola%3A%20___%0AGrazie." class="btn-white">Verifica disponibilita nella tua regione</a>
+</section>
+
+<footer>
+  <div><strong>S.A.N.E. Italia</strong> &mdash; Sicurezza &middot; Alimentazione &middot; Nutrizione &middot; Educazione</div>
+  <div>&copy; 2025&ndash;2026 Dott.ssa Serafina Cardaci &amp; Ing. Patrick Orlando &mdash; Tutti i diritti riservati</div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+// =====================
+// DATI BIOLOGI
+// =====================
+const biologiSane = [
+  {
+    nome: "Dott.ssa Serafina Cardaci",
+    titolo: "Biologa Nutrizionista",
+    ruolo: "Direttrice Scientifica S.A.N.E. Italia",
+    regione: "Piemonte",
+    specializzazione: "Educazione alimentare infantile, allergie e intolleranze alimentari",
+    foto: "https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/serafina.webp",
+    contatto: false
+  },
+  {
+    nome: "Biologa S.A.N.E.",
+    titolo: "Biologa Nutrizionista",
+    ruolo: "Biologa Certificata S.A.N.E.",
+    regione: "Piemonte",
+    specializzazione: "Educazione alimentare scolastica",
+    foto: "",
+    contatto: false
+  }
+];
+
+// =====================
+// REGIONI ATTIVE
+// =====================
+const regioniAttive = ["Piemonte"];
+
+// =====================
+// GRIGLIA BIOLOGI
+// =====================
+function renderBiologi() {
+  document.getElementById('biologi-grid').innerHTML = biologiSane.map(b => {
+    const iniziali = b.nome.split(' ').filter(w => w.length > 1 && w !== 'Dott.ssa' && w !== 'Dott.').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    const avatarHtml = b.foto
+      ? `<img src="${b.foto}" alt="${b.nome}">`
+      : iniziali;
+    return `
+      <div class="biologo-card">
+        <div class="biologo-top">
+          <div class="biologo-avatar">${b.foto ? `<img src="${b.foto}" alt="${b.nome}">` : iniziali}</div>
+          <div>
+            <div class="biologo-nome">${b.nome}</div>
+            <div class="biologo-titolo">${b.titolo}</div>
+          </div>
+        </div>
+        <div class="biologo-body">
+          <div class="biologo-ruolo">${b.ruolo}</div>
+          <div class="biologo-regione">📍 ${b.regione}</div>
+          <div class="biologo-spec">${b.specializzazione}</div>
+          <span class="cert-badge">✓ Certificato S.A.N.E.</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+renderBiologi();
+
+// =====================
+// MAPPA REGIONI
+// =====================
+document.addEventListener('DOMContentLoaded', function() {
+  const map = L.map('mappa-biologi', {
+    scrollWheelZoom: false,
+    zoomControl: true
+  }).setView([42.5, 12.5], 5);
+
+  function styleRegione(feature) {
+    const nome = feature.properties.reg_name || feature.properties.NAME_1 || '';
+    const attiva = regioniAttive.some(r => nome.toLowerCase().includes(r.toLowerCase()));
+    return {
+      fillColor: attiva ? '#00A896' : '#94a3b8',
+      fillOpacity: attiva ? 0.55 : 0.25,
+      color: attiva ? '#007a6e' : '#64748b',
+      weight: 1.2,
+      opacity: 0.8
+    };
+  }
+
+  function onEachRegione(feature, layer) {
+    const nome = feature.properties.reg_name || feature.properties.NAME_1 || '';
+    const attiva = regioniAttive.some(r => nome.toLowerCase().includes(r.toLowerCase()));
+    layer.bindTooltip(
+      `<strong>${nome}</strong><br><span style="font-size:.75rem;color:${attiva ? '#00A896' : '#94a3b8'}">${attiva ? '✓ Biologo S.A.N.E. attivo' : 'In espansione'}</span>`,
+      { sticky: true, direction: 'top', offset: [0, -4] }
+    );
+    layer.on('mouseover', function() {
+      if (!attiva) layer.setStyle({ fillOpacity: 0.4 });
+    });
+    layer.on('mouseout', function() {
+      layer.setStyle(styleRegione(feature));
+    });
+  }
+
+  fetch('https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_IT_regions.geojson')
+    .then(r => r.json())
+    .then(data => {
+      L.geoJSON(data, {
+        style: styleRegione,
+        onEachFeature: onEachRegione
+      }).addTo(map);
+      setTimeout(() => map.invalidateSize(), 200);
+    })
+    .catch(() => {
+      document.getElementById('mappa-biologi').innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#5A6A7A;font-size:.9rem">Mappa temporaneamente non disponibile</div>';
+    });
+});
+
+// =====================
+// LINGUA (predisposto)
+// =====================
+function setLang(l) {
+  document.querySelectorAll('.lb').forEach(b =>
+    b.classList.toggle('active', b.textContent.toLowerCase() === l)
+  );
+}
+</script>
+</body>
+</html>
