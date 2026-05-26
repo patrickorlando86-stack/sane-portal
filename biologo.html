@@ -1006,7 +1006,7 @@ const db = createClient(SUPABASE_URL, SUPABASE_KEY, _isViewAs
 // ============================================================
 // STATO
 // ============================================================
-let appState={utente:null,scuole:[],pacchetti:[],classi:[],autovalutazioni:[]};
+let appState={utente:null,scuole:[],pacchetti:[],classi:[],autovalutazioni:[],rispCount:{}};
 let _viewAsMode = false;
 let _authMode = 'login';
 let _editClasseId = null;
@@ -1252,6 +1252,16 @@ async function caricaDati(targetId=null){
     appState.pacchetti=pacchetti||[];
     appState.classi=classi||[];
     appState.autovalutazioni=autov||[];
+    // Conteggio risposte presenti per (classe_id, tipo) — usato nelle card Q.PRE/Q.POST
+    appState.rispCount = {};
+    const classiIds = (classi||[]).map(c=>c.id);
+    if(classiIds.length>0){
+        const {data:risp} = await db.from('risposte').select('classe_id, tipo').in('classe_id', classiIds);
+        (risp||[]).forEach(r=>{
+            if(!appState.rispCount[r.classe_id]) appState.rispCount[r.classe_id] = {PRE:0, POST:0};
+            appState.rispCount[r.classe_id][r.tipo] = (appState.rispCount[r.classe_id][r.tipo]||0) + 1;
+        });
+    }
     aggiornaBadgeAutov();
 }
 
@@ -1438,22 +1448,32 @@ function renderClasseDetail(c,scuola){
             </div>
         </div>
         <!-- Stato questionari -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div style="background:${preOk?'#f0fdf9':'#f8fafc'};border:2px solid ${preOk?'#16a34a':'#e2e8f0'};border-radius:14px;padding:12px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                    <i class="fas fa-clipboard-list" style="color:${preOk?'#16a34a':'#94a3b8'};font-size:14px;"></i>
-                    <span style="font-weight:700;font-size:13px;color:${preOk?'#16a34a':'#64748b'};">Q.PRE${preOk?' ✓':''}</span>
+        ${(()=>{
+            const cnt = (appState.rispCount&&appState.rispCount[c.id])||{PRE:0,POST:0};
+            const tot = c.num_studenti||0;
+            const nPre = cnt.PRE||0, nPost = cnt.POST||0;
+            const assPre  = tot>0 ? Math.max(0, tot-nPre)  : 0;
+            const assPost = tot>0 ? Math.max(0, tot-nPost) : 0;
+            const fmtCount = (n,t)=> t>0 ? `${n}/${t} compilati${(t-n)>0?` · ${t-n} assenti`:''}` : (n>0?`${n} compilati`:'Nessuna risposta');
+            return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div style="background:${preOk?'#f0fdf9':'#f8fafc'};border:2px solid ${preOk?'#16a34a':'#e2e8f0'};border-radius:14px;padding:12px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                        <i class="fas fa-clipboard-list" style="color:${preOk?'#16a34a':'#94a3b8'};font-size:14px;"></i>
+                        <span style="font-weight:700;font-size:13px;color:${preOk?'#16a34a':'#64748b'};">Q.PRE${preOk?' ✓':''}</span>
+                    </div>
+                    <div style="font-size:11px;color:#64748b;">${c.pre_data?'📅 '+new Date(c.pre_data).toLocaleDateString('it-IT'):'Nessuna data'}</div>
+                    <div style="font-size:11px;color:${nPre>0?'#16a34a':'#94a3b8'};font-weight:600;margin-top:4px;"><i class="fas fa-users" style="margin-right:4px;font-size:10px;"></i>${fmtCount(nPre,tot)}</div>
                 </div>
-                <div style="font-size:11px;color:#64748b;">${c.pre_data?'📅 '+new Date(c.pre_data).toLocaleDateString('it-IT'):'Nessuna data'}</div>
-            </div>
-            <div style="background:${postOk?'#f0fdf9':'#f8fafc'};border:2px solid ${postOk?'#16a34a':'#e2e8f0'};border-radius:14px;padding:12px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                    <i class="fas fa-clipboard-check" style="color:${postOk?'#16a34a':'#94a3b8'};font-size:14px;"></i>
-                    <span style="font-weight:700;font-size:13px;color:${postOk?'#16a34a':'#64748b'};">Q.POST${postOk?' ✓':''}</span>
+                <div style="background:${postOk?'#f0fdf9':'#f8fafc'};border:2px solid ${postOk?'#16a34a':'#e2e8f0'};border-radius:14px;padding:12px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                        <i class="fas fa-clipboard-check" style="color:${postOk?'#16a34a':'#94a3b8'};font-size:14px;"></i>
+                        <span style="font-weight:700;font-size:13px;color:${postOk?'#16a34a':'#64748b'};">Q.POST${postOk?' ✓':''}</span>
+                    </div>
+                    <div style="font-size:11px;color:#64748b;">${c.post_data?'📅 '+new Date(c.post_data).toLocaleDateString('it-IT'):'Nessuna data'}</div>
+                    <div style="font-size:11px;color:${nPost>0?'#16a34a':'#94a3b8'};font-weight:600;margin-top:4px;"><i class="fas fa-users" style="margin-right:4px;font-size:10px;"></i>${fmtCount(nPost,tot)}</div>
                 </div>
-                <div style="font-size:11px;color:#64748b;">${c.post_data?'📅 '+new Date(c.post_data).toLocaleDateString('it-IT'):'Nessuna data'}</div>
-            </div>
-        </div>
+            </div>`;
+        })()}
         <div style="display:none;">
             <button onclick="mostraRisposteInline('PRE')" style="width:100%;padding:9px;border:none;border-radius:10px;background:${preOk?'#16a34a':'var(--teal)'};color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;">
                     <i class="fas fa-pen" style="margin-right:4px;"></i>${preOk?'Aggiorna Risposte PRE':'Inserisci Risposte PRE'}
@@ -3366,6 +3386,8 @@ async function autoSalvaRisposte(){
     await db.from('classi').update({[scoreField]:mediaScore}).eq('id',sessId);
     const ci=appState.classi.findIndex(c=>c.id===sessId);
     if(ci!==-1) appState.classi[ci][scoreField]=mediaScore;
+    if(!appState.rispCount[sessId]) appState.rispCount[sessId]={PRE:0,POST:0};
+    appState.rispCount[sessId][tipo] = presenti.length;
     aggiornaStatusBarPresenti(presenti.length, assenti.length, numStudenti);
     if(txt) txt.textContent=`✓ Salvato — ${presenti.length}/${numStudenti} compilati${assenti.length?` (${assenti.length} assenti)`:''} · Score ${tipo}: ${mediaScore!=null?mediaScore+'/10':'—'}`;
 }
@@ -3560,6 +3582,8 @@ async function salvaRisposte() {
         const ci=appState.classi.findIndex(c=>c.id===sessId);
         if(ci!==-1) Object.assign(appState.classi[ci], updatePayload);
     }
+    if(!appState.rispCount[sessId]) appState.rispCount[sessId]={PRE:0,POST:0};
+    appState.rispCount[sessId][tipo] = presenti.length;
     // ─────────────────────────────────────────────────────────────────
 
     showToast(`Risposte salvate ✓  ${presenti.length}/${numStudenti}${assenti.length?` (${assenti.length} assenti)`:''} · Score ${tipo}: ${mediaScore!=null?mediaScore+'/10':'—'}`);
@@ -4030,7 +4054,7 @@ db.auth.onAuthStateChange(async (event, session) => {
         catch(err){ clearTimeout(_initTimeout); console.error('Init error:',err); hideInitLoader(); document.getElementById('loginScreen').classList.remove('hidden'); }
     } else if(event === 'SIGNED_OUT'){
         Object.keys(localStorage).filter(k=>k.startsWith('sane_')).forEach(k=>localStorage.removeItem(k));
-        appState={utente:null,scuole:[],pacchetti:[],classi:[],autovalutazioni:[]};
+        appState={utente:null,scuole:[],pacchetti:[],classi:[],autovalutazioni:[],rispCount:{}};
         hideInitLoader();
         document.getElementById('appShell').style.opacity='0';
         setTimeout(()=>document.getElementById('loginScreen').classList.remove('hidden'),300);
@@ -4349,6 +4373,8 @@ async function confermaImportXlsx(){
         appState.classi[ci][scoreField] = media;
         appState.classi[ci][dataField]  = upd[dataField];
     }
+    if(!appState.rispCount[p.classeId]) appState.rispCount[p.classeId]={PRE:0,POST:0};
+    appState.rispCount[p.classeId][p.tipo] = p.righe.length;
     if(typeof logActivity==='function') logActivity('excel_import_risposte',{classe_id:p.classeId,tipo:p.tipo,studenti:p.righe.length,score:media});
     if(overlay) overlay.remove();
     window._xlsxImportPending = null;
