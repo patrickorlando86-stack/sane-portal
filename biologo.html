@@ -3136,11 +3136,12 @@ async function generaFormStudenti() {
     const esistentiMap = {};
     esistenti.forEach(r => { esistentiMap[r.studente_num] = r; });
 
-    let html = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+    let html = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
         <div style="height:2px;flex:1;background:#e2e8f0;"></div>
-        <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;">${numStudenti} studenti · ${tipo} · Versione ${versioneGlobale}${esistenti.length > 0 ? ' · ' + esistenti.length + ' già salvati' : ''}</span>
+        <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;">${numStudenti} studenti · ${tipo} · Versione ${versioneGlobale}</span>
         <div style="height:2px;flex:1;background:#e2e8f0;"></div>
-    </div>`;
+    </div>
+    <div id="risposteStatusBar" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:18px;padding:10px 14px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;"></div>`;
     for (let i = 1; i <= numStudenti; i++) {
         html += renderFormStudente(i, tipo, classeDefault, !!esistentiMap[i]);
     }
@@ -3166,6 +3167,11 @@ async function generaFormStudenti() {
     if(bozza){
         showToast('Bozza locale ripristinata — controlla e salva');
     }
+    // Inizializza status bar (presenti = righe con almeno una risposta nel DB)
+    const presentiIni = (esistenti||[]).filter(r => {
+        return ['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11','d12','d13','d_post'].some(k => r[k]);
+    }).length;
+    aggiornaStatusBarPresenti(presentiIni, 0, numStudenti);
 }
 
 function precompileDaBozza(num, dati){
@@ -3237,7 +3243,12 @@ function renderFormStudente(num, tipo, classeDefault, giaEsistente = false) {
                 <h4 style="font-size:15px;font-weight:700;color:var(--dark);margin:0;">Studente ${num}</h4>
                 ${giaEsistente ? `<span style="background:#dbeafe;color:#1e40af;font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:0.06em;"><i class="fas fa-sync-alt" style="margin-right:3px;font-size:8px;"></i>Modifica</span>` : ''}
             </div>
-            <div id="scoreDisplay_${num}" style="background:#f0fdf9;color:var(--teal);font-family:'Syne',sans-serif;font-weight:700;padding:6px 14px;border-radius:10px;font-size:14px;display:none;"></div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button type="button" id="btnAssente_${num}" onclick="toggleStudenteAssente(${num})" title="Marca questo studente come assente — verrà escluso dal calcolo della media" style="background:#f8fafc;border:1.5px solid #e2e8f0;color:#64748b;font-size:10px;font-weight:700;padding:5px 10px;border-radius:8px;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;">
+                    <i class="fas fa-user-slash" style="margin-right:4px;font-size:9px;"></i>Assente
+                </button>
+                <div id="scoreDisplay_${num}" style="background:#f0fdf9;color:var(--teal);font-family:'Syne',sans-serif;font-weight:700;padding:6px 14px;border-radius:10px;font-size:14px;display:none;"></div>
+            </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:18px;">
             <div>
@@ -3310,35 +3321,64 @@ async function autoSalvaRisposte(){
     const numStudenti = parseInt(document.getElementById('risposteNumStudenti')?.value)||0;
     if(!numStudenti) return;
     const versioneGlobale = document.getElementById('risposteVersione')?.value||'A';
-    const righe=[];
+    const presenti = [];
+    const assenti  = [];
     for(let i=1;i<=numStudenti;i++){
         const versione=versioneGlobale;
         const classe_studente=document.getElementById('classe_'+i)?.value.trim()||'';
         const sesso=document.getElementById('sesso_'+i)?.value||'NI';
         const riga={classe_id:sessId,studente_num:i,tipo,versione,classe_studente,sesso};
-        let punti=0;
+        let punti=0, compilate=0;
         for(let d=1;d<=9;d++){
             const campo='d'+d; const v=getSelectedAnswer('s'+i+'_'+campo);
             riga[campo]=v;
-            if(v&&v===RISPOSTE_CORRETTE[campo]) punti++;
+            if(v){ compilate++; if(v===RISPOSTE_CORRETTE[campo]) punti++; }
         }
-        if(versione==='B'||versione==='C'){ riga.d10=getSelectedAnswer('s'+i+'_d10'); riga.d11=getSelectedAnswer('s'+i+'_d11'); }
-        if(versione==='C'){ riga.d12=getSelectedAnswer('s'+i+'_d12'); riga.d13=getSelectedAnswer('s'+i+'_d13'); }
-        if(tipo==='POST') riga.d_post=getSelectedAnswer('s'+i+'_d_post');
+        if(versione==='B'||versione==='C'){
+            const v10=getSelectedAnswer('s'+i+'_d10'); riga.d10=v10; if(v10) compilate++;
+            const v11=getSelectedAnswer('s'+i+'_d11'); riga.d11=v11; if(v11) compilate++;
+        }
+        if(versione==='C'){
+            const v12=getSelectedAnswer('s'+i+'_d12'); riga.d12=v12; if(v12) compilate++;
+            const v13=getSelectedAnswer('s'+i+'_d13'); riga.d13=v13; if(v13) compilate++;
+        }
+        if(tipo==='POST'){ const vp=getSelectedAnswer('s'+i+'_d_post'); riga.d_post=vp; if(vp) compilate++; }
         riga.punteggio=punti; riga.punteggio_max=9;
-        righe.push(riga);
+        const cardEl=document.getElementById('studenteCard_'+i);
+        const markedAbsent = cardEl && cardEl.getAttribute('data-assente')==='true';
+        if(markedAbsent || compilate===0){ assenti.push(i); }
+        else { presenti.push(riga); }
     }
-    const {error}=await db.from('risposte').upsert(righe,{onConflict:'classe_id,studente_num,tipo',ignoreDuplicates:false});
     const txt=document.getElementById('autoSaveText');
-    if(error){ if(txt) txt.textContent='⚠️ Errore salvataggio — riprova o usa il tasto Salva.'; return; }
-    // Aggiorna score medio
-    const totalPunti=righe.reduce((a,r)=>a+(r.punteggio||0),0);
-    const mediaScore=righe.length>0?parseFloat(((totalPunti/righe.length/9)*10).toFixed(1)):null;
+    // Upsert presenti
+    if(presenti.length>0){
+        const {error}=await db.from('risposte').upsert(presenti,{onConflict:'classe_id,studente_num,tipo',ignoreDuplicates:false});
+        if(error){ if(txt) txt.textContent='⚠️ Errore salvataggio — riprova o usa il tasto Salva.'; return; }
+    }
+    // Delete assenti (eventuali righe pre-esistenti che ora sono diventate assenti)
+    if(assenti.length>0){
+        await db.from('risposte').delete().eq('classe_id',sessId).eq('tipo',tipo).in('studente_num',assenti);
+    }
+    // Aggiorna score medio sulla base dei SOLI presenti
+    const totalPunti=presenti.reduce((a,r)=>a+(r.punteggio||0),0);
+    const mediaScore=presenti.length>0?parseFloat(((totalPunti/presenti.length/9)*10).toFixed(1)):null;
     const scoreField=tipo==='PRE'?'score_pre':'score_post';
     await db.from('classi').update({[scoreField]:mediaScore}).eq('id',sessId);
     const ci=appState.classi.findIndex(c=>c.id===sessId);
     if(ci!==-1) appState.classi[ci][scoreField]=mediaScore;
-    if(txt) txt.textContent=`✓ Salvato automaticamente — Score ${tipo}: ${mediaScore!=null?mediaScore+'/10':'—'}`;
+    aggiornaStatusBarPresenti(presenti.length, assenti.length, numStudenti);
+    if(txt) txt.textContent=`✓ Salvato — ${presenti.length}/${numStudenti} compilati${assenti.length?` (${assenti.length} assenti)`:''} · Score ${tipo}: ${mediaScore!=null?mediaScore+'/10':'—'}`;
+}
+
+function aggiornaStatusBarPresenti(presenti, assenti, totale){
+    const bar=document.getElementById('risposteStatusBar');
+    if(!bar) return;
+    const daFare=Math.max(0,totale-presenti-assenti);
+    bar.innerHTML = `
+        <span style="background:#f0fdf9;color:#16a34a;font-weight:700;padding:3px 10px;border-radius:99px;font-size:11px;"><i class="fas fa-check" style="margin-right:4px;"></i>${presenti} compilati</span>
+        ${assenti>0?`<span style="background:#eff6ff;color:#1e40af;font-weight:700;padding:3px 10px;border-radius:99px;font-size:11px;"><i class="fas fa-user-slash" style="margin-right:4px;"></i>${assenti} assenti</span>`:''}
+        ${daFare>0?`<span style="background:#fef3c7;color:#92400e;font-weight:700;padding:3px 10px;border-radius:99px;font-size:11px;"><i class="fas fa-clock" style="margin-right:4px;"></i>${daFare} da fare</span>`:''}
+        <span style="color:#94a3b8;font-size:11px;">su ${totale} iscritti</span>`;
 }
 
 function salvaBozzaLocalStorage(){
@@ -3383,6 +3423,8 @@ function aggiornaVersioneGlobale() {
 }
 
 function aggiornaScoreStudente(num) {
+    const card = document.getElementById('studenteCard_' + num);
+    if (card && card.getAttribute('data-assente') === 'true') return;
     let punti = 0;
     for (const [campo, corretta] of Object.entries(RISPOSTE_CORRETTE)) {
         const val = getSelectedAnswer('s' + num + '_' + campo);
@@ -3393,6 +3435,50 @@ function aggiornaScoreStudente(num) {
     el.textContent = punti + '/9';
 }
 
+function toggleStudenteAssente(num) {
+    const card = document.getElementById('studenteCard_' + num);
+    const btn  = document.getElementById('btnAssente_' + num);
+    if (!card || !btn) return;
+    const isAssente = card.getAttribute('data-assente') === 'true';
+    if (isAssente) {
+        // Riattiva: ripristina aspetto normale
+        card.removeAttribute('data-assente');
+        card.style.opacity = '';
+        card.style.background = '';
+        btn.style.background = '#f8fafc';
+        btn.style.borderColor = '#e2e8f0';
+        btn.style.color = '#64748b';
+        btn.innerHTML = '<i class="fas fa-user-slash" style="margin-right:4px;font-size:9px;"></i>Assente';
+        const inner = card.querySelector('[style*="border-top:1px solid"]');
+        if (inner) inner.style.pointerEvents = '';
+    } else {
+        if (!confirm(`Marcare lo studente ${num} come ASSENTE?\nLe sue risposte verranno cancellate e non entrerà nel calcolo della media.`)) return;
+        // Svuota tutte le risposte di questo studente
+        document.querySelectorAll(`[data-group^="s${num}_"]`).forEach(b => {
+            b.style.background = 'white';
+            b.style.color = 'var(--dark)';
+            b.style.borderColor = '#e2e8f0';
+            b.style.boxShadow = 'none';
+            b.removeAttribute('data-selected');
+        });
+        // Marca come assente
+        card.setAttribute('data-assente', 'true');
+        card.style.opacity = '0.55';
+        card.style.background = '#eff6ff';
+        btn.style.background = '#1e40af';
+        btn.style.borderColor = '#1e40af';
+        btn.style.color = 'white';
+        btn.innerHTML = '<i class="fas fa-undo" style="margin-right:4px;font-size:9px;"></i>Annulla';
+        const scoreEl = document.getElementById('scoreDisplay_' + num);
+        if (scoreEl) scoreEl.style.display = 'none';
+        const inner = card.querySelector('[style*="border-top:1px solid"]');
+        if (inner) inner.style.pointerEvents = 'none';
+    }
+    salvaBozzaLocalStorage();
+    clearTimeout(_autoSaveTimer);
+    _autoSaveTimer = setTimeout(() => autoSalvaRisposte(), 600);
+}
+
 async function salvaRisposte() {
     const sessId = document.getElementById('risposteSessione').value;
     const tipo = document.getElementById('risposteTipo').value;
@@ -3400,57 +3486,69 @@ async function salvaRisposte() {
     if (!sessId || !numStudenti) { showToast('Dati mancanti', 'error'); return; }
 
     const versioneGlobale = document.getElementById('risposteVersione')?.value || 'A';
-    const righe = [];
+    const presenti = [];
+    const assenti = [];
     for (let i = 1; i <= numStudenti; i++) {
         const versione = versioneGlobale;
         const classe_studente = document.getElementById('classe_' + i)?.value.trim() || '';
         const sesso = document.getElementById('sesso_' + i).value;
         const riga = { classe_id: sessId, studente_num: i, tipo, versione, classe_studente, sesso };
 
-        let punti = 0;
+        let punti = 0, compilate = 0;
         for (let d = 1; d <= 9; d++) {
             const campo = 'd' + d;
             const val = getSelectedAnswer('s' + i + '_' + campo);
             riga[campo] = val;
-            if (val && val === RISPOSTE_CORRETTE[campo]) punti++;
+            if (val) { compilate++; if (val === RISPOSTE_CORRETTE[campo]) punti++; }
         }
         if (versione === 'B' || versione === 'C') {
             for (let d = 10; d <= 11; d++) {
-                riga['d' + d] = getSelectedAnswer('s' + i + '_d' + d);
+                const v = getSelectedAnswer('s' + i + '_d' + d);
+                riga['d' + d] = v; if (v) compilate++;
             }
         }
         if (versione === 'C') {
             for (let d = 12; d <= 13; d++) {
-                riga['d' + d] = getSelectedAnswer('s' + i + '_d' + d);
+                const v = getSelectedAnswer('s' + i + '_d' + d);
+                riga['d' + d] = v; if (v) compilate++;
             }
         }
         if (tipo === 'POST') {
-            riga.d_post = getSelectedAnswer('s' + i + '_d_post');
+            const v = getSelectedAnswer('s' + i + '_d_post');
+            riga.d_post = v; if (v) compilate++;
         }
         riga.punteggio = punti;
         riga.punteggio_max = 9;
-        righe.push(riga);
+        const cardEl = document.getElementById('studenteCard_' + i);
+        const markedAbsent = cardEl && cardEl.getAttribute('data-assente') === 'true';
+        if (markedAbsent || compilate === 0) { assenti.push(i); }
+        else { presenti.push(riga); }
     }
 
     // Salva prima in localStorage come backup
     const bozzaKey='sane_bozza_'+sessId+'_'+tipo;
-    localStorage.setItem(bozzaKey+'_pending', JSON.stringify({righe,ts:Date.now()}));
+    localStorage.setItem(bozzaKey+'_pending', JSON.stringify({righe:presenti,ts:Date.now()}));
 
-    const { error } = await db.from('risposte').upsert(righe, {
-        onConflict: 'classe_id,studente_num,tipo',
-        ignoreDuplicates: false
-    });
-    if (error) {
-        showToast('Errore connessione — dati salvati localmente, riprova.', 'error');
-        return;
+    if (presenti.length > 0) {
+        const { error } = await db.from('risposte').upsert(presenti, {
+            onConflict: 'classe_id,studente_num,tipo',
+            ignoreDuplicates: false
+        });
+        if (error) {
+            showToast('Errore connessione — dati salvati localmente, riprova.', 'error');
+            return;
+        }
+    }
+    if (assenti.length > 0) {
+        await db.from('risposte').delete().eq('classe_id', sessId).eq('tipo', tipo).in('studente_num', assenti);
     }
     // Pulizia localStorage dopo invio riuscito
     localStorage.removeItem(bozzaKey);
     localStorage.removeItem(bozzaKey+'_pending');
 
-    // ── Auto-calcolo score medio (scala 0-10) e aggiornamento classi ──
-    const totalPunti = righe.reduce((a,r)=>a+(r.punteggio||0),0);
-    const mediaScore = righe.length>0 ? parseFloat(((totalPunti/righe.length/9)*10).toFixed(1)) : null;
+    // ── Auto-calcolo score medio (scala 0-10) — solo sui presenti ──
+    const totalPunti = presenti.reduce((a,r)=>a+(r.punteggio||0),0);
+    const mediaScore = presenti.length>0 ? parseFloat(((totalPunti/presenti.length/9)*10).toFixed(1)) : null;
     const scoreField = tipo==='PRE' ? 'score_pre' : 'score_post';
     const dataField  = tipo==='PRE' ? 'pre_data'  : 'post_data';
     const oggi = new Date().toISOString().split('T')[0];
@@ -3464,7 +3562,7 @@ async function salvaRisposte() {
     }
     // ─────────────────────────────────────────────────────────────────
 
-    showToast(`Risposte salvate ✓  Score ${tipo}: ${mediaScore!=null?mediaScore+'/10':'—'}`);
+    showToast(`Risposte salvate ✓  ${presenti.length}/${numStudenti}${assenti.length?` (${assenti.length} assenti)`:''} · Score ${tipo}: ${mediaScore!=null?mediaScore+'/10':'—'}`);
     document.getElementById('risposteStudentiContainer').innerHTML = '';
     document.getElementById('risposteSalvaContainer').style.display = 'none';
     document.getElementById('risposteNumStudenti').value = '';
@@ -3995,7 +4093,7 @@ async function esportaRisposteExcel(classeId, tipo){
     const aoa = [];
     aoa.push([`S.A.N.E. Italia — Risposte questionario ${tipo}`]);
     aoa.push([`Scuola: ${scuola}`, '', `Classe: ${c.nome_classe||'—'}`, '', `A.S.: ${c.anno_scolastico||'—'}`, '', `Versione: ${versione}`, '', `Tipo: ${tipo}`]);
-    aoa.push(['Istruzioni: una riga per studente. Valori ammessi A/B/C/D nelle domande; M/F/NI per Sesso. Lascia vuoto se lo studente non ha risposto.']);
+    aoa.push(['Istruzioni: una riga per studente. Valori ammessi A/B/C/D nelle domande; M/F/NI per Sesso. Studente ASSENTE → lascia tutta la riga vuota (verrà escluso dal calcolo della media).']);
     aoa.push([]);
 
     const header1 = ['N° Studente','Sesso'];
@@ -4017,11 +4115,16 @@ async function esportaRisposteExcel(classeId, tipo){
     }
 
     const ws = XLSX.utils.aoa_to_sheet(aoa);
-    const cols = [{wch:12},{wch:10}];
-    colsD.forEach(()=>cols.push({wch:7}));
-    if(inclPost) cols.push({wch:9});
+    const cols = [{wch:14},{wch:10}];
+    colsD.forEach(()=>cols.push({wch:11}));
+    if(inclPost) cols.push({wch:12});
     ws['!cols'] = cols;
+    // Altezza riga descrizioni domande (un po' più alta per leggibilità)
+    ws['!rows'] = [];
+    ws['!rows'][5] = { hpt: 28 };
     ws['!merges'] = [{s:{r:0,c:0},e:{r:0,c:Math.max(0,header1.length-1)}}];
+    // Freeze: blocca le prime 6 righe (intestazione) e la colonna A (N° studente)
+    ws['!freeze'] = { xSplit: 1, ySplit: 6 };
 
     const aoa2 = [['Codice','Domanda','Opzione A','Opzione B','Opzione C','Opzione D']];
     const tutteDom = inclPost ? [...colsD,'d_post'] : colsD;
@@ -4099,6 +4202,7 @@ async function importaRisposteExcel(classeId, file){
     const righe = [];
     const errori = [];
     const warnings = [];
+    const assenti = [];
     const numVisti = new Set();
 
     for(let r=dataStart;r<aoa.length;r++){
@@ -4141,18 +4245,30 @@ async function importaRisposteExcel(classeId, file){
         });
         obj.punteggio = punti;
         obj.punteggio_max = 9;
-        if(compilate===0) warnings.push({riga:r+1,msg:`Studente ${num}: nessuna risposta compilata`});
+        if(compilate===0){
+            // Studente con N° ma nessuna risposta = ASSENTE → non salvato, non incluso in media
+            assenti.push(num);
+            continue;
+        }
         if(!rigaHaErrori) righe.push(obj);
     }
 
-    mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnings);
+    mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnings, assenti);
 }
 
-function mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnings){
+function mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnings, assenti){
+    assenti = assenti || [];
     const totErr = errori.length;
     const totWarn = warnings.length;
     const totOk = righe.length;
+    const totAss = assenti.length;
     const bloccante = (totOk===0);
+
+    const assentiHtml = totAss>0 ? `
+        <div style="background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:12px;color:#1e40af;line-height:1.5;">
+            <i class="fas fa-user-slash" style="margin-right:6px;"></i>
+            <strong>${totAss} assenti</strong> (righe vuote: N° ${assenti.slice(0,15).join(', ')}${totAss>15?'…':''}) — esclusi dal salvataggio e dal calcolo della media.
+        </div>` : '';
 
     const issuesHtml = (totErr+totWarn>0) ? `
         <div style="max-height:220px;overflow:auto;border:1px solid #e2e8f0;border-radius:10px;padding:10px;margin-top:12px;font-size:12px;background:#fafafa;">
@@ -4182,10 +4298,11 @@ function mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnin
                         <div style="font-size:10px;font-weight:700;color:${totErr?'#b91c1c':'#94a3b8'};text-transform:uppercase;letter-spacing:0.06em;margin-top:4px;">Errori</div>
                     </div>
                 </div>
+                ${assentiHtml}
                 ${issuesHtml}
                 <div style="background:#f8fafc;border-radius:10px;padding:12px;margin-top:14px;font-size:12px;color:#64748b;line-height:1.5;">
                     <i class="fas fa-info-circle" style="color:var(--teal);margin-right:5px;"></i>
-                    ${bloccante ? 'Nessuna riga valida da importare. Correggi il file e riprova.' : `Verranno salvati <strong style="color:var(--dark);">${totOk}</strong> studenti per il questionario <strong>${tipo}</strong>. Le risposte già presenti per gli stessi N° verranno aggiornate.`}
+                    ${bloccante ? 'Nessuna riga valida da importare. Correggi il file e riprova.' : `Verranno salvati <strong style="color:var(--dark);">${totOk}</strong> studenti per il questionario <strong>${tipo}</strong>${totAss>0?` (${totAss} assenti esclusi)`:''}. Le risposte già presenti per gli stessi N° verranno aggiornate.`}
                 </div>
                 <div style="display:flex;gap:10px;margin-top:18px;">
                     <button onclick="document.getElementById('xlsxPreviewOverlay').remove();window._xlsxImportPending=null;" style="flex:1;padding:11px;border:1.5px solid #e2e8f0;border-radius:10px;background:white;color:#64748b;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;">Annulla</button>
@@ -4198,7 +4315,7 @@ function mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnin
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
     document.body.appendChild(wrap.firstElementChild);
-    window._xlsxImportPending = { classeId, tipo, righe };
+    window._xlsxImportPending = { classeId, tipo, righe, assenti };
 }
 
 async function confermaImportXlsx(){
@@ -4214,6 +4331,10 @@ async function confermaImportXlsx(){
         if(overlay) overlay.remove();
         window._xlsxImportPending = null;
         return;
+    }
+    // Cancella eventuali righe pre-esistenti per studenti ora segnati come assenti
+    if(p.assenti && p.assenti.length>0){
+        await db.from('risposte').delete().eq('classe_id',p.classeId).eq('tipo',p.tipo).in('studente_num',p.assenti);
     }
     const totPunti = p.righe.reduce((a,r)=>a+(r.punteggio||0),0);
     const media = p.righe.length>0 ? parseFloat(((totPunti/p.righe.length/9)*10).toFixed(1)) : null;
