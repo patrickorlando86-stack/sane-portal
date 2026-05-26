@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="js/reportProfessionale.js"></script>
     <script src="js/relazioneFull.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -1419,15 +1420,21 @@ function renderClasseDetail(c,scuola){
                     </button>
                 </div>
             </div>
-            <div style="background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;opacity:0.75;">
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
-                    <span style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Lettura Automatica</span>
-                    <span style="background:#fef3c7;color:#92400e;font-size:8px;font-weight:700;padding:1px 6px;border-radius:99px;text-transform:uppercase;">In arrivo</span>
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;">
+                <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px;">Via Excel</div>
+                <div style="font-size:11px;color:#64748b;line-height:1.4;flex:1;">Scarica il template, compilalo offline trascrivendo i questionari cartacei, poi ricaricalo.</div>
+                <div style="display:flex;gap:6px;margin-top:4px;">
+                    <button onclick="esportaRisposteExcel('${c.id}','PRE')" title="Scarica template Excel PRE" style="flex:1;padding:7px;border:none;border-radius:8px;background:#0A2647;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;cursor:pointer;">
+                        <i class="fas fa-file-excel" style="margin-right:3px;"></i>⬇ PRE
+                    </button>
+                    <button onclick="esportaRisposteExcel('${c.id}','POST')" title="Scarica template Excel POST" style="flex:1;padding:7px;border:none;border-radius:8px;background:#0A2647;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;cursor:pointer;">
+                        <i class="fas fa-file-excel" style="margin-right:3px;"></i>⬇ POST
+                    </button>
+                    <button onclick="document.getElementById('excelInput_${c.id}').click()" title="Carica file Excel compilato" style="flex:1;padding:7px;border:none;border-radius:8px;background:var(--teal);color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;cursor:pointer;">
+                        <i class="fas fa-upload" style="margin-right:3px;"></i>⬆ Carica
+                    </button>
+                    <input type="file" id="excelInput_${c.id}" accept=".xlsx,.xls" style="display:none;" onchange="importaRisposteExcel('${c.id}',this.files[0]);this.value='';">
                 </div>
-                <div style="font-size:11px;color:#94a3b8;line-height:1.4;flex:1;">Carica la foto dei questionari compilati — le risposte vengono lette automaticamente dai QR code.</div>
-                <button disabled style="padding:7px;border:1.5px dashed #cbd5e1;border-radius:8px;background:transparent;color:#94a3b8;font-size:10px;font-weight:700;cursor:not-allowed;">
-                    <i class="fas fa-camera" style="margin-right:3px;"></i>Carica Scansione
-                </button>
             </div>
         </div>
         <!-- Stato questionari -->
@@ -3957,6 +3964,275 @@ if(_isViewAs){
 } else {
     hideInitLoader();
     document.getElementById('loginScreen').classList.remove('hidden');
+}
+
+/* ========================================================================
+   EXCEL IMPORT/EXPORT RISPOSTE QUESTIONARI STUDENTI
+   Canale alternativo al form manuale: stessa tabella `risposte`,
+   stesso schema, stesso onConflict. Zero modifiche al DB.
+   ======================================================================== */
+
+const _XLSX_COLS_PER_VERSIONE = {
+    A: ['d1','d2','d3','d4','d5','d6','d7','d8','d9'],
+    B: ['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11'],
+    C: ['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11','d12','d13']
+};
+
+async function esportaRisposteExcel(classeId, tipo){
+    if(typeof XLSX==='undefined'){ showToast('Libreria Excel non caricata, riprova','error'); return; }
+    const c = appState.classi.find(x=>x.id===classeId);
+    if(!c){ showToast('Classe non trovata','error'); return; }
+    const scuola = (appState.scuole.find(s=>s.id===c.scuola_id)||{}).nome || '—';
+    const versione = c.tipo_scuola || 'A';
+    const colsD = _XLSX_COLS_PER_VERSIONE[versione] || _XLSX_COLS_PER_VERSIONE.A;
+    const inclPost = (tipo==='POST');
+
+    const {data:esist} = await db.from('risposte').select('*').eq('classe_id',classeId).eq('tipo',tipo).order('studente_num');
+    const mappa = {};
+    (esist||[]).forEach(r=>{ mappa[r.studente_num]=r; });
+    const num = c.num_studenti || Math.max(1,(esist||[]).length) || 22;
+
+    const aoa = [];
+    aoa.push([`S.A.N.E. Italia — Risposte questionario ${tipo}`]);
+    aoa.push([`Scuola: ${scuola}`, '', `Classe: ${c.nome_classe||'—'}`, '', `A.S.: ${c.anno_scolastico||'—'}`, '', `Versione: ${versione}`, '', `Tipo: ${tipo}`]);
+    aoa.push(['Istruzioni: una riga per studente. Valori ammessi A/B/C/D nelle domande; M/F/NI per Sesso. Lascia vuoto se lo studente non ha risposto.']);
+    aoa.push([]);
+
+    const header1 = ['N° Studente','Sesso'];
+    colsD.forEach(d => header1.push(d.toUpperCase()));
+    if(inclPost) header1.push('D_POST');
+    aoa.push(header1);
+
+    const header2 = ['',''];
+    colsD.forEach(d => header2.push(DOMANDE[d]||d));
+    if(inclPost) header2.push(DOMANDE.d_post||'Cambiamento abitudini');
+    aoa.push(header2);
+
+    for(let i=1;i<=num;i++){
+        const r = mappa[i] || {};
+        const row = [i, r.sesso || ''];
+        colsD.forEach(d => row.push(r[d] || ''));
+        if(inclPost) row.push(r.d_post || '');
+        aoa.push(row);
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    const cols = [{wch:12},{wch:10}];
+    colsD.forEach(()=>cols.push({wch:7}));
+    if(inclPost) cols.push({wch:9});
+    ws['!cols'] = cols;
+    ws['!merges'] = [{s:{r:0,c:0},e:{r:0,c:Math.max(0,header1.length-1)}}];
+
+    const aoa2 = [['Codice','Domanda','Opzione A','Opzione B','Opzione C','Opzione D']];
+    const tutteDom = inclPost ? [...colsD,'d_post'] : colsD;
+    tutteDom.forEach(d=>{
+        const op = DOMANDE_OPZIONI[d] || ['','','',''];
+        aoa2.push([d.toUpperCase(), DOMANDE[d]||d, op[0]||'', op[1]||'', op[2]||'', op[3]||'']);
+    });
+    aoa2.push([]);
+    aoa2.push(['LEGENDA SESSO','M = Maschio','F = Femmina','NI = Non indicato']);
+    aoa2.push([]);
+    aoa2.push(['NOTA','Non modificare il blocco intestazione (righe 1-3) del foglio Risposte: serve all\'import per riconoscere Tipo e Versione.']);
+    const ws2 = XLSX.utils.aoa_to_sheet(aoa2);
+    ws2['!cols'] = [{wch:10},{wch:42},{wch:34},{wch:34},{wch:34},{wch:34}];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Risposte');
+    XLSX.utils.book_append_sheet(wb, ws2, 'Domande');
+
+    const safe = (s)=>String(s||'').replace(/[^\w-]+/g,'_').slice(0,40);
+    const fname = `risposte_${safe(c.nome_classe)}_${tipo}_v${versione}.xlsx`;
+    XLSX.writeFile(wb, fname);
+    if(typeof logActivity==='function') logActivity('excel_export_risposte',{classe_id:classeId,tipo,versione});
+    showToast('Template Excel scaricato ✓');
+}
+
+async function importaRisposteExcel(classeId, file){
+    if(typeof XLSX==='undefined'){ showToast('Libreria Excel non caricata','error'); return; }
+    if(!file) return;
+    const c = appState.classi.find(x=>x.id===classeId);
+    if(!c){ showToast('Classe non trovata','error'); return; }
+
+    let wb;
+    try{
+        const buf = await file.arrayBuffer();
+        wb = XLSX.read(buf,{type:'array'});
+    } catch(e){ showToast('File non leggibile: '+e.message,'error'); return; }
+    const ws = wb.Sheets['Risposte'] || wb.Sheets[wb.SheetNames[0]];
+    if(!ws){ showToast('Foglio "Risposte" non trovato nel file','error'); return; }
+    const aoa = XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+
+    // Estrai tipo e versione dall'header
+    let tipo = 'PRE';
+    let versione = c.tipo_scuola || 'A';
+    for(const row of aoa.slice(0,4)){
+        (row||[]).forEach(cell=>{
+            const s = String(cell||'');
+            const mt = s.match(/Tipo:\s*(PRE|POST)/i); if(mt) tipo = mt[1].toUpperCase();
+            const mv = s.match(/Versione:\s*([ABC])/i); if(mv) versione = mv[1].toUpperCase();
+        });
+    }
+
+    // Trova riga di intestazione
+    let headerRow = -1;
+    for(let i=0;i<aoa.length;i++){
+        const first = String((aoa[i]||[])[0]||'').toLowerCase();
+        if(first.includes('n°') || first.includes('studente')){ headerRow = i; break; }
+    }
+    if(headerRow<0){ showToast('Intestazione "N° Studente" non trovata','error'); return; }
+    const header = (aoa[headerRow]||[]).map(h=>String(h||'').trim().toUpperCase());
+
+    let dataStart = headerRow + 1;
+    // Salta riga di descrizione domande (prime due celle vuote)
+    if(aoa[dataStart] && String(aoa[dataStart][0]||'').trim()==='' && String(aoa[dataStart][1]||'').trim()===''){
+        dataStart++;
+    }
+
+    const colIdx = {};
+    header.forEach((h,i)=>{ if(h) colIdx[h]=i; });
+    const idxN = colIdx['N° STUDENTE'] !== undefined ? colIdx['N° STUDENTE'] : (colIdx['N°'] !== undefined ? colIdx['N°'] : 0);
+    const idxSesso = colIdx['SESSO'];
+
+    const colsD = _XLSX_COLS_PER_VERSIONE[versione] || _XLSX_COLS_PER_VERSIONE.A;
+    const tutteDom = (tipo==='POST') ? [...colsD,'d_post'] : colsD;
+
+    const righe = [];
+    const errori = [];
+    const warnings = [];
+    const numVisti = new Set();
+
+    for(let r=dataStart;r<aoa.length;r++){
+        const row = aoa[r] || [];
+        if(row.every(x=>String(x||'').trim()==='')) continue;
+        const num = parseInt(row[idxN]);
+        if(!num || num<1){ errori.push({riga:r+1,msg:'N° studente non valido: "'+row[idxN]+'"'}); continue; }
+        if(numVisti.has(num)){ errori.push({riga:r+1,msg:`Studente ${num} duplicato`}); continue; }
+        numVisti.add(num);
+
+        let sesso = String(row[idxSesso]||'').trim().toUpperCase();
+        if(sesso==='') sesso='NI';
+        else if(!['M','F','NI'].includes(sesso)){
+            warnings.push({riga:r+1,msg:`Sesso "${sesso}" sconosciuto, impostato a NI`});
+            sesso='NI';
+        }
+
+        const obj = {
+            classe_id: classeId,
+            studente_num: num,
+            tipo, versione,
+            classe_studente: c.nome_classe || '',
+            sesso
+        };
+        let compilate = 0, punti = 0;
+        let rigaHaErrori = false;
+        tutteDom.forEach(d=>{
+            const ci = colIdx[d.toUpperCase()];
+            if(ci===undefined){ obj[d]=null; return; }
+            let v = String(row[ci]||'').trim().toUpperCase();
+            if(v===''){ obj[d]=null; return; }
+            if(!['A','B','C','D'].includes(v)){
+                errori.push({riga:r+1,msg:`${d.toUpperCase()}: "${v}" non valido (atteso A/B/C/D)`});
+                rigaHaErrori = true;
+                obj[d]=null;
+                return;
+            }
+            obj[d]=v; compilate++;
+            if(d!=='d_post' && RISPOSTE_CORRETTE[d]===v) punti++;
+        });
+        obj.punteggio = punti;
+        obj.punteggio_max = 9;
+        if(compilate===0) warnings.push({riga:r+1,msg:`Studente ${num}: nessuna risposta compilata`});
+        if(!rigaHaErrori) righe.push(obj);
+    }
+
+    mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnings);
+}
+
+function mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnings){
+    const totErr = errori.length;
+    const totWarn = warnings.length;
+    const totOk = righe.length;
+    const bloccante = (totOk===0);
+
+    const issuesHtml = (totErr+totWarn>0) ? `
+        <div style="max-height:220px;overflow:auto;border:1px solid #e2e8f0;border-radius:10px;padding:10px;margin-top:12px;font-size:12px;background:#fafafa;">
+            ${errori.slice(0,40).map(e=>`<div style="color:#b91c1c;margin-bottom:4px;line-height:1.4;"><i class="fas fa-times-circle" style="margin-right:5px;"></i>Riga ${e.riga}: ${e.msg}</div>`).join('')}
+            ${warnings.slice(0,40).map(w=>`<div style="color:#92400e;margin-bottom:4px;line-height:1.4;"><i class="fas fa-exclamation-triangle" style="margin-right:5px;"></i>Riga ${w.riga}: ${w.msg}</div>`).join('')}
+            ${(totErr+totWarn)>80?`<div style="color:#64748b;margin-top:6px;font-style:italic;">…e altri ${totErr+totWarn-80} avvisi</div>`:''}
+        </div>` : '';
+
+    const html = `
+        <div id="xlsxPreviewOverlay" style="position:fixed;inset:0;background:rgba(10,38,71,0.55);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;">
+            <div style="background:white;border-radius:20px;max-width:560px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-height:90vh;overflow:auto;">
+                <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--dark);margin-bottom:6px;">
+                    <i class="fas fa-file-excel" style="color:var(--teal);margin-right:8px;"></i>Anteprima import — ${tipo} (vers. ${versione})
+                </h3>
+                <p style="font-size:12px;color:#64748b;margin-bottom:14px;">Controlla il riepilogo prima di salvare. Le righe con errori vengono ignorate.</p>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+                    <div style="background:#f0fdf9;border:1.5px solid #16a34a;border-radius:10px;padding:12px;text-align:center;">
+                        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:26px;color:#16a34a;line-height:1;">${totOk}</div>
+                        <div style="font-size:10px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:0.06em;margin-top:4px;">Studenti OK</div>
+                    </div>
+                    <div style="background:${totWarn?'#fef3c7':'#f8fafc'};border:1.5px solid ${totWarn?'#f59e0b':'#e2e8f0'};border-radius:10px;padding:12px;text-align:center;">
+                        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:26px;color:${totWarn?'#92400e':'#cbd5e1'};line-height:1;">${totWarn}</div>
+                        <div style="font-size:10px;font-weight:700;color:${totWarn?'#92400e':'#94a3b8'};text-transform:uppercase;letter-spacing:0.06em;margin-top:4px;">Avvisi</div>
+                    </div>
+                    <div style="background:${totErr?'#fee2e2':'#f8fafc'};border:1.5px solid ${totErr?'#ef4444':'#e2e8f0'};border-radius:10px;padding:12px;text-align:center;">
+                        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:26px;color:${totErr?'#b91c1c':'#cbd5e1'};line-height:1;">${totErr}</div>
+                        <div style="font-size:10px;font-weight:700;color:${totErr?'#b91c1c':'#94a3b8'};text-transform:uppercase;letter-spacing:0.06em;margin-top:4px;">Errori</div>
+                    </div>
+                </div>
+                ${issuesHtml}
+                <div style="background:#f8fafc;border-radius:10px;padding:12px;margin-top:14px;font-size:12px;color:#64748b;line-height:1.5;">
+                    <i class="fas fa-info-circle" style="color:var(--teal);margin-right:5px;"></i>
+                    ${bloccante ? 'Nessuna riga valida da importare. Correggi il file e riprova.' : `Verranno salvati <strong style="color:var(--dark);">${totOk}</strong> studenti per il questionario <strong>${tipo}</strong>. Le risposte già presenti per gli stessi N° verranno aggiornate.`}
+                </div>
+                <div style="display:flex;gap:10px;margin-top:18px;">
+                    <button onclick="document.getElementById('xlsxPreviewOverlay').remove();window._xlsxImportPending=null;" style="flex:1;padding:11px;border:1.5px solid #e2e8f0;border-radius:10px;background:white;color:#64748b;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;">Annulla</button>
+                    <button onclick="confermaImportXlsx()" ${bloccante?'disabled':''} style="flex:2;padding:11px;border:none;border-radius:10px;background:${bloccante?'#cbd5e1':'var(--teal)'};color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:${bloccante?'not-allowed':'pointer'};">
+                        <i class="fas fa-check" style="margin-right:5px;"></i>Conferma import (${totOk})
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    document.body.appendChild(wrap.firstElementChild);
+    window._xlsxImportPending = { classeId, tipo, righe };
+}
+
+async function confermaImportXlsx(){
+    const p = window._xlsxImportPending;
+    if(!p || !p.righe || p.righe.length===0) return;
+    const overlay = document.getElementById('xlsxPreviewOverlay');
+    if(overlay){
+        overlay.innerHTML = '<div style="background:white;border-radius:20px;padding:40px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);"><i class="fas fa-spinner fa-spin" style="color:var(--teal);font-size:28px;margin-bottom:12px;"></i><div style="font-family:Syne,sans-serif;font-weight:700;color:var(--dark);font-size:14px;">Importazione in corso…</div></div>';
+    }
+    const {error} = await db.from('risposte').upsert(p.righe,{onConflict:'classe_id,studente_num,tipo',ignoreDuplicates:false});
+    if(error){
+        showToast('Errore salvataggio: '+error.message,'error');
+        if(overlay) overlay.remove();
+        window._xlsxImportPending = null;
+        return;
+    }
+    const totPunti = p.righe.reduce((a,r)=>a+(r.punteggio||0),0);
+    const media = p.righe.length>0 ? parseFloat(((totPunti/p.righe.length/9)*10).toFixed(1)) : null;
+    const scoreField = p.tipo==='PRE'?'score_pre':'score_post';
+    const dataField  = p.tipo==='PRE'?'pre_data':'post_data';
+    const upd = {};
+    upd[scoreField] = media;
+    upd[dataField]  = new Date().toISOString().split('T')[0];
+    await db.from('classi').update(upd).eq('id',p.classeId);
+    const ci = appState.classi.findIndex(c=>c.id===p.classeId);
+    if(ci!==-1){
+        appState.classi[ci][scoreField] = media;
+        appState.classi[ci][dataField]  = upd[dataField];
+    }
+    if(typeof logActivity==='function') logActivity('excel_import_risposte',{classe_id:p.classeId,tipo:p.tipo,studenti:p.righe.length,score:media});
+    if(overlay) overlay.remove();
+    window._xlsxImportPending = null;
+    showToast(`✓ Importati ${p.righe.length} studenti — Score ${p.tipo}: ${media!=null?media+'/10':'—'}`);
+    if(typeof aggiornaClassiList==='function') aggiornaClassiList();
 }
 </script>
 </body>
