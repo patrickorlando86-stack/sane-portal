@@ -4277,21 +4277,64 @@ async function importaRisposteExcel(classeId, file){
         if(!rigaHaErrori) righe.push(obj);
     }
 
-    mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnings, assenti);
+    // Carica righe esistenti da DB per rilevare conflitti
+    const {data:esistenti} = await db.from('risposte').select('*').eq('classe_id',classeId).eq('tipo',tipo);
+    const mapaEsist = {};
+    (esistenti||[]).forEach(r => { mapaEsist[r.studente_num] = r; });
+    const tuttiCampi = ['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11','d12','d13','d_post','sesso'];
+    const sameAnswer = (a, b) => String(a||'').trim() === String(b||'').trim();
+    const nuovi = [], modifiche = [], invariati = [];
+    righe.forEach(r => {
+        const old = mapaEsist[r.studente_num];
+        if(!old){ nuovi.push(r); return; }
+        const diversi = tuttiCampi.filter(k => !sameAnswer(r[k], old[k]));
+        if(diversi.length === 0) invariati.push(r);
+        else modifiche.push({ studente_num: r.studente_num, campiDiversi: diversi });
+    });
+
+    mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnings, assenti, {nuovi, modifiche, invariati});
 }
 
-function mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnings, assenti){
+function mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnings, assenti, diff){
     assenti = assenti || [];
+    diff = diff || {nuovi:[],modifiche:[],invariati:[]};
     const totErr = errori.length;
     const totWarn = warnings.length;
     const totOk = righe.length;
     const totAss = assenti.length;
+    const totNuovi = diff.nuovi.length;
+    const totMod = diff.modifiche.length;
+    const totInv = diff.invariati.length;
     const bloccante = (totOk===0);
 
     const assentiHtml = totAss>0 ? `
         <div style="background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:12px;color:#1e40af;line-height:1.5;">
             <i class="fas fa-user-slash" style="margin-right:6px;"></i>
             <strong>${totAss} assenti</strong> (righe vuote: N° ${assenti.slice(0,15).join(', ')}${totAss>15?'…':''}) — esclusi dal salvataggio e dal calcolo della media.
+        </div>` : '';
+
+    const diffHtml = (totMod+totNuovi+totInv>0) ? `
+        <div style="margin-top:12px;border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;">
+            <div style="background:#f8fafc;padding:8px 12px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #e2e8f0;">Confronto con dati esistenti</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
+                <div style="padding:10px;text-align:center;border-right:1px solid #e2e8f0;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:22px;color:#16a34a;line-height:1;">${totNuovi}</div>
+                    <div style="font-size:9px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:0.06em;margin-top:3px;">Nuovi</div>
+                </div>
+                <div style="padding:10px;text-align:center;border-right:1px solid #e2e8f0;background:${totMod>0?'#fef3c7':'#fff'};">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:22px;color:${totMod>0?'#b45309':'#cbd5e1'};line-height:1;">${totMod}</div>
+                    <div style="font-size:9px;font-weight:700;color:${totMod>0?'#b45309':'#94a3b8'};text-transform:uppercase;letter-spacing:0.06em;margin-top:3px;">Sovrascrivono</div>
+                </div>
+                <div style="padding:10px;text-align:center;">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:22px;color:#94a3b8;line-height:1;">${totInv}</div>
+                    <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin-top:3px;">Invariati</div>
+                </div>
+            </div>
+            ${totMod>0?`
+                <div style="background:#fffbeb;border-top:1px solid #fde68a;padding:10px 12px;font-size:11px;color:#78350f;line-height:1.5;">
+                    <i class="fas fa-exclamation-triangle" style="margin-right:5px;"></i>
+                    <strong>Attenzione:</strong> ${totMod} studenti hanno già risposte salvate nel portale e verranno <strong>sovrascritti</strong>. N°: ${diff.modifiche.slice(0,20).map(m=>m.studente_num).join(', ')}${totMod>20?` …e altri ${totMod-20}`:''}.
+                </div>` : ''}
         </div>` : '';
 
     const issuesHtml = (totErr+totWarn>0) ? `
@@ -4322,6 +4365,7 @@ function mostraPreviewImportXlsx(classeId, tipo, versione, righe, errori, warnin
                         <div style="font-size:10px;font-weight:700;color:${totErr?'#b91c1c':'#94a3b8'};text-transform:uppercase;letter-spacing:0.06em;margin-top:4px;">Errori</div>
                     </div>
                 </div>
+                ${diffHtml}
                 ${assentiHtml}
                 ${issuesHtml}
                 <div style="background:#f8fafc;border-radius:10px;padding:12px;margin-top:14px;font-size:12px;color:#64748b;line-height:1.5;">
