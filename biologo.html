@@ -1266,9 +1266,7 @@ async function caricaDati(targetId=null){
 }
 
 async function inizializzaApp(user){
-    console.log('[SANE] 1. inizializzaApp start', user?.email);
     const {data:profilo, error:errP}=await db.from('profiles').select('*').eq('id',user.id).single();
-    console.log('[SANE] 2. profilo caricato', profilo?.stato, errP?.message);
     if(!profilo){showToast('Profilo non trovato. Contatta l\'amministratore.','error');await db.auth.signOut();return;}
     if(profilo.stato==='eliminato'){
         showToast('Questo account è stato disattivato. Per informazioni contatta patrick.orlando@libero.it','error');
@@ -1280,9 +1278,7 @@ async function inizializzaApp(user){
         await db.auth.signOut();return;
     }
     appState.utente={nome:profilo.nome||user.email.split('@')[0],email:user.email,id:user.id,regione:profilo.regione||null,ordine:profilo.ordine||null,genere:profilo.genere||null};
-    console.log('[SANE] 3. caricaDati start');
     await caricaDati();
-    console.log('[SANE] 4. caricaDati done — scuole:',appState.scuole.length,'pacchetti:',appState.pacchetti.length,'classi:',appState.classi.length);
     const classiIdsAttivi = new Set(appState.classi.map(c => c.id));
     Object.keys(localStorage)
         .filter(k => k.startsWith('sane_bozza_'))
@@ -1290,7 +1286,6 @@ async function inizializzaApp(user){
             const classeId = k.slice('sane_bozza_'.length, 'sane_bozza_'.length + 36);
             if (!classiIdsAttivi.has(classeId)) localStorage.removeItem(k);
         });
-    console.log('[SANE] 5. hideInitLoader');
     hideInitLoader();
     document.getElementById('loginScreen').classList.add('hidden');
     setTimeout(()=>{
@@ -1300,7 +1295,6 @@ async function inizializzaApp(user){
             logActivity('login');
             resetSessionTimer();
             showToast('Bentornato, '+appState.utente.nome+'!');
-            console.log('[SANE] 6. aggiornaUI OK');
             // Onboarding per nuovi utenti
             setTimeout(()=>mostraOnboarding(user.id), 1000);
         } catch(e){ console.error('[SANE] aggiornaUI error:',e); }
