@@ -3905,7 +3905,7 @@ async function salvaNoteBiologo(){
     showToast('Note salvate!');
 }
 
-function generaCertificatoAutovalutazione(autovId){
+async function generaCertificatoAutovalutazione(autovId){
     const autov=_autovalutazioni.find(a=>a.id===autovId);
     if(!autov)return;
     const sc=appState.scuole.find(s=>s.id===autov.scuola_id);
@@ -3914,19 +3914,40 @@ function generaCertificatoAutovalutazione(autovId){
     const pct=Math.round((pts/maxPts)*100);
     const livello=pct>=80?'Avanzato':pct>=60?'Intermedio':'Base';
     const dataStr=autov.compilata_il?new Date(autov.compilata_il).toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'}):new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+
     const cert=window.open('','_blank');
+    cert.document.write('<!DOCTYPE html><html><head><title>Certificato SANE</title></head><body style="font-family:sans-serif;padding:40px;color:#94a3b8;">Caricamento certificato…</body></html>');
+
+    const {data:risposte}=await db.from('risposte_autovalutazione').select('area,valore,non_applicabile').eq('autovalutazione_id',autovId);
+    const areeHtml=[1,2,3,4,5].map(a=>{
+        const rArea=(risposte||[]).filter(r=>String(r.area)===String(a));
+        const ptsA=rArea.reduce((s,r)=>s+(r.non_applicabile?0:(r.valore||0)),0);
+        const appA=rArea.filter(r=>!r.non_applicabile).length;
+        const maxA=appA*2;
+        const pctA=maxA>0?Math.round((ptsA/maxA)*100):0;
+        const colore=maxA===0?'#94a3b8':pctA>=70?'#00A896':pctA>=40?'#f59e0b':'#ef4444';
+        const valLabel=maxA===0?'N/A':`${ptsA}/${maxA}`;
+        return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;text-align:left;">
+            <div style="flex:0 0 38%;font-size:11px;font-weight:600;color:#0A2647;">${a}. ${AREE_AUTOV[a-1]}</div>
+            <div style="flex:1;height:7px;background:#e2e8f0;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pctA}%;background:${colore};border-radius:99px;"></div></div>
+            <div style="flex:0 0 52px;text-align:right;font-size:11px;font-weight:700;color:${colore};">${valLabel}</div>
+        </div>`;
+    }).join('');
+
+    cert.document.open();
     cert.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Certificato SANE — ${sc?sc.nome:''}</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         *{box-sizing:border-box;margin:0;padding:0;}
         body{font-family:'Inter',sans-serif;background:#f0f4f8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px;}
-        .cert{background:white;max-width:700px;width:100%;border:3px solid #00A896;border-radius:20px;padding:54px;text-align:center;box-shadow:0 8px 40px rgba(10,38,71,0.12);}
+        .cert{background:white;max-width:700px;width:100%;border:3px solid #00A896;border-radius:20px;padding:48px;text-align:center;box-shadow:0 8px 40px rgba(10,38,71,0.12);}
         h1,h2,h3{font-family:'Syne',sans-serif;}
-        .header-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:44px;text-align:left;}
-        .score-big{font-family:'Syne',sans-serif;font-size:72px;font-weight:700;color:#00A896;line-height:1;}
-        .divider{border:none;border-top:1px solid #e2e8f0;margin:44px 0;}
+        .header-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;text-align:left;}
+        .score-big{font-family:'Syne',sans-serif;font-size:64px;font-weight:700;color:#00A896;line-height:1;}
+        .divider{border:none;border-top:1px solid #e2e8f0;margin:28px 0;}
         .firma-row{display:flex;justify-content:space-between;text-align:left;}
-        @media print{body{background:white;padding:0;}.cert{box-shadow:none;border-radius:0;}}
+        .aree-title{font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:14px;text-align:left;}
+        @media print{body{background:white;padding:0;}.cert{box-shadow:none;border-radius:0;border-width:2px;}}
     </style></head><body>
     <div class="cert">
         <div class="header-row">
@@ -3935,25 +3956,28 @@ function generaCertificatoAutovalutazione(autovId){
                 <div style="font-size:11px;color:#94a3b8;margin-top:3px;">Sistema di Alimentazione Naturale ed Educativa</div>
             </div>
         </div>
-        <div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.18em;margin-bottom:14px;">Certificato di Qualità Alimentare Scolastica</div>
-        <h2 style="font-size:30px;color:#0A2647;margin-bottom:6px;">${sc?sc.nome:''}</h2>
-        <p style="color:#64748b;font-size:14px;margin-bottom:40px;">Anno Scolastico ${autov.anno_scolastico||'—'}${sc&&sc.comune?' &middot; '+sc.comune:''}</p>
+        <div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.18em;margin-bottom:12px;">Certificato di Qualità Alimentare Scolastica</div>
+        <h2 style="font-size:28px;color:#0A2647;margin-bottom:4px;">${sc?sc.nome:''}</h2>
+        <p style="color:#64748b;font-size:13px;margin-bottom:28px;">Anno Scolastico ${autov.anno_scolastico||'—'}${sc&&sc.comune?' &middot; '+sc.comune:''}</p>
         <div class="score-big">${pts}/${maxPts}</div>
-        <div style="font-size:22px;font-weight:700;color:#0A2647;margin:12px 0 20px;">Livello <span style="color:#00A896;">${livello}</span></div>
-        <div style="display:inline-block;background:#00A896;color:white;padding:8px 28px;border-radius:99px;font-weight:700;font-size:14px;letter-spacing:0.05em;">★ Scuola Certificata SANE Italia</div>
+        <div style="font-size:20px;font-weight:700;color:#0A2647;margin:10px 0 18px;">Livello <span style="color:#00A896;">${livello}</span></div>
+        <div style="display:inline-block;background:#00A896;color:white;padding:7px 24px;border-radius:99px;font-weight:700;font-size:13px;letter-spacing:0.05em;">★ Scuola Certificata SANE Italia</div>
+        <hr class="divider">
+        <div class="aree-title">Dettaglio per area</div>
+        ${areeHtml}
         <hr class="divider">
         <div class="firma-row">
             <div>
                 <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Biologo Responsabile</div>
-                <div style="font-size:16px;font-weight:700;color:#0A2647;">${appState.utente?appState.utente.nome:''}</div>
+                <div style="font-size:15px;font-weight:700;color:#0A2647;">${appState.utente?appState.utente.nome:''}</div>
             </div>
             <div style="text-align:right;">
                 <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Data Certificazione</div>
-                <div style="font-size:16px;font-weight:700;color:#0A2647;">${dataStr}</div>
+                <div style="font-size:15px;font-weight:700;color:#0A2647;">${dataStr}</div>
             </div>
         </div>
     </div>
-    <script>window.onload=function(){window.print();}<\/script>
+    <script>window.onload=function(){setTimeout(()=>window.print(),300);}<\/script>
     </body></html>`);
     cert.document.close();
 }
