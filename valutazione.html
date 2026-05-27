@@ -256,7 +256,7 @@ async function inviaRisposte(){
     }));
 
     const {error:errR}=await db.from('risposte_autovalutazione').insert(righe);
-    if(errR){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore durante il salvataggio. Riprova.');return;}
+    if(errR){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore: '+JSON.stringify(errR||errA));return;}
 
     const {error:errA}=await db.from('autovalutazioni').update({
         stato:'completata',
@@ -264,7 +264,7 @@ async function inviaRisposte(){
         punteggio_max:max,
         compilata_il:new Date().toISOString()
     }).eq('id',_autovId);
-    if(errA){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore durante il salvataggio. Riprova.');return;}
+    if(errA){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore: '+JSON.stringify(errR||errA));return;}
 
     document.getElementById('questionario').style.display='none';
     document.getElementById('risultatoFinale').style.display='none';
