@@ -28,7 +28,7 @@
         .opz-btn.sel-0{border-color:#ef4444;background:#fee2e2;color:#b91c1c;}
         .opz-btn.sel-1{border-color:#f59e0b;background:#fef3c7;color:#92400e;}
         .opz-btn.sel-2{border-color:var(--teal);background:#d1fae5;color:#065f46;}
-        .opz-btn.sel-na{border-color:#94a3b8;background:#f1f5f9;color:#64748b;}
+        .opz-btn.sel-na{border-color:#3b82f6;background:#dbeafe;color:#1e40af;}
         .btn-primary{background:var(--teal);color:white;border:none;border-radius:12px;padding:14px 28px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;}
         .btn-primary:hover{background:var(--teal-light);}
         .btn-primary:disabled{background:#cbd5e1;cursor:not-allowed;}
@@ -74,13 +74,16 @@
 <!-- QUESTIONARIO -->
 <div class="container">
     <div id="intestazione" style="margin-bottom:24px;"></div>
+    <div style="background:#dbeafe;border-left:4px solid #3b82f6;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:12px;color:#1e40af;line-height:1.5;">
+        <strong>N/A = non applicabile</strong> alla vostra scuola (es. nessun servizio mensa). Le domande contrassegnate N/A <strong>non penalizzano</strong> il punteggio: vengono escluse dal totale.
+    </div>
     <div id="questionario"></div>
 
     <!-- RISULTATO FINALE -->
     <div id="risultatoFinale" class="card" style="text-align:center;padding:40px;">
         <i class="fas fa-check-circle" style="font-size:40px;color:var(--teal);margin-bottom:16px;display:block;"></i>
         <div class="score-final" id="scoreFinalVal">—</div>
-        <div style="font-size:13px;color:#94a3b8;margin:8px 0 4px;">punti su 50</div>
+        <div style="font-size:13px;color:#94a3b8;margin:8px 0 4px;">punti sulle domande applicabili</div>
         <div style="font-size:20px;font-weight:700;color:var(--dark);margin-bottom:24px;" id="livelloLabel">—</div>
         <button class="btn-primary" style="margin:0 auto;" onclick="inviaRisposte()"><i class="fas fa-paper-plane"></i>Invia Questionario</button>
         <p style="font-size:11px;color:#94a3b8;margin-top:14px;">Verifica le risposte prima di inviare. Non sarà possibile modificarle dopo l'invio.</p>
@@ -211,19 +214,26 @@ function seleziona(idx,val){
     verificaCompletamento();
 }
 
+function calcolaPunteggio(){
+    const valori=Object.values(_risposte);
+    const applicabili=valori.filter(v=>v!==null).length;
+    const max=applicabili*2;
+    const pts=valori.reduce((s,v)=>s+(v===null?0:(v||0)),0);
+    const pct=max>0?Math.round((pts/max)*100):0;
+    return {pts,max,pct,applicabili};
+}
+
 function aggiornaScore(){
-    const pts=Object.values(_risposte).reduce((s,v)=>s+(v===null?0:(v||0)),0);
-    const risposte=Object.keys(_risposte).length;
-    const pct=Math.round((pts/50)*100);
-    document.getElementById('scoreDisplay').textContent=pts+' / 50';
+    const {pts,max,pct}=calcolaPunteggio();
+    document.getElementById('scoreDisplay').textContent=pts+' / '+max;
     document.getElementById('progressFill').style.width=pct+'%';
 }
 
 function verificaCompletamento(){
     if(Object.keys(_risposte).length<25) return;
-    const pts=Object.values(_risposte).reduce((s,v)=>s+(v===null?0:(v||0)),0);
-    document.getElementById('scoreFinalVal').textContent=pts;
-    const lv=pts>=40?'Livello Avanzato':pts>=30?'Livello Intermedio':pts>=20?'Livello Base':'Livello Insufficiente';
+    const {pts,max,pct}=calcolaPunteggio();
+    document.getElementById('scoreFinalVal').textContent=pts+' / '+max;
+    const lv=pct>=80?'Livello Avanzato':pct>=60?'Livello Intermedio':pct>=40?'Livello Base':'Livello Insufficiente';
     document.getElementById('livelloLabel').textContent=lv;
     document.getElementById('risultatoFinale').style.display='block';
     document.getElementById('risultatoFinale').scrollIntoView({behavior:'smooth',block:'center'});
@@ -234,7 +244,7 @@ async function inviaRisposte(){
     const btn=document.querySelector('#risultatoFinale .btn-primary');
     btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>Invio in corso...';
 
-    const pts=Object.values(_risposte).reduce((s,v)=>s+(v===null?0:(v||0)),0);
+    const {pts,max}=calcolaPunteggio();
 
     // Prepara le righe per risposte_autovalutazione
     const righe=DOMANDE.map((dom,idx)=>({
@@ -251,6 +261,7 @@ async function inviaRisposte(){
     const {error:errA}=await db.from('autovalutazioni').update({
         stato:'completata',
         punteggio_totale:pts,
+        punteggio_max:max,
         compilata_il:new Date().toISOString()
     }).eq('id',_autovId);
     if(errA){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore durante il salvataggio. Riprova.');return;}
