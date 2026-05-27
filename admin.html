@@ -2235,16 +2235,16 @@ async function vediRisposteAdmin(autovId){
     document.getElementById('adminRispostePunteggio').textContent = (a.punteggio_totale!=null?a.punteggio_totale:'—')+'/'+(a.punteggio_max||50);
     document.getElementById('adminRisposteDettaglio').innerHTML = '<p style="text-align:center;color:#94a3b8;padding:20px;"><i class="fas fa-spinner fa-spin"></i></p>';
     document.getElementById('adminRisposteModal').classList.add('open');
-    const {data:risposte} = await db.from('risposte_autovalutazione').select('*').eq('autovalutazione_id',autovId).order('area').order('domanda_index');
+    const {data:risposte} = await db.from('risposte_autovalutazione').select('*').eq('autovalutazione_id',autovId).order('area').order('domanda_id');
     renderRisposteAdmin(risposte||[]);
 }
 
 function renderRisposteAdmin(risposte){
     let html='';
     for(let a=1;a<=5;a++){
-        const rArea   = risposte.filter(r=>r.area===a);
-        const pts     = rArea.reduce((s,r)=>s+(r.punteggio||0),0);
-        const applicabiliArea = rArea.filter(r=>r.punteggio!==null).length;
+        const rArea   = risposte.filter(r=>String(r.area)===String(a));
+        const pts     = rArea.reduce((s,r)=>s+(r.non_applicabile?0:(r.valore||0)),0);
+        const applicabiliArea = rArea.filter(r=>!r.non_applicabile).length;
         const maxArea = applicabiliArea*2;
         const pct     = maxArea>0?Math.round((pts/maxArea)*100):0;
         const domArea = DOMANDE_AUTOV_ADMIN.filter(d=>d.area===a);
@@ -2258,8 +2258,8 @@ function renderRisposteAdmin(risposte){
             </div>
             <div style="display:flex;flex-direction:column;gap:5px;">`;
         domArea.forEach((dom,idx)=>{
-            const r   = rArea.find(x=>x.domanda_index===idx);
-            const p   = r?r.punteggio:null;
+            const r   = rArea.find(x=>x.domanda_id===idx);
+            const p   = r?(r.non_applicabile?null:r.valore):null;
             const lbl = p===null?'N/A':p===0?'Mai':p===1?'A volte':'Sempre';
             const col = p===2?'#065f46':p===1?'#92400e':p===0?'#b91c1c':'#94a3b8';
             const bg  = p===2?'#d1fae5':p===1?'#fef3c7':p===0?'#fee2e2':'#f1f5f9';

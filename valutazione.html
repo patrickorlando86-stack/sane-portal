@@ -247,16 +247,20 @@ async function inviaRisposte(){
     const {pts,max}=calcolaPunteggio();
 
     // Prepara le righe per risposte_autovalutazione
-    const righe=DOMANDE.map((dom,idx)=>({
-        autovalutazione_id:_autovId,
-        area:dom.area,
-        domanda_id:idx,
-        domanda:dom.testo,
-        punteggio:_risposte[idx]===null?null:(_risposte[idx]!==undefined?_risposte[idx]:null)
-    }));
+    const righe=DOMANDE.map((dom,idx)=>{
+        const v=_risposte[idx];
+        return {
+            autovalutazione_id:_autovId,
+            area:String(dom.area),
+            domanda_id:idx,
+            domanda:dom.testo,
+            valore:v===null||v===undefined?null:v,
+            non_applicabile:v===null
+        };
+    });
 
     const {error:errR}=await db.from('risposte_autovalutazione').insert(righe);
-    if(errR){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore: '+JSON.stringify(errR||errA));return;}
+    if(errR){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore durante il salvataggio. Riprova.');return;}
 
     const {error:errA}=await db.from('autovalutazioni').update({
         stato:'completata',
@@ -264,7 +268,7 @@ async function inviaRisposte(){
         punteggio_max:max,
         compilata_il:new Date().toISOString()
     }).eq('id',_autovId);
-    if(errA){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore: '+JSON.stringify(errR||errA));return;}
+    if(errA){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore durante il salvataggio. Riprova.');return;}
 
     document.getElementById('questionario').style.display='none';
     document.getElementById('risultatoFinale').style.display='none';
