@@ -1,0 +1,7 @@
+# Impostazioni locali Claude Code (non vanno su GitHub / Netlify)
+.claude/
+
+# File di sistema
+Thumbs.db
+Desktop.ini
+.DS_Store
