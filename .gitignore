@@ -1,6 +1,9 @@
 # Impostazioni locali Claude Code (non vanno su GitHub / Netlify)
 .claude/
 
+# File temporanei della CLI Supabase
+supabase/.temp/
+
 # File di sistema
 Thumbs.db
 Desktop.ini
