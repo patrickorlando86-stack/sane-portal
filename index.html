@@ -184,21 +184,18 @@ section{padding:4.5rem 4rem}
 /* GAME */
 .game-sec{background:var(--cr)}
 .game-intro{font-size:.97rem;color:var(--gr);margin-top:1rem;max-width:600px;line-height:1.75}
-.game-inner{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;margin-top:2.5rem}
-.game-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.game-card{background:#fff;padding:1.5rem;border-top:3px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:0 0 8px 8px;box-shadow:0 2px 12px rgba(10,38,71,.06)}
+.game-inner{margin-top:2.5rem}
+.game-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.game-card{display:flex;gap:1.1rem;align-items:center;background:#fff;padding:1.1rem;border-left:4px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:10px;box-shadow:0 2px 12px rgba(10,38,71,.06)}
 .game-card:hover{border-color:var(--gm);transform:translateY(-3px)}
-.game-icon{font-size:1.8rem;margin-bottom:.6rem}
-.game-img{width:60px;height:60px;border-radius:12px;object-fit:cover;box-shadow:0 2px 8px rgba(10,38,71,.12)}
-.game-card h4{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;color:var(--g);margin-bottom:.4rem}
-.game-card p{font-size:.8rem;color:var(--gr);line-height:1.5}
-.game-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem}
-.game-tag{font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.18rem .5rem;border-radius:999px;background:var(--gm);color:#fff;white-space:nowrap}
+.game-img{width:104px;height:104px;flex-shrink:0;border-radius:14px;object-fit:cover;box-shadow:0 2px 8px rgba(10,38,71,.12)}
+.game-icon{width:104px;height:104px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2.8rem;background:var(--cr);border-radius:14px}
+.game-body{flex:1;min-width:0}
+.game-top{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.45rem}
+.game-card h4{font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;color:var(--g)}
+.game-card p{font-size:.82rem;color:var(--gr);line-height:1.55}
+.game-tag{font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.18rem .5rem;border-radius:999px;background:var(--gm);color:#fff;white-space:nowrap;flex-shrink:0}
 .game-tag.tag-pro{background:var(--gl);color:var(--g)}
-.allergen-box{background:var(--g);padding:2rem;color:#fff;border-radius:12px}
-.allergen-box h4{font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
-.allergen-box p{font-size:.8rem;color:rgba(255,255,255,.6);margin-bottom:1.2rem;line-height:1.5}
-.allergen-tags{display:flex;flex-wrap:wrap;gap:.4rem}
 .tag{background:rgba(0,168,150,.15);border:1px solid rgba(0,168,150,.3);padding:.3rem .7rem;font-size:.7rem;color:var(--gl);letter-spacing:.04em;border-radius:4px;transition:background .2s}
 .tag:hover{background:var(--gm);border-color:var(--gm);color:#fff}
 
@@ -295,8 +292,7 @@ footer a:hover{color:var(--gl)}
   .contact-sec{padding:2.5rem 1.5rem}
   .contact-cards{grid-template-columns:1fr}
   .about-grid{grid-template-columns:1fr;gap:2rem}
-  .game-inner{grid-template-columns:1fr;gap:2rem}
-  .game-cards{grid-template-columns:1fr 1fr}
+  .game-cards{grid-template-columns:1fr}
   .cards-grid{grid-template-columns:1fr}
   .steps{grid-template-columns:repeat(2,1fr)}
   footer{flex-direction:column;gap:.8rem;text-align:center;padding:1.5rem}
@@ -382,11 +378,6 @@ footer a:hover{color:var(--gl)}
   <p class="game-intro" data-k="game_sub"></p>
   <div class="game-inner">
     <div class="game-cards" id="game-cards"></div>
-    <div class="allergen-box">
-      <h4 data-k="allergens_title"></h4>
-      <p data-k="allergens_sub"></p>
-      <div class="allergen-tags" id="allergen-tags"></div>
-    </div>
   </div>
 </section>
 
@@ -470,7 +461,7 @@ const T = {
     b3_label:"Primo pilota",b3_val:'I.C. "Carducci–Fattori"',b3_sub:"Rosignano Marittimo — ~100 studenti coinvolti",
     game_eyebrow:"Lo strumento digitale del programma",
     game_title:"Il gioco <em>«Il Piatto Sano»</em> — 6 mini-giochi educativi.",
-    game_sub:"Il cuore digitale del programma «Mangiare Bene, Crescere Meglio»: un gioco gratuito su browser, tablet, LIM e Android, guidato dalla mascotte Serafina. Multilingua (IT/EN/ES), con feedback immediato e modalità classe. Due giochi gratuiti, gli altri si sbloccano con un codice.",
+    game_sub:"Il cuore digitale del programma «Mangiare Bene, Crescere Meglio»: un gioco su browser, tablet, LIM e Android, guidato dalla mascotte Serafina. Multilingua (IT/EN/ES), gestisce in modo personalizzato tutti i 14 allergeni obbligatori EU per ogni bambino, con 2 livelli di difficoltà e modalità classe. Due giochi sono gratuiti, gli altri sono a pagamento.",
     games:[{img:"piattosano.webp",icon:"🍽️",name:"Il Piatto Sano",desc:"Componi il piatto equilibrato secondo il modello di Harvard (½ frutta e verdura, ¼ cereali integrali, ¼ proteine) rispettando le tue allergie",tag:"Gratis"},{img:"tempo.webp",icon:"🚨",name:"Il Coraggio di Agire",desc:"Storia interattiva su una reazione allergica grave: scegli cosa fare in emergenza e allenati all'uso dell'autoiniettore (EpiPen, Jext, Emerade, Fastjekt) passo per passo",tag:"Gratis"},{img:"quiz.webp",icon:"❓",name:"Quiz Alimentare",desc:"Nutrizione, allergie, spreco, miti e stagionalità con timer, streak e power-up",tag:"Premium",pro:true},{img:"piramide.webp",icon:"🔺",name:"Piramide Alimentare",desc:"La piramide mediterranea e le piramidi alimentari del mondo",tag:"Premium",pro:true},{img:"stagioni.webp",icon:"🌿",name:"Stagionalità",desc:"Riconosci la frutta e la verdura di stagione",tag:"Premium",pro:true},{img:"etichetta.webp",icon:"🔍",name:"Detective Etichette",desc:"Leggi le etichette e trova gli allergeni in grassetto, poi abbina ogni alimento ai suoi allergeni su 3 livelli",tag:"Premium",pro:true}],
     allergens_title:"Gestione 14 allergeni EU",
     allergens_sub:"L'app gestisce in modo personalizzato tutti i 14 allergeni obbligatori EU per ogni bambino, con 2 livelli di difficoltà e modalità LIM per la classe.",
@@ -525,7 +516,7 @@ const T = {
     b3_label:"Primer piloto",b3_val:'I.C. "Carducci–Fattori"',b3_sub:"Rosignano Marittimo — ~100 estudiantes",
     game_eyebrow:"La herramienta insignia",
     game_title:"<em>«Il Piatto Sano»</em> — 6 mini-juegos educativos.",
-    game_sub:"El corazón digital del programa: un juego gratuito en la web, tablet, PDI y Android, guiado por la mascota Serafina. Multilingüe (IT/EN/ES), con feedback inmediato y modo clase. Dos juegos gratuitos; el resto se desbloquea con un código.",
+    game_sub:"El corazón digital del programa: un juego en la web, tablet, PDI y Android, guiado por la mascota Serafina. Multilingüe (IT/EN/ES), gestiona de forma personalizada los 14 alérgenos obligatorios de la UE para cada niño, con 2 niveles de dificultad y modo clase. Dos juegos son gratuitos; los demás son de pago.",
     games:[{img:"piattosano.webp",icon:"🍽️",name:"Il Piatto Sano",desc:"Compón la comida equilibrada según el modelo de Harvard (½ fruta y verdura, ¼ cereales integrales, ¼ proteínas) respetando tus alergias",tag:"Gratis"},{img:"tempo.webp",icon:"🚨",name:"El Coraje de Actuar",desc:"Historia interactiva sobre una reacción alérgica grave: elige qué hacer en una emergencia y entrénate en el uso del autoinyector (EpiPen, Jext, Emerade, Fastjekt) paso a paso",tag:"Gratis"},{img:"quiz.webp",icon:"❓",name:"Quiz Alimentario",desc:"Nutrición, alergias, desperdicio, mitos y estacionalidad con cronómetro, racha y power-ups",tag:"Premium",pro:true},{img:"piramide.webp",icon:"🔺",name:"Pirámide Alimentaria",desc:"La pirámide mediterránea y las pirámides alimentarias del mundo",tag:"Premium",pro:true},{img:"stagioni.webp",icon:"🌱",name:"Estacionalidad",desc:"Reconoce la fruta y la verdura de temporada",tag:"Premium",pro:true},{img:"etichetta.webp",icon:"🔍",name:"Detective Etiquetas",desc:"Lee las etiquetas y encuentra los alérgenos en negrita, luego asocia cada alimento a sus alérgenos en 3 niveles",tag:"Premium",pro:true}],
     allergens_title:"Gestión de alérgenos integrada",
     allergens_sub:"El primer juego escolar que gestiona los 14 alérgenos obligatorios UE de forma personalizada para cada niño.",
@@ -580,7 +571,7 @@ const T = {
     b3_label:"First pilot",b3_val:'I.C. "Carducci–Fattori"',b3_sub:"Rosignano Marittimo — ~100 students involved",
     game_eyebrow:"The flagship tool",
     game_title:"<em>«Il Piatto Sano»</em> — 6 educational mini-games.",
-    game_sub:"The digital heart of the programme: a free game on web, tablet, IWB and Android, guided by the «Serafina» mascot. Multilingual (IT/EN/ES), with instant feedback and a class mode. Two games are free; the rest unlock with a code.",
+    game_sub:"The digital heart of the programme: a game on web, tablet, IWB and Android, guided by the «Serafina» mascot. Multilingual (IT/EN/ES), it personally manages all 14 mandatory EU allergens for each child, with 2 difficulty levels and a class mode. Two games are free; the others are paid.",
     games:[{img:"piattosano.webp",icon:"🍽️",name:"The Healthy Plate",desc:"Build a balanced meal following the Harvard model (½ fruit & veg, ¼ whole grains, ¼ protein) while respecting your allergies",tag:"Free"},{img:"tempo.webp",icon:"🚨",name:"The Courage to Act",desc:"Interactive story about a severe allergic reaction: choose what to do in an emergency and train step by step on using the auto-injector (EpiPen, Jext, Emerade, Fastjekt)",tag:"Free"},{img:"quiz.webp",icon:"❓",name:"Food Quiz",desc:"Nutrition, allergies, food waste, myths and seasonality with timer, streak and power-ups",tag:"Premium",pro:true},{img:"piramide.webp",icon:"🔺",name:"Food Pyramid",desc:"The Mediterranean pyramid and food pyramids from around the world",tag:"Premium",pro:true},{img:"stagioni.webp",icon:"🌱",name:"Seasonality",desc:"Recognise seasonal fruit and vegetables",tag:"Premium",pro:true},{img:"etichetta.webp",icon:"🔍",name:"Label Detective",desc:"Read labels and spot allergens in bold, then match each food to its allergens across 3 levels",tag:"Premium",pro:true}],
     allergens_title:"Integrated allergen management",
     allergens_sub:"The first school game to manage all 14 mandatory EU allergens in a personalised way for every child.",
@@ -642,12 +633,7 @@ function render(l) {
 
   // game cards
   document.getElementById('game-cards').innerHTML = t.games.map(g =>
-    `<div class="game-card"><div class="game-top">${g.img?`<img class="game-img" src="immagini/carosello/${g.img}" alt="${g.name}" loading="lazy">`:`<div class="game-icon">${g.icon}</div>`}${g.tag?`<span class="game-tag${g.pro?' tag-pro':''}">${g.tag}</span>`:''}</div><h4>${g.name}</h4><p>${g.desc}</p></div>`
-  ).join('');
-
-  // allergens
-  document.getElementById('allergen-tags').innerHTML = t.allergens.map(a =>
-    `<span class="tag">${a}</span>`
+    `<div class="game-card">${g.img?`<img class="game-img" src="immagini/carosello/${g.img}" alt="${g.name}" loading="lazy">`:`<div class="game-icon">${g.icon}</div>`}<div class="game-body"><div class="game-top"><h4>${g.name}</h4>${g.tag?`<span class="game-tag${g.pro?' tag-pro':''}">${g.tag}</span>`:''}</div><p>${g.desc}</p></div></div>`
   ).join('');
 
   // cards grid
