@@ -140,7 +140,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .hero-sub{font-size:.98rem;font-weight:400;line-height:1.8;color:var(--gr);margin-top:1.5rem;max-width:460px}
 .hero-app{position:relative;width:100%;margin-top:1.8rem}
 .hero-applogo{display:block;width:100%;height:auto;border-radius:16px;box-shadow:0 8px 28px rgba(10,38,71,.18)}
-.hero-app-btn{position:absolute;right:8%;bottom:9%;box-shadow:0 6px 18px rgba(10,38,71,.35)}
+.hero-app-btn{position:absolute;right:1.1rem;bottom:1.1rem;box-shadow:0 6px 18px rgba(10,38,71,.35)}
 .hero-btns{display:flex;gap:.8rem;margin-top:1.6rem;flex-wrap:wrap}
 .btn-p{background:var(--g);color:#fff;padding:.8rem 2rem;font-size:.86rem;font-weight:600;letter-spacing:.04em;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;border-radius:8px}
 .btn-p:hover{background:var(--gm);transform:translateY(-2px)}
@@ -152,11 +152,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .hero-r{background:linear-gradient(135deg,var(--g) 0%,#0d3460 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
 .hero-r::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,150,.18) 0%,transparent 70%);top:-120px;right:-120px}
 .hero-r::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.1) 0%,transparent 70%);bottom:-60px;left:30px}
-.stats{position:relative;z-index:2;padding:3rem;display:flex;flex-direction:column;gap:1.4rem;width:100%}
-.stat{background:rgba(255,255,255,.05);border:1px solid rgba(0,168,150,.25);padding:1.5rem 1.8rem;border-radius:12px;transition:border-color .2s}
+.hero-r-inner{position:relative;z-index:2;width:100%;max-width:440px;padding:2.5rem 2.8rem;display:flex;flex-direction:column;gap:.85rem}
+.hero-r-logo{width:128px;height:auto;align-self:flex-start;background:#fff;border-radius:16px;padding:.5rem;box-shadow:0 8px 24px rgba(0,0,0,.18);margin-bottom:.4rem}
+.hero-r-eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gl)}
+.hero-r-title{font-family:'Inter',sans-serif;font-size:1.55rem;font-weight:800;color:#fff;line-height:1.1}
+.hero-r-text{font-size:.86rem;line-height:1.6;color:rgba(255,255,255,.72)}
+.hero-r-text strong{color:var(--gl);font-weight:700}
+.stats{position:relative;z-index:2;display:flex;flex-direction:column;gap:.7rem;width:100%;margin-top:.6rem}
+.stat{display:flex;align-items:center;gap:1rem;background:rgba(255,255,255,.05);border:1px solid rgba(0,168,150,.25);padding:.9rem 1.2rem;border-radius:12px;transition:border-color .2s}
 .stat:hover{border-color:rgba(0,168,150,.55)}
-.stat-n{font-family:'Inter',sans-serif;font-size:2.6rem;font-weight:800;color:var(--gl);line-height:1}
-.stat-l{font-size:.8rem;color:rgba(255,255,255,.65);margin-top:.4rem;line-height:1.5}
+.stat-n{font-family:'Inter',sans-serif;font-size:2.1rem;font-weight:800;color:var(--gl);line-height:1;flex-shrink:0;min-width:3.4rem}
+.stat-l{font-size:.78rem;color:rgba(255,255,255,.65);line-height:1.45}
 
 /* ACRONYM */
 .acr{background:var(--g);border-top:3px solid var(--gm);border-bottom:3px solid var(--gm);display:grid;grid-template-columns:repeat(4,1fr);padding:2rem 3rem;gap:.8rem}
@@ -340,13 +346,16 @@ footer a:hover{color:var(--gl)}
     </div>
   </div>
   <div class="hero-r">
-    <div class="stats">
-      <div style="text-align:center;margin-bottom:.5rem">
-        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo3.webp" alt="Mangiare Bene, Crescere Meglio" style="height:180px;width:auto;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.3)">
+    <div class="hero-r-inner">
+      <img class="hero-r-logo" src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo3.webp" alt="Mangiare Bene, Crescere Meglio">
+      <p class="hero-r-eyebrow" data-k="sane_kicker"></p>
+      <h2 class="hero-r-title" data-k="sane_title"></h2>
+      <p class="hero-r-text" data-k="sane_text"></p>
+      <div class="stats">
+        <div class="stat"><div class="stat-n">6</div><div class="stat-l" data-k="stat1_label"></div></div>
+        <div class="stat"><div class="stat-n">14</div><div class="stat-l" data-k="stat2_label"></div></div>
+        <div class="stat"><div class="stat-n">6–13</div><div class="stat-l" data-k="stat3_label"></div></div>
       </div>
-      <div class="stat"><div class="stat-n">6</div><div class="stat-l" data-k="stat1_label"></div></div>
-      <div class="stat"><div class="stat-n">14</div><div class="stat-l" data-k="stat2_label"></div></div>
-      <div class="stat"><div class="stat-n">6–13</div><div class="stat-l" data-k="stat3_label"></div></div>
     </div>
   </div>
 </section>
@@ -448,6 +457,9 @@ const T = {
     hero_title:"Mangiare Bene,<br><em>Crescere Meglio.</em>",
     hero_sub:"Un percorso strutturato in 6 moduli tematici, progettato da una Biologa Nutrizionista qualificata, che integra interventi in presenza, strumenti digitali interattivi e coinvolgimento attivo delle famiglie. Rivolto a bambini dai 6 ai 13 anni.",
     hero_btn1:"Prova l'app gratuita",hero_btn2:"Parla con noi",hero_dl:"Scarica la locandina (PDF)",
+    sane_kicker:"L'organizzazione",
+    sane_title:"S.A.N.E. Italia",
+    sane_text:"<strong>S</strong>icurezza, <strong>A</strong>limentazione, <strong>N</strong>utrizione, <strong>E</strong>ducazione: la rete di biologi nutrizionisti che porta nelle scuole il programma «Mangiare Bene, Crescere Meglio».",
     stat1_label:"moduli tematici del programma — dalla nutrizione alle allergie",
     stat2_label:"allergeni EU gestiti nell'app «Il Piatto Sano»",
     stat3_label:"anni — fascia d'età a cui è rivolto il programma",
@@ -502,6 +514,9 @@ const T = {
     hero_title:"<span class='em'>Seguridad</span><br>alimentaria<br>para cada niño.",
     hero_sub:"S.A.N.E. Italia lleva a las escuelas el primer programa científico que integra educación nutricional y gestión de alergias e intolerancias alimentarias, guiado por biólogos nutricionistas certificados.",
     hero_btn1:"Descubre el programa",hero_btn2:"Habla con nosotros",hero_dl:"Descargar el folleto (PDF)",
+    sane_kicker:"La organización",
+    sane_title:"S.A.N.E. Italia",
+    sane_text:"La red de biólogos nutricionistas que lleva a las escuelas el programa «Mangiare Bene, Crescere Meglio», con un enfoque <strong>científico, alimentario, nutricional y educativo</strong>.",
     stat1_label:"módulos temáticos del programa — de la nutrición a las alergias",
     stat2_label:"alérgenos EU gestionados en la app «Il Piatto Sano»",
     stat3_label:"años — franja de edad a la que va dirigido el programa",
@@ -556,6 +571,9 @@ const T = {
     hero_title:"<span class='em'>Food safety</span><br>for every<br>child.",
     hero_sub:"S.A.N.E. Italia brings to schools the first scientific programme integrating nutritional education and allergy & food intolerance management, led by certified nutritionist biologists.",
     hero_btn1:"Discover the programme",hero_btn2:"Talk to us",hero_dl:"Download the brochure (PDF)",
+    sane_kicker:"The organisation",
+    sane_title:"S.A.N.E. Italia",
+    sane_text:"The network of certified nutritionist biologists bringing the «Mangiare Bene, Crescere Meglio» programme to schools, with a <strong>scientific, alimentary, nutritional and educational</strong> approach.",
     stat1_label:"thematic modules — from nutrition to allergy management",
     stat2_label:"EU allergens managed in the «Il Piatto Sano» app",
     stat3_label:"years old — the age range the programme is designed for",
