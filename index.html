@@ -171,6 +171,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .acr-w{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);margin-top:.25rem}
 .acr-d{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:.25rem;line-height:1.4}
 
+/* CHI SIAMO */
+.chisiamo-sec{background:#fff}
+.chisiamo-inner{max-width:860px}
+.chisiamo-lead{font-size:1rem;color:var(--gr);line-height:1.85;margin-top:1.1rem}
+.chi-stats{display:flex;gap:2.2rem;margin-top:2.2rem;flex-wrap:wrap}
+.chi-stat{display:flex;align-items:baseline;gap:.6rem}
+.chi-stat-n{font-family:'Inter',sans-serif;font-size:2.2rem;font-weight:800;color:var(--gm);line-height:1}
+.chi-stat-l{font-size:.82rem;color:var(--gr);max-width:210px;line-height:1.45}
+
 /* SECTIONS */
 section{padding:4.5rem 4rem}
 .sec-title{font-family:'Inter',sans-serif;font-size:clamp(1.6rem,2.8vw,2.4rem);font-weight:700;line-height:1.15;color:var(--g);max-width:700px}
@@ -347,10 +356,55 @@ footer a:hover{color:var(--gl)}
   </div>
 </section>
 
-<!-- ACRONYM -->
+<!-- CHI SIAMO -->
+<section id="chisiamo" class="chisiamo-sec">
+  <div class="chisiamo-inner">
+    <p class="eyebrow" data-k="chi_eyebrow"></p>
+    <h2 class="sec-title" data-k="chi_title"></h2>
+    <p class="chisiamo-lead" data-k="chi_p1"></p>
+    <p class="chisiamo-lead" data-k="chi_p2"></p>
+    <div class="chi-stats">
+      <div class="chi-stat"><span class="chi-stat-n">6</span><span class="chi-stat-l" data-k="stat1_label"></span></div>
+      <div class="chi-stat"><span class="chi-stat-n">14</span><span class="chi-stat-l" data-k="stat2_label"></span></div>
+      <div class="chi-stat"><span class="chi-stat-n">6–13</span><span class="chi-stat-l" data-k="stat3_label"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ACRONYM (fascia S A N E) -->
 <div class="acr" id="acr-strip"></div>
 
-<!-- ABOUT -->
+<!-- TEAM (fondatori) -->
+<section id="team">
+  <p class="eyebrow" data-k="team_eyebrow"></p>
+  <h2 class="sec-title" data-k="team_title"></h2>
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-top">
+        <div class="ser-init">
+          <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/serafina.webp" alt="Serafina Cardaci">
+        </div>
+        <div><div class="ser-name">Serafina Cardaci</div><div class="ser-role" data-k="ser_role"></div></div>
+      </div>
+      <div class="ser-creds" id="ser-creds"></div>
+      <p class="team-bio" data-k="ser_p1"></p>
+      <p class="team-bio" data-k="ser_p2"></p>
+    </div>
+    <div class="team-card team-card-alt">
+      <div class="team-top">
+        <div class="ser-init" style="border-color:rgba(10,38,71,.12)">
+          <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/patrick.webp" alt="Patrick Orlando">
+        </div>
+        <div><div class="ser-name">Patrick Orlando</div><div class="ser-role" data-k="pat_role"></div></div>
+      </div>
+      <div class="ser-creds" id="pat-creds"></div>
+      <p class="team-bio" data-k="pat_p1"></p>
+      <p class="team-bio" data-k="pat_p2"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT (il programma) -->
 <section id="about">
   <div class="about-grid">
     <div class="about-text">
@@ -392,36 +446,6 @@ footer a:hover{color:var(--gl)}
   <div class="steps" id="steps"></div>
 </section>
 
-<!-- TEAM -->
-<section id="team">
-  <p class="eyebrow" data-k="team_eyebrow"></p>
-  <h2 class="sec-title" data-k="team_title"></h2>
-  <div class="team-grid">
-    <div class="team-card">
-      <div class="team-top">
-        <div class="ser-init">
-          <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/serafina.webp" alt="Serafina Cardaci">
-        </div>
-        <div><div class="ser-name">Serafina Cardaci</div><div class="ser-role" data-k="ser_role"></div></div>
-      </div>
-      <div class="ser-creds" id="ser-creds"></div>
-      <p class="team-bio" data-k="ser_p1"></p>
-      <p class="team-bio" data-k="ser_p2"></p>
-    </div>
-    <div class="team-card team-card-alt">
-      <div class="team-top">
-        <div class="ser-init" style="border-color:rgba(10,38,71,.12)">
-          <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/patrick.webp" alt="Patrick Orlando">
-        </div>
-        <div><div class="ser-name">Patrick Orlando</div><div class="ser-role" data-k="pat_role"></div></div>
-      </div>
-      <div class="ser-creds" id="pat-creds"></div>
-      <p class="team-bio" data-k="pat_p1"></p>
-      <p class="team-bio" data-k="pat_p2"></p>
-    </div>
-  </div>
-</section>
-
 <!-- CONTACT -->
 <section id="contact" class="contact-sec">
   <p class="eyebrow" data-k="contact_eyebrow"></p>
@@ -451,6 +475,10 @@ const T = {
     stat2_label:"allergeni EU gestiti nell'app «Il Piatto Sano»",
     stat3_label:"anni — fascia d'età a cui è rivolto il programma",
     acr:[{l:"S",w:"Sicurezza",d:"Sicurezza alimentare in classe"},{l:"A",w:"Alimentazione",d:"Corrette abitudini a tavola"},{l:"N",w:"Nutrizione",d:"Expertise della Biologa Nutrizionista"},{l:"E",w:"Educazione",d:"Metodo ludico e misurabile"}],
+    chi_eyebrow:"Chi siamo",
+    chi_title:"Chi è <em>S.A.N.E. Italia</em>.",
+    chi_p1:"S.A.N.E. Italia è una rete di biologi nutrizionisti che porta l'educazione alimentare e la sicurezza alimentare nelle scuole. Il nome riassume i nostri quattro pilastri: <strong>Sicurezza</strong>, <strong>Alimentazione</strong>, <strong>Nutrizione</strong>, <strong>Educazione</strong>.",
+    chi_p2:"Sotto la guida scientifica della Dott.ssa Serafina Cardaci, abbiamo sviluppato il programma «Mangiare Bene, Crescere Meglio» e il gioco educativo «Il Piatto Sano», con un approccio pratico, ludico e misurabile. Il primo pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo ha coinvolto circa 100 studenti.",
     about_eyebrow:"Il programma",
     about_title:"<em>Mangiare Bene, Crescere Meglio</em> — educazione alimentare strutturata.",
     about_p1:"Un percorso in 6 moduli tematici pensato per scuole elementari e medie, progettato dalla Dott.ssa Serafina Cardaci, Biologa Nutrizionista. Ogni modulo combina lezioni in presenza, strumenti digitali e attività per coinvolgere attivamente le famiglie.",
@@ -508,6 +536,10 @@ const T = {
     stat2_label:"alérgenos EU gestionados en la app «Il Piatto Sano»",
     stat3_label:"años — franja de edad a la que va dirigido el programa",
     acr:[{l:"S",w:"Ciencia",d:"Bases científicas certificadas"},{l:"A",w:"Alimentaria",d:"Conductas alimenticias correctas"},{l:"N",w:"Nutricional",d:"Expertise de biólogos nutricionistas"},{l:"E",w:"Educativa",d:"Método lúdico para escuela y familia"}],
+    chi_eyebrow:"Quiénes somos",
+    chi_title:"Qué es <em>S.A.N.E. Italia</em>.",
+    chi_p1:"S.A.N.E. Italia es una red de biólogos nutricionistas que lleva la educación alimentaria y la seguridad alimentaria a las escuelas. El nombre resume nuestros cuatro pilares: <strong>Seguridad</strong>, <strong>Alimentación</strong>, <strong>Nutrición</strong>, <strong>Educación</strong>.",
+    chi_p2:"Bajo la dirección científica de la Dra. Serafina Cardaci, hemos desarrollado el programa «Mangiare Bene, Crescere Meglio» y el juego educativo «Il Piatto Sano», con un enfoque práctico, lúdico y medible. El primer piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo involucró a unos 100 estudiantes.",
     about_eyebrow:"Quiénes somos",
     about_title:"El primer programa escolar que enseña a <em>gestionar alergias e intolerancias.</em>",
     about_p1:"S.A.N.E. Italia nace de una convicción clara: la seguridad alimentaria es un derecho de cada niño. No solo nutrición correcta, sino la capacidad real de reconocer alérgenos, leer etiquetas y gestionar intolerancias de forma autónoma y segura.",
@@ -565,6 +597,10 @@ const T = {
     stat2_label:"EU allergens managed in the «Il Piatto Sano» app",
     stat3_label:"years old — the age range the programme is designed for",
     acr:[{l:"S",w:"Scientific",d:"Certified, up-to-date scientific bases"},{l:"A",w:"Alimentary",d:"Correct eating behaviours from an early age"},{l:"N",w:"Nutritional",d:"Expertise of certified nutritionist biologists"},{l:"E",w:"Education",d:"A playful method for school and family"}],
+    chi_eyebrow:"Who we are",
+    chi_title:"What is <em>S.A.N.E. Italia</em>.",
+    chi_p1:"S.A.N.E. Italia is a network of nutritionist biologists bringing food education and food safety into schools. The name sums up our four pillars: <strong>Safety</strong>, <strong>Food</strong>, <strong>Nutrition</strong>, <strong>Education</strong>.",
+    chi_p2:"Under the scientific direction of Dr. Serafina Cardaci, we developed the «Mangiare Bene, Crescere Meglio» programme and the «Il Piatto Sano» educational game, with a practical, playful and measurable approach. The first pilot at I.C. «Carducci–Fattori» in Rosignano Marittimo involved around 100 students.",
     about_eyebrow:"Who we are",
     about_title:"The first school programme that teaches children to <em>manage allergies and intolerances.</em>",
     about_p1:"S.A.N.E. Italia was born from a clear conviction: food safety is every child's right. Not just proper nutrition, but the concrete ability to recognise allergens, read labels and manage intolerances independently and safely.",
