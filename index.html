@@ -132,13 +132,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .nav-portale:hover{background:rgba(255,255,255,.1);border-color:var(--gl);color:#fff}
 
 /* HERO */
-.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:4.5rem;overflow:hidden}
+.hero{display:block;padding-top:4.5rem;overflow:hidden}
 .hero-l{display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem 4rem 4rem}
 .eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gm);margin-bottom:1.2rem}
 .hero-title{font-family:'Inter',sans-serif;font-size:clamp(2.4rem,4.5vw,4.2rem);line-height:1.08;font-weight:800;color:var(--g)}
 .hero-title .em{color:var(--gm)}
 .hero-sub{font-size:.98rem;font-weight:400;line-height:1.8;color:var(--gr);margin-top:1.5rem;max-width:460px}
-.hero-app{position:relative;width:100%;margin-top:1.8rem}
+.hero-app{position:relative;width:100%;max-width:520px;margin-top:1.8rem}
 .hero-applogo{display:block;width:100%;height:auto;border-radius:16px;box-shadow:0 8px 28px rgba(10,38,71,.18)}
 .hero-app-btn{position:absolute;right:1.1rem;bottom:1.1rem;box-shadow:0 6px 18px rgba(10,38,71,.35)}
 .hero-btns{display:flex;gap:.8rem;margin-top:1.6rem;flex-wrap:wrap}
@@ -343,19 +343,6 @@ footer a:hover{color:var(--gl)}
     <div class="hero-app">
       <img class="hero-applogo" src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logogioco.webp" alt="Il Piatto Sano">
       <a href="https://gioco.sane-italia.it" target="_blank" class="btn-p hero-app-btn" data-k="hero_btn1"></a>
-    </div>
-  </div>
-  <div class="hero-r">
-    <div class="hero-r-inner">
-      <img class="hero-r-logo" src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo3.webp" alt="Mangiare Bene, Crescere Meglio">
-      <p class="hero-r-eyebrow" data-k="sane_kicker"></p>
-      <h2 class="hero-r-title" data-k="sane_title"></h2>
-      <p class="hero-r-text" data-k="sane_text"></p>
-      <div class="stats">
-        <div class="stat"><div class="stat-n">6</div><div class="stat-l" data-k="stat1_label"></div></div>
-        <div class="stat"><div class="stat-n">14</div><div class="stat-l" data-k="stat2_label"></div></div>
-        <div class="stat"><div class="stat-n">6–13</div><div class="stat-l" data-k="stat3_label"></div></div>
-      </div>
     </div>
   </div>
 </section>
@@ -677,7 +664,6 @@ function render(l) {
     if (c.type === 'person') {
       return `<div class="cc">
         <div class="cc-head">
-          <div class="cc-avatar"><img src="${c.img}" alt="${c.name}"></div>
           <div><div class="cc-name">${c.name}</div><div class="cc-role">${c.role}</div></div>
         </div>
         <div class="cc-lines">
