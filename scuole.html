@@ -739,7 +739,6 @@ function renderScuole(t) {
 function renderAderire(t) {
   document.getElementById('aderire-grid').innerHTML = t.modalita.map(m => `
     <div class="aderire-card ${m.classe || m.clase}-card">
-      <div class="aderire-icon">${m.icona}</div>
       <div class="aderire-tipo">${m.tipo}</div>
       <div class="aderire-nome">${m.nome}</div>
       <p class="aderire-desc-card">${m.desc}</p>
