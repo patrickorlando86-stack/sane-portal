@@ -145,6 +145,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .gplay:hover{transform:translateY(-2px)}
 .gplay img{height:52px;width:auto;display:block}
 .hero-app-img{display:block;width:100%;max-width:560px;height:auto;border-radius:22px;box-shadow:0 18px 50px rgba(10,38,71,.22);margin:0 auto}
+.hero-projlogo{display:block;width:100%;max-width:340px;height:auto;margin:0 auto;filter:drop-shadow(0 14px 32px rgba(10,38,71,.16))}
 .hero-btns{display:flex;gap:.8rem;margin-top:1.6rem;flex-wrap:wrap}
 .btn-p{background:var(--g);color:#fff;padding:.8rem 2rem;font-size:.86rem;font-weight:600;letter-spacing:.04em;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;border-radius:8px}
 .btn-p:hover{background:var(--gm);transform:translateY(-2px)}
@@ -214,7 +215,10 @@ section{padding:4.5rem 4rem}
 /* GAME */
 .game-sec{background:var(--cr)}
 .game-intro{font-size:.97rem;color:var(--gr);margin-top:1rem;max-width:600px;line-height:1.75}
-.game-inner{margin-top:2.5rem}
+.game-head{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;margin-bottom:2.8rem}
+.game-head-visual{display:flex;flex-direction:column;align-items:flex-start;gap:1.1rem}
+.game-banner{width:100%;max-width:480px;height:auto;border-radius:20px;box-shadow:0 14px 40px rgba(10,38,71,.18)}
+.game-head-visual .hero-allergie,.game-head-visual .hero-cta{margin-top:0}
 .game-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
 .game-card{display:flex;gap:1.1rem;align-items:center;background:#fff;padding:1.1rem;border-left:4px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:10px;box-shadow:0 2px 12px rgba(10,38,71,.06)}
 .game-card:hover{border-color:var(--gm);transform:translateY(-3px)}
@@ -324,6 +328,7 @@ footer a:hover{color:var(--gl)}
   .facts-grid{grid-template-columns:1fr}
   .chisiamo-grid{grid-template-columns:1fr;gap:2rem}
   .game-cards{grid-template-columns:1fr}
+  .game-head{grid-template-columns:1fr;gap:2rem}
   .cards-grid{grid-template-columns:1fr}
   .steps{grid-template-columns:repeat(2,1fr)}
   footer{flex-direction:column;gap:.8rem;text-align:center;padding:1.5rem}
@@ -375,16 +380,9 @@ footer a:hover{color:var(--gl)}
     <p class="eyebrow" data-k="hero_eyebrow"></p>
     <h1 class="hero-title" data-k="hero_title"></h1>
     <p class="hero-sub" data-k="hero_sub"></p>
-    <div class="hero-allergie"><span class="hero-allergie-dot"></span><span data-k="hero_allergie"></span></div>
-    <div class="hero-cta">
-      <a href="https://gioco.sane-italia.it" target="_blank" class="btn-p" data-k="hero_btn1"></a>
-      <a href="https://play.google.com/store/apps/details?id=com.daop.ilpiattosano&amp;utm_source=emea_Med" target="_blank" rel="noopener" class="gplay" aria-label="Disponibile su Google Play">
-        <img id="gplay-badge" src="https://play.google.com/intl/it_it/badges/static/images/badges/it_badge_web_generic.png" alt="Disponibile su Google Play" loading="lazy">
-      </a>
-    </div>
   </div>
   <div class="hero-r">
-    <img class="hero-app-img" src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logogioco.webp" alt="Il Piatto Sano">
+    <img class="hero-projlogo" src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo3.webp" alt="Mangiare Bene, Crescere Meglio">
   </div>
 </section>
 
@@ -429,12 +427,24 @@ footer a:hover{color:var(--gl)}
 
 <!-- GAME -->
 <section id="game" class="game-sec">
-  <p class="eyebrow" data-k="game_eyebrow"></p>
-  <h2 class="sec-title" data-k="game_title"></h2>
-  <p class="game-intro" data-k="game_sub"></p>
-  <div class="game-inner">
-    <div class="game-cards" id="game-cards"></div>
+  <div class="game-head">
+    <div class="game-head-text">
+      <p class="eyebrow" data-k="game_eyebrow"></p>
+      <h2 class="sec-title" data-k="game_title"></h2>
+      <p class="game-intro" data-k="game_sub"></p>
+    </div>
+    <div class="game-head-visual">
+      <img class="game-banner" src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logogioco.webp" alt="Il Piatto Sano">
+      <div class="hero-allergie"><span class="hero-allergie-dot"></span><span data-k="hero_allergie"></span></div>
+      <div class="hero-cta">
+        <a href="https://gioco.sane-italia.it" target="_blank" class="btn-p" data-k="hero_btn1"></a>
+        <a href="https://play.google.com/store/apps/details?id=com.daop.ilpiattosano&amp;utm_source=emea_Med" target="_blank" rel="noopener" class="gplay" aria-label="Disponibile su Google Play">
+          <img id="gplay-badge" src="https://play.google.com/intl/it_it/badges/static/images/badges/it_badge_web_generic.png" alt="Disponibile su Google Play" loading="lazy">
+        </a>
+      </div>
+    </div>
   </div>
+  <div class="game-cards" id="game-cards"></div>
 </section>
 
 <!-- TARGET -->
