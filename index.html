@@ -236,10 +236,10 @@ section{padding:4.5rem 4rem}
 .method-sec{background:var(--g);color:#fff}
 .method-sec .sec-title{color:#fff;max-width:100%}
 .method-sec .eyebrow{color:var(--gl)}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2.5rem}
-.step{background:rgba(255,255,255,.04);padding:2rem 1.5rem;border:1px solid rgba(0,168,150,.15);transition:background .2s}
-.step:hover{background:rgba(0,168,150,.08)}
-.step-n{font-family:'Inter',sans-serif;font-size:2.8rem;font-weight:800;color:var(--gl);opacity:.35;line-height:1;margin-bottom:.8rem}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.5rem}
+.step{background:rgba(255,255,255,.05);padding:1.8rem 1.6rem;border-radius:14px;border:1px solid rgba(255,255,255,.08);transition:transform .2s,background .2s,box-shadow .2s}
+.step:hover{background:rgba(255,255,255,.09);transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.step-n{font-family:'Inter',sans-serif;font-size:2.6rem;font-weight:800;line-height:1;margin-bottom:.55rem}
 .step h4{font-size:.92rem;font-weight:600;color:#fff;margin-bottom:.5rem}
 .step p{font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.65}
 
@@ -691,9 +691,11 @@ function render(l) {
   ).join('');
 
   // steps
-  document.getElementById('steps').innerHTML = t.steps.map(s =>
-    `<div class="step"><div class="step-n">${s.n}</div><h4>${s.t}</h4><p>${s.d}</p></div>`
-  ).join('');
+  const stepColors = ['#00C9B1','#F4A261','#4DA3FF','#6BCB77','#B98CFF','#FF7B9C'];
+  document.getElementById('steps').innerHTML = t.steps.map((s,i) => {
+    const c = stepColors[i % stepColors.length];
+    return `<div class="step" style="border-top:3px solid ${c}"><div class="step-n" style="color:${c}">${s.n}</div><h4>${s.t}</h4><p>${s.d}</p></div>`;
+  }).join('');
 
   // ser creds
   document.getElementById('ser-creds').innerHTML = t.ser_creds.map(c =>
