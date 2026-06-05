@@ -138,7 +138,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .hero-title{font-family:'Inter',sans-serif;font-size:clamp(2.4rem,4.5vw,4.2rem);line-height:1.08;font-weight:800;color:var(--g)}
 .hero-title .em{color:var(--gm)}
 .hero-sub{font-size:.98rem;font-weight:400;line-height:1.8;color:var(--gr);margin-top:1.5rem;max-width:460px}
-.hero-btns{display:flex;gap:.8rem;margin-top:2.2rem;flex-wrap:wrap}
+.hero-applogo{align-self:flex-start;height:110px;width:auto;margin-top:1.8rem;border-radius:16px;box-shadow:0 8px 28px rgba(10,38,71,.18)}
+.hero-btns{display:flex;gap:.8rem;margin-top:1.6rem;flex-wrap:wrap}
 .btn-p{background:var(--g);color:#fff;padding:.8rem 2rem;font-size:.86rem;font-weight:600;letter-spacing:.04em;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;border-radius:8px}
 .btn-p:hover{background:var(--gm);transform:translateY(-2px)}
 .btn-s{background:transparent;color:var(--g);padding:.8rem 2rem;font-size:.86rem;font-weight:600;letter-spacing:.04em;border:2px solid var(--g);cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;border-radius:8px}
@@ -335,9 +336,9 @@ footer a:hover{color:var(--gl)}
     <p class="eyebrow" data-k="hero_eyebrow"></p>
     <h1 class="hero-title" data-k="hero_title"></h1>
     <p class="hero-sub" data-k="hero_sub"></p>
+    <img class="hero-applogo" src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logogioco.webp" alt="Il Piatto Sano">
     <div class="hero-btns">
       <a href="https://gioco.sane-italia.it" target="_blank" class="btn-p" data-k="hero_btn1"></a>
-      <a href="#contact" class="btn-s" data-k="hero_btn2"></a>
     </div>
     <a href="locandina.pdf" download class="hero-dl" data-k="hero_dl"></a>
   </div>
@@ -382,9 +383,6 @@ footer a:hover{color:var(--gl)}
   <div class="game-inner">
     <div class="game-cards" id="game-cards"></div>
     <div class="allergen-box">
-      <div style="text-align:center;margin-bottom:1.2rem">
-        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logogioco.webp" alt="Il Piatto Sano" style="height:80px;width:auto;border-radius:12px">
-      </div>
       <h4 data-k="allergens_title"></h4>
       <p data-k="allergens_sub"></p>
       <div class="allergen-tags" id="allergen-tags"></div>
