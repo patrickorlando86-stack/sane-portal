@@ -120,8 +120,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .logo-text{font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:.03em}
 .logo-text span{color:var(--gl)}
 .nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-size:.76rem;font-weight:500;letter-spacing:.08em;text-decoration:none;color:rgba(255,255,255,.65);text-transform:uppercase;transition:color .2s;white-space:nowrap}
-.nav-links a:hover{color:var(--gl)}
+.nav-links a{font-size:.76rem;font-weight:500;letter-spacing:.08em;text-decoration:none;color:rgba(255,255,255,.65);text-transform:uppercase;border-bottom:2px solid transparent;padding-bottom:.2rem;transition:color .2s,border-color .2s;white-space:nowrap}
+.nav-links a:hover{color:var(--gl);border-bottom-color:var(--gl)}
 .nav-right{display:flex;align-items:center;gap:.9rem}
 .lang-sw{display:flex;gap:.3rem}
 .lb{background:none;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.68rem;font-weight:600;letter-spacing:.08em;padding:.22rem .55rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;text-transform:uppercase;border-radius:3px}
@@ -132,15 +132,19 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .nav-portale:hover{background:rgba(255,255,255,.1);border-color:var(--gl);color:#fff}
 
 /* HERO */
-.hero{display:block;padding-top:4.5rem;overflow:hidden}
-.hero-l{display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem 4rem 4rem}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center;padding:6rem 4rem 3.5rem;background:linear-gradient(135deg,#EEF5FA 0%,#e3f4f0 55%,#d2efe8 100%);overflow:hidden}
+.hero-l{display:flex;flex-direction:column;justify-content:center}
 .eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gm);margin-bottom:1.2rem}
 .hero-title{font-family:'Inter',sans-serif;font-size:clamp(2.4rem,4.5vw,4.2rem);line-height:1.08;font-weight:800;color:var(--g)}
 .hero-title .em{color:var(--gm)}
 .hero-sub{font-size:.98rem;font-weight:400;line-height:1.8;color:var(--gr);margin-top:1.5rem;max-width:460px}
-.hero-app{position:relative;width:100%;max-width:520px;margin-top:1.8rem}
-.hero-applogo{display:block;width:100%;height:auto;border-radius:16px;box-shadow:0 8px 28px rgba(10,38,71,.18)}
-.hero-app-btn{position:absolute;right:1.1rem;bottom:1.1rem;box-shadow:0 6px 18px rgba(10,38,71,.35)}
+.hero-allergie{display:inline-flex;align-items:center;gap:.55rem;align-self:flex-start;margin-top:1.5rem;background:#fff;border:1px solid rgba(244,162,97,.55);border-radius:999px;padding:.5rem 1rem;font-size:.82rem;font-weight:600;color:var(--g);box-shadow:0 2px 12px rgba(10,38,71,.07)}
+.hero-allergie-dot{width:9px;height:9px;border-radius:50%;background:#F4A261;box-shadow:0 0 0 4px rgba(244,162,97,.2);flex-shrink:0}
+.hero-cta{display:flex;align-items:center;gap:1rem;margin-top:1.9rem;flex-wrap:wrap}
+.gplay{display:inline-flex;transition:transform .15s}
+.gplay:hover{transform:translateY(-2px)}
+.gplay img{height:52px;width:auto;display:block}
+.hero-app-img{display:block;width:100%;max-width:560px;height:auto;border-radius:22px;box-shadow:0 18px 50px rgba(10,38,71,.22);margin:0 auto}
 .hero-btns{display:flex;gap:.8rem;margin-top:1.6rem;flex-wrap:wrap}
 .btn-p{background:var(--g);color:#fff;padding:.8rem 2rem;font-size:.86rem;font-weight:600;letter-spacing:.04em;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;border-radius:8px}
 .btn-p:hover{background:var(--gm);transform:translateY(-2px)}
@@ -149,9 +153,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .hero-dl{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;font-size:.78rem;color:var(--gr);text-decoration:none;transition:color .2s;font-weight:500}
 .hero-dl::before{content:"↓";font-size:.9rem;color:var(--gm)}
 .hero-dl:hover{color:var(--gm)}
-.hero-r{background:linear-gradient(135deg,var(--g) 0%,#0d3460 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-.hero-r::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,150,.18) 0%,transparent 70%);top:-120px;right:-120px}
-.hero-r::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.1) 0%,transparent 70%);bottom:-60px;left:30px}
+.hero-r{display:flex;align-items:center;justify-content:center;position:relative}
 .hero-r-inner{position:relative;z-index:2;width:100%;max-width:440px;padding:2.5rem 2.8rem;display:flex;flex-direction:column;gap:.85rem}
 .hero-r-logo{width:128px;height:auto;align-self:flex-start;background:#fff;border-radius:16px;padding:.5rem;box-shadow:0 8px 24px rgba(0,0,0,.18);margin-bottom:.4rem}
 .hero-r-eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gl)}
@@ -301,9 +303,8 @@ footer a:hover{color:var(--gl)}
 @media(max-width:860px){
   nav{padding:.8rem 1.2rem}
   .nav-links{display:none}
-  .hero{grid-template-columns:1fr}
-  .hero-r{display:none}
-  .hero-l{padding:5.5rem 1.5rem 2.5rem}
+  .hero{grid-template-columns:1fr;padding:5.5rem 1.5rem 2.5rem;gap:2rem}
+  .hero-l{padding:0}
   .acr{grid-template-columns:repeat(2,1fr);padding:1.5rem}
   section{padding:2.5rem 1.5rem}
   .contact-sec{padding:2.5rem 1.5rem}
@@ -329,8 +330,8 @@ footer a:hover{color:var(--gl)}
     <li><a href="#game" data-k="nav1"></a></li>
     <li><a href="#method" data-k="nav2"></a></li>
     <li><a href="#team" data-k="nav3"></a></li>
-    <li><a href="scuole.html" style="color:var(--gl)">Scuole Aderenti</a></li>
-    <li><a href="biologi.html" style="color:var(--gl)">I Biologi</a></li>
+    <li><a href="scuole.html">Scuole Aderenti</a></li>
+    <li><a href="biologi.html">I Biologi</a></li>
   </ul>
   <div class="nav-right">
     <div class="lang-sw">
@@ -349,10 +350,16 @@ footer a:hover{color:var(--gl)}
     <p class="eyebrow" data-k="hero_eyebrow"></p>
     <h1 class="hero-title" data-k="hero_title"></h1>
     <p class="hero-sub" data-k="hero_sub"></p>
-    <div class="hero-app">
-      <img class="hero-applogo" src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logogioco.webp" alt="Il Piatto Sano">
-      <a href="https://gioco.sane-italia.it" target="_blank" class="btn-p hero-app-btn" data-k="hero_btn1"></a>
+    <div class="hero-allergie"><span class="hero-allergie-dot"></span><span data-k="hero_allergie"></span></div>
+    <div class="hero-cta">
+      <a href="https://gioco.sane-italia.it" target="_blank" class="btn-p" data-k="hero_btn1"></a>
+      <a href="https://play.google.com/store/search?q=il%20piatto%20sano&amp;c=apps" target="_blank" class="gplay" aria-label="Disponibile su Google Play">
+        <img src="https://play.google.com/intl/it_it/badges/static/images/badges/it_badge_web_generic.png" alt="Disponibile su Google Play" loading="lazy">
+      </a>
     </div>
+  </div>
+  <div class="hero-r">
+    <img class="hero-app-img" src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logogioco.webp" alt="Il Piatto Sano">
   </div>
 </section>
 
@@ -422,6 +429,13 @@ footer a:hover{color:var(--gl)}
   </div>
 </section>
 
+<!-- METHOD (i 6 moduli) -->
+<section id="method" class="method-sec">
+  <p class="eyebrow" data-k="method_eyebrow"></p>
+  <h2 class="sec-title" data-k="method_title"></h2>
+  <div class="steps" id="steps"></div>
+</section>
+
 <!-- GAME -->
 <section id="game" class="game-sec">
   <p class="eyebrow" data-k="game_eyebrow"></p>
@@ -437,13 +451,6 @@ footer a:hover{color:var(--gl)}
   <p class="eyebrow" data-k="target_eyebrow"></p>
   <h2 class="sec-title" data-k="target_title"></h2>
   <div class="cards-grid" id="cards-grid"></div>
-</section>
-
-<!-- METHOD -->
-<section id="method" class="method-sec">
-  <p class="eyebrow" data-k="method_eyebrow"></p>
-  <h2 class="sec-title" data-k="method_title"></h2>
-  <div class="steps" id="steps"></div>
 </section>
 
 <!-- CONTACT -->
@@ -468,6 +475,7 @@ const T = {
     hero_title:"Mangiare Bene,<br><em>Crescere Meglio.</em>",
     hero_sub:"Un percorso strutturato in 6 moduli tematici, progettato da una Biologa Nutrizionista qualificata, che integra interventi in presenza, strumenti digitali interattivi e coinvolgimento attivo delle famiglie. Rivolto a bambini dai 6 ai 13 anni.",
     hero_btn1:"Prova l'app gratuita",hero_btn2:"Parla con noi",hero_dl:"Scarica la locandina (PDF)",
+    hero_allergie:"Unico gioco con gestione personalizzata dei 14 allergeni EU",
     sane_kicker:"L'organizzazione",
     sane_title:"S.A.N.E. Italia",
     sane_text:"<strong>S</strong>icurezza, <strong>A</strong>limentazione, <strong>N</strong>utrizione, <strong>E</strong>ducazione: la rete di biologi nutrizionisti che porta nelle scuole il programma «Mangiare Bene, Crescere Meglio».",
@@ -529,6 +537,7 @@ const T = {
     hero_title:"<span class='em'>Seguridad</span><br>alimentaria<br>para cada niño.",
     hero_sub:"S.A.N.E. Italia lleva a las escuelas el primer programa científico que integra educación nutricional y gestión de alergias e intolerancias alimentarias, guiado por biólogos nutricionistas certificados.",
     hero_btn1:"Descubre el programa",hero_btn2:"Habla con nosotros",hero_dl:"Descargar el folleto (PDF)",
+    hero_allergie:"Único juego con gestión personalizada de los 14 alérgenos UE",
     sane_kicker:"La organización",
     sane_title:"S.A.N.E. Italia",
     sane_text:"La red de biólogos nutricionistas que lleva a las escuelas el programa «Mangiare Bene, Crescere Meglio», con un enfoque <strong>científico, alimentario, nutricional y educativo</strong>.",
@@ -590,6 +599,7 @@ const T = {
     hero_title:"<span class='em'>Food safety</span><br>for every<br>child.",
     hero_sub:"S.A.N.E. Italia brings to schools the first scientific programme integrating nutritional education and allergy & food intolerance management, led by certified nutritionist biologists.",
     hero_btn1:"Discover the programme",hero_btn2:"Talk to us",hero_dl:"Download the brochure (PDF)",
+    hero_allergie:"The only game with personalised management of the 14 EU allergens",
     sane_kicker:"The organisation",
     sane_title:"S.A.N.E. Italia",
     sane_text:"The network of certified nutritionist biologists bringing the «Mangiare Bene, Crescere Meglio» programme to schools, with a <strong>scientific, alimentary, nutritional and educational</strong> approach.",
