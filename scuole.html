@@ -42,7 +42,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .logo-text span{color:var(--gl)}
 .nav-links{display:flex;gap:1.5rem;list-style:none}
 .nav-links a{font-size:.76rem;font-weight:500;letter-spacing:.08em;text-decoration:none;color:rgba(255,255,255,.65);text-transform:uppercase;transition:color .2s}
-.nav-links a:hover,.nav-links a.active{color:var(--gl)}
+.nav-links a:hover{color:var(--gl)}
+.nav-links a.current{color:#fff;border-bottom:2px solid var(--gl);padding-bottom:.2rem}
 .nav-right{display:flex;align-items:center;gap:.9rem}
 .lang-sw{display:flex;gap:.3rem}
 .lb{background:none;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.68rem;font-weight:600;letter-spacing:.08em;padding:.22rem .55rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;text-transform:uppercase;border-radius:3px}
@@ -185,7 +186,7 @@ footer a:hover{color:var(--gl)}
     <li><a href="index.html#game" data-k="nav1"></a></li>
     <li><a href="index.html#method" data-k="nav2"></a></li>
     <li><a href="index.html#team" data-k="nav3"></a></li>
-    <li><a href="scuole.html" class="active" data-k="nav4"></a></li>
+    <li><a href="scuole.html" class="current" data-k="nav4"></a></li>
     <li><a href="biologi.html" data-k="nav5"></a></li>
   </ul>
   <div class="nav-right">
