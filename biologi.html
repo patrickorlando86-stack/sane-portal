@@ -57,7 +57,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .page-hero{background:linear-gradient(135deg,var(--g) 0%,#0d3460 100%);padding:8rem 4rem 5rem;position:relative;overflow:hidden}
 .page-hero::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,150,.14) 0%,transparent 70%);top:-200px;right:-100px;pointer-events:none}
 .page-hero::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.08) 0%,transparent 70%);bottom:-100px;left:5%;pointer-events:none}
-.hero-inner{position:relative;z-index:2;max-width:760px}
+.page-hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.5fr .9fr;gap:3rem;align-items:center;max-width:1180px}
+.hero-inner{max-width:760px}
+.hero-visual{display:flex;justify-content:center}
+.hero-visual-card{background:#fff;border-radius:24px;padding:1.8rem 2rem;box-shadow:0 18px 44px rgba(0,0,0,.28)}
+.hero-visual-card img{width:100%;max-width:210px;height:auto;display:block}
 .eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gm);margin-bottom:1.2rem}
 .page-hero .eyebrow{color:var(--gl)}
 .page-hero-title{font-family:'Inter',sans-serif;font-size:clamp(2.2rem,4vw,3.8rem);line-height:1.08;font-weight:800;color:#fff;margin-bottom:1.2rem}
@@ -79,7 +83,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .sec-desc{font-size:.92rem;color:var(--gr);margin-top:.8rem;line-height:1.8;max-width:640px}
 
 /* MAPPA */
-.map-sec{background:var(--cr);padding:4rem}
+.map-sec{background:#fff;padding:4rem}
 .map-legend{display:flex;gap:1.5rem;margin:1.2rem 0;flex-wrap:wrap}
 .legend-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--g)}
 .legend-dot{width:14px;height:14px;border-radius:2px;flex-shrink:0}
@@ -88,7 +92,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 #mappa-biologi{width:100%;height:500px;border-radius:14px;border:1px solid rgba(10,38,71,.1);box-shadow:0 4px 24px rgba(10,38,71,.08)}
 
 /* BIOLOGI GRID */
-.biologi-sec{background:#fff;padding:4rem}
+.biologi-sec{background:var(--cr);padding:4rem}
 .biologi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
 .biologo-card{background:var(--wh);border-radius:12px;overflow:hidden;border:1px solid rgba(10,38,71,.08);box-shadow:0 2px 16px rgba(10,38,71,.05);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column}
 .biologo-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(10,38,71,.12)}
@@ -146,6 +150,8 @@ footer a:hover{color:var(--gl)}
 @media(max-width:860px){
   nav{padding:.8rem 1.2rem}.nav-links{display:none}
   .page-hero{padding:6rem 1.5rem 3.5rem}
+  .page-hero-grid{grid-template-columns:1fr}
+  .hero-visual{display:none}
   .stats-sec,.biologi-sec,.map-sec,.candidatura-sec,.cta-scuole-sec{padding:2.5rem 1.5rem}
   footer{flex-direction:column;gap:.8rem;text-align:center;padding:1.5rem}
 }
@@ -179,11 +185,18 @@ footer a:hover{color:var(--gl)}
 
 <!-- HERO -->
 <section class="page-hero">
-  <div class="hero-inner">
-    <p class="eyebrow" data-k="hero_eyebrow"></p>
-    <h1 class="page-hero-title" data-k="hero_title"></h1>
-    <p class="page-hero-sub" data-k="hero_sub"></p>
-    <p class="page-hero-desc" data-k="hero_desc"></p>
+  <div class="page-hero-grid">
+    <div class="hero-inner">
+      <p class="eyebrow" data-k="hero_eyebrow"></p>
+      <h1 class="page-hero-title" data-k="hero_title"></h1>
+      <p class="page-hero-sub" data-k="hero_sub"></p>
+      <p class="page-hero-desc" data-k="hero_desc"></p>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-visual-card">
+        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
+      </div>
+    </div>
   </div>
 </section>
 
@@ -201,9 +214,19 @@ footer a:hover{color:var(--gl)}
       <div class="stat-label" data-k="stat2_label"></div>
     </div>
     <div class="stat-card">
-      <div class="stat-num">1</div>
+      <div class="stat-num">100%</div>
       <div class="stat-label" data-k="stat3_label"></div>
     </div>
+  </div>
+</section>
+
+<!-- LA RETE + NOTA CONTATTI -->
+<section class="biologi-sec">
+  <p class="eyebrow" data-k="biologi_eyebrow"></p>
+  <h2 class="sec-title" data-k="biologi_title"></h2>
+  <p class="sec-desc" data-k="biologi_desc"></p>
+  <div class="nota-box">
+    <div class="nota-text" data-k="nota_text"></div>
   </div>
 </section>
 
@@ -217,16 +240,6 @@ footer a:hover{color:var(--gl)}
     <div class="legend-item"><div class="legend-dot espansione"></div> <span data-k="legend_espansione"></span></div>
   </div>
   <div id="mappa-biologi"></div>
-</section>
-
-<!-- LA RETE + NOTA CONTATTI -->
-<section class="biologi-sec">
-  <p class="eyebrow" data-k="biologi_eyebrow"></p>
-  <h2 class="sec-title" data-k="biologi_title"></h2>
-  <p class="sec-desc" data-k="biologi_desc"></p>
-  <div class="nota-box">
-    <div class="nota-text" data-k="nota_text"></div>
-  </div>
 </section>
 
 <!-- CANDIDATURA BIOLOGI -->
@@ -281,7 +294,7 @@ const T = {
     stats_title: "Professionisti <em>selezionati</em>, metodo unico.",
     stat1_label: "biologi nutrizionisti certificati nella rete S.A.N.E. Italia",
     stat2_label: "regioni italiane con copertura attiva del programma",
-    stat3_label: "programma, un metodo scientifico unico in tutta Italia",
+    stat3_label: "formati direttamente dalla Dott.ssa Serafina Cardaci",
     map_eyebrow: "Copertura territoriale",
     map_title: "Dove siamo <em>presenti</em>",
     map_desc: "Le regioni evidenziate hanno gia un biologo S.A.N.E. attivo sul territorio. La rete e in espansione: nuovi professionisti vengono selezionati ogni anno.",
@@ -326,7 +339,7 @@ const T = {
     stats_title: "Profesionales <em>seleccionados</em>, metodo unico.",
     stat1_label: "biologos nutricionistas certificados en la red S.A.N.E. Italia",
     stat2_label: "regiones italianas con cobertura activa del programa",
-    stat3_label: "programa, un metodo cientifico unico en toda Italia",
+    stat3_label: "formados directamente por la Dott.ssa Serafina Cardaci",
     map_eyebrow: "Cobertura territorial",
     map_title: "Donde estamos <em>presentes</em>",
     map_desc: "Las regiones destacadas ya tienen un biologo S.A.N.E. activo en el territorio. La red esta en expansion: se seleccionan nuevos profesionales cada ano.",
@@ -371,7 +384,7 @@ const T = {
     stats_title: "<em>Selected</em> professionals, one unified method.",
     stat1_label: "certified nutritionist biologists in the S.A.N.E. Italia network",
     stat2_label: "Italian regions with active programme coverage",
-    stat3_label: "programme, one unique scientific method across Italy",
+    stat3_label: "trained directly by Dott.ssa Serafina Cardaci",
     map_eyebrow: "Territorial coverage",
     map_title: "Where we are <em>active</em>",
     map_desc: "Highlighted regions already have an active S.A.N.E. biologist on the ground. The network is expanding: new professionals are selected every year.",
