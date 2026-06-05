@@ -174,7 +174,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .acr-d{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:.25rem;line-height:1.4}
 
 /* CHI SIAMO */
-.chisiamo-sec{background:#fff}
+.chisiamo-sec{background:#fff;padding-top:6.5rem}
 .chisiamo-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:3.5rem;align-items:center}
 .chisiamo-lead{font-size:1rem;color:var(--gr);line-height:1.85;margin-top:1.1rem}
 .chi-stats{display:flex;gap:2rem;margin-top:2rem;flex-wrap:wrap}
@@ -356,6 +356,19 @@ footer a:hover{color:var(--gl)}
   </div>
 </nav>
 
+<!-- CHI SIAMO (apertura) -->
+<section id="chisiamo" class="chisiamo-sec">
+  <div class="chisiamo-grid">
+    <div class="chisiamo-text">
+      <p class="eyebrow" data-k="chi_eyebrow"></p>
+      <h2 class="sec-title" data-k="chi_title"></h2>
+      <p class="chisiamo-lead" data-k="chi_p1"></p>
+      <p class="chisiamo-lead" data-k="chi_p2"></p>
+    </div>
+    <div class="sane-band" id="sane-pillars"></div>
+  </div>
+</section>
+
 <!-- HERO -->
 <section class="hero">
   <div class="hero-l">
@@ -381,19 +394,6 @@ footer a:hover{color:var(--gl)}
     <div class="badge"><div class="badge-label" data-k="b1_label"></div><div class="badge-val" data-k="b1_val"></div><div class="badge-sub" data-k="b1_sub"></div></div>
     <div class="badge badge-alt"><div class="badge-label" data-k="b2_label"></div><div class="badge-val" data-k="b2_val"></div><div class="badge-sub" data-k="b2_sub"></div></div>
     <div class="badge"><div class="badge-label" data-k="b3_label"></div><div class="badge-val" data-k="b3_val"></div><div class="badge-sub" data-k="b3_sub"></div></div>
-  </div>
-</section>
-
-<!-- CHI SIAMO -->
-<section id="chisiamo" class="chisiamo-sec">
-  <div class="chisiamo-grid">
-    <div class="chisiamo-text">
-      <p class="eyebrow" data-k="chi_eyebrow"></p>
-      <h2 class="sec-title" data-k="chi_title"></h2>
-      <p class="chisiamo-lead" data-k="chi_p1"></p>
-      <p class="chisiamo-lead" data-k="chi_p2"></p>
-    </div>
-    <div class="sane-band" id="sane-pillars"></div>
   </div>
 </section>
 
