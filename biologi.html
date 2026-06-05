@@ -103,12 +103,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .biologo-spec{font-size:.76rem;color:var(--gr);line-height:1.55;padding-top:.4rem;border-top:1px solid rgba(10,38,71,.07)}
 .cert-badge{display:inline-flex;align-items:center;gap:.35rem;background:rgba(0,168,150,.1);border:1px solid rgba(0,168,150,.25);color:var(--gm);font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .7rem;border-radius:20px;margin-top:auto;align-self:flex-start}
 
-/* NOTA CONTATTI */
-.nota-sec{background:var(--g);padding:2.5rem 4rem}
-.nota-box{background:rgba(0,201,177,.1);border:1.5px solid var(--gl);border-radius:14px;padding:1.8rem 2.2rem;display:flex;gap:1.4rem;align-items:flex-start}
-.nota-icon{font-size:1.8rem;flex-shrink:0;margin-top:.1rem}
-.nota-text{font-size:.9rem;color:rgba(255,255,255,.8);line-height:1.8}
-.nota-text strong{color:#fff}
+/* NOTA CONTATTI (callout) */
+.nota-box{background:rgba(0,168,150,.07);border:1px solid rgba(0,168,150,.22);border-left:4px solid var(--gm);border-radius:12px;padding:1.5rem 1.9rem;margin-top:2rem;max-width:760px}
+.nota-text{font-size:.9rem;color:var(--gr);line-height:1.8}
+.nota-text strong{color:var(--g)}
 
 /* CANDIDATURA */
 .candidatura-sec{background:var(--cr);padding:4rem}
@@ -148,9 +146,8 @@ footer a:hover{color:var(--gl)}
 @media(max-width:860px){
   nav{padding:.8rem 1.2rem}.nav-links{display:none}
   .page-hero{padding:6rem 1.5rem 3.5rem}
-  .stats-sec,.biologi-sec,.map-sec,.nota-sec,.candidatura-sec,.cta-scuole-sec{padding:2.5rem 1.5rem}
+  .stats-sec,.biologi-sec,.map-sec,.candidatura-sec,.cta-scuole-sec{padding:2.5rem 1.5rem}
   footer{flex-direction:column;gap:.8rem;text-align:center;padding:1.5rem}
-  .nota-box{flex-direction:column;gap:.8rem}
 }
 @media(max-width:600px){.stats-grid{grid-template-columns:1fr}.biologi-grid{grid-template-columns:1fr}#mappa-biologi{height:340px}}
 </style>
@@ -222,18 +219,12 @@ footer a:hover{color:var(--gl)}
   <div id="mappa-biologi"></div>
 </section>
 
-<!-- LA RETE -->
+<!-- LA RETE + NOTA CONTATTI -->
 <section class="biologi-sec">
   <p class="eyebrow" data-k="biologi_eyebrow"></p>
   <h2 class="sec-title" data-k="biologi_title"></h2>
   <p class="sec-desc" data-k="biologi_desc"></p>
-  <p class="sec-desc" data-k="biologi_desc2" style="margin-top:1rem"></p>
-</section>
-
-<!-- NOTA CONTATTI -->
-<section class="nota-sec">
   <div class="nota-box">
-    <div class="nota-icon">🔒</div>
     <div class="nota-text" data-k="nota_text"></div>
   </div>
 </section>
