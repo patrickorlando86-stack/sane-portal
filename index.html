@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mangiare Bene, Crescere Meglio | S.A.N.E. Italia — Educazione Alimentare nelle Scuole</title>
-<meta name="description" content="Programma di educazione alimentare per scuole elementari e medie. 6 moduli tematici, gestione allergie e intolleranze, gioco educativo «Il Piatto Sano» con 6 mini-giochi (incluso l'allenamento all'autoiniettore) su web e Android. Ideato dalla Dott.ssa Serafina Cardaci, Biologa Nutrizionista.">
+<title>S.A.N.E. Italia — Educazione Alimentare e Sicurezza Alimentare nelle Scuole</title>
+<meta name="description" content="S.A.N.E. Italia è la rete di biologi nutrizionisti che porta educazione alimentare e sicurezza alimentare nelle scuole. Il programma «Mangiare Bene, Crescere Meglio» e il gioco educativo «Il Piatto Sano» (web e Android), con gestione personalizzata dei 14 allergeni EU. Direzione scientifica Dott.ssa Serafina Cardaci, Biologa Nutrizionista.">
 <meta name="keywords" content="educazione alimentare scuole, gioco educativo alimentare, sicurezza alimentare bambini, programma nutrizione bambini, allergie scuola primaria, Il Piatto Sano, gioco allergie EpiPen autoiniettore, quiz alimentare bambini, piramide alimentare, detective etichette allergeni, stagionalità frutta verdura, Mangiare Bene Crescere Meglio, biologa nutrizionista, intolleranze alimentari bambini, SANE Italia, Serafina Cardaci, app educativa Android LIM">
 <meta name="author" content="Dott.ssa Serafina Cardaci, Ing. Patrick Orlando">
 <meta name="robots" content="index, follow">
@@ -13,16 +13,16 @@
 <!-- Open Graph (WhatsApp, LinkedIn, Facebook) -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sane-italia.it/">
-<meta property="og:title" content="Mangiare Bene, Crescere Meglio | S.A.N.E. Italia">
-<meta property="og:description" content="Programma di educazione alimentare per scuole elementari e medie. 6 moduli, gioco educativo «Il Piatto Sano» con 6 mini-giochi (web e Android), gestione allergie e allenamento all'autoiniettore. Biologa Nutrizionista Serafina Cardaci.">
+<meta property="og:title" content="S.A.N.E. Italia — Educazione Alimentare nelle Scuole">
+<meta property="og:description" content="La rete di biologi nutrizionisti per l'educazione e la sicurezza alimentare nelle scuole. Programma «Mangiare Bene, Crescere Meglio» e gioco educativo «Il Piatto Sano» (web e Android) con gestione personalizzata dei 14 allergeni EU.">
 <meta property="og:image" content="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
 <meta property="og:locale" content="it_IT">
 <meta property="og:site_name" content="S.A.N.E. Italia">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Mangiare Bene, Crescere Meglio | S.A.N.E. Italia">
-<meta name="twitter:description" content="Programma di educazione alimentare per scuole elementari e medie. 6 moduli, gioco «Il Piatto Sano» con 6 mini-giochi (web e Android), gestione allergie.">
+<meta name="twitter:title" content="S.A.N.E. Italia — Educazione Alimentare nelle Scuole">
+<meta name="twitter:description" content="Rete di biologi nutrizionisti per educazione e sicurezza alimentare nelle scuole. Programma «Mangiare Bene, Crescere Meglio» e gioco «Il Piatto Sano» (web e Android), gestione 14 allergeni EU.">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
 
 <!-- Schema.org strutturato (Google capisce meglio il sito) -->
@@ -386,13 +386,11 @@ footer a:hover{color:var(--gl)}
   </div>
 </section>
 
-<!-- PUNTI CHIAVE (dal programma) -->
-<section class="facts-sec">
-  <div class="facts-grid">
-    <div class="badge"><div class="badge-label" data-k="b1_label"></div><div class="badge-val" data-k="b1_val"></div><div class="badge-sub" data-k="b1_sub"></div></div>
-    <div class="badge badge-alt"><div class="badge-label" data-k="b2_label"></div><div class="badge-val" data-k="b2_val"></div><div class="badge-sub" data-k="b2_sub"></div></div>
-    <div class="badge"><div class="badge-label" data-k="b3_label"></div><div class="badge-val" data-k="b3_val"></div><div class="badge-sub" data-k="b3_sub"></div></div>
-  </div>
+<!-- METHOD (i 6 moduli del programma) -->
+<section id="method" class="method-sec">
+  <p class="eyebrow" data-k="method_eyebrow"></p>
+  <h2 class="sec-title" data-k="method_title"></h2>
+  <div class="steps" id="steps"></div>
 </section>
 
 <!-- TEAM (fondatori) -->
@@ -695,6 +693,13 @@ function render(l) {
   document.getElementById('cards-grid').innerHTML = t.cards.map(c =>
     `<div class="card"><div class="card-icon">${c.icon}</div><h3>${c.title}</h3><p>${c.desc}</p><ul>${c.li.map(l=>`<li>${l}</li>`).join('')}</ul></div>`
   ).join('');
+
+  // moduli (6 card colorate)
+  const stepColors = ['#00C9B1','#F4A261','#4DA3FF','#6BCB77','#B98CFF','#FF7B9C'];
+  document.getElementById('steps').innerHTML = t.steps.map((s,i) => {
+    const c = stepColors[i % stepColors.length];
+    return `<div class="step" style="border-top:3px solid ${c}"><div class="step-n" style="color:${c}">${s.n}</div><h4>${s.t}</h4><p>${s.d}</p></div>`;
+  }).join('');
 
   // ser creds
   document.getElementById('ser-creds').innerHTML = t.ser_creds.map(c =>
