@@ -96,8 +96,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .scuole-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
 .scuola-card{background:var(--wh);border-radius:12px;overflow:hidden;border:1px solid rgba(10,38,71,.08);box-shadow:0 2px 16px rgba(10,38,71,.05);transition:transform .2s,box-shadow .2s}
 .scuola-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(10,38,71,.12)}
-.scuola-card-top{height:120px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative}
-.scuola-badge{position:absolute;top:.8rem;right:.8rem;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .6rem;border-radius:20px}
+.scuola-badge{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .6rem;border-radius:20px;margin-bottom:.9rem}
 .scuola-badge.completo{background:var(--gm);color:#fff}
 .scuola-badge.kit{background:#3b82f6;color:#fff}
 .scuola-badge.attivazione{background:#f59e0b;color:#fff}
@@ -300,7 +299,7 @@ const scuoleAderenti = [
     tipoAdesione: "completo",
     miglioramentoPrePost: 117,
     raccomandazioneInsegnanti: 100,
-    testimonianza: "",
+    testimonianza: "Un percorso completo che ha lasciato il segno: i bambini hanno imparato a riconoscere gli alimenti e a fare scelte piu consapevoli a tavola, con grande attenzione anche al tema delle allergie. Il gioco Il Piatto Sano e stato il filo conduttore di tutti i moduli e ha coinvolto le famiglie. Un'esperienza che consigliamo ad altre scuole.",
     foto: ""
   },
   {
@@ -713,23 +712,15 @@ function renderScuole(t) {
   ).join('');
   document.getElementById('scuole-grid').innerHTML = scuoleAderenti.map(s => {
     const tipo = s.tipoAdesione;
-    const topBg = tipo === 'completo'
-      ? 'linear-gradient(135deg,#0A2647,#00A896)'
-      : tipo === 'attivazione'
-      ? 'linear-gradient(135deg,#0A2647,#f59e0b)'
-      : 'linear-gradient(135deg,#0A2647,#3b82f6)';
+    const accent = tipo === 'completo' ? '#00A896' : tipo === 'attivazione' ? '#f59e0b' : '#3b82f6';
     const badgeClass = tipo === 'completo' ? 'completo' : tipo === 'attivazione' ? 'attivazione' : 'kit';
     const badgeTxt = tipo === 'completo' ? lb.tipo_completo : tipo === 'attivazione' ? lb.tipo_attivazione : lb.tipo_kit;
-    const icon = tipo === 'completo' ? '🎓' : tipo === 'attivazione' ? '⏳' : '📦';
     const classiLabel = s.classi === 1 ? lb.classi : lb.classi_pl;
 
     return `
-      <div class="scuola-card">
-        <div class="scuola-card-top" style="background:${topBg}">
-          <span>${icon}</span>
-          <span class="scuola-badge ${badgeClass}">${badgeTxt}</span>
-        </div>
+      <div class="scuola-card" style="border-top:3px solid ${accent}">
         <div class="scuola-body">
+          <span class="scuola-badge ${badgeClass}">${badgeTxt}</span>
           <div class="scuola-nome">${s.nome}</div>
           <div class="scuola-luogo">📍 ${s.comune} (${s.provincia}) · ${s.regione}</div>
           <div class="scuola-meta">
