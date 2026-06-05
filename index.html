@@ -358,7 +358,7 @@ footer a:hover{color:var(--gl)}
     <div class="hero-cta">
       <a href="https://gioco.sane-italia.it" target="_blank" class="btn-p" data-k="hero_btn1"></a>
       <a href="https://play.google.com/store/apps/details?id=com.daop.ilpiattosano&amp;utm_source=emea_Med" target="_blank" rel="noopener" class="gplay" aria-label="Disponibile su Google Play">
-        <img src="https://play.google.com/intl/it_it/badges/static/images/badges/it_badge_web_generic.png" alt="Disponibile su Google Play" loading="lazy">
+        <img id="gplay-badge" src="https://play.google.com/intl/it_it/badges/static/images/badges/it_badge_web_generic.png" alt="Disponibile su Google Play" loading="lazy">
       </a>
     </div>
   </div>
@@ -666,6 +666,11 @@ function render(l) {
     }
     if (T[l][k] !== undefined) el.innerHTML = T[l][k];
   });
+
+  // badge Google Play (multilingua)
+  const gp = {it:['it_it','it','Disponibile su Google Play'],es:['es_es','es','Disponible en Google Play'],en:['en_us','en','Get it on Google Play']}[l] || {it:['it_it','it','Disponibile su Google Play']}.it;
+  const gpBadge = document.getElementById('gplay-badge');
+  if (gpBadge) { gpBadge.src = `https://play.google.com/intl/${gp[0]}/badges/static/images/badges/${gp[1]}_badge_web_generic.png`; gpBadge.alt = gp[2]; }
 
   // lang buttons
   document.querySelectorAll('.lb').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase() === l));
