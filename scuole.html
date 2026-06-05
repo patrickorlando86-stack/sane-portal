@@ -83,6 +83,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .legend-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.5)}
 .legend-dot.completo{background:#00A896;border-color:#007a6e}
 .legend-dot.kit{background:#3b82f6;border-color:#2563eb}
+.legend-dot.attivazione{background:#f59e0b;border-color:#d97706}
 #mappa-italia{width:100%;height:480px;border-radius:14px;border:1px solid rgba(10,38,71,.1);box-shadow:0 4px 24px rgba(10,38,71,.08)}
 
 /* SCUOLE GRID */
@@ -94,6 +95,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .scuola-badge{position:absolute;top:.8rem;right:.8rem;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .6rem;border-radius:20px}
 .scuola-badge.completo{background:var(--gm);color:#fff}
 .scuola-badge.kit{background:#3b82f6;color:#fff}
+.scuola-badge.attivazione{background:#f59e0b;color:#fff}
 .scuola-body{padding:1.4rem}
 .scuola-nome{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;color:var(--g);margin-bottom:.4rem;line-height:1.3}
 .scuola-luogo{font-size:.78rem;color:var(--gr);margin-bottom:.9rem}
@@ -156,6 +158,7 @@ footer a:hover{color:var(--gl)}
 .popup-badge{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .55rem;border-radius:20px;margin-bottom:.5rem}
 .popup-badge.completo{background:var(--gm);color:#fff}
 .popup-badge.kit{background:#3b82f6;color:#fff}
+.popup-badge.attivazione{background:#f59e0b;color:#fff}
 .popup-meta{font-size:.74rem;color:var(--gr);display:flex;flex-direction:column;gap:.2rem}
 .popup-meta span strong{color:var(--g)}
 
@@ -234,6 +237,7 @@ footer a:hover{color:var(--gl)}
   <div class="map-legend">
     <div class="legend-item"><div class="legend-dot completo"></div> <span data-k="legend_completo"></span></div>
     <div class="legend-item"><div class="legend-dot kit"></div> <span data-k="legend_kit"></span></div>
+    <div class="legend-item"><div class="legend-dot attivazione"></div> <span data-k="legend_attivazione"></span></div>
   </div>
   <div id="mappa-italia"></div>
 </section>
@@ -305,6 +309,38 @@ const scuoleAderenti = [
     raccomandazioneInsegnanti: null,
     testimonianza: "L'attivita e stata molto coinvolgente: i bambini hanno partecipato con entusiasmo, collaborando e riflettendo insieme sugli elementi da inserire nel piatto in modo equilibrato. Il gioco si e rivelato semplice, intuitivo e adatto alla loro eta, oltre che molto utile per consolidare in modo divertente i concetti affrontati in classe.",
     foto: ""
+  },
+  {
+    nome: "Novi Ligure",
+    comune: "Novi Ligure",
+    provincia: "AL",
+    regione: "Piemonte",
+    lat: 44.7633,
+    lng: 8.7878,
+    bambini: null,
+    classi: null,
+    dataAttivazione: null,
+    tipoAdesione: "attivazione",
+    miglioramentoPrePost: null,
+    raccomandazioneInsegnanti: null,
+    testimonianza: "",
+    foto: ""
+  },
+  {
+    nome: "Asti",
+    comune: "Asti",
+    provincia: "AT",
+    regione: "Piemonte",
+    lat: 44.9009,
+    lng: 8.2065,
+    bambini: null,
+    classi: null,
+    dataAttivazione: null,
+    tipoAdesione: "attivazione",
+    miglioramentoPrePost: null,
+    raccomandazioneInsegnanti: null,
+    testimonianza: "",
+    foto: ""
   }
 ];
 
@@ -329,6 +365,7 @@ const T = {
     map_desc: "Ogni pin rappresenta una scuola che ha scelto di investire nell'educazione alimentare dei propri studenti. Clicca su un pin per vedere i dettagli della scuola.",
     legend_completo: "Programma SANE Completo",
     legend_kit: "Kit Classe Il Piatto Sano",
+    legend_attivazione: "In attivazione",
     scuole_eyebrow: "Le scuole della rete",
     scuole_title: "Ogni scuola, <em>una storia di impatto.</em>",
     labels: {
@@ -341,6 +378,7 @@ const T = {
       raccomandazione: "Raccomandazione insegnanti",
       tipo_completo: "Programma Completo",
       tipo_kit: "Kit Classe",
+      tipo_attivazione: "In attivazione",
       nd: "N.d.",
       popup_bambini: "Bambini",
       popup_classi: "Classi",
@@ -412,6 +450,7 @@ const T = {
     map_desc: "Cada marcador representa una escuela que ha elegido invertir en la educacion alimentaria de sus estudiantes. Haz clic en un marcador para ver los detalles.",
     legend_completo: "Programa SANE Completo",
     legend_kit: "Kit Clase El Plato Sano",
+    legend_attivazione: "En activacion",
     scuole_eyebrow: "Las escuelas de la red",
     scuole_title: "Cada escuela, <em>una historia de impacto.</em>",
     labels: {
@@ -424,6 +463,7 @@ const T = {
       raccomandazione: "Recomendacion docentes",
       tipo_completo: "Programa Completo",
       tipo_kit: "Kit Clase",
+      tipo_attivazione: "En activacion",
       nd: "N.d.",
       popup_bambini: "Ninos",
       popup_classi: "Clases",
@@ -495,6 +535,7 @@ const T = {
     map_desc: "Each pin represents a school that has chosen to invest in the food education of its students. Click a pin to see the school's details.",
     legend_completo: "Full S.A.N.E. Programme",
     legend_kit: "Class Kit The Healthy Plate",
+    legend_attivazione: "Activating soon",
     scuole_eyebrow: "Schools in the network",
     scuole_title: "Every school, <em>a story of impact.</em>",
     labels: {
@@ -507,6 +548,7 @@ const T = {
       raccomandazione: "Teacher recommendation",
       tipo_completo: "Full Programme",
       tipo_kit: "Class Kit",
+      tipo_attivazione: "Activating soon",
       nd: "N/a",
       popup_bambini: "Children",
       popup_classi: "Classes",
@@ -633,22 +675,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const iconCompleto = makeIcon('#00A896');
   const iconKit = makeIcon('#3b82f6');
+  const iconAttivazione = makeIcon('#f59e0b');
 
   scuoleAderenti.forEach(s => {
-    const icon = s.tipoAdesione === 'completo' ? iconCompleto : iconKit;
+    const icon = s.tipoAdesione === 'completo' ? iconCompleto : s.tipoAdesione === 'attivazione' ? iconAttivazione : iconKit;
     const marker = L.marker([s.lat, s.lng], { icon }).addTo(leafletMap);
     marker.bindPopup(() => {
       const t = T[currentLang];
       const lb = t.labels;
-      const badgeClass = s.tipoAdesione === 'completo' ? 'completo' : 'kit';
-      const badgeTxt = s.tipoAdesione === 'completo' ? lb.tipo_completo : lb.tipo_kit;
+      const badgeClass = s.tipoAdesione === 'completo' ? 'completo' : s.tipoAdesione === 'attivazione' ? 'attivazione' : 'kit';
+      const badgeTxt = s.tipoAdesione === 'completo' ? lb.tipo_completo : s.tipoAdesione === 'attivazione' ? lb.tipo_attivazione : lb.tipo_kit;
       return `
         <div class="popup-nome">${s.nome}</div>
         <div class="popup-luogo">📍 ${s.comune} (${s.provincia}) · ${s.regione}</div>
         <span class="popup-badge ${badgeClass}">${badgeTxt}</span>
         <div class="popup-meta">
           <span><strong>${lb.popup_bambini}:</strong> ${s.bambini !== null ? s.bambini : lb.nd}</span>
-          <span><strong>${lb.popup_classi}:</strong> ${s.classi}</span>
+          ${s.classi !== null ? `<span><strong>${lb.popup_classi}:</strong> ${s.classi}</span>` : ''}
           <span><strong>${lb.popup_attivazione}:</strong> ${formatData(s.dataAttivazione, currentLang)}</span>
           ${s.miglioramentoPrePost !== null ? `<span><strong>${lb.miglioramento}:</strong> +${s.miglioramentoPrePost}%</span>` : ''}
         </div>
@@ -665,13 +708,15 @@ document.addEventListener('DOMContentLoaded', function() {
 function renderScuole(t) {
   const lb = t.labels;
   document.getElementById('scuole-grid').innerHTML = scuoleAderenti.map(s => {
-    const isCompleto = s.tipoAdesione === 'completo';
-    const topBg = isCompleto
+    const tipo = s.tipoAdesione;
+    const topBg = tipo === 'completo'
       ? 'linear-gradient(135deg,#0A2647,#00A896)'
+      : tipo === 'attivazione'
+      ? 'linear-gradient(135deg,#0A2647,#f59e0b)'
       : 'linear-gradient(135deg,#0A2647,#3b82f6)';
-    const badgeClass = isCompleto ? 'completo' : 'kit';
-    const badgeTxt = isCompleto ? lb.tipo_completo : lb.tipo_kit;
-    const icon = isCompleto ? '🎓' : '📦';
+    const badgeClass = tipo === 'completo' ? 'completo' : tipo === 'attivazione' ? 'attivazione' : 'kit';
+    const badgeTxt = tipo === 'completo' ? lb.tipo_completo : tipo === 'attivazione' ? lb.tipo_attivazione : lb.tipo_kit;
+    const icon = tipo === 'completo' ? '🎓' : tipo === 'attivazione' ? '⏳' : '📦';
     const classiLabel = s.classi === 1 ? lb.classi : lb.classi_pl;
 
     return `
@@ -685,8 +730,8 @@ function renderScuole(t) {
           <div class="scuola-luogo">📍 ${s.comune} (${s.provincia}) · ${s.regione}</div>
           <div class="scuola-meta">
             ${s.bambini !== null ? `<div class="scuola-meta-row">👧 <strong>${s.bambini}</strong> ${lb.bambini}</div>` : ''}
-            <div class="scuola-meta-row">🏛️ <strong>${s.classi}</strong> ${classiLabel} ${lb.aderente}</div>
-            <div class="scuola-meta-row">📅 ${lb.attivazione}: <strong>${formatData(s.dataAttivazione, currentLang)}</strong></div>
+            ${s.classi !== null ? `<div class="scuola-meta-row">🏛️ <strong>${s.classi}</strong> ${classiLabel} ${lb.aderente}</div>` : ''}
+            ${s.dataAttivazione ? `<div class="scuola-meta-row">📅 ${lb.attivazione}: <strong>${formatData(s.dataAttivazione, currentLang)}</strong></div>` : ''}
             ${s.miglioramentoPrePost !== null ? `<div class="scuola-meta-row">📈 ${lb.miglioramento}: <strong>+${s.miglioramentoPrePost}%</strong></div>` : ''}
             ${s.raccomandazioneInsegnanti !== null ? `<div class="scuola-meta-row">⭐ ${lb.raccomandazione}: <strong>${s.raccomandazioneInsegnanti}%</strong></div>` : ''}
           </div>
