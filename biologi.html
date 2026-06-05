@@ -108,7 +108,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-conten
 .cert-badge{display:inline-flex;align-items:center;gap:.35rem;background:rgba(0,168,150,.1);border:1px solid rgba(0,168,150,.25);color:var(--gm);font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .7rem;border-radius:20px;margin-top:auto;align-self:flex-start}
 
 /* NOTA CONTATTI (callout) */
-.nota-box{background:rgba(0,168,150,.07);border:1px solid rgba(0,168,150,.22);border-left:4px solid var(--gm);border-radius:12px;padding:1.5rem 1.9rem;margin-top:2rem;max-width:760px}
+.biologi-cols{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center;margin-top:1.5rem}
+.nota-box{background:rgba(0,168,150,.07);border:1px solid rgba(0,168,150,.22);border-left:4px solid var(--gm);border-radius:12px;padding:1.6rem 2rem}
+.biologi-cols .nota-box{align-self:center}
 .nota-text{font-size:.9rem;color:var(--gr);line-height:1.8}
 .nota-text strong{color:var(--g)}
 
@@ -146,7 +148,7 @@ footer a:hover{color:var(--gl)}
 .leaflet-tooltip{font-family:'Inter',sans-serif;font-size:.78rem;border:none;border-radius:6px;box-shadow:0 2px 12px rgba(10,38,71,.15);padding:.4rem .7rem}
 
 /* RESPONSIVE */
-@media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}.biologi-grid{grid-template-columns:1fr 1fr}.candidatura-inner{grid-template-columns:1fr}}
+@media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}.biologi-grid{grid-template-columns:1fr 1fr}.candidatura-inner{grid-template-columns:1fr}.biologi-cols{grid-template-columns:1fr;gap:2rem}}
 @media(max-width:860px){
   nav{padding:.8rem 1.2rem}.nav-links{display:none}
   .page-hero{padding:6rem 1.5rem 3.5rem}
@@ -222,11 +224,15 @@ footer a:hover{color:var(--gl)}
 
 <!-- LA RETE + NOTA CONTATTI -->
 <section class="biologi-sec">
-  <p class="eyebrow" data-k="biologi_eyebrow"></p>
-  <h2 class="sec-title" data-k="biologi_title"></h2>
-  <p class="sec-desc" data-k="biologi_desc"></p>
-  <div class="nota-box">
-    <div class="nota-text" data-k="nota_text"></div>
+  <div class="biologi-cols">
+    <div class="biologi-text">
+      <p class="eyebrow" data-k="biologi_eyebrow"></p>
+      <h2 class="sec-title" data-k="biologi_title"></h2>
+      <p class="sec-desc" data-k="biologi_desc"></p>
+    </div>
+    <div class="nota-box">
+      <div class="nota-text" data-k="nota_text"></div>
+    </div>
   </div>
 </section>
 
