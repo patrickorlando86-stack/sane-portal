@@ -364,9 +364,16 @@ section{padding:4.5rem 4rem}
 .field-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(10,38,71,.08)}
 .field-card img{width:100%;height:210px;object-fit:cover;display:block}
 .field-cap{font-size:.8rem;color:var(--gr);padding:.85rem 1.05rem;line-height:1.5}
-.field-meta{margin-top:1.7rem;font-size:.86rem;color:var(--gr);line-height:1.75;max-width:760px}
+.field-meta{margin-top:1.4rem;font-size:.86rem;color:var(--gr);line-height:1.75;max-width:760px}
 .field-meta a{color:var(--gm);text-decoration:none;font-weight:600}
 .field-meta a:hover{text-decoration:underline}
+.field-credit{margin-top:1.9rem}
+.field-credit-lead{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gm);display:block;margin-bottom:.7rem}
+.field-educator{display:inline-flex;align-items:center;gap:.9rem;background:#fff;border:1px solid rgba(10,38,71,.08);border-radius:999px;padding:.55rem 1.3rem .55rem .55rem;box-shadow:0 4px 16px rgba(10,38,71,.07)}
+.ed-av{width:46px;height:46px;border-radius:50%;background:var(--gm);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;flex-shrink:0;font-family:'Inter',sans-serif}
+.ed-txt{display:flex;flex-direction:column;line-height:1.3}
+.ed-name{font-size:.92rem;font-weight:700;color:var(--g)}
+.ed-role{font-size:.76rem;color:var(--gr)}
 
 @media(max-width:980px){.team-grid{grid-template-columns:1fr;max-width:560px;margin-left:auto;margin-right:auto}}
 @media(max-width:860px){.field-grid{grid-template-columns:1fr}}
@@ -578,6 +585,16 @@ footer a:hover{color:var(--gl)}
     <figure class="field-card"><img src="/immagini/pilota/classe-allergie.webp" alt="Lezione sul modulo allergie alimentari e i 14 allergeni EU del programma S.A.N.E." loading="lazy"><figcaption class="field-cap" data-k="field_cap2"></figcaption></figure>
     <figure class="field-card"><img src="/immagini/pilota/classe-stampa.webp" alt="Il progetto pilota Mangiare Bene, Crescere Meglio sulla stampa locale" loading="lazy"><figcaption class="field-cap" data-k="field_cap3"></figcaption></figure>
   </div>
+  <div class="field-credit">
+    <span class="field-credit-lead" data-k="educator_lead"></span>
+    <div class="field-educator">
+      <div class="ed-av">SC</div>
+      <div class="ed-txt">
+        <span class="ed-name">Sara Comandi</span>
+        <span class="ed-role" data-k="educator_role"></span>
+      </div>
+    </div>
+  </div>
   <p class="field-meta" data-k="field_meta"></p>
 </section>
 
@@ -682,7 +699,9 @@ const T = {
     field_cap1:"Il gioco «Il Piatto Sano» alla LIM durante una lezione.",
     field_cap2:"Il modulo dedicato alle allergie e ai 14 allergeni EU.",
     field_cap3:"Il progetto pilota raccontato dalla stampa locale.",
-    field_meta:"Marzo–aprile 2026: 5 classi, circa 100 ragazzi all'I.C. «Carducci–Fattori» di Rosignano Marittimo, con la biologa nutrizionista Sara Comandi (referente territoriale). Fonti ufficiali: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Istituto Carducci–Fattori</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Comune di Rosignano Marittimo</a>.",
+    field_meta:"Marzo–aprile 2026: 5 classi, circa 100 ragazzi all'I.C. «Carducci–Fattori» di Rosignano Marittimo. Fonti ufficiali: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Istituto Carducci–Fattori</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Comune di Rosignano Marittimo</a>.",
+    educator_lead:"Lezioni del pilota condotte da",
+    educator_role:"Biologa Nutrizionista · Referente territoriale (Provincia di Livorno)",
     quote_eyebrow:"Le istituzioni che ci sostengono",
     quote_title:"Cosa dicono di <em>S.A.N.E.</em>",
     quote_text:"«Abbiamo accolto questo progetto perché nutrirsi in maniera giusta è molto importante, specialmente per i ragazzi e le ragazze.»",
@@ -761,7 +780,9 @@ const T = {
     field_cap1:"El juego «Il Piatto Sano» en la PDI durante una clase.",
     field_cap2:"El módulo dedicado a las alergias y los 14 alérgenos UE.",
     field_cap3:"El proyecto piloto en la prensa local.",
-    field_meta:"Marzo–abril de 2026: 5 clases, unos 100 chicos en el I.C. «Carducci–Fattori» de Rosignano Marittimo, con la bióloga nutricionista Sara Comandi (referente territorial). Fuentes oficiales: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Instituto Carducci–Fattori</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Ayuntamiento de Rosignano Marittimo</a>.",
+    field_meta:"Marzo–abril de 2026: 5 clases, unos 100 chicos en el I.C. «Carducci–Fattori» de Rosignano Marittimo. Fuentes oficiales: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Instituto Carducci–Fattori</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Ayuntamiento de Rosignano Marittimo</a>.",
+    educator_lead:"Clases del piloto impartidas por",
+    educator_role:"Bióloga Nutricionista · Referente territorial (Provincia de Livorno)",
     quote_eyebrow:"Las instituciones que nos respaldan",
     quote_title:"Qué dicen de <em>S.A.N.E.</em>",
     quote_text:"«Acogimos este proyecto porque alimentarse de la manera correcta es muy importante, especialmente para los chicos y las chicas.»",
@@ -840,7 +861,9 @@ const T = {
     field_cap1:"The «Il Piatto Sano» game on the IWB during a lesson.",
     field_cap2:"The module on allergies and the 14 EU allergens.",
     field_cap3:"The pilot project covered by the local press.",
-    field_meta:"March–April 2026: 5 classes, around 100 students at I.C. «Carducci–Fattori» in Rosignano Marittimo, with nutritionist biologist Sara Comandi (local coordinator). Official sources: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Carducci–Fattori School</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Municipality of Rosignano Marittimo</a>.",
+    field_meta:"March–April 2026: 5 classes, around 100 students at I.C. «Carducci–Fattori» in Rosignano Marittimo. Official sources: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Carducci–Fattori School</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Municipality of Rosignano Marittimo</a>.",
+    educator_lead:"Pilot lessons delivered by",
+    educator_role:"Nutritionist Biologist · Local coordinator (Province of Livorno)",
     quote_eyebrow:"The institutions backing us",
     quote_title:"What they say about <em>S.A.N.E.</em>",
     quote_text:"«We embraced this project because eating the right way is very important, especially for boys and girls.»",
