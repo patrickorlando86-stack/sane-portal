@@ -67,7 +67,16 @@
       "name": "Patrick Orlando",
       "jobTitle": "Sviluppatore App, Partner Tecnologico e Media"
     }
-  ]
+  ],
+  "member": {
+    "@type": "Person",
+    "name": "Amelia Zarauza",
+    "jobTitle": "Referente Medica del Progetto — Medico Pediatra, Allergologa e Immunologa",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "Universidad de Buenos Aires"
+    }
+  }
 }
 </script>
 <script type="application/ld+json">
@@ -270,8 +279,8 @@ section{padding:4.5rem 4rem}
 .ser-role{font-size:.78rem;color:var(--gl);margin-top:.2rem;letter-spacing:.04em}
 .ser-creds{margin-top:1.2rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
 .ser-cred{font-size:.76rem;padding:.5rem .7rem;background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);border-left:2px solid var(--gl);border-radius:0 4px 4px 0}
-.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem}
-.team-card{background:var(--g);color:#fff;padding:2.5rem;border-radius:16px}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin-top:2rem}
+.team-card{background:var(--g);color:#fff;padding:2.2rem;border-radius:16px}
 .team-card-alt{background:var(--cr);color:var(--g)}
 .team-top{display:flex;gap:1.2rem;align-items:center;margin-bottom:1.5rem}
 .team-card-alt .ser-init{background:var(--tc);color:#fff}
@@ -282,7 +291,7 @@ section{padding:4.5rem 4rem}
 .team-card .team-bio{color:rgba(255,255,255,.7)}
 .team-card-alt .team-bio{color:var(--gr)}
 #team{background:var(--wh)}
-@media(max-width:860px){.team-grid{grid-template-columns:1fr}}
+@media(max-width:980px){.team-grid{grid-template-columns:1fr;max-width:560px;margin-left:auto;margin-right:auto}}
 
 /* PARTNER */
 .partner-sec{background:var(--g);text-align:center}
@@ -428,6 +437,17 @@ footer a:hover{color:var(--gl)}
       <p class="team-bio" data-k="pat_p1"></p>
       <p class="team-bio" data-k="pat_p2"></p>
     </div>
+    <div class="team-card">
+      <div class="team-top">
+        <div class="ser-init">
+          <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/amelia.webp" alt="Amelia Zarauza">
+        </div>
+        <div><div class="ser-name">Amelia Zarauza</div><div class="ser-role" data-k="ame_role"></div></div>
+      </div>
+      <div class="ser-creds" id="ame-creds"></div>
+      <p class="team-bio" data-k="ame_p1"></p>
+      <p class="team-bio" data-k="ame_p2"></p>
+    </div>
   </div>
 </section>
 
@@ -520,8 +540,12 @@ const T = {
     ser_p1:"La Dott.ssa Serafina Cardaci è la mente scientifica del programma. Ha progettato i 6 moduli di «Mangiare Bene, Crescere Meglio» integrando le più recenti evidenze in nutrizione pediatrica con un approccio pratico, ludico e misurabile.",
     ser_p2:"Il primo pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — con circa 100 studenti — ha dimostrato l'efficacia del programma nel migliorare consapevolezza alimentare e gestione delle allergie.",
     ser_cta:"Entra nella rete S.A.N.E.",
-    team_eyebrow:"Il team fondatore",
-    team_title:"Due competenze, <em>un'unica missione.</em>",
+    team_eyebrow:"Il team",
+    team_title:"Tre competenze, <em>un'unica missione.</em>",
+    ame_role:"Referente Medica del Progetto · Pediatra Allergologa",
+    ame_creds:["🩺 Medico Pediatra","💊 Specialista in Allergologia, Immunologia e Medicina Ambientale","🎓 Vicedirettrice della Specializzazione in Allergologia e Immunologia (UBA)","🌎 Università di Buenos Aires (Argentina)"],
+    ame_p1:"La Dott.ssa Amelia Zarauza è la referente medica del progetto. Medico pediatra specializzata in allergologia, immunologia e medicina ambientale, garantisce il rigore clinico dei contenuti su allergie e sicurezza alimentare.",
+    ame_p2:"Vicedirettrice della Carriera di Specializzazione in Allergologia e Immunologia all'Università di Buenos Aires (UBA), affianca la direzione scientifica nella validazione del gioco «Il Coraggio di Agire» e dei moduli sulle allergie.",
     pat_role:"Sviluppatore App · Partner Tecnologico e Media",
     pat_creds:["🎮 Sviluppatore dell'app «Il Piatto Sano»","💻 Partner Tecnologico e Media S.A.N.E. Italia","📻 Comunicatore — Radio PNR · Venerdì Tech","✍️ Autore — libri e musica"],
     pat_p1:"L'Ing. Patrick Orlando è il co-fondatore e sviluppatore dell'app «Il Piatto Sano», il cuore digitale del programma. Disponibile su browser, tablet, LIM e Android, il gioco rende l'educazione alimentare interattiva, personalizzata e multilingua.",
@@ -582,8 +606,12 @@ const T = {
     ser_p1:"Serafina Cardaci cofundó S.A.N.E. Italia con una visión clara: llevar a las escuelas italianas un programa que enseñe a los niños a vivir con seguridad con sus alergias e intolerancias.",
     ser_p2:"El primer piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo — con cerca de 100 estudiantes — demostró que el juego es la herramienta más eficaz para hacer la seguridad alimentaria concreta y memorable.",
     ser_cta:"Únete a la red S.A.N.E.",
-    team_eyebrow:"El equipo fundador",
-    team_title:"Dos competencias, <em>una sola misión.</em>",
+    team_eyebrow:"El equipo",
+    team_title:"Tres competencias, <em>una sola misión.</em>",
+    ame_role:"Referente Médica del Proyecto · Pediatra Alergóloga",
+    ame_creds:["🩺 Médica Pediatra","💊 Especialista en Alergia, Inmunología y Medicina Ambiental","🎓 Subdirectora de la Carrera de Especialistas en Alergia e Inmunología (UBA)","🌎 Universidad de Buenos Aires (Argentina)"],
+    ame_p1:"La Dra. Amelia Zarauza es la referente médica del proyecto. Médica pediatra especializada en alergia, inmunología y medicina ambiental, garantiza el rigor clínico de los contenidos sobre alergias y seguridad alimentaria.",
+    ame_p2:"Subdirectora de la Carrera de Especialistas en Alergia e Inmunología de la Universidad de Buenos Aires (UBA), acompaña la dirección científica en la validación del juego «El Coraje de Actuar» y de los módulos sobre alergias.",
     pat_role:"Cofundador & Director Comercial",
     pat_creds:["🎮 Creador del juego educativo «Il Piatto Sano»","🌍 Desarrollo comercial y alianzas","📻 Comunicador — Radio PNR · Venerdì Tech","✍️ Autor — libros y música"],
     pat_p1:"Patrick Orlando es el cofundador y creador del juego educativo «Il Piatto Sano». Se ocupa del desarrollo comercial de S.A.N.E. Italia, la construcción de redes de biólogos nutricionistas y las alianzas institucionales.",
@@ -644,8 +672,12 @@ const T = {
     ser_p1:"Serafina Cardaci co-founded S.A.N.E. Italia with a clear vision: to bring Italian schools a programme that teaches children not just about good nutrition, but how to live safely with their allergies and intolerances.",
     ser_p2:"The first pilot at I.C. «Carducci–Fattori» in Rosignano Marittimo — with around 100 students — proved that play is the most effective tool for making food safety concrete and memorable.",
     ser_cta:"Join the S.A.N.E. network",
-    team_eyebrow:"The founding team",
-    team_title:"Two expertises, <em>one mission.</em>",
+    team_eyebrow:"The team",
+    team_title:"Three expertises, <em>one mission.</em>",
+    ame_role:"Project Medical Advisor · Paediatric Allergist",
+    ame_creds:["🩺 Paediatrician","💊 Specialist in Allergy, Immunology & Environmental Medicine","🎓 Deputy Director of the Allergy & Immunology Specialisation (UBA)","🌎 University of Buenos Aires (Argentina)"],
+    ame_p1:"Dr. Amelia Zarauza is the project's medical advisor. A paediatrician specialised in allergy, immunology and environmental medicine, she ensures the clinical rigour of the content on allergies and food safety.",
+    ame_p2:"Deputy Director of the Allergy & Immunology Specialisation programme at the University of Buenos Aires (UBA), she supports the scientific direction in validating the «The Courage to Act» game and the allergy modules.",
     pat_role:"Co-founder & Commercial Director",
     pat_creds:["🎮 Creator of the «Il Piatto Sano» educational game","🌍 Commercial development & partnerships","📻 Communicator — Radio PNR · Venerdì Tech","✍️ Author — books and music"],
     pat_p1:"Patrick Orlando is the co-founder and creator of the «Il Piatto Sano» educational game. He leads the commercial development of S.A.N.E. Italia, building networks of nutritionist biologists across Italy and institutional partnerships.",
@@ -716,6 +748,11 @@ function render(l) {
 
   // pat creds
   document.getElementById('pat-creds').innerHTML = t.pat_creds.map(c =>
+    `<div class="ser-cred">${c}</div>`
+  ).join('');
+
+  // amelia creds
+  document.getElementById('ame-creds').innerHTML = t.ame_creds.map(c =>
     `<div class="ser-cred">${c}</div>`
   ).join('');
 
