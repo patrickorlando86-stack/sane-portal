@@ -114,9 +114,51 @@
   }
 }
 </script>
+<!-- FAQ-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "A chi è rivolto il programma S.A.N.E.?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A tutte le scuole di ogni ordine e grado — primaria, secondaria e superiori — per bambini e ragazzi dai 6 ai 18 anni. Coinvolge attivamente anche docenti e famiglie."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Il gioco «Il Piatto Sano» è gratuito?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sì. Due dei sei mini-giochi sono completamente gratuiti (Il Piatto Sano e Il Coraggio di Agire, con l'allenamento all'uso dell'autoiniettore). Gli altri quattro si sbloccano con un codice. Il gioco è disponibile su browser, tablet, LIM e Android, in italiano, spagnolo e inglese."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Come funziona la gestione delle allergie?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "L'app gestisce in modo personalizzato tutti i 14 allergeni obbligatori EU per ogni bambino, con due livelli di difficoltà e una modalità classe pensata per la LIM."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Come può aderire la mia scuola?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Scrivici dalla sezione Contatti: ti mettiamo in contatto con un biologo nutrizionista certificato S.A.N.E. del tuo territorio per costruire il percorso più adatto alla tua scuola."
+      }
+    }
+  ]
+}
+</script>
+<!-- /FAQ-LD -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -155,7 +197,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center;padding:6rem 4rem 3.5rem;background:linear-gradient(135deg,#EEF5FA 0%,#e3f4f0 55%,#d2efe8 100%);overflow:hidden}
 .hero-l{display:flex;flex-direction:column;justify-content:center}
 .eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gm);margin-bottom:1.2rem}
-.hero-title{font-family:'Inter',sans-serif;font-size:clamp(2.4rem,4.5vw,4.2rem);line-height:1.08;font-weight:800;color:var(--g)}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(2.4rem,4.5vw,4.2rem);line-height:1.08;font-weight:800;color:var(--g);letter-spacing:-.01em}
 .hero-title .em{color:var(--gm)}
 .hero-sub{font-size:.98rem;font-weight:400;line-height:1.8;color:var(--gr);margin-top:1.5rem;max-width:460px}
 .hero-allergie{display:inline-flex;align-items:center;gap:.55rem;align-self:flex-start;margin-top:1.5rem;background:#fff;border:1px solid rgba(244,162,97,.55);border-radius:999px;padding:.5rem 1rem;font-size:.82rem;font-weight:600;color:var(--g);box-shadow:0 2px 12px rgba(10,38,71,.07)}
@@ -213,7 +255,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 
 /* SECTIONS */
 section{padding:4.5rem 4rem}
-.sec-title{font-family:'Inter',sans-serif;font-size:clamp(1.6rem,2.8vw,2.4rem);font-weight:700;line-height:1.15;color:var(--g);max-width:700px}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,2.8vw,2.4rem);font-weight:700;line-height:1.15;color:var(--g);max-width:700px;letter-spacing:-.01em}
 .sec-title em{font-style:normal;color:var(--gm)}
 
 /* ABOUT */
@@ -258,7 +300,7 @@ section{padding:4.5rem 4rem}
 .cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem}
 .card{background:var(--wh);padding:2rem;border-top:3px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:0 0 10px 10px;box-shadow:0 2px 16px rgba(10,38,71,.06)}
 .card:hover{border-color:var(--gm);transform:translateY(-4px)}
-.card-icon{font-size:1.8rem;margin-bottom:.8rem}
+.card-icon{font-size:1.7rem;margin-bottom:.9rem;color:var(--gm)}
 .card h3{font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:700;color:var(--g);margin-bottom:.6rem}
 .card p{font-size:.86rem;line-height:1.7;color:var(--gr)}
 .card ul{font-size:.82rem;color:var(--gr);margin-top:.7rem;padding-left:1.1rem}
@@ -590,24 +632,24 @@ const T = {
     allergens_sub:"L'app gestisce in modo personalizzato tutti i 14 allergeni obbligatori EU per ogni bambino, con 2 livelli di difficoltà e modalità LIM per la classe.",
     allergens:["Glutine","Crostacei","Uova","Pesce","Arachidi","Soia","Latte","Frutta a guscio","Sedano","Senape","Sesamo","Anidride solforosa","Lupini","Molluschi"],
     target_eyebrow:"A chi ci rivolgiamo",target_title:"Un programma che parla a tutti.",
-    cards:[{icon:"🏫",title:"Scuole e istituti",desc:"Programma strutturato con gestione allergeni per ogni studente, integrabile nel curriculo.",li:["Percorsi per primaria, secondaria e superiori","Gestione allergeni personalizzata per classe","Formazione docenti inclusa","Compatibile con MIUR / Carta del Docente"]},{icon:"👨‍👩‍👧",title:"Famiglie",desc:"Strumenti concreti per genitori di bambini con allergie e intolleranze, in sinergia con la scuola.",li:["Workshop su allergie e lettura etichette","Accesso al gioco «Il Piatto Sano»","Guide pratiche per la spesa sicura","Supporto nutrizionista certificato"]},{icon:"🔬",title:"Biologi nutrizionisti",desc:"Network professionale certificato con strumenti operativi per portare S.A.N.E. nel proprio territorio.",li:["Certificazione S.A.N.E. Educator","Crediti ECM via FNOB","Portale operativo dedicato","Supporto commerciale e marketing"]}],
+    cards:[{icon:"<i class='fas fa-school'></i>",title:"Scuole e istituti",desc:"Programma strutturato con gestione allergeni per ogni studente, integrabile nel curriculo.",li:["Percorsi per primaria, secondaria e superiori","Gestione allergeni personalizzata per classe","Formazione docenti inclusa","Compatibile con MIUR / Carta del Docente"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Famiglie",desc:"Strumenti concreti per genitori di bambini con allergie e intolleranze, in sinergia con la scuola.",li:["Workshop su allergie e lettura etichette","Accesso al gioco «Il Piatto Sano»","Guide pratiche per la spesa sicura","Supporto nutrizionista certificato"]},{icon:"<i class='fas fa-microscope'></i>",title:"Biologi nutrizionisti",desc:"Network professionale certificato con strumenti operativi per portare S.A.N.E. nel proprio territorio.",li:["Certificazione S.A.N.E. Educator","Crediti ECM via FNOB","Portale operativo dedicato","Supporto commerciale e marketing"]}],
     method_eyebrow:"I 6 moduli del programma",method_title:"Un percorso completo, <em>dalla nutrizione alla sicurezza.</em>",
     steps:[{n:"01",t:"Conosciamo gli Alimenti",d:"Scopriamo i gruppi alimentari, le proprietà nutrizionali e come costruire un'alimentazione equilibrata."},{n:"02",t:"Il Piatto Equilibrato",d:"Le proporzioni Harvard (50/25/25), la varietà e la qualità nel piatto quotidiano — con l'app «Il Piatto Sano»."},{n:"03",t:"Energia in Movimento",d:"Il legame tra alimentazione, attività fisica e benessere: come il cibo diventa carburante."},{n:"04",t:"Lo Zaino della Salute",d:"Cosa portare a scuola, come fare spesa consapevole e leggere le etichette degli alimenti."},{n:"05",t:"Cibo, Ambiente e Cultura",d:"Stagionalità, filiera corta, tradizioni alimentari e impatto ambientale delle nostre scelte."},{n:"06",t:"Allergie e Sicurezza",d:"Riconoscere i 14 allergeni EU, gestire le intolleranze in sicurezza a scuola e in famiglia."}],
     ser_eyebrow:"La nostra fondatrice scientifica",
     ser_heading:"Scienza, passione e <em>metodo.</em>",
     ser_role:"Biologa Nutrizionista · Responsabile Scientifica",
-    ser_creds:["🔬 Biologa Nutrizionista","📚 Ideatrice del programma «Mangiare Bene e Crescere Meglio»","🏫 Responsabile Scientifica S.A.N.E. Italia","🌐 www.serafinacardacinutrizione.com"],
+    ser_creds:["<i class='fas fa-microscope'></i> Biologa Nutrizionista","<i class='fas fa-book'></i> Ideatrice del programma «Mangiare Bene e Crescere Meglio»","<i class='fas fa-school'></i> Responsabile Scientifica S.A.N.E. Italia","<i class='fas fa-globe'></i> www.serafinacardacinutrizione.com"],
     ser_p1:"La Dott.ssa Serafina Cardaci è la mente scientifica del programma. Ha progettato i 6 moduli di «Mangiare Bene, Crescere Meglio» integrando le più recenti evidenze in nutrizione pediatrica con un approccio pratico, ludico e misurabile.",
     ser_p2:"Il primo pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — con circa 100 studenti — ha dimostrato l'efficacia del programma nel migliorare consapevolezza alimentare e gestione delle allergie.",
     ser_cta:"Entra nella rete S.A.N.E.",
     team_eyebrow:"Il team",
     team_title:"Tre competenze, <em>un'unica missione.</em>",
     ame_role:"Referente Medica del Progetto · Pediatra Allergologa",
-    ame_creds:["🩺 Medico Pediatra","💊 Specialista in Allergologia, Immunologia e Medicina Ambientale","🎓 Vicedirettrice della Specializzazione in Allergologia e Immunologia (UBA)","🌎 Università di Buenos Aires (Argentina)"],
+    ame_creds:["<i class='fas fa-stethoscope'></i> Medico Pediatra","<i class='fas fa-pills'></i> Specialista in Allergologia, Immunologia e Medicina Ambientale","<i class='fas fa-graduation-cap'></i> Vicedirettrice della Specializzazione in Allergologia e Immunologia (UBA)","<i class='fas fa-earth-americas'></i> Università di Buenos Aires (Argentina)"],
     ame_p1:"La Dott.ssa Amelia Zarauza è la referente medica del progetto. Medico pediatra specializzata in allergologia, immunologia e medicina ambientale, garantisce il rigore clinico dei contenuti su allergie e sicurezza alimentare.",
     ame_p2:"Vicedirettrice della Carriera di Specializzazione in Allergologia e Immunologia all'Università di Buenos Aires (UBA), affianca la direzione scientifica nella validazione del gioco «Il Coraggio di Agire» e dei moduli sulle allergie.",
     pat_role:"Sviluppatore App · Partner Tecnologico e Media",
-    pat_creds:["🎮 Sviluppatore dell'app «Il Piatto Sano»","💻 Partner Tecnologico e Media S.A.N.E. Italia","📻 Comunicatore — Radio PNR · Venerdì Tech","✍️ Autore — libri e musica"],
+    pat_creds:["<i class='fas fa-gamepad'></i> Sviluppatore dell'app «Il Piatto Sano»","<i class='fas fa-laptop-code'></i> Partner Tecnologico e Media S.A.N.E. Italia","<i class='fas fa-radio'></i> Comunicatore — Radio PNR · Venerdì Tech","<i class='fas fa-pen-nib'></i> Autore — libri e musica"],
     pat_p1:"L'Ing. Patrick Orlando è il co-fondatore e sviluppatore dell'app «Il Piatto Sano», il cuore digitale del programma. Disponibile su browser, tablet, LIM e Android, il gioco rende l'educazione alimentare interattiva, personalizzata e multilingua.",
     pat_p2:"Si occupa della parte tecnologica e media di S.A.N.E. Italia: sviluppo della piattaforma, comunicazione e diffusione del programma sul territorio.",
     partner_eyebrow:"Riconoscimenti e partnership",partner_title:"Con il supporto delle istituzioni.",
@@ -663,24 +705,24 @@ const T = {
     allergens_sub:"El primer juego escolar que gestiona los 14 alérgenos obligatorios UE de forma personalizada para cada niño.",
     allergens:["Gluten","Crustáceos","Huevos","Pescado","Cacahuetes","Soja","Leche","Frutos secos","Apio","Mostaza","Sésamo","Dióxido de azufre","Altramuces","Moluscos"],
     target_eyebrow:"A quién nos dirigimos",target_title:"Un programa que habla a todos.",
-    cards:[{icon:"🏫",title:"Escuelas e institutos",desc:"Programa estructurado con gestión de alérgenos para cada estudiante, integrable en el currículo.",li:["Rutas para primaria, secundaria y superior","Gestión personalizada de alérgenos por clase","Formación docente incluida","Compatible con convocatorias MIUR"]},{icon:"👨‍👩‍👧",title:"Familias",desc:"Herramientas concretas para padres de niños con alergias e intolerancias, en sintonía con la escuela.",li:["Talleres sobre alergias y lectura de etiquetas","Acceso al juego «Il Piatto Sano»","Guías prácticas de compra segura","Apoyo de nutricionista certificado"]},{icon:"🔬",title:"Biólogos nutricionistas",desc:"Red profesional certificada con herramientas operativas para llevar S.A.N.E. a tu territorio.",li:["Certificación S.A.N.E. Educator","Créditos ECM vía FNOB","Portal operativo dedicado","Apoyo comercial y marketing"]}],
+    cards:[{icon:"<i class='fas fa-school'></i>",title:"Escuelas e institutos",desc:"Programa estructurado con gestión de alérgenos para cada estudiante, integrable en el currículo.",li:["Rutas para primaria, secundaria y superior","Gestión personalizada de alérgenos por clase","Formación docente incluida","Compatible con convocatorias MIUR"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Familias",desc:"Herramientas concretas para padres de niños con alergias e intolerancias, en sintonía con la escuela.",li:["Talleres sobre alergias y lectura de etiquetas","Acceso al juego «Il Piatto Sano»","Guías prácticas de compra segura","Apoyo de nutricionista certificado"]},{icon:"<i class='fas fa-microscope'></i>",title:"Biólogos nutricionistas",desc:"Red profesional certificada con herramientas operativas para llevar S.A.N.E. a tu territorio.",li:["Certificación S.A.N.E. Educator","Créditos ECM vía FNOB","Portal operativo dedicado","Apoyo comercial y marketing"]}],
     method_eyebrow:"Los 6 módulos del programa",method_title:"Un recorrido completo, <em>de la nutrición a la seguridad.</em>",
     steps:[{n:"01",t:"Conocemos los Alimentos",d:"Descubrimos los grupos alimentarios, las propiedades nutricionales y cómo construir una alimentación equilibrada."},{n:"02",t:"El Plato Equilibrado",d:"Las proporciones Harvard (½ fruta y verdura, ¼ cereales, ¼ proteínas), la variedad y la calidad en el plato diario — con la app «Il Piatto Sano»."},{n:"03",t:"Energía en Movimiento",d:"El vínculo entre alimentación, actividad física y bienestar: cómo el alimento se convierte en energía."},{n:"04",t:"La Mochila de la Salud",d:"Qué llevar a la escuela, cómo hacer una compra consciente y leer las etiquetas de los alimentos."},{n:"05",t:"Alimentación, Ambiente y Cultura",d:"Estacionalidad, cadena corta, tradiciones alimentarias e impacto ambiental de nuestras elecciones."},{n:"06",t:"Alergias y Seguridad",d:"Reconocer los 14 alérgenos UE, gestionar las intolerancias con seguridad en la escuela y en familia."}],
     ser_eyebrow:"Nuestra fundadora científica",
     ser_heading:"Ciencia, pasión y <em>método.</em>",
     ser_role:"Cofundadora & Directora Científica",
-    ser_creds:["🔬 Bióloga Nutricionista","📚 Especialista en nutrición pediátrica y alergias","🧠 Creadora del programa «Mangiare Bene e Crescere Meglio»","📋 Responsable científica S.A.N.E. Italia"],
+    ser_creds:["<i class='fas fa-microscope'></i> Bióloga Nutricionista","<i class='fas fa-book'></i> Especialista en nutrición pediátrica y alergias","🧠 Creadora del programa «Mangiare Bene e Crescere Meglio»","📋 Responsable científica S.A.N.E. Italia"],
     ser_p1:"Serafina Cardaci cofundó S.A.N.E. Italia con una visión clara: llevar a las escuelas italianas un programa que enseñe a los niños a vivir con seguridad con sus alergias e intolerancias.",
     ser_p2:"El primer piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo — con cerca de 100 estudiantes — demostró que el juego es la herramienta más eficaz para hacer la seguridad alimentaria concreta y memorable.",
     ser_cta:"Únete a la red S.A.N.E.",
     team_eyebrow:"El equipo",
     team_title:"Tres competencias, <em>una sola misión.</em>",
     ame_role:"Referente Médica del Proyecto · Pediatra Alergóloga",
-    ame_creds:["🩺 Médica Pediatra","💊 Especialista en Alergia, Inmunología y Medicina Ambiental","🎓 Subdirectora de la Carrera de Especialistas en Alergia e Inmunología (UBA)","🌎 Universidad de Buenos Aires (Argentina)"],
+    ame_creds:["<i class='fas fa-stethoscope'></i> Médica Pediatra","<i class='fas fa-pills'></i> Especialista en Alergia, Inmunología y Medicina Ambiental","<i class='fas fa-graduation-cap'></i> Subdirectora de la Carrera de Especialistas en Alergia e Inmunología (UBA)","<i class='fas fa-earth-americas'></i> Universidad de Buenos Aires (Argentina)"],
     ame_p1:"La Dra. Amelia Zarauza es la referente médica del proyecto. Médica pediatra especializada en alergia, inmunología y medicina ambiental, garantiza el rigor clínico de los contenidos sobre alergias y seguridad alimentaria.",
     ame_p2:"Subdirectora de la Carrera de Especialistas en Alergia e Inmunología de la Universidad de Buenos Aires (UBA), acompaña la dirección científica en la validación del juego «El Coraje de Actuar» y de los módulos sobre alergias.",
     pat_role:"Cofundador & Director Comercial",
-    pat_creds:["🎮 Creador del juego educativo «Il Piatto Sano»","🌍 Desarrollo comercial y alianzas","📻 Comunicador — Radio PNR · Venerdì Tech","✍️ Autor — libros y música"],
+    pat_creds:["<i class='fas fa-gamepad'></i> Creador del juego educativo «Il Piatto Sano»","<i class='fas fa-earth-europe'></i> Desarrollo comercial y alianzas","<i class='fas fa-radio'></i> Comunicador — Radio PNR · Venerdì Tech","<i class='fas fa-pen-nib'></i> Autor — libros y música"],
     pat_p1:"Patrick Orlando es el cofundador y creador del juego educativo «Il Piatto Sano». Se ocupa del desarrollo comercial de S.A.N.E. Italia, la construcción de redes de biólogos nutricionistas y las alianzas institucionales.",
     pat_p2:"Fundador de DAOP APS — comunidad family-friendly de Alessandria y Asti — y co-presentador de Venerdì Tech en Radio PNR, Patrick cree que la comunicación y la educación son herramientas poderosas para el cambio.",
     partner_eyebrow:"Reconocimientos y alianzas",partner_title:"Con el apoyo de las instituciones.",
@@ -736,24 +778,24 @@ const T = {
     allergens_sub:"The first school game to manage all 14 mandatory EU allergens in a personalised way for every child.",
     allergens:["Gluten","Crustaceans","Eggs","Fish","Peanuts","Soya","Milk","Tree nuts","Celery","Mustard","Sesame","Sulphur dioxide","Lupin","Molluscs"],
     target_eyebrow:"Who we serve",target_title:"A programme that speaks to everyone.",
-    cards:[{icon:"🏫",title:"Schools & institutions",desc:"Structured programme with per-student allergen management, fully integrable into the curriculum.",li:["Pathways for primary, secondary and high school","Personalised allergen management per class","Teacher training included","Compatible with MIUR funding schemes"]},{icon:"👨‍👩‍👧",title:"Families",desc:"Practical tools for parents of children with allergies and intolerances, in sync with school.",li:["Allergy & label-reading workshops","Access to «Il Piatto Sano» game","Safe shopping practical guides","Individual certified biologist consultations"]},{icon:"🔬",title:"Nutritionist biologists",desc:"Certified professional network with operational tools to bring S.A.N.E. to your area.",li:["S.A.N.E. Educator certification","ECM credits via FNOB","Dedicated operational portal","Commercial and marketing support"]}],
+    cards:[{icon:"<i class='fas fa-school'></i>",title:"Schools & institutions",desc:"Structured programme with per-student allergen management, fully integrable into the curriculum.",li:["Pathways for primary, secondary and high school","Personalised allergen management per class","Teacher training included","Compatible with MIUR funding schemes"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Families",desc:"Practical tools for parents of children with allergies and intolerances, in sync with school.",li:["Allergy & label-reading workshops","Access to «Il Piatto Sano» game","Safe shopping practical guides","Individual certified biologist consultations"]},{icon:"<i class='fas fa-microscope'></i>",title:"Nutritionist biologists",desc:"Certified professional network with operational tools to bring S.A.N.E. to your area.",li:["S.A.N.E. Educator certification","ECM credits via FNOB","Dedicated operational portal","Commercial and marketing support"]}],
     method_eyebrow:"The 6 programme modules",method_title:"A complete path, <em>from nutrition to safety.</em>",
     steps:[{n:"01",t:"Getting to Know Food",d:"We discover food groups, nutritional properties and how to build a balanced diet."},{n:"02",t:"The Balanced Plate",d:"The Harvard proportions (½ fruit & veg, ¼ grains, ¼ protein), variety and quality on the daily plate — with the «Il Piatto Sano» app."},{n:"03",t:"Energy in Motion",d:"The link between food, physical activity and wellbeing: how food becomes fuel."},{n:"04",t:"The Health Backpack",d:"What to bring to school, how to shop consciously and read food labels."},{n:"05",t:"Food, Environment and Culture",d:"Seasonality, short supply chains, food traditions and the environmental impact of our choices."},{n:"06",t:"Allergies and Safety",d:"Recognising the 14 EU allergens, managing intolerances safely at school and at home."}],
     ser_eyebrow:"Our scientific founder",
     ser_heading:"Science, passion and <em>method.</em>",
     ser_role:"Co-founder & Scientific Director",
-    ser_creds:["🔬 Nutritionist Biologist","📚 Specialist in paediatric nutrition & allergies","🧠 Creator of the «Mangiare Bene e Crescere Meglio» programme","📋 Scientific Director, S.A.N.E. Italia"],
+    ser_creds:["<i class='fas fa-microscope'></i> Nutritionist Biologist","<i class='fas fa-book'></i> Specialist in paediatric nutrition & allergies","🧠 Creator of the «Mangiare Bene e Crescere Meglio» programme","📋 Scientific Director, S.A.N.E. Italia"],
     ser_p1:"Serafina Cardaci co-founded S.A.N.E. Italia with a clear vision: to bring Italian schools a programme that teaches children not just about good nutrition, but how to live safely with their allergies and intolerances.",
     ser_p2:"The first pilot at I.C. «Carducci–Fattori» in Rosignano Marittimo — with around 100 students — proved that play is the most effective tool for making food safety concrete and memorable.",
     ser_cta:"Join the S.A.N.E. network",
     team_eyebrow:"The team",
     team_title:"Three expertises, <em>one mission.</em>",
     ame_role:"Project Medical Advisor · Paediatric Allergist",
-    ame_creds:["🩺 Paediatrician","💊 Specialist in Allergy, Immunology & Environmental Medicine","🎓 Deputy Director of the Allergy & Immunology Specialisation (UBA)","🌎 University of Buenos Aires (Argentina)"],
+    ame_creds:["<i class='fas fa-stethoscope'></i> Paediatrician","<i class='fas fa-pills'></i> Specialist in Allergy, Immunology & Environmental Medicine","<i class='fas fa-graduation-cap'></i> Deputy Director of the Allergy & Immunology Specialisation (UBA)","<i class='fas fa-earth-americas'></i> University of Buenos Aires (Argentina)"],
     ame_p1:"Dr. Amelia Zarauza is the project's medical advisor. A paediatrician specialised in allergy, immunology and environmental medicine, she ensures the clinical rigour of the content on allergies and food safety.",
     ame_p2:"Deputy Director of the Allergy & Immunology Specialisation programme at the University of Buenos Aires (UBA), she supports the scientific direction in validating the «The Courage to Act» game and the allergy modules.",
     pat_role:"Co-founder & Commercial Director",
-    pat_creds:["🎮 Creator of the «Il Piatto Sano» educational game","🌍 Commercial development & partnerships","📻 Communicator — Radio PNR · Venerdì Tech","✍️ Author — books and music"],
+    pat_creds:["<i class='fas fa-gamepad'></i> Creator of the «Il Piatto Sano» educational game","<i class='fas fa-earth-europe'></i> Commercial development & partnerships","<i class='fas fa-radio'></i> Communicator — Radio PNR · Venerdì Tech","<i class='fas fa-pen-nib'></i> Author — books and music"],
     pat_p1:"Patrick Orlando is the co-founder and creator of the «Il Piatto Sano» educational game. He leads the commercial development of S.A.N.E. Italia, building networks of nutritionist biologists across Italy and institutional partnerships.",
     pat_p2:"Founder of DAOP APS — the family-friendly community of Alessandria and Asti — and co-host of Venerdì Tech on Radio PNR, Patrick believes that communication and education are powerful tools for social change.",
     partner_eyebrow:"Recognition & partnerships",partner_title:"Backed by institutions.",
@@ -862,10 +904,10 @@ function render(l) {
           <div><div class="cc-name">${c.name}</div><div class="cc-role">${c.role}</div></div>
         </div>
         <div class="cc-lines">
-          <div class="cc-line">📧 <a href="mailto:${c.email}">${c.email}</a></div>
-          <div class="cc-line">📞 <a href="tel:${c.tel.replace(/\s/g,'')}">${c.tel}</a></div>
-          ${c.address ? `<div class="cc-line">📍 ${c.address}</div>` : ''}
-          ${c.site ? `<div class="cc-line">🌐 <a href="${c.site}" target="_blank">${c.sitelabel}</a></div>` : ''}
+          <div class="cc-line"><i class='fas fa-envelope'></i> <a href="mailto:${c.email}">${c.email}</a></div>
+          <div class="cc-line"><i class='fas fa-phone'></i> <a href="tel:${c.tel.replace(/\s/g,'')}">${c.tel}</a></div>
+          ${c.address ? `<div class="cc-line"><i class='fas fa-location-dot'></i> ${c.address}</div>` : ''}
+          ${c.site ? `<div class="cc-line"><i class='fas fa-globe'></i> <a href="${c.site}" target="_blank">${c.sitelabel}</a></div>` : ''}
         </div>
         <div class="cc-socials">
           ${c.ig ? `<a href="${c.ig}" target="_blank" class="cc-social"><i class="fab fa-instagram"></i> Instagram</a>` : ''}

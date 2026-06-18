@@ -55,6 +55,22 @@ for (const lang of ['es', 'en']) {
   o = repRe(o, /(<meta name="twitter:title" content=")[^"]*(">)/, (x,a,b)=>a+m.ogTitle+b, 'twitter:title');
   o = repRe(o, /(<meta name="twitter:description" content=")[^"]*(">)/, (x,a,b)=>a+m.twDesc+b, 'twitter:description');
 
+  // FAQ JSON-LD rigenerato nella lingua target (da T[lang].faqs)
+  if (T[lang].faqs) {
+    const faqJson = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: T[lang].faqs.map(f => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a }
+      }))
+    };
+    const faqBlock = '<!-- FAQ-LD -->\n<script type="application/ld+json">\n' +
+      JSON.stringify(faqJson, null, 2) + '\n</' + 'script>\n<!-- /FAQ-LD -->';
+    o = repRe(o, /<!-- FAQ-LD -->[\s\S]*?<!-- \/FAQ-LD -->/, () => faqBlock, 'faq-ld');
+  }
+
   // testo statico nel body -> lingua target
   for (const [key, tag] of Object.entries(STATIC)) {
     o = rep(o, 'data-k="' + key + '">' + T.it[key] + '</' + tag + '>',
