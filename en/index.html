@@ -317,6 +317,16 @@ section{padding:4.5rem 4rem}
 .allerg-badge{margin-top:2.4rem;display:flex;align-items:flex-start;gap:.75rem;font-size:.84rem;line-height:1.6;color:rgba(255,255,255,.75);background:rgba(0,201,177,.1);border:1px solid rgba(0,201,177,.25);border-radius:12px;padding:1rem 1.3rem;max-width:780px}
 .allerg-badge::before{content:"\f0f1";font-family:"Font Awesome 6 Free";font-weight:900;color:var(--gl);font-size:1.05rem;flex-shrink:0;margin-top:.05rem}
 @media(max-width:860px){.allerg-steps{grid-template-columns:1fr}}
+/* «Il Coraggio di Agire» (riquadro emergenza) */
+.coraggio{display:grid;grid-template-columns:.75fr 1.25fr;gap:2rem;align-items:center;margin-top:2.4rem;background:rgba(244,162,97,.1);border:1px solid rgba(244,162,97,.35);border-left:4px solid var(--tc);border-radius:16px;padding:1.6rem}
+.coraggio-img{width:100%;height:auto;border-radius:12px;display:block}
+.coraggio-tag{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--tc);color:var(--g);padding:.28rem .65rem;border-radius:999px;margin-bottom:.8rem}
+.coraggio-h{font-family:'Inter',sans-serif;font-size:1.35rem;font-weight:800;color:#fff;margin-bottom:.55rem}
+.coraggio-lead{font-size:.9rem;line-height:1.7;color:rgba(255,255,255,.8);margin-bottom:1.2rem}
+.coraggio-lead strong{color:var(--tc);font-weight:700}
+.coraggio-btn{display:inline-block;background:var(--tc);color:var(--g);font-weight:700;font-size:.85rem;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none;transition:transform .15s,background .2s}
+.coraggio-btn:hover{transform:translateY(-2px);background:#f6b277}
+@media(max-width:860px){.coraggio{grid-template-columns:1fr}}
 
 /* TARGET */
 .target-sec{background:#fff}
@@ -603,6 +613,15 @@ footer a:hover{color:var(--gl)}
     <div class="allerg-chips" id="allerg-chips"></div>
   </div>
   <p class="allerg-badge" data-k="allerg_badge"></p>
+  <div class="coraggio">
+    <img class="coraggio-img" src="/immagini/carosello/tempo.webp" alt="Il Coraggio di Agire — allenamento all'uso dell'autoiniettore" width="1874" height="1874" loading="lazy">
+    <div class="coraggio-txt">
+      <span class="coraggio-tag" data-k="coraggio_tag"></span>
+      <h3 class="coraggio-h" data-k="coraggio_h"></h3>
+      <p class="coraggio-lead" data-k="coraggio_lead"></p>
+      <a href="https://gioco.sane-italia.it" target="_blank" rel="noopener" class="coraggio-btn" data-k="coraggio_btn"></a>
+    </div>
+  </div>
 </section>
 
 <!-- TARGET -->
@@ -706,6 +725,10 @@ const T = {
     allerg_steps:[{n:"01",t:"Imposti il profilo",d:"Selezioni gli allergeni e le intolleranze del singolo bambino o dell'intera classe."},{n:"02",t:"Il gioco si adatta",d:"I cibi a rischio vengono segnalati e personalizzati in tempo reale, con 2 livelli di difficoltà."},{n:"03",t:"Impara in sicurezza",d:"Il bambino riconosce gli allergeni nelle etichette e impara come agire in emergenza con l'autoiniettore."}],
     allerg_chips_title:"I 14 allergeni obbligatori EU gestiti dall'app",
     allerg_badge:"Contenuti su allergie e sicurezza validati dalla Dra. Amelia Zarauza — Pediatra Allergologa e Immunologa (Università di Buenos Aires).",
+    coraggio_tag:"Gioco gratuito",
+    coraggio_h:"«Il Coraggio di Agire»",
+    coraggio_lead:"In un'emergenza allergica, <strong>ogni secondo conta</strong>. In questa storia interattiva il bambino vive una reazione allergica grave, sceglie cosa fare e si allena <strong>passo per passo all'uso dell'autoiniettore</strong> (EpiPen, Jext, Emerade, Fastjekt). Unico nel suo genere — e gratuito.",
+    coraggio_btn:"Prova «Il Coraggio di Agire»",
     target_eyebrow:"A chi ci rivolgiamo",target_title:"Un programma che parla a tutti.",
     cards:[{icon:"<i class='fas fa-school'></i>",title:"Scuole e istituti",desc:"Programma strutturato con gestione allergeni per ogni studente, integrabile nel curriculo.",li:["Percorsi per primaria, secondaria e superiori","Gestione allergeni personalizzata per classe","Formazione docenti inclusa","Compatibile con MIUR / Carta del Docente"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Famiglie",desc:"Strumenti concreti per genitori di bambini con allergie e intolleranze, in sinergia con la scuola.",li:["Workshop su allergie e lettura etichette","Accesso al gioco «Il Piatto Sano»","Guide pratiche per la spesa sicura","Supporto nutrizionista certificato"]},{icon:"<i class='fas fa-microscope'></i>",title:"Biologi nutrizionisti",desc:"Network professionale certificato con strumenti operativi per portare S.A.N.E. nel proprio territorio.",li:["Certificazione S.A.N.E. Educator","Crediti ECM via FNOB","Portale operativo dedicato","Supporto commerciale e marketing"]}],
     method_eyebrow:"I 6 moduli del programma",method_title:"Un percorso completo, <em>dalla nutrizione alla sicurezza.</em>",
@@ -794,6 +817,10 @@ const T = {
     allerg_steps:[{n:"01",t:"Configuras el perfil",d:"Seleccionas las alergias e intolerancias del niño o de toda la clase."},{n:"02",t:"El juego se adapta",d:"Los alimentos de riesgo se señalan y personalizan en tiempo real, con 2 niveles de dificultad."},{n:"03",t:"Aprende con seguridad",d:"El niño reconoce los alérgenos en las etiquetas y aprende cómo actuar en una emergencia con el autoinyector."}],
     allerg_chips_title:"Los 14 alérgenos obligatorios UE que gestiona la app",
     allerg_badge:"Contenidos sobre alergias y seguridad validados por la Dra. Amelia Zarauza — Médica Pediatra Alergóloga e Inmunóloga (Universidad de Buenos Aires).",
+    coraggio_tag:"Juego gratuito",
+    coraggio_h:"«El Coraje de Actuar»",
+    coraggio_lead:"En una emergencia alérgica, <strong>cada segundo cuenta</strong>. En esta historia interactiva el niño vive una reacción alérgica grave, elige qué hacer y se entrena <strong>paso a paso en el uso del autoinyector</strong> (EpiPen, Jext, Emerade, Fastjekt). Único en su género — y gratuito.",
+    coraggio_btn:"Prueba «El Coraje de Actuar»",
     target_eyebrow:"A quién nos dirigimos",target_title:"Un programa que habla a todos.",
     cards:[{icon:"<i class='fas fa-school'></i>",title:"Escuelas e institutos",desc:"Programa estructurado con gestión de alérgenos para cada estudiante, integrable en el currículo.",li:["Rutas para primaria, secundaria y superior","Gestión personalizada de alérgenos por clase","Formación docente incluida","Compatible con convocatorias MIUR"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Familias",desc:"Herramientas concretas para padres de niños con alergias e intolerancias, en sintonía con la escuela.",li:["Talleres sobre alergias y lectura de etiquetas","Acceso al juego «Il Piatto Sano»","Guías prácticas de compra segura","Apoyo de nutricionista certificado"]},{icon:"<i class='fas fa-microscope'></i>",title:"Biólogos nutricionistas",desc:"Red profesional certificada con herramientas operativas para llevar S.A.N.E. a tu territorio.",li:["Certificación S.A.N.E. Educator","Créditos ECM vía FNOB","Portal operativo dedicado","Apoyo comercial y marketing"]}],
     method_eyebrow:"Los 6 módulos del programa",method_title:"Un recorrido completo, <em>de la nutrición a la seguridad.</em>",
@@ -882,6 +909,10 @@ const T = {
     allerg_steps:[{n:"01",t:"Set the profile",d:"Select the allergies and intolerances of the individual child or the whole class."},{n:"02",t:"The game adapts",d:"Risky foods are flagged and personalised in real time, with 2 difficulty levels."},{n:"03",t:"Learn safely",d:"The child recognises allergens on labels and learns how to act in an emergency with the auto-injector."}],
     allerg_chips_title:"The 14 mandatory EU allergens managed by the app",
     allerg_badge:"Allergy and safety content validated by Dr. Amelia Zarauza — Paediatric Allergist & Immunologist (University of Buenos Aires).",
+    coraggio_tag:"Free game",
+    coraggio_h:"«The Courage to Act»",
+    coraggio_lead:"In an allergic emergency, <strong>every second counts</strong>. In this interactive story the child experiences a severe allergic reaction, chooses what to do and trains <strong>step by step on using the auto-injector</strong> (EpiPen, Jext, Emerade, Fastjekt). One of a kind — and free.",
+    coraggio_btn:"Try «The Courage to Act»",
     target_eyebrow:"Who we serve",target_title:"A programme that speaks to everyone.",
     cards:[{icon:"<i class='fas fa-school'></i>",title:"Schools & institutions",desc:"Structured programme with per-student allergen management, fully integrable into the curriculum.",li:["Pathways for primary, secondary and high school","Personalised allergen management per class","Teacher training included","Compatible with MIUR funding schemes"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Families",desc:"Practical tools for parents of children with allergies and intolerances, in sync with school.",li:["Allergy & label-reading workshops","Access to «Il Piatto Sano» game","Safe shopping practical guides","Individual certified biologist consultations"]},{icon:"<i class='fas fa-microscope'></i>",title:"Nutritionist biologists",desc:"Certified professional network with operational tools to bring S.A.N.E. to your area.",li:["S.A.N.E. Educator certification","ECM credits via FNOB","Dedicated operational portal","Commercial and marketing support"]}],
     method_eyebrow:"The 6 programme modules",method_title:"A complete path, <em>from nutrition to safety.</em>",
