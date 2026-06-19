@@ -298,6 +298,26 @@ section{padding:4.5rem 4rem}
 .tag{background:rgba(0,168,150,.15);border:1px solid rgba(0,168,150,.3);padding:.3rem .7rem;font-size:.7rem;color:var(--gl);letter-spacing:.04em;border-radius:4px;transition:background .2s}
 .tag:hover{background:var(--gm);border-color:var(--gm);color:#fff}
 
+/* SICUREZZA & ALLERGIE */
+.allerg-sec{background:var(--g);color:#fff}
+.allerg-sec .eyebrow{color:var(--gl)}
+.allerg-sec .sec-title{color:#fff;max-width:100%}
+.allerg-lead{font-size:1rem;line-height:1.85;color:rgba(255,255,255,.78);max-width:780px;margin-top:1.1rem}
+.allerg-lead strong{color:var(--gl);font-weight:700}
+.allerg-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.4rem}
+.allerg-step{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.6rem 1.5rem}
+.allerg-step-n{font-family:'Inter',sans-serif;font-size:1.6rem;font-weight:800;color:var(--tc);line-height:1;margin-bottom:.5rem}
+.allerg-step h4{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:.45rem}
+.allerg-step p{font-size:.83rem;line-height:1.65;color:rgba(255,255,255,.6)}
+.allerg-chips-wrap{margin-top:2.6rem}
+.allerg-chips-title{font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gl);margin-bottom:1rem}
+.allerg-chips{display:flex;flex-wrap:wrap;gap:.6rem}
+.allerg-chip{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.06);border:1px solid rgba(0,168,150,.3);border-radius:999px;padding:.5rem .95rem;font-size:.83rem;font-weight:500;color:#fff}
+.allerg-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gl);flex-shrink:0}
+.allerg-badge{margin-top:2.4rem;display:flex;align-items:flex-start;gap:.75rem;font-size:.84rem;line-height:1.6;color:rgba(255,255,255,.75);background:rgba(0,201,177,.1);border:1px solid rgba(0,201,177,.25);border-radius:12px;padding:1rem 1.3rem;max-width:780px}
+.allerg-badge::before{content:"\f0f1";font-family:"Font Awesome 6 Free";font-weight:900;color:var(--gl);font-size:1.05rem;flex-shrink:0;margin-top:.05rem}
+@media(max-width:860px){.allerg-steps{grid-template-columns:1fr}}
+
 /* TARGET */
 .target-sec{background:#fff}
 .cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem}
@@ -572,6 +592,19 @@ footer a:hover{color:var(--gl)}
   <div class="game-cards" id="game-cards"></div>
 </section>
 
+<!-- SICUREZZA & ALLERGIE -->
+<section id="allergeni" class="allerg-sec">
+  <p class="eyebrow" data-k="allerg_eyebrow"></p>
+  <h2 class="sec-title" data-k="allerg_title"></h2>
+  <p class="allerg-lead" data-k="allerg_lead"></p>
+  <div class="allerg-steps" id="allerg-steps"></div>
+  <div class="allerg-chips-wrap">
+    <p class="allerg-chips-title" data-k="allerg_chips_title"></p>
+    <div class="allerg-chips" id="allerg-chips"></div>
+  </div>
+  <p class="allerg-badge" data-k="allerg_badge"></p>
+</section>
+
 <!-- TARGET -->
 <section id="target" class="target-sec">
   <p class="eyebrow" data-k="target_eyebrow"></p>
@@ -667,6 +700,12 @@ const T = {
     allergens_title:"Gestione 14 allergeni EU",
     allergens_sub:"L'app gestisce in modo personalizzato tutti i 14 allergeni obbligatori EU per ogni bambino, con 2 livelli di difficoltà e modalità LIM per la classe.",
     allergens:["Glutine","Crostacei","Uova","Pesce","Arachidi","Soia","Latte","Frutta a guscio","Sedano","Senape","Sesamo","Anidride solforosa","Lupini","Molluschi"],
+    allerg_eyebrow:"Sicurezza alimentare · ciò che ci rende unici",
+    allerg_title:"Allergie: <em>nessuno le gestisce come noi.</em>",
+    allerg_lead:"In Italia il <strong>6–8% dei bambini</strong> soffre di allergie alimentari. Non è un capriccio, non è una moda: è sicurezza. Per questo «Il Piatto Sano» è l'<strong>unico gioco educativo che gestisce in modo personalizzato i 14 allergeni obbligatori EU</strong> per ogni singolo bambino.",
+    allerg_steps:[{n:"01",t:"Imposti il profilo",d:"Selezioni gli allergeni e le intolleranze del singolo bambino o dell'intera classe."},{n:"02",t:"Il gioco si adatta",d:"I cibi a rischio vengono segnalati e personalizzati in tempo reale, con 2 livelli di difficoltà."},{n:"03",t:"Impara in sicurezza",d:"Il bambino riconosce gli allergeni nelle etichette e impara come agire in emergenza con l'autoiniettore."}],
+    allerg_chips_title:"I 14 allergeni obbligatori EU gestiti dall'app",
+    allerg_badge:"Contenuti su allergie e sicurezza validati dalla Dra. Amelia Zarauza — Pediatra Allergologa e Immunologa (Università di Buenos Aires).",
     target_eyebrow:"A chi ci rivolgiamo",target_title:"Un programma che parla a tutti.",
     cards:[{icon:"<i class='fas fa-school'></i>",title:"Scuole e istituti",desc:"Programma strutturato con gestione allergeni per ogni studente, integrabile nel curriculo.",li:["Percorsi per primaria, secondaria e superiori","Gestione allergeni personalizzata per classe","Formazione docenti inclusa","Compatibile con MIUR / Carta del Docente"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Famiglie",desc:"Strumenti concreti per genitori di bambini con allergie e intolleranze, in sinergia con la scuola.",li:["Workshop su allergie e lettura etichette","Accesso al gioco «Il Piatto Sano»","Guide pratiche per la spesa sicura","Supporto nutrizionista certificato"]},{icon:"<i class='fas fa-microscope'></i>",title:"Biologi nutrizionisti",desc:"Network professionale certificato con strumenti operativi per portare S.A.N.E. nel proprio territorio.",li:["Certificazione S.A.N.E. Educator","Crediti ECM via FNOB","Portale operativo dedicato","Supporto commerciale e marketing"]}],
     method_eyebrow:"I 6 moduli del programma",method_title:"Un percorso completo, <em>dalla nutrizione alla sicurezza.</em>",
@@ -749,6 +788,12 @@ const T = {
     allergens_title:"Gestión de alérgenos integrada",
     allergens_sub:"El primer juego escolar que gestiona los 14 alérgenos obligatorios UE de forma personalizada para cada niño.",
     allergens:["Gluten","Crustáceos","Huevos","Pescado","Cacahuetes","Soja","Leche","Frutos secos","Apio","Mostaza","Sésamo","Dióxido de azufre","Altramuces","Moluscos"],
+    allerg_eyebrow:"Seguridad alimentaria · lo que nos hace únicos",
+    allerg_title:"Alergias: <em>nadie las gestiona como nosotros.</em>",
+    allerg_lead:"En Italia el <strong>6–8% de los niños</strong> sufre alergias alimentarias. No es un capricho ni una moda: es seguridad. Por eso «Il Piatto Sano» es el <strong>único juego educativo que gestiona de forma personalizada los 14 alérgenos obligatorios UE</strong> para cada niño.",
+    allerg_steps:[{n:"01",t:"Configuras el perfil",d:"Seleccionas las alergias e intolerancias del niño o de toda la clase."},{n:"02",t:"El juego se adapta",d:"Los alimentos de riesgo se señalan y personalizan en tiempo real, con 2 niveles de dificultad."},{n:"03",t:"Aprende con seguridad",d:"El niño reconoce los alérgenos en las etiquetas y aprende cómo actuar en una emergencia con el autoinyector."}],
+    allerg_chips_title:"Los 14 alérgenos obligatorios UE que gestiona la app",
+    allerg_badge:"Contenidos sobre alergias y seguridad validados por la Dra. Amelia Zarauza — Médica Pediatra Alergóloga e Inmunóloga (Universidad de Buenos Aires).",
     target_eyebrow:"A quién nos dirigimos",target_title:"Un programa que habla a todos.",
     cards:[{icon:"<i class='fas fa-school'></i>",title:"Escuelas e institutos",desc:"Programa estructurado con gestión de alérgenos para cada estudiante, integrable en el currículo.",li:["Rutas para primaria, secundaria y superior","Gestión personalizada de alérgenos por clase","Formación docente incluida","Compatible con convocatorias MIUR"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Familias",desc:"Herramientas concretas para padres de niños con alergias e intolerancias, en sintonía con la escuela.",li:["Talleres sobre alergias y lectura de etiquetas","Acceso al juego «Il Piatto Sano»","Guías prácticas de compra segura","Apoyo de nutricionista certificado"]},{icon:"<i class='fas fa-microscope'></i>",title:"Biólogos nutricionistas",desc:"Red profesional certificada con herramientas operativas para llevar S.A.N.E. a tu territorio.",li:["Certificación S.A.N.E. Educator","Créditos ECM vía FNOB","Portal operativo dedicado","Apoyo comercial y marketing"]}],
     method_eyebrow:"Los 6 módulos del programa",method_title:"Un recorrido completo, <em>de la nutrición a la seguridad.</em>",
@@ -831,6 +876,12 @@ const T = {
     allergens_title:"Integrated allergen management",
     allergens_sub:"The first school game to manage all 14 mandatory EU allergens in a personalised way for every child.",
     allergens:["Gluten","Crustaceans","Eggs","Fish","Peanuts","Soya","Milk","Tree nuts","Celery","Mustard","Sesame","Sulphur dioxide","Lupin","Molluscs"],
+    allerg_eyebrow:"Food safety · what makes us unique",
+    allerg_title:"Allergies: <em>no one manages them like we do.</em>",
+    allerg_lead:"In Italy <strong>6–8% of children</strong> have food allergies. It's not a whim or a trend: it's safety. That's why «Il Piatto Sano» is the <strong>only educational game that personally manages the 14 mandatory EU allergens</strong> for each child.",
+    allerg_steps:[{n:"01",t:"Set the profile",d:"Select the allergies and intolerances of the individual child or the whole class."},{n:"02",t:"The game adapts",d:"Risky foods are flagged and personalised in real time, with 2 difficulty levels."},{n:"03",t:"Learn safely",d:"The child recognises allergens on labels and learns how to act in an emergency with the auto-injector."}],
+    allerg_chips_title:"The 14 mandatory EU allergens managed by the app",
+    allerg_badge:"Allergy and safety content validated by Dr. Amelia Zarauza — Paediatric Allergist & Immunologist (University of Buenos Aires).",
     target_eyebrow:"Who we serve",target_title:"A programme that speaks to everyone.",
     cards:[{icon:"<i class='fas fa-school'></i>",title:"Schools & institutions",desc:"Structured programme with per-student allergen management, fully integrable into the curriculum.",li:["Pathways for primary, secondary and high school","Personalised allergen management per class","Teacher training included","Compatible with MIUR funding schemes"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Families",desc:"Practical tools for parents of children with allergies and intolerances, in sync with school.",li:["Allergy & label-reading workshops","Access to «Il Piatto Sano» game","Safe shopping practical guides","Individual certified biologist consultations"]},{icon:"<i class='fas fa-microscope'></i>",title:"Nutritionist biologists",desc:"Certified professional network with operational tools to bring S.A.N.E. to your area.",li:["S.A.N.E. Educator certification","ECM credits via FNOB","Dedicated operational portal","Commercial and marketing support"]}],
     method_eyebrow:"The 6 programme modules",method_title:"A complete path, <em>from nutrition to safety.</em>",
@@ -913,6 +964,15 @@ function render(l) {
   // game cards
   document.getElementById('game-cards').innerHTML = t.games.map(g =>
     `<div class="game-card">${g.img?`<img class="game-img" src="/immagini/carosello/${g.img}" alt="${g.name}" loading="lazy">`:`<div class="game-icon">${g.icon}</div>`}<div class="game-body"><div class="game-top"><h4>${g.name}</h4>${g.tag?`<span class="game-tag${g.pro?' tag-pro':''}">${g.tag}</span>`:''}</div><p>${g.desc}</p></div></div>`
+  ).join('');
+
+  // sicurezza & allergie: 3 step personalizzazione
+  document.getElementById('allerg-steps').innerHTML = t.allerg_steps.map(s =>
+    `<div class="allerg-step"><div class="allerg-step-n">${s.n}</div><h4>${s.t}</h4><p>${s.d}</p></div>`
+  ).join('');
+  // sicurezza & allergie: i 14 allergeni EU
+  document.getElementById('allerg-chips').innerHTML = t.allergens.map(a =>
+    `<span class="allerg-chip">${a}</span>`
   ).join('');
 
   // cards grid
