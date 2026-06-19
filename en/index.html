@@ -156,6 +156,7 @@
 }
 </script>
 <!-- /FAQ-LD -->
+<link rel="preload" as="image" href="/immagini/logo/logo3.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
@@ -174,6 +175,8 @@
 }
 html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:var(--wh);color:var(--g);overflow-x:hidden}
+/* accessibilità: focus visibile da tastiera */
+a:focus-visible,button:focus-visible,.lb:focus-visible{outline:3px solid var(--gl);outline-offset:2px;border-radius:4px}
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:.9rem 3rem;background:rgba(10,38,71,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(0,168,150,.2);gap:1rem}
@@ -186,7 +189,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .nav-links a:hover{color:var(--gl);border-bottom-color:var(--gl)}
 .nav-right{display:flex;align-items:center;gap:.9rem}
 .lang-sw{display:flex;gap:.3rem}
-.lb{background:none;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.68rem;font-weight:600;letter-spacing:.08em;padding:.22rem .55rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;text-transform:uppercase;border-radius:3px;text-decoration:none;display:inline-block}
+.lb{background:none;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.68rem;font-weight:600;letter-spacing:.08em;padding:.3rem .6rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;text-transform:uppercase;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:28px;min-width:34px}
 .lb:hover,.lb.active{background:var(--gm);color:#fff;border-color:var(--gm)}
 .nav-cta{background:var(--gm);color:#fff;padding:.48rem 1.2rem;font-size:.76rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:background .2s,transform .15s;border-radius:6px;white-space:nowrap}
 .nav-cta:hover{background:var(--gl);transform:translateY(-1px)}
@@ -340,6 +343,11 @@ section{padding:4.5rem 4rem}
 /* NUMERI (stat band) */
 .statband-sec{background:var(--g);padding:2.4rem 4rem}
 .statband{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:920px;margin:0 auto}
+/* TRUST ROW (sotto hero) */
+.trust-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.6rem 1.4rem;padding:1rem 2rem;background:#fff;border-bottom:1px solid rgba(10,38,71,.07)}
+.trust-lead{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gm)}
+.trust-item{font-size:.82rem;font-weight:600;color:var(--g);opacity:.78;white-space:nowrap}
+.trust-sep{color:rgba(10,38,71,.22);font-weight:400}
 .statband-item{text-align:center}
 .statband-n{font-family:'Inter',sans-serif;font-size:clamp(2rem,4vw,2.9rem);font-weight:800;color:var(--gl);line-height:1}
 .statband-l{font-size:.8rem;color:rgba(255,255,255,.72);margin-top:.45rem;line-height:1.45}
@@ -362,7 +370,7 @@ section{padding:4.5rem 4rem}
 .field-sec{background:var(--cr)}
 .field-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2rem}
 .field-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(10,38,71,.08)}
-.field-card img{width:100%;height:210px;object-fit:cover;display:block}
+.field-card img{width:100%;aspect-ratio:4/3;height:auto;object-fit:cover;display:block}
 .field-cap{font-size:.8rem;color:var(--gr);padding:.85rem 1.05rem;line-height:1.5}
 .field-meta{margin-top:1.4rem;font-size:.86rem;color:var(--gr);line-height:1.75;max-width:760px}
 .field-meta a{color:var(--gm);text-decoration:none;font-weight:600}
@@ -477,9 +485,12 @@ footer a:hover{color:var(--gl)}
     <a href="/locandina.pdf" target="_blank" rel="noopener" class="hero-dl" data-k="hero_dl"></a>
   </div>
   <div class="hero-r">
-    <img class="hero-projlogo" src="/immagini/logo/logo3.webp" alt="Mangiare Bene, Crescere Meglio">
+    <img class="hero-projlogo" src="/immagini/logo/logo3.webp" alt="Mangiare Bene, Crescere Meglio" width="1600" height="1600" fetchpriority="high">
   </div>
 </section>
+
+<!-- TRUST ROW -->
+<div class="trust-row" id="trust-row"></div>
 
 <!-- NUMERI -->
 <section class="statband-sec">
@@ -556,7 +567,7 @@ footer a:hover{color:var(--gl)}
       <p class="game-intro" data-k="game_sub"></p>
     </div>
     <div class="game-head-visual">
-      <img class="game-banner" src="/immagini/logo/logogioco.webp" alt="Il Piatto Sano">
+      <img class="game-banner" src="/immagini/logo/logogioco.webp" alt="Il Piatto Sano" width="1376" height="768" loading="lazy">
       <div class="hero-allergie"><span class="hero-allergie-dot"></span><span data-k="hero_allergie"></span></div>
       <div class="hero-cta">
         <a href="https://gioco.sane-italia.it" target="_blank" class="btn-p" data-k="hero_btn1"></a>
@@ -693,6 +704,7 @@ const T = {
     pat_p1:"L'Ing. Patrick Orlando è il co-fondatore e sviluppatore dell'app «Il Piatto Sano», il cuore digitale del programma. Disponibile su browser, tablet, LIM e Android, il gioco rende l'educazione alimentare interattiva, personalizzata e multilingua.",
     pat_p2:"Si occupa della parte tecnologica e media di S.A.N.E. Italia: sviluppo della piattaforma, comunicazione e diffusione del programma sul territorio.",
     partner_eyebrow:"Riconoscimenti e partnership",partner_title:"Con il supporto delle istituzioni.",
+    trust_lead:"Con il supporto di",
     partners:["Senato della Repubblica","ENPAB","I.C. Carducci–Fattori","DAOP APS","Google Play"],
     field_eyebrow:"Sul campo · pilota 2026",
     field_title:"Il programma <em>in classe.</em>",
@@ -774,6 +786,7 @@ const T = {
     pat_p1:"Patrick Orlando es el cofundador y creador del juego educativo «Il Piatto Sano». Se ocupa del desarrollo comercial de S.A.N.E. Italia, la construcción de redes de biólogos nutricionistas y las alianzas institucionales.",
     pat_p2:"Fundador de DAOP APS — comunidad family-friendly de Alessandria y Asti — y co-presentador de Venerdì Tech en Radio PNR, Patrick cree que la comunicación y la educación son herramientas poderosas para el cambio.",
     partner_eyebrow:"Reconocimientos y alianzas",partner_title:"Con el apoyo de las instituciones.",
+    trust_lead:"Con el apoyo de",
     partners:["Senado de la República","ENPAB","I.C. Carducci–Fattori","DAOP APS","Google Play"],
     field_eyebrow:"Sobre el terreno · piloto 2026",
     field_title:"El programa <em>en el aula.</em>",
@@ -855,6 +868,7 @@ const T = {
     pat_p1:"Patrick Orlando is the co-founder and creator of the «Il Piatto Sano» educational game. He leads the commercial development of S.A.N.E. Italia, building networks of nutritionist biologists across Italy and institutional partnerships.",
     pat_p2:"Founder of DAOP APS — the family-friendly community of Alessandria and Asti — and co-host of Venerdì Tech on Radio PNR, Patrick believes that communication and education are powerful tools for social change.",
     partner_eyebrow:"Recognition & partnerships",partner_title:"Backed by institutions.",
+    trust_lead:"Backed by",
     partners:["Italian Senate","ENPAB","I.C. Carducci–Fattori","DAOP APS","Google Play"],
     field_eyebrow:"In the field · 2026 pilot",
     field_title:"The programme <em>in the classroom.</em>",
@@ -949,6 +963,12 @@ function render(l) {
     [t.stat1_label, t.stat2_label, t.stat3_label].map((l, i) =>
       `<div class="statband-item"><div class="statband-n">${statNums[i]}</div><div class="statband-l">${l}</div></div>`
     ).join('');
+
+  // trust row (sotto hero): lead + prime 4 istituzioni
+  document.getElementById('trust-row').innerHTML =
+    `<span class="trust-lead">${t.trust_lead}</span>` +
+    t.partners.slice(0, 4).map(p => `<span class="trust-item">${p}</span>`)
+      .join('<span class="trust-sep">·</span>');
 
   // istituzioni / partner
   document.getElementById('partner-list').innerHTML = t.partners.map(p =>
