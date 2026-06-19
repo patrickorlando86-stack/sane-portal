@@ -343,11 +343,6 @@ section{padding:4.5rem 4rem}
 /* NUMERI (stat band) */
 .statband-sec{background:var(--g);padding:2.4rem 4rem}
 .statband{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:920px;margin:0 auto}
-/* TRUST ROW (sotto hero) */
-.trust-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.6rem 1.4rem;padding:1rem 2rem;background:#fff;border-bottom:1px solid rgba(10,38,71,.07)}
-.trust-lead{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gm)}
-.trust-item{font-size:.82rem;font-weight:600;color:var(--g);opacity:.78;white-space:nowrap}
-.trust-sep{color:rgba(10,38,71,.22);font-weight:400}
 .statband-item{text-align:center}
 .statband-n{font-family:'Inter',sans-serif;font-size:clamp(2rem,4vw,2.9rem);font-weight:800;color:var(--gl);line-height:1}
 .statband-l{font-size:.8rem;color:rgba(255,255,255,.72);margin-top:.45rem;line-height:1.45}
@@ -489,9 +484,6 @@ footer a:hover{color:var(--gl)}
   </div>
 </section>
 
-<!-- TRUST ROW -->
-<div class="trust-row" id="trust-row"></div>
-
 <!-- NUMERI -->
 <section class="statband-sec">
   <div class="statband" id="statband"></div>
@@ -617,13 +609,6 @@ footer a:hover{color:var(--gl)}
     <p class="quote-text" data-k="quote_text"></p>
     <div class="quote-author" data-k="quote_author"></div>
   </div>
-</section>
-
-<!-- ISTITUZIONI / PARTNER -->
-<section id="partner" class="partner-sec">
-  <p class="eyebrow" data-k="partner_eyebrow"></p>
-  <h2 class="sec-title" data-k="partner_title"></h2>
-  <div class="partner-list" id="partner-list"></div>
 </section>
 
 <!-- FAQ -->
@@ -963,17 +948,6 @@ function render(l) {
     [t.stat1_label, t.stat2_label, t.stat3_label].map((l, i) =>
       `<div class="statband-item"><div class="statband-n">${statNums[i]}</div><div class="statband-l">${l}</div></div>`
     ).join('');
-
-  // trust row (sotto hero): lead + prime 4 istituzioni
-  document.getElementById('trust-row').innerHTML =
-    `<span class="trust-lead">${t.trust_lead}</span>` +
-    t.partners.slice(0, 4).map(p => `<span class="trust-item">${p}</span>`)
-      .join('<span class="trust-sep">·</span>');
-
-  // istituzioni / partner
-  document.getElementById('partner-list').innerHTML = t.partners.map(p =>
-    `<div class="partner-item">${p}</div>`
-  ).join('');
 
   // FAQ
   document.getElementById('faq-list').innerHTML = t.faqs.map(f =>
