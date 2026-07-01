@@ -38,7 +38,7 @@ serve(async (req) => {
             <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">🎉 Account attivato!</h2>
             <p style="color:#475569;font-size:14px;line-height:1.7;">Ciao ${nome},<br><br>
             Il tuo account S.A.N.E. Italia è stato <strong>approvato e attivato</strong>. Puoi ora accedere al portale e iniziare a lavorare.</p>
-            <a href="https://www.sane-italia.it/biologo.html"
+            <a href="https://sane-italia.it/biologo.html"
                style="display:block;background:#00A896;color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">
               Accedi al Portale →
             </a>

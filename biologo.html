@@ -1327,6 +1327,13 @@ async function inizializzaApp(user){
         showToast('Account sospeso. Per informazioni contatta l\'amministratore.','error');
         await db.auth.signOut();return;
     }
+    // Scadenza: se la data è passata, tratta il profilo come 'expired' anche se
+    // lo stato in DB non è ancora stato aggiornato (l'aggiornamento a 'expired'
+    // avviene solo quando un admin apre il pannello). Così la licenza scade da sola.
+    if(profilo.stato==='active' && profilo.scadenza){
+        const _oggi = new Date().toISOString().split('T')[0];
+        if(profilo.scadenza < _oggi) profilo.stato = 'expired';
+    }
     if(profilo.stato!=='active'){
         // pending o expired → paywall (abbonamento o codice). La sessione resta viva.
         mostraPaywall(profilo);

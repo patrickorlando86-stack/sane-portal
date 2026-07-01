@@ -659,6 +659,7 @@ const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZm9zbGlva2Zza2Z0bW91a3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDY3NTEsImV4cCI6MjA5MDYyMjc1MX0.eX9BL0tIy83zZ49hxzxFloH24hGIcbMRb2AsmCOiF9k';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'sane-admin-session' } });
+const FN_BASE = 'https://saneportal.netlify.app/.netlify/functions';
 
 // ============================================================
 // STATO
@@ -855,8 +856,9 @@ function showSection(id, el){
 let _codiciCache = [];
 
 function _generaStringaCodice(){
-    const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // niente 0/O/1/I ambigui
-    const blk=()=>Array.from({length:4},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+    const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 32 simboli, niente 0/O/1/I ambigui
+    // crypto invece di Math.random: codici imprevedibili (256 % 32 == 0 → nessun bias)
+    const blk=()=>{ const a=new Uint8Array(4); crypto.getRandomValues(a); return Array.from(a,b=>chars[b%chars.length]).join(''); };
     return 'SANE-'+blk()+'-'+blk();
 }
 
@@ -1848,7 +1850,7 @@ function apriPopupEmailNomina(b, regione){
 ti comunichiamo che sei stata/o nominata/o Responsabile Regionale per ${regione} nel programma S.A.N.E. Italia.
 
 Puoi accedere al pannello admin al seguente link:
-https://www.sane-italia.it/admin.html
+https://sane-italia.it/admin.html
 
 Usa le tue credenziali abituali (la stessa email e password con cui accedi al portale biologi).
 
@@ -1982,14 +1984,21 @@ async function rinnovaLicenza(id){
 async function eliminaBiologo(id){
     const b = adminState.biologi.find(x=>x.id===id);
     if(!b) return;
-    if(!confirm('Rimuovere '+b.nome+' dalla lista?\nIl profilo verrà disattivato definitivamente.')) return;
-    const { data: updated, error } = await db.from('profiles').update({ stato:'eliminato' }).eq('id', id).select();
-    if(error){ showToast('Errore: '+error.message,'error'); return; }
-    if(!updated || updated.length===0){ showToast('Operazione bloccata — verifica policy RLS su Supabase','error'); return; }
+    // Doppia conferma. L'account di accesso viene rimosso (email liberata), ma
+    // scuole, classi e statistiche del biologo restano nel database.
+    if(!confirm('Eliminare '+b.nome+'?\n\nL\'account di accesso viene rimosso e l\'email tornerà libera.\nI dati personali vengono anonimizzati; scuole, classi e statistiche RESTANO nel database.')) return;
+    if(!confirm('Confermi l\'eliminazione di '+b.nome+'?')) return;
+    const token = (await db.auth.getSession()).data?.session?.access_token;
+    if(!token){ showToast('Sessione scaduta, rientra','error'); return; }
+    let r;
+    try{
+        r = await fetch(FN_BASE+'/elimina-utente',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:token,user_id:id})});
+    }catch(e){ showToast('Errore di rete, riprova','error'); return; }
+    const j = await r.json().catch(()=>({}));
+    if(!r.ok || !j.ok){ showToast(j.error||'Eliminazione non riuscita','error'); return; }
     adminState.biologi = adminState.biologi.filter(x=>x.id!==id);
     aggiornaLicenze(); aggiornaDashboard();
-    showToast(b.nome+' rimosso ✓');
-    alert('Nota: per eliminare completamente l\'accesso dell\'utente è necessario rimuoverlo anche da Supabase Authentication. Vai su Supabase → Authentication → Users e cerca l\'email.');
+    showToast(b.nome+' eliminato definitivamente ✓');
 }
 
 async function aggiungiBiologo(){
@@ -2002,7 +2011,7 @@ async function aggiungiBiologo(){
     if(!nome||!email||!regione){ showToast('Compila nome, email e regione','error'); return; }
 
     // Aggiorna profilo esistente se già registrato, altrimenti mostra istruzione
-    const { data: existing } = await db.from('profiles').select('id').eq('email', email).single();
+    const { data: existing } = await db.from('profiles').select('id').eq('email', email).maybeSingle();
     if(existing){
         const update = { nome, regione, ordine:ordine||'—', stato, scadenza:scadenza||null };
         const { error } = await db.from('profiles').update(update).eq('id', existing.id);
