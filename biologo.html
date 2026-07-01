@@ -330,6 +330,44 @@
     </div>
 </div>
 
+<!-- SCHERMATA PAYWALL (utente loggato ma senza abbonamento/codice attivo) -->
+<div id="paywallScreen" style="display:none;position:fixed;inset:0;z-index:210;background:var(--dark);align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px;">
+    <div class="login-card" style="max-width:440px;">
+        <div style="text-align:center;margin-bottom:24px;">
+            <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="SANE" style="height:56px;margin:0 auto 14px;display:block;">
+            <h1 style="color:white;font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin:0;">Attiva il tuo accesso</h1>
+            <p id="paywallSub" style="color:rgba(255,255,255,0.45);font-size:13px;line-height:1.6;margin-top:8px;">Per usare il Portale Biologi serve un abbonamento attivo.</p>
+        </div>
+
+        <!-- Abbonamento -->
+        <div style="background:rgba(0,168,150,0.10);border:1px solid rgba(0,168,150,0.35);border-radius:16px;padding:20px;margin-bottom:18px;">
+            <div style="display:flex;align-items:baseline;justify-content:center;gap:6px;margin-bottom:4px;">
+                <span style="color:white;font-family:'Syne',sans-serif;font-size:30px;font-weight:800;">€50</span>
+                <span style="color:rgba(255,255,255,0.5);font-size:13px;">/ anno</span>
+            </div>
+            <p style="color:rgba(255,255,255,0.45);font-size:12px;text-align:center;line-height:1.6;margin-bottom:16px;">Accesso completo al portale: scuole, classi, questionari, report e certificati. Rinnovo automatico, disdici quando vuoi.</p>
+            <button id="paywallAbbonaBtn" onclick="avviaAbbonamento()" style="width:100%;background:var(--teal);color:white;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;">Abbonati ora</button>
+            <p style="color:rgba(255,255,255,0.3);font-size:10px;text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:5px;"><i class="fas fa-lock"></i> Pagamento sicuro con Stripe</p>
+        </div>
+
+        <!-- Divisore -->
+        <div style="display:flex;align-items:center;gap:12px;margin:16px 0;">
+            <div style="flex:1;height:1px;background:rgba(255,255,255,0.12);"></div>
+            <span style="color:rgba(255,255,255,0.3);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">oppure</span>
+            <div style="flex:1;height:1px;background:rgba(255,255,255,0.12);"></div>
+        </div>
+
+        <!-- Codice di sblocco -->
+        <label class="form-label" style="color:rgba(255,255,255,0.4);">Hai un codice di accesso?</label>
+        <input class="login-input" type="text" id="paywallCodice" placeholder="es. SANE-XXXX-XXXX" style="text-transform:uppercase;" onkeydown="if(event.key==='Enter')riscattaCodice()">
+        <button id="paywallCodiceBtn" onclick="riscattaCodice()" style="width:100%;background:rgba(255,255,255,0.08);color:white;border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:13px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;">Sblocca con codice</button>
+
+        <p style="text-align:center;margin-top:20px;">
+            <a href="#" onclick="doLogout();return false;" style="color:rgba(255,255,255,0.4);font-size:12px;text-decoration:none;"><i class="fas fa-arrow-left" style="font-size:10px;"></i> Esci</a>
+        </p>
+    </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast"></div>
 
@@ -1266,16 +1304,28 @@ async function caricaDati(targetId=null){
 }
 
 async function inizializzaApp(user){
+    // Ritorno da Stripe Checkout: verifica il pagamento e attiva PRIMA di leggere lo stato
+    const _sp=new URLSearchParams(window.location.search);
+    if(_sp.get('checkout')==='success' && _sp.get('session_id')){
+        await verificaPagamentoRitorno(_sp.get('session_id'));
+        pulisciUrlCheckout();
+    } else if(_sp.get('checkout')==='cancel'){
+        pulisciUrlCheckout();
+    }
     const {data:profilo, error:errP}=await db.from('profiles').select('*').eq('id',user.id).single();
     if(!profilo){showToast('Profilo non trovato. Contatta l\'amministratore.','error');await db.auth.signOut();return;}
     if(profilo.stato==='eliminato'){
         showToast('Questo account è stato disattivato. Per informazioni contatta patrick.orlando@libero.it','error');
         await db.auth.signOut();return;
     }
-    if(profilo.stato!=='active'){
-        const msg=profilo.stato==='pending'?'Licenza in attesa di approvazione.':'Licenza sospesa o scaduta.';
-        showToast(msg+' Contatta l\'amministratore.','error');
+    if(profilo.stato==='suspended'){
+        showToast('Account sospeso. Per informazioni contatta l\'amministratore.','error');
         await db.auth.signOut();return;
+    }
+    if(profilo.stato!=='active'){
+        // pending o expired → paywall (abbonamento o codice). La sessione resta viva.
+        mostraPaywall(profilo);
+        return;
     }
     appState.utente={nome:profilo.nome||user.email.split('@')[0],email:user.email,id:user.id,regione:profilo.regione||null,ordine:profilo.ordine||null,genere:profilo.genere||null};
     await caricaDati();
@@ -1299,6 +1349,73 @@ async function inizializzaApp(user){
             setTimeout(()=>mostraOnboarding(user.id), 1000);
         } catch(e){ console.error('[SANE] aggiornaUI error:',e); }
     },400);
+}
+
+// ─── PAYWALL / ABBONAMENTO STRIPE + CODICI ────────────────────
+const FN_BASE='/.netlify/functions';
+
+async function _accessToken(){
+    const {data}=await db.auth.getSession();
+    return data?.session?.access_token||null;
+}
+function pulisciUrlCheckout(){
+    try{ history.replaceState({}, '', window.location.pathname); }catch(e){}
+}
+function mostraPaywall(profilo){
+    hideInitLoader();
+    const login=document.getElementById('loginScreen'); if(login) login.classList.add('hidden');
+    const sub=document.getElementById('paywallSub');
+    if(sub) sub.textContent = (profilo && profilo.stato==='expired')
+        ? 'Il tuo abbonamento è scaduto. Rinnova per continuare a usare il portale.'
+        : 'Per usare il Portale Biologi serve un abbonamento attivo.';
+    const pw=document.getElementById('paywallScreen');
+    if(pw) pw.style.display='flex';
+}
+async function avviaAbbonamento(){
+    const btn=document.getElementById('paywallAbbonaBtn');
+    if(btn){ btn.disabled=true; btn.textContent='Attendere...'; }
+    try{
+        const token=await _accessToken();
+        if(!token){ showToast('Sessione scaduta, rientra','error'); return; }
+        const r=await fetch(FN_BASE+'/crea-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:token})});
+        const j=await r.json();
+        if(j.url){ window.location.href=j.url; return; }
+        showToast(j.error||'Errore avvio pagamento','error');
+    }catch(e){ showToast('Errore di rete, riprova','error'); }
+    finally{ if(btn){ btn.disabled=false; btn.textContent='Abbonati ora'; } }
+}
+async function riscattaCodice(){
+    const inp=document.getElementById('paywallCodice');
+    const codice=(inp?.value||'').trim();
+    if(!codice){ showToast('Inserisci un codice','error'); return; }
+    const btn=document.getElementById('paywallCodiceBtn');
+    if(btn){ btn.disabled=true; btn.textContent='Verifica...'; }
+    try{
+        const token=await _accessToken();
+        if(!token){ showToast('Sessione scaduta, rientra','error'); return; }
+        const r=await fetch(FN_BASE+'/riscatta-codice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:token,codice})});
+        const j=await r.json();
+        if(j.ok){
+            showToast('Accesso sbloccato ✓');
+            document.getElementById('paywallScreen').style.display='none';
+            const {data:{user}}=await db.auth.getUser();
+            const el=document.getElementById('initLoader'); if(el){ el.style.display='flex'; el.style.opacity='1'; el.style.pointerEvents=''; }
+            await inizializzaApp(user);
+            return;
+        }
+        showToast(j.error||'Codice non valido','error');
+    }catch(e){ showToast('Errore di rete, riprova','error'); }
+    finally{ if(btn){ btn.disabled=false; btn.textContent='Sblocca con codice'; } }
+}
+async function verificaPagamentoRitorno(session_id){
+    try{
+        const token=await _accessToken();
+        if(!token) return false;
+        const r=await fetch(FN_BASE+'/verify-payment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:token,session_id})});
+        const j=await r.json();
+        if(j.paid){ showToast('Pagamento confermato ✓'); return true; }
+    }catch(e){}
+    return false;
 }
 
 function showSection(id,el){

@@ -352,6 +352,9 @@
             <div class="nav-item" onclick="showSection('licenze',this)">
                 <i class="fas fa-id-card"></i><span class="label">Licenze Biologi</span>
             </div>
+            <div id="navCodici" class="nav-item" onclick="showSection('codici',this)">
+                <i class="fas fa-key"></i><span class="label">Codici Accesso</span>
+            </div>
             <div id="navNazionale" class="nav-item" onclick="showSection('nazionale',this)">
                 <i class="fas fa-map-marked-alt"></i><span class="label">Dati Nazionali</span>
             </div>
@@ -612,6 +615,39 @@
             </div>
         </section>
 
+        <!-- CODICI DI ACCESSO -->
+        <section id="sec-codici" class="section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;">
+                <div>
+                    <h2 style="font-size:22px;font-weight:700;color:var(--dark);">Codici di Accesso</h2>
+                    <p style="color:#94a3b8;font-size:12px;margin-top:3px;">Sblocco manuale del portale senza pagamento — genera un codice con scadenza e dallo al biologo</p>
+                </div>
+            </div>
+
+            <!-- GENERA -->
+            <div class="card" style="margin-bottom:20px;">
+                <h3 style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:14px;"><i class="fas fa-plus-circle" style="color:var(--teal);margin-right:6px;"></i>Genera nuovo codice</h3>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;">
+                    <div>
+                        <label style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:4px;">Valido fino al</label>
+                        <input type="date" id="codiceScadenza" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 12px;font-size:13px;color:var(--dark);">
+                    </div>
+                    <div style="flex:1;min-width:220px;">
+                        <label style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:4px;">Etichetta <span style="text-transform:none;color:#cbd5e1;">(nota per te)</span></label>
+                        <input type="text" id="codiceEtichetta" placeholder="es. Scuola Carducci — omaggio 2026" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 12px;font-size:13px;color:var(--dark);">
+                    </div>
+                    <button class="btn-primary" onclick="generaCodice()"><i class="fas fa-key" style="margin-right:5px;"></i>Genera</button>
+                </div>
+            </div>
+
+            <!-- LISTA -->
+            <div class="card" style="padding:0;overflow:hidden;">
+                <div id="codiciTabella" style="overflow-x:auto;">
+                    <p style="text-align:center;color:#94a3b8;padding:40px;font-size:13px;">Clicca su "Codici Accesso" per caricare i dati.</p>
+                </div>
+            </div>
+        </section>
+
     </main>
 </div>
 
@@ -767,8 +803,10 @@ function adattaInterfaccia(){
     // Nascondi sezioni riservate al super admin
     const navNaz = document.getElementById('navNazionale');
     const navLog = document.getElementById('navLog');
+    const navCod = document.getElementById('navCodici');
     if(navNaz) navNaz.style.display = 'none';
     if(navLog) navLog.style.display = 'none';
+    if(navCod) navCod.style.display = 'none';
 
     // Nascondi pulsante aggiungi biologo
     const btnAdd = document.getElementById('btnAggiungiBiologo');
@@ -808,6 +846,94 @@ function showSection(id, el){
     if(id==='licenze'){ aggiornaLicenze(); renderMappa(); }
     if(id==='nazionale') aggiornaNazionale();
     if(id==='autovalutazioni') aggiornaAdminAutovalutazioni();
+    if(id==='codici') caricaCodici();
+}
+
+// ============================================================
+// CODICI DI ACCESSO (sblocco manuale)
+// ============================================================
+let _codiciCache = [];
+
+function _generaStringaCodice(){
+    const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // niente 0/O/1/I ambigui
+    const blk=()=>Array.from({length:4},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+    return 'SANE-'+blk()+'-'+blk();
+}
+
+async function generaCodice(){
+    const scadenza = document.getElementById('codiceScadenza').value;
+    const etichetta = document.getElementById('codiceEtichetta').value.trim();
+    if(!scadenza){ showToast('Imposta una data di scadenza','error'); return; }
+    if(scadenza < new Date().toISOString().split('T')[0]){ showToast('La scadenza è nel passato','error'); return; }
+    const codice = _generaStringaCodice();
+    const { error } = await db.from('codici_accesso').insert({ codice, scadenza, etichetta: etichetta||null });
+    if(error){ showToast('Errore: '+error.message,'error'); return; }
+    document.getElementById('codiceEtichetta').value='';
+    showToast('Codice generato ✓');
+    await caricaCodici();
+    // Copia automatica negli appunti + evidenzia
+    try{ await navigator.clipboard.writeText(codice); showToast('Codice '+codice+' copiato negli appunti ✓'); }catch(e){}
+}
+
+async function caricaCodici(){
+    const { data, error } = await db.from('codici_accesso').select('*').order('created_at',{ascending:false});
+    if(error){ document.getElementById('codiciTabella').innerHTML='<p style="text-align:center;color:#dc2626;padding:40px;font-size:13px;">Errore: '+error.message+'</p>'; return; }
+    _codiciCache = data||[];
+    renderCodici();
+}
+
+async function copiaCodice(codice){
+    try{ await navigator.clipboard.writeText(codice); showToast('Copiato: '+codice); }
+    catch(e){ showToast('Copia non riuscita','error'); }
+}
+
+async function toggleCodice(id, attivo){
+    const { error } = await db.from('codici_accesso').update({ attivo:!attivo }).eq('id',id);
+    if(error){ showToast('Errore: '+error.message,'error'); return; }
+    const c=_codiciCache.find(x=>x.id===id); if(c) c.attivo=!attivo;
+    renderCodici();
+    showToast(!attivo?'Codice riattivato':'Codice disattivato');
+}
+
+function _nomeDaId(uid){
+    const b=(adminState.biologi||[]).find(x=>x.id===uid);
+    return b ? (b.nome||b.email||uid.slice(0,8)) : uid.slice(0,8)+'…';
+}
+
+function renderCodici(){
+    const el=document.getElementById('codiciTabella');
+    if(!_codiciCache.length){ el.innerHTML='<p style="text-align:center;color:#94a3b8;padding:40px;font-size:13px;">Nessun codice generato. Creane uno qui sopra.</p>'; return; }
+    const oggi=new Date().toISOString().split('T')[0];
+    const righe=_codiciCache.map(c=>{
+        const scaduto = c.scadenza < oggi;
+        let stato, col, bg;
+        if(c.usato_da){ stato='Usato'; col='#6b7280'; bg='#f1f5f9'; }
+        else if(!c.attivo){ stato='Disattivato'; col='#6b7280'; bg='#f1f5f9'; }
+        else if(scaduto){ stato='Scaduto'; col='#dc2626'; bg='#fee2e2'; }
+        else { stato='Disponibile'; col='#16a34a'; bg='#dcfce7'; }
+        const scadFmt=c.scadenza?new Date(c.scadenza).toLocaleDateString('it-IT'):'—';
+        const usato = c.usato_da
+            ? _nomeDaId(c.usato_da)+(c.usato_il?' · '+new Date(c.usato_il).toLocaleDateString('it-IT'):'')
+            : '—';
+        return `<tr style="border-bottom:1px solid #f1f5f9;">
+            <td style="padding:12px 16px;"><span style="font-family:monospace;font-weight:700;color:var(--dark);font-size:13px;">${c.codice}</span>
+                <button onclick="copiaCodice('${c.codice}')" title="Copia" style="background:none;border:none;cursor:pointer;color:#94a3b8;margin-left:6px;"><i class="fas fa-copy"></i></button></td>
+            <td style="padding:12px 16px;font-size:12px;color:#475569;">${c.etichetta||'—'}</td>
+            <td style="padding:12px 16px;font-size:12px;color:${scaduto?'#dc2626':'#475569'};">${scadFmt}</td>
+            <td style="padding:12px 16px;"><span style="background:${bg};color:${col};border-radius:7px;padding:2px 10px;font-size:11px;font-weight:700;">${stato}</span></td>
+            <td style="padding:12px 16px;font-size:12px;color:#475569;">${usato}</td>
+            <td style="padding:12px 16px;text-align:right;">${c.usato_da?'':`<button onclick="toggleCodice('${c.id}',${c.attivo})" style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:#64748b;cursor:pointer;">${c.attivo?'Disattiva':'Riattiva'}</button>`}</td>
+        </tr>`;
+    }).join('');
+    el.innerHTML=`<table style="width:100%;border-collapse:collapse;min-width:640px;">
+        <thead><tr style="background:#f8fafc;text-align:left;">
+            <th style="padding:12px 16px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Codice</th>
+            <th style="padding:12px 16px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Etichetta</th>
+            <th style="padding:12px 16px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Scadenza</th>
+            <th style="padding:12px 16px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Stato</th>
+            <th style="padding:12px 16px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Usato da</th>
+            <th style="padding:12px 16px;"></th>
+        </tr></thead><tbody>${righe}</tbody></table>`;
 }
 
 // ============================================================
