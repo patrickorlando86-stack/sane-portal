@@ -1986,7 +1986,7 @@ async function eliminaBiologo(id){
     if(!b) return;
     // Doppia conferma. L'account di accesso viene rimosso (email liberata), ma
     // scuole, classi e statistiche del biologo restano nel database.
-    if(!confirm('Eliminare '+b.nome+'?\n\nL\'account di accesso viene rimosso e l\'email tornerà libera.\nScuole, classi e statistiche del biologo RESTANO nel database.')) return;
+    if(!confirm('Eliminare '+b.nome+'?\n\nL\'account di accesso viene rimosso e l\'email tornerà libera.\nI dati personali vengono anonimizzati; scuole, classi e statistiche RESTANO nel database.')) return;
     if(!confirm('Confermi l\'eliminazione di '+b.nome+'?')) return;
     const token = (await db.auth.getSession()).data?.session?.access_token;
     if(!token){ showToast('Sessione scaduta, rientra','error'); return; }

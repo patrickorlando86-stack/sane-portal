@@ -69,21 +69,34 @@ async function handle(event) {
       return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Non puoi eliminare il tuo stesso account' }) };
     }
 
-    // 4) Marca il profilo come eliminato — MA lo LASCIAMO nel database, così
-    //    scuole, classi, questionari e statistiche del biologo restano intatti
-    //    e correttamente attribuiti (nessuna perdita di dati).
+    // Segnaposto univoco per l'email (l'email originale torna libera per una
+    // futura registrazione). .invalid è un TLD riservato, mai recapitabile.
+    const tombstone = `deleted+${userId}@sane-italia.invalid`;
+
+    // 4) ANONIMIZZA il profilo (best practice GDPR) ma lo LASCIAMO nel database:
+    //    togliamo i dati personali (nome, email, n. ordine, genere, Stripe) e
+    //    marchiamo stato='eliminato', tenendo regione e biologo_id. Così scuole,
+    //    classi, questionari e statistiche restano intatti e attribuiti a un
+    //    record ormai anonimo — nessun dato personale conservato, nessuna
+    //    perdita di dati statistici.
     await svc(`profiles?id=eq.${userId}`, {
       method: 'PATCH',
       headers: { Prefer: 'return=minimal' },
-      body: JSON.stringify({ stato: 'eliminato' })
+      body: JSON.stringify({
+        stato: 'eliminato',
+        nome: 'Biologo rimosso',
+        email: tombstone,
+        ordine: null,
+        genere: null,
+        stripe_customer_id: null,
+        stripe_subscription_id: null
+      })
     });
 
     // 5) Neutralizza l'ACCOUNT di accesso senza cancellarlo: cambiamo l'email
-    //    con un segnaposto (così l'email originale torna libera per una futura
-    //    registrazione) e blocchiamo il login con un ban lunghissimo.
+    //    con il segnaposto e blocchiamo il login con un ban lunghissimo.
     //    NON usiamo DELETE apposta: eviterebbe eventuali ON DELETE CASCADE che
     //    porterebbero via profilo, scuole e dati statistici.
-    const tombstone = `deleted+${userId}@sane-italia.invalid`;
     const upd = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
       method: 'PUT',
       headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
