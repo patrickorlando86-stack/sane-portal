@@ -271,3 +271,51 @@ create policy "risposte_autoval_owner_read" on public.risposte_autovalutazione
 --   • nessuna tabella usata dal portale compare in 1c (senza policy)
 --   • anon abbia privilegi SOLO dove serve (idealmente: solo EXECUTE sulle RPC)
 -- ============================================================
+
+
+-- ============================================================
+--  PARTE 5 — POLICY PERICOLOSE TROVATE IN PRODUZIONE (2026-07-01)
+--  L'ispezione (PARTE 1b) ha rivelato policy permissive stratificate
+--  negli anni. Le policy permissive si sommano in OR: basta una riga
+--  "true" per vanificare tutte le altre. Tre buchi reali:
+--
+--   A) profiles.profiles_select_auth  ->  {authenticated} USING true
+--      Qualunque biologo loggato legge TUTTI i profili (email, role,
+--      scadenza, stripe_*). Chiudibile SUBITO: la lettura corretta è già
+--      garantita da profiles_select (id=auth.uid() OR is_staff()).
+--
+--   B) autovalutazioni: public_autovalutazioni_token/_update (USING true)
+--      e "anon read/update by token" (token IS NOT NULL, sempre vero).
+--      Chiunque legge/modifica qualsiasi autovalutazione.
+--
+--   C) risposte_autovalutazione: public_risposte_select/_insert (true).
+--      Chiunque legge tutte le risposte e ne inserisce.
+--
+--  B e C esistono perché la vecchia valutazione.html accedeva alle
+--  tabelle direttamente. Con le RPC (PARTE 3) + la nuova valutazione.html
+--  non servono più e vanno rimosse — ma SOLO dopo che la pagina RPC è
+--  online, altrimenti il questionario in produzione si rompe.
+-- ============================================================
+
+-- PASSO 1 (sicuro, subito):
+drop policy if exists "profiles_select_auth" on public.profiles;
+
+-- PASSO 4 (solo DOPO che la nuova valutazione.html è live):
+drop policy if exists "public_autovalutazioni_token"  on public.autovalutazioni;
+drop policy if exists "public_autovalutazioni_update" on public.autovalutazioni;
+drop policy if exists "anon read by token"            on public.autovalutazioni;
+drop policy if exists "anon update by token"          on public.autovalutazioni;
+drop policy if exists "public_risposte_select"        on public.risposte_autovalutazione;
+drop policy if exists "public_risposte_insert"        on public.risposte_autovalutazione;
+drop policy if exists "anon insert risposte autoval"  on public.risposte_autovalutazione;
+
+-- PULIZIA OPZIONALE (duplicati innocui ma disordinati): dopo aver
+-- verificato che tutto funziona, si possono rimuovere le policy ridondanti
+-- lasciando un solo set canonico (quelle *_owner_all con is_staff()):
+-- drop policy if exists "biologo own autoval"     on public.autovalutazioni;
+-- drop policy if exists "biologo_autovalutazioni" on public.autovalutazioni;
+-- drop policy if exists "biologo own scuole"      on public.scuole;
+-- drop policy if exists "biologo_scuole"          on public.scuole;
+-- drop policy if exists "admin_scuole_select"     on public.scuole;
+-- drop policy if exists "Admin read all scuole"   on public.scuole;
+-- ... (idem per classi/pacchetti: tenere solo *_owner_all)
