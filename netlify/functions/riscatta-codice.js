@@ -30,11 +30,26 @@ function svc(path, opts = {}) {
   });
 }
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type'
-};
+// Origin allowlist: le pagine del portale girano su sane-italia.it (GitHub Pages)
+// e chiamano queste function su saneportal.netlify.app (cross-origin). L'auth è
+// sul Bearer token nel body (non su cookie), quindi il CORS non è un confine di
+// sicurezza qui — ma restringiamo comunque l'Origin per igiene, invece di '*'.
+const ALLOWED_ORIGINS = [
+  'https://sane-italia.it',
+  'https://www.sane-italia.it',
+  'https://saneportal.netlify.app'
+];
+function corsHeaders(event) {
+  const h = event.headers || {};
+  const origin = h.origin || h.Origin || '';
+  const allow = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allow,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin'
+  };
+}
 
 // ── Rate limit (difesa in profondità: i codici hanno ~40 bit di entropia,
 //    il brute-force è già infeasible; qui limitiamo l'hammering) ──────────
@@ -167,6 +182,7 @@ async function handle(event) {
 }
 
 exports.handler = async (event) => {
+  const CORS = corsHeaders(event);
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS };
   const res = await handle(event);
   return { ...res, headers: { ...CORS, ...(res.headers || {}) } };
