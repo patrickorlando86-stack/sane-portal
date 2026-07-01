@@ -36,6 +36,54 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type'
 };
 
+// ── Rate limit (difesa in profondità: i codici hanno ~40 bit di entropia,
+//    il brute-force è già infeasible; qui limitiamo l'hammering) ──────────
+const RL_WINDOW_MIN = 15;   // finestra scorrevole
+const RL_MAX_FAILS  = 5;    // tentativi FALLITI ammessi per utente (e per IP) nella finestra
+
+// IP best-effort dagli header (Netlify: x-nf-client-connection-ip / x-forwarded-for)
+function clientIp(event) {
+  const h = event.headers || {};
+  const xff = h['x-forwarded-for'] || h['X-Forwarded-For'] || '';
+  return (xff.split(',')[0] || '').trim()
+    || h['x-nf-client-connection-ip'] || h['client-ip'] || null;
+}
+
+// Conta i tentativi falliti recenti su una colonna (user_id o ip). Restituisce
+// un numero; in caso di errore restituisce 0 così un problema di logging non
+// blocca mai un riscatto legittimo (fail-open sul rate limit).
+async function contaFail(colonna, valore) {
+  if (!valore) return 0;
+  const since = new Date(Date.now() - RL_WINDOW_MIN * 60000).toISOString();
+  try {
+    const r = await svc(
+      `codice_tentativi?${colonna}=eq.${encodeURIComponent(valore)}` +
+      `&esito=eq.fail&created_at=gte.${encodeURIComponent(since)}&select=id`,
+      { headers: { Prefer: 'count=exact', Range: '0-0' } }
+    );
+    // Content-Range: "0-0/<totale>" oppure "*/0"
+    const cr = r.headers.get('content-range') || '';
+    const tot = parseInt(cr.split('/')[1], 10);
+    return Number.isFinite(tot) ? tot : 0;
+  } catch (e) {
+    console.error('rate-limit contaFail:', e);
+    return 0;
+  }
+}
+
+// Registra un tentativo (best-effort: non deve mai far fallire il riscatto).
+async function logTentativo(userId, ip, esito) {
+  try {
+    await svc('codice_tentativi', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({ user_id: userId, ip, esito })
+    });
+  } catch (e) {
+    console.error('rate-limit logTentativo:', e);
+  }
+}
+
 async function handle(event) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
@@ -54,16 +102,38 @@ async function handle(event) {
     const user = await getUser(token);
     if (!user || !user.id) return { statusCode: 401, body: JSON.stringify({ ok: false, error: 'Sessione non valida' }) };
 
+    const ip = clientIp(event);
+
+    // Rate limit: troppi tentativi FALLITI recenti (per utente o per IP) → blocca.
+    const [failUser, failIp] = await Promise.all([
+      contaFail('user_id', user.id),
+      contaFail('ip', ip)
+    ]);
+    if (failUser >= RL_MAX_FAILS || failIp >= RL_MAX_FAILS) {
+      return {
+        statusCode: 429,
+        headers: { 'Retry-After': String(RL_WINDOW_MIN * 60) },
+        body: JSON.stringify({ ok: false, error: `Troppi tentativi. Riprova tra ${RL_WINDOW_MIN} minuti.` })
+      };
+    }
+
+    // Un tentativo con codice errato/inutilizzabile viene registrato come 'fail'
+    // (è il segnale di brute-force che alimenta il rate limit).
+    const denyCode = async (error) => {
+      await logTentativo(user.id, ip, 'fail');
+      return { statusCode: 200, body: JSON.stringify({ ok: false, error }) };
+    };
+
     // 1) Cerca il codice
     const q = await svc(`codici_accesso?codice=eq.${encodeURIComponent(codice)}&select=*`);
     const rows = await q.json();
     const c = Array.isArray(rows) ? rows[0] : null;
-    if (!c)          return { statusCode: 200, body: JSON.stringify({ ok: false, error: 'Codice non valido' }) };
-    if (!c.attivo)   return { statusCode: 200, body: JSON.stringify({ ok: false, error: 'Codice disattivato' }) };
-    if (c.usato_da)  return { statusCode: 200, body: JSON.stringify({ ok: false, error: 'Codice già utilizzato' }) };
+    if (!c)          return await denyCode('Codice non valido');
+    if (!c.attivo)   return await denyCode('Codice disattivato');
+    if (c.usato_da)  return await denyCode('Codice già utilizzato');
 
     const oggi = new Date().toISOString().split('T')[0];
-    if (c.scadenza < oggi) return { statusCode: 200, body: JSON.stringify({ ok: false, error: 'Codice scaduto' }) };
+    if (c.scadenza < oggi) return await denyCode('Codice scaduto');
 
     // 2) Marca il codice come usato (condizione usato_da IS NULL per evitare doppio riscatto)
     const upd = await svc(`codici_accesso?id=eq.${c.id}&usato_da=is.null`, {
@@ -73,7 +143,7 @@ async function handle(event) {
     });
     const updRows = await upd.json();
     if (!Array.isArray(updRows) || updRows.length === 0) {
-      return { statusCode: 200, body: JSON.stringify({ ok: false, error: 'Codice già utilizzato' }) };
+      return await denyCode('Codice già utilizzato');
     }
 
     // 3) Attiva il profilo con la scadenza del codice
@@ -87,6 +157,7 @@ async function handle(event) {
       return { statusCode: 500, body: JSON.stringify({ ok: false, error: 'Errore attivazione profilo' }) };
     }
 
+    await logTentativo(user.id, ip, 'ok');
     return { statusCode: 200, headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ok: true, scadenza: c.scadenza }) };
   } catch (err) {
