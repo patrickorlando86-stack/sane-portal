@@ -176,14 +176,17 @@ create policy "risposte_owner_all" on public.risposte
 -- Opzione A (consigliata) — RPC che espone SOLO ciò che serve per token,
 -- senza dare policy dirette ad anon sulle tabelle.
 create or replace function public.autoval_get_by_token(p_token text)
-returns table (id uuid, scuola_id uuid, anno_scolastico text, stato text)
+returns table (id uuid, scuola_id uuid, anno_scolastico text, stato text,
+               scuola_nome text, scuola_comune text)
 language sql
 security definer
 stable
 set search_path = public
 as $$
-  select a.id, a.scuola_id, a.anno_scolastico, a.stato
+  select a.id, a.scuola_id, a.anno_scolastico, a.stato,
+         s.nome as scuola_nome, s.comune as scuola_comune
   from public.autovalutazioni a
+  left join public.scuole s on s.id = a.scuola_id
   where a.token = p_token
   limit 1;
 $$;

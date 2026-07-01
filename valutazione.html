@@ -143,6 +143,7 @@ const DOMANDE=[
 const AREE=['Mensa e Refezione','Educazione Alimentare','Ambiente e Spazi','Sicurezza Alimentare','Attività Fisica e Benessere'];
 
 let _autovId=null;
+let _token=null;
 let _risposte={}; // index -> punteggio (0,1,2) or null for N/A
 
 function mostraErrore(msg){
@@ -156,17 +157,19 @@ async function init(){
     const params=new URLSearchParams(window.location.search);
     const token=params.get('token');
     if(!token){mostraErrore('Nessun token trovato nel link.');return;}
+    _token=token;
 
-    const {data:autov,error}=await db.from('autovalutazioni').select('*').eq('token',token).single();
+    // RPC SECURITY DEFINER: l'anon non interroga direttamente autovalutazioni/scuole
+    const {data:rows,error}=await db.rpc('autoval_get_by_token',{p_token:token});
+    const autov=Array.isArray(rows)?rows[0]:rows;
     if(error||!autov){mostraErrore('Link non valido o scaduto.');return;}
     if(autov.stato!=='attesa'){mostraErrore('Questo questionario è già stato compilato. Grazie!');return;}
 
     _autovId=autov.id;
 
-    // Carica nome scuola
-    const {data:scuola}=await db.from('scuole').select('nome,comune').eq('id',autov.scuola_id).single();
-    const nomeScuola=scuola?scuola.nome:'Scuola';
-    const comune=scuola&&scuola.comune?' · '+scuola.comune:'';
+    // Nome scuola: restituito dalla RPC stessa
+    const nomeScuola=autov.scuola_nome||'Scuola';
+    const comune=autov.scuola_comune?' · '+autov.scuola_comune:'';
 
     document.getElementById('intestazione').innerHTML=`
         <div style="background:var(--dark);border-radius:16px;padding:20px 24px;color:white;margin-bottom:4px;">
@@ -255,11 +258,10 @@ async function inviaRisposte(){
 
     const {pts,max}=calcolaPunteggio();
 
-    // Prepara le righe per risposte_autovalutazione
+    // Righe risposte (autovalutazione_id lo deriva la RPC dal token)
     const righe=DOMANDE.map((dom,idx)=>{
         const v=_risposte[idx];
         return {
-            autovalutazione_id:_autovId,
             area:String(dom.area),
             domanda_id:idx,
             domanda:dom.testo,
@@ -268,16 +270,18 @@ async function inviaRisposte(){
         };
     });
 
-    const {error:errR}=await db.from('risposte_autovalutazione').insert(righe);
-    if(errR){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore durante il salvataggio. Riprova.');return;}
-
-    const {error:errA}=await db.from('autovalutazioni').update({
-        stato:'completata',
-        punteggio_totale:pts,
-        punteggio_max:max,
-        compilata_il:new Date().toISOString()
-    }).eq('id',_autovId);
-    if(errA){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';alert('Errore durante il salvataggio. Riprova.');return;}
+    // RPC SECURITY DEFINER: inserisce le risposte e chiude l'autovalutazione
+    // in un'unica transazione lato server. L'anon non tocca le tabelle.
+    const {data:ok,error:errSub}=await db.rpc('autoval_submit',{
+        p_token:_token,
+        p_righe:righe,
+        p_punteggio:pts,
+        p_punteggio_max:max
+    });
+    if(errSub||ok!==true){
+        btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>Invia Questionario';
+        alert('Errore durante il salvataggio. Riprova.');return;
+    }
 
     document.getElementById('questionario').style.display='none';
     document.getElementById('risultatoFinale').style.display='none';
