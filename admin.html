@@ -659,6 +659,7 @@ const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZm9zbGlva2Zza2Z0bW91a3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDY3NTEsImV4cCI6MjA5MDYyMjc1MX0.eX9BL0tIy83zZ49hxzxFloH24hGIcbMRb2AsmCOiF9k';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'sane-admin-session' } });
+const FN_BASE = 'https://saneportal.netlify.app/.netlify/functions';
 
 // ============================================================
 // STATO
@@ -1983,14 +1984,20 @@ async function rinnovaLicenza(id){
 async function eliminaBiologo(id){
     const b = adminState.biologi.find(x=>x.id===id);
     if(!b) return;
-    if(!confirm('Rimuovere '+b.nome+' dalla lista?\nIl profilo verrà disattivato definitivamente.')) return;
-    const { data: updated, error } = await db.from('profiles').update({ stato:'eliminato' }).eq('id', id).select();
-    if(error){ showToast('Errore: '+error.message,'error'); return; }
-    if(!updated || updated.length===0){ showToast('Operazione bloccata — verifica policy RLS su Supabase','error'); return; }
+    // Doppia conferma: l'operazione cancella anche l'account di accesso ed è irreversibile
+    if(!confirm('Eliminare DEFINITIVAMENTE '+b.nome+'?\n\nViene cancellato anche l\'account di accesso (l\'email torna libera).\nL\'operazione è IRREVERSIBILE.')) return;
+    if(!confirm('Ultima conferma: elimino definitivamente '+b.nome+'?')) return;
+    const token = (await db.auth.getSession()).data?.session?.access_token;
+    if(!token){ showToast('Sessione scaduta, rientra','error'); return; }
+    let r;
+    try{
+        r = await fetch(FN_BASE+'/elimina-utente',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:token,user_id:id})});
+    }catch(e){ showToast('Errore di rete, riprova','error'); return; }
+    const j = await r.json().catch(()=>({}));
+    if(!r.ok || !j.ok){ showToast(j.error||'Eliminazione non riuscita','error'); return; }
     adminState.biologi = adminState.biologi.filter(x=>x.id!==id);
     aggiornaLicenze(); aggiornaDashboard();
-    showToast(b.nome+' rimosso ✓');
-    alert('Nota: per eliminare completamente l\'accesso dell\'utente è necessario rimuoverlo anche da Supabase Authentication. Vai su Supabase → Authentication → Users e cerca l\'email.');
+    showToast(b.nome+' eliminato definitivamente ✓');
 }
 
 async function aggiungiBiologo(){
