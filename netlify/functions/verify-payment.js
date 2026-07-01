@@ -26,7 +26,13 @@ function svc(path, opts = {}) {
 
 function unixToDate(sec) { return sec ? new Date(sec * 1000).toISOString().split('T')[0] : null; }
 
-exports.handler = async (event) => {
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
+
+async function handle(event) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
   try {
@@ -71,4 +77,10 @@ exports.handler = async (event) => {
     console.error('🔥 verify-payment:', err);
     return { statusCode: 500, body: JSON.stringify({ paid: false, error: 'Errore interno' }) };
   }
+}
+
+exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS };
+  const res = await handle(event);
+  return { ...res, headers: { ...CORS, ...(res.headers || {}) } };
 };

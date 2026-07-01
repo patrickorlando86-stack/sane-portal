@@ -1352,7 +1352,7 @@ async function inizializzaApp(user){
 }
 
 // ─── PAYWALL / ABBONAMENTO STRIPE + CODICI ────────────────────
-const FN_BASE='/.netlify/functions';
+const FN_BASE='https://saneportal.netlify.app/.netlify/functions';
 
 async function _accessToken(){
     const {data}=await db.auth.getSession();

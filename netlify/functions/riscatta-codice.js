@@ -30,7 +30,13 @@ function svc(path, opts = {}) {
   });
 }
 
-exports.handler = async (event) => {
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
+
+async function handle(event) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
   try {
@@ -87,4 +93,10 @@ exports.handler = async (event) => {
     console.error('🔥 riscatta-codice:', err);
     return { statusCode: 500, body: JSON.stringify({ ok: false, error: 'Errore interno' }) };
   }
+}
+
+exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS };
+  const res = await handle(event);
+  return { ...res, headers: { ...CORS, ...(res.headers || {}) } };
 };
