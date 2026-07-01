@@ -69,21 +69,29 @@ async function handle(event) {
       return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Non puoi eliminare il tuo stesso account' }) };
     }
 
-    // 4) Marca il profilo come eliminato (se la riga sopravvive alla cancellazione dell'utente)
+    // 4) Marca il profilo come eliminato — MA lo LASCIAMO nel database, così
+    //    scuole, classi, questionari e statistiche del biologo restano intatti
+    //    e correttamente attribuiti (nessuna perdita di dati).
     await svc(`profiles?id=eq.${userId}`, {
       method: 'PATCH',
       headers: { Prefer: 'return=minimal' },
       body: JSON.stringify({ stato: 'eliminato' })
     });
 
-    // 5) Cancella l'account da Supabase Auth (libera l'email, invalida le sessioni)
-    const del = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
-      method: 'DELETE',
-      headers: { apikey: key, Authorization: `Bearer ${key}` }
+    // 5) Neutralizza l'ACCOUNT di accesso senza cancellarlo: cambiamo l'email
+    //    con un segnaposto (così l'email originale torna libera per una futura
+    //    registrazione) e blocchiamo il login con un ban lunghissimo.
+    //    NON usiamo DELETE apposta: eviterebbe eventuali ON DELETE CASCADE che
+    //    porterebbero via profilo, scuole e dati statistici.
+    const tombstone = `deleted+${userId}@sane-italia.invalid`;
+    const upd = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
+      method: 'PUT',
+      headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: tombstone, email_confirm: true, ban_duration: '876000h', user_metadata: { deleted: true } })
     });
     // 404 = utente già assente: lo consideriamo comunque un successo (idempotente)
-    if (!del.ok && del.status !== 404) {
-      console.error('⚠️ delete auth user non OK:', del.status, await del.text());
+    if (!upd.ok && upd.status !== 404) {
+      console.error('⚠️ neutralizzazione account non OK:', upd.status, await upd.text());
       return { statusCode: 502, body: JSON.stringify({ ok: false, error: 'Errore eliminazione account' }) };
     }
 

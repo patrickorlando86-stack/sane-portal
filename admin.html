@@ -1984,9 +1984,10 @@ async function rinnovaLicenza(id){
 async function eliminaBiologo(id){
     const b = adminState.biologi.find(x=>x.id===id);
     if(!b) return;
-    // Doppia conferma: l'operazione cancella anche l'account di accesso ed è irreversibile
-    if(!confirm('Eliminare DEFINITIVAMENTE '+b.nome+'?\n\nViene cancellato anche l\'account di accesso (l\'email torna libera).\nL\'operazione è IRREVERSIBILE.')) return;
-    if(!confirm('Ultima conferma: elimino definitivamente '+b.nome+'?')) return;
+    // Doppia conferma. L'account di accesso viene rimosso (email liberata), ma
+    // scuole, classi e statistiche del biologo restano nel database.
+    if(!confirm('Eliminare '+b.nome+'?\n\nL\'account di accesso viene rimosso e l\'email tornerà libera.\nScuole, classi e statistiche del biologo RESTANO nel database.')) return;
+    if(!confirm('Confermi l\'eliminazione di '+b.nome+'?')) return;
     const token = (await db.auth.getSession()).data?.session?.access_token;
     if(!token){ showToast('Sessione scaduta, rientra','error'); return; }
     let r;
