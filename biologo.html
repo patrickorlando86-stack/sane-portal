@@ -294,6 +294,7 @@
             </div>
         </div>
         <button id="loginBtn" onclick="doLogin()" style="width:100%;background:var(--teal);color:white;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:background 0.2s;">Accedi al Portale</button>
+        <p id="loginBtnHint" style="display:none;color:var(--teal);font-size:11px;text-align:center;margin-top:8px;">Attendi qualche secondo, non ricaricare la pagina…</p>
         <p style="color:rgba(255,255,255,0.35);font-size:12px;text-align:center;margin-top:12px;">
             <a href="#" onclick="mostraResetPassword(event)" style="color:rgba(255,255,255,0.4);font-size:11px;text-decoration:none;" id="resetLink">Hai dimenticato la password?</a>
         </p>
@@ -1118,7 +1119,9 @@ async function doLogin(){
         const ordine=document.getElementById('loginOrdine').value.trim()||null;
         if(!nome){showToast('Inserisci il tuo nome','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
         if(!document.getElementById('consentoTermini').checked||!document.getElementById('consentoPrivacy').checked||!document.getElementById('consentoDati').checked||!document.getElementById('consentoDPA').checked){showToast('Accetta tutti i consensi obbligatori per procedere','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
+        document.getElementById('loginBtnHint').style.display='block';
         const {data:signUpData,error}=await db.auth.signUp({email,password:pass,options:{data:{nome,regione,ordine}}});
+        document.getElementById('loginBtnHint').style.display='none';
         if(error){showToast(error.message,'error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Crea Account';return;}
         // Salva regione/ordine nel profilo se presenti
         if(signUpData?.user&&(regione||ordine)){
@@ -1132,7 +1135,9 @@ async function doLogin(){
         document.getElementById('loginSignupForm').style.display='none';
         document.getElementById('signupSuccessScreen').style.display='block';
     } else {
+        document.getElementById('loginBtnHint').style.display='block';
         const {error}=await db.auth.signInWithPassword({email,password:pass});
+        document.getElementById('loginBtnHint').style.display='none';
         if(error){showToast('Credenziali non valide','error');document.getElementById('loginBtn').disabled=false;document.getElementById('loginBtn').textContent='Accedi al Portale';return;}
         // onAuthStateChange gestirà il resto
     }
