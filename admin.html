@@ -660,6 +660,10 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'sane-admin-session' } });
 const FN_BASE = 'https://saneportal.netlify.app/.netlify/functions';
+// Escape HTML: i dati inseriti dai biologi (nome, ordine, nomi scuole/classi…)
+// finiscono in innerHTML nel pannello admin. Senza escape un biologo potrebbe
+// iniettare <script>/<img onerror> ed eseguirlo nella sessione dell'admin (XSS).
+function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 // ============================================================
 // STATO
@@ -821,7 +825,7 @@ function adattaInterfaccia(){
     const dashDate = document.getElementById('dashDate');
     if(dashDate) dashDate.insertAdjacentHTML('afterend',
         `<span style="display:inline-flex;align-items:center;gap:5px;background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:0.08em;margin-top:6px;">
-            <i class="fas fa-map-marker-alt"></i> ${adminState.regioneAdmin}
+            <i class="fas fa-map-marker-alt"></i> ${esc(adminState.regioneAdmin)}
         </span>`);
 
     // Lock filtro regione nella sezione licenze
@@ -920,7 +924,7 @@ function renderCodici(){
         return `<tr style="border-bottom:1px solid #f1f5f9;">
             <td style="padding:12px 16px;"><span style="font-family:monospace;font-weight:700;color:var(--dark);font-size:13px;">${c.codice}</span>
                 <button onclick="copiaCodice('${c.codice}')" title="Copia" style="background:none;border:none;cursor:pointer;color:#94a3b8;margin-left:6px;"><i class="fas fa-copy"></i></button></td>
-            <td style="padding:12px 16px;font-size:12px;color:#475569;">${c.etichetta||'—'}</td>
+            <td style="padding:12px 16px;font-size:12px;color:#475569;">${esc(c.etichetta||'—')}</td>
             <td style="padding:12px 16px;font-size:12px;color:${scaduto?'#dc2626':'#475569'};">${scadFmt}</td>
             <td style="padding:12px 16px;"><span style="background:${bg};color:${col};border-radius:7px;padding:2px 10px;font-size:11px;font-weight:700;">${stato}</span></td>
             <td style="padding:12px 16px;font-size:12px;color:#475569;">${usato}</td>
@@ -976,12 +980,12 @@ function aggiornaDashboard(){
             const giorni = Math.ceil((new Date(x.scadenza)-oggi)/(1000*60*60*24));
             return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;gap:8px;">
                 <div style="min-width:0;">
-                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${x.nome}</div>
-                    <div style="font-size:11px;color:#94a3b8;">${x.regione}</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${esc(x.nome)}</div>
+                    <div style="font-size:11px;color:#94a3b8;">${esc(x.regione)}</div>
                 </div>
                 <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                     <span style="background:#fef3c7;color:#92400e;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;">tra ${giorni}gg</span>
-                    <a href="${buildMailtoPromemoria(x.email,x.nome,x.scadenza)}" class="btn-warn" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:5px 10px;font-size:11px;"><i class="fas fa-envelope"></i> Promemoria</a>
+                    <a href="${esc(buildMailtoPromemoria(x.email,x.nome,x.scadenza))}" class="btn-warn" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:5px 10px;font-size:11px;"><i class="fas fa-envelope"></i> Promemoria</a>
                 </div>
             </div>`;
         }).join('');
@@ -996,8 +1000,8 @@ function aggiornaDashboard(){
         elP.innerHTML = pendingList.map(x=>`
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
                 <div>
-                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${x.nome}</div>
-                    <div style="font-size:11px;color:#94a3b8;">${x.regione} · ${x.dataIscrizione}</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--dark);">${esc(x.nome)}</div>
+                    <div style="font-size:11px;color:#94a3b8;">${esc(x.regione)} · ${x.dataIscrizione}</div>
                 </div>
                 <div style="display:flex;gap:6px;">
                     <button class="btn-success" data-id="${x.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check"></i></button>
@@ -1196,10 +1200,10 @@ async function aggiornaProntiAttestatoDashboard(){
                 <div style="width:36px;height:36px;border-radius:10px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:#065f46;font-size:14px;">${b.nome.charAt(0)}</div>
                 <div>
                     <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="font-weight:700;font-size:13px;color:var(--dark);">${b.nome}</span>
+                        <span style="font-weight:700;font-size:13px;color:var(--dark);">${esc(b.nome)}</span>
                         ${oreWarning?'<span title="Alcune classi hanno ore rendicontate inferiori al pacchetto" style="background:#fef3c7;color:#92400e;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;cursor:default;">⚠️ Ore incomplete</span>':''}
                     </div>
-                    <div style="font-size:11px;color:#94a3b8;">${b.regione} · ${b.classi} class${b.classi===1?'e':'i'} · ${b.studenti} studenti</div>
+                    <div style="font-size:11px;color:#94a3b8;">${esc(b.regione)} · ${b.classi} class${b.classi===1?'e':'i'} · ${b.studenti} studenti</div>
                 </div>
             </div>
             <button onclick="mostraDettaglioBiologo('${b.id}')" style="background:#d1fae5;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;color:#065f46;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;">
@@ -1264,11 +1268,11 @@ function aggiornaLicenze(){
             <div class="bio-avatar" style="background:${color};">${b.nome.charAt(0)}</div>
             <div style="flex:1;min-width:0;">
                 <div style="display:flex;align-items:center;gap:7px;">
-                    <span style="font-weight:700;font-size:14px;color:var(--dark);">${b.nome}</span>
+                    <span style="font-weight:700;font-size:14px;color:var(--dark);">${esc(b.nome)}</span>
                     ${b.isAdmin?'<span style="font-size:9px;font-weight:700;background:#0A2647;color:white;padding:2px 7px;border-radius:5px;letter-spacing:0.06em;">ADMIN</span>':''}
                     ${b.ruolo==='regional_admin'?'<span style="font-size:9px;font-weight:700;background:#7c3aed;color:white;padding:2px 7px;border-radius:5px;letter-spacing:0.06em;"><i class="fas fa-star" style="font-size:8px;margin-right:3px;"></i>RESP. REG.</span>':''}
                 </div>
-                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${b.email} · ${b.regione}</div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${esc(b.email)} · ${esc(b.regione)}</div>
                 <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
                     ${badge}
                     <span style="font-size:10px;color:#94a3b8;background:#f8fafc;padding:2px 8px;border-radius:6px;">${b.scuole} scuol${b.scuole===1?'a':'e'}</span>
@@ -1287,7 +1291,7 @@ function aggiornaLicenze(){
                     <button onclick="mostraDettaglioBiologo('${b.id}')" style="background:#f0fdf9;border:1.5px solid var(--teal);color:var(--teal);border-radius:8px;font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;"><i class="fas fa-eye"></i> Dettaglio</button>
                     ${b.stato==='pending' ? `<button class="btn-success" data-id="${b.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check" style="margin-right:4px;"></i>Approva</button>` : ''}
                     ${adminState.role!=='regional_admin' && b.stato==='active' ? `<button class="btn-warn" data-id="${b.id}" data-action="rinnova" onclick="handleStatoBtn(this)"><i class="fas fa-redo" style="margin-right:4px;"></i>Rinnova</button>` : ''}
-                    ${(b.stato==='active'&&b.scadenza&&new Date(b.scadenza)<=new Date(Date.now()+30*864e5)&&new Date(b.scadenza)>=new Date()) ? '<a href="'+buildMailtoPromemoria(b.email,b.nome,b.scadenza)+'" class="btn-warn" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;"><i class="fas fa-envelope"></i> Promemoria</a>' : ''}
+                    ${(b.stato==='active'&&b.scadenza&&new Date(b.scadenza)<=new Date(Date.now()+30*864e5)&&new Date(b.scadenza)>=new Date()) ? '<a href="'+esc(buildMailtoPromemoria(b.email,b.nome,b.scadenza))+'" class="btn-warn" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;"><i class="fas fa-envelope"></i> Promemoria</a>' : ''}
                     ${(b.stato==='active'||b.stato==='pending') ? `<button class="btn-danger" data-id="${b.id}" data-action="suspended" onclick="handleStatoBtn(this)"><i class="fas fa-ban" style="margin-right:4px;"></i>Sospendi</button>` : ''}
                     ${(b.stato==='suspended'||b.stato==='expired') ? `<button class="btn-success" data-id="${b.id}" data-action="active" onclick="handleStatoBtn(this)"><i class="fas fa-check" style="margin-right:4px;"></i>Riattiva</button>` : ''}
                     ${adminState.role!=='regional_admin' ? `<button class="btn-ghost" data-id="${b.id}" data-action="elimina" onclick="handleStatoBtn(this)" style="font-size:10px;padding:7px 10px;" title="Elimina"><i class="fas fa-trash"></i></button>` : ''}
@@ -1349,7 +1353,7 @@ async function mostraDettaglioBiologo(id){
     function codicePacket(p, s, allPacchetti){
         const skip=new Set(['IC','ISTITUTO','COMPRENSIVO','STATALE','SCUOLA','PRIMARIA','MEDIA','SECONDARIA','DI','DEL','DELLA','PRIMO','SECONDO','GRADO','E','CON','SMS','ICS','IPSSAR','ITCG','ITIS','IPSIA']);
         const parole=(s?.nome||'???').toUpperCase().split(/\s+/).filter(w=>!skip.has(w));
-        const scuolaCode=(parole[0]||'???').substring(0,8);
+        const scuolaCode=esc((parole[0]||'???').substring(0,8));
         const anno=String(p.anno_scolastico||'').replace('/','-');
         const annoEnd=(anno.split('-')[1]||'').slice(-2)||'??';
         const stessi=(allPacchetti||[])
@@ -1390,8 +1394,8 @@ async function mostraDettaglioBiologo(id){
             return `<div style="border:1.5px solid #e2e8f0;border-radius:16px;padding:16px 18px;margin-bottom:12px;">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
                     <div>
-                        <div style="font-weight:700;font-size:14px;color:var(--dark);">${s.nome||'—'}</div>
-                        <div style="font-size:11px;color:#64748b;margin-top:3px;"><i class="fas fa-map-marker-alt" style="margin-right:4px;color:var(--teal);"></i>${s.comune||'—'}</div>
+                        <div style="font-weight:700;font-size:14px;color:var(--dark);">${esc(s.nome||'—')}</div>
+                        <div style="font-size:11px;color:#64748b;margin-top:3px;"><i class="fas fa-map-marker-alt" style="margin-right:4px;color:var(--teal);"></i>${esc(s.comune||'—')}</div>
                     </div>
                     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
                         ${pkBadgeScuola(s.id, s)}
@@ -1436,7 +1440,7 @@ async function mostraDettaglioBiologo(id){
                 ${cl.length>0?`<div style="display:flex;flex-wrap:wrap;gap:6px;">${cl.map(c=>`
                     <span style="background:${c.post_data?'#f0fdf9':'#f8fafc'};border:1px solid ${c.post_data?'#bbf7d0':'#e2e8f0'};color:#475569;border-radius:8px;padding:4px 10px;font-size:11px;display:flex;align-items:center;gap:5px;">
                         <i class="fas fa-${c.post_data?'check-circle':'circle'}" style="font-size:9px;color:${c.post_data?'#16a34a':'#cbd5e1'};"></i>
-                        ${c.nome_classe||'—'} <span style="color:#94a3b8;margin-left:2px;">${c.num_studenti||0} stud.</span>
+                        ${esc(c.nome_classe||'—')} <span style="color:#94a3b8;margin-left:2px;">${c.num_studenti||0} stud.</span>
                     </span>`).join('')}</div>`:''}
                 <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;">
                     ${cl.length>0 && clComplete.length===cl.length
@@ -1466,12 +1470,12 @@ async function mostraDettaglioBiologo(id){
                     <span style="color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:22px;">${b.nome.charAt(0)}</span>
                 </div>
                 <div>
-                    <h3 style="font-size:20px;font-weight:800;color:var(--dark);margin:0;">${b.nome}</h3>
-                    <div style="font-size:12px;color:#64748b;margin-top:3px;">${b.email}</div>
+                    <h3 style="font-size:20px;font-weight:800;color:var(--dark);margin:0;">${esc(b.nome)}</h3>
+                    <div style="font-size:12px;color:#64748b;margin-top:3px;">${esc(b.email)}</div>
                     <div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;">
                         <span style="background:${statoCol};color:white;border-radius:7px;padding:2px 10px;font-size:11px;font-weight:700;">${statoLabel}</span>
-                        <span style="font-size:11px;color:#64748b;">Regione: <b>${b.regione}</b></span>
-                        <span style="font-size:11px;color:#64748b;">Ordine: <b>${b.ordine}</b></span>
+                        <span style="font-size:11px;color:#64748b;">Regione: <b>${esc(b.regione)}</b></span>
+                        <span style="font-size:11px;color:#64748b;">Ordine: <b>${esc(b.ordine)}</b></span>
                         ${adminState.role!=='regional_admin' ? `<button onclick="modificaProfiloBiologo('${b.id}')" style="display:inline-flex;align-items:center;gap:4px;background:#f1f5f9;border:none;border-radius:7px;padding:3px 9px;font-size:10px;font-weight:700;color:#475569;cursor:pointer;" title="Modifica regione/ordine"><i class="fas fa-pen" style="font-size:9px;"></i> Modifica</button>` : ''}
                     </div>
                 </div>
@@ -1537,9 +1541,9 @@ function generaPTOF(scuolaId){
         ? (classiConMig.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/classiConMig.length).toFixed(1)
         : null;
 
-    const testo = `Nell'anno scolastico ${anno}, l'Istituto "${s.nome}" di ${s.comune||'—'} ha aderito al progetto "Mangiare bene, crescere meglio" — Progetto di Educazione Alimentare promosso da S.A.N.E. Italia (Sicurezza · Alimentazione · Nutrizione · Educazione).
+    const testo = `Nell'anno scolastico ${anno}, l'Istituto "${s.nome}" di ${esc(s.comune||'—')} ha aderito al progetto "Mangiare bene, crescere meglio" — Progetto di Educazione Alimentare promosso da S.A.N.E. Italia (Sicurezza · Alimentazione · Nutrizione · Educazione).
 
-Il progetto, condotto dal Biologo Nutrizionista ${b.nome}, ha coinvolto ${cl.length} class${cl.length===1?'e':'i'} per un totale di ${totStudenti} student${totStudenti===1?'e':'i'}${totOre>0?', con '+totOre+' ore di attività educativa strutturata':''}.
+Il progetto, condotto dal Biologo Nutrizionista ${esc(b.nome)}, ha coinvolto ${cl.length} class${cl.length===1?'e':'i'} per un totale di ${totStudenti} student${totStudenti===1?'e':'i'}${totOre>0?', con '+totOre+' ore di attività educativa strutturata':''}.
 
 Le attività hanno previsto interventi di educazione alimentare volti a promuovere corrette abitudini nutrizionali e uno stile di vita sano, in coerenza con le finalità del Piano Triennale dell'Offerta Formativa.${mig ? ' La valutazione delle conoscenze alimentari degli studenti attraverso questionari pre e post intervento ha registrato un miglioramento medio di +'+mig+' punti.' : ''}
 
@@ -1588,7 +1592,7 @@ function avviaReportDocxAdmin(scuolaId){
     };
     const nomeScuola=(s.nome||'scuola').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
     const anno=(pk.anno_scolastico||new Date().getFullYear()).toString().replace('/','-');
-    scaricaReportDocx(data,`Report_SANE_${nomeScuola}_${anno}.docx`);
+    scaricaReportDocx(data,`Report_SANE_${esc(nomeScuola)}_${anno}.docx`);
 }
 
 async function avviaRelazioneHtmlAdmin(scuolaId){
@@ -1659,7 +1663,7 @@ function generaAttestato(scuolaId){
     const righe = cl.map(c=>{
         const ore=(c.m1_ore||0)+(c.m2_ore||0)+(c.m3_ore||0)+(c.m4_ore||0)+(c.m5_ore||0)+(c.m6_ore||0);
         return `<tr>
-            <td>${c.nome_classe||'—'}</td>
+            <td>${esc(c.nome_classe||'—')}</td>
             <td style="text-align:center;">${c.num_studenti||0}</td>
             <td style="text-align:center;">${ore>0?ore+'h':'—'}</td>
         </tr>`;
@@ -1669,7 +1673,7 @@ function generaAttestato(scuolaId){
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>Attestato — ${s.nome||'Scuola'}</title>
+<title>Attestato — ${esc(s.nome||'Scuola')}</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -1727,8 +1731,8 @@ tbody td{padding:${tdPad};color:#334155;border-bottom:1px solid #e2e8f0;}
 
     <div class="body-text">
         Si attesta che l'Istituto<br>
-        <span class="school-name">${s.nome||'—'}</span>
-        <span style="font-size:${isCompact?'10px':'12px'};color:#64748b;">${s.comune||''}</span><br><br>
+        <span class="school-name">${esc(s.nome||'—')}</span>
+        <span style="font-size:${isCompact?'10px':'12px'};color:#64748b;">${esc(s.comune||'')}</span><br><br>
         ha partecipato al progetto <span class="program-name">Mangiare bene, crescere meglio</span><br>
         <em style="color:#64748b;font-size:${isCompact?'10px':'12px'};">Progetto di Educazione Alimentare — un'iniziativa S.A.N.E. Italia</em><br>
         con le seguenti classi:
@@ -1746,19 +1750,19 @@ tbody td{padding:${tdPad};color:#334155;border-bottom:1px solid #e2e8f0;}
     <div class="totals">
         <span>Totale studenti coinvolti: <strong>${totStudenti}</strong></span>
         ${totOre>0?`<span>Ore totali erogate: <strong>${totOre}h</strong></span>`:''}
-        <span>Biologo responsabile: <strong>${b.nome}</strong></span>
+        <span>Biologo responsabile: <strong>${esc(b.nome)}</strong></span>
     </div>
 
     <div class="sig-section">
         <div class="sig-block">
             <div class="sig-label">Luogo e Data</div>
-            <div class="sig-name" style="margin-top:6px;">${s.comune||'—'}, ${oggi}</div>
+            <div class="sig-name" style="margin-top:6px;">${esc(s.comune||'—')}, ${oggi}</div>
         </div>
         <div class="sig-block">
             <div style="height:32px;"></div>
             <div class="sig-line"></div>
             <div class="sig-label">Biologo S.A.N.E. Italia</div>
-            <div class="sig-name">${b.nome}</div>
+            <div class="sig-name">${esc(b.nome)}</div>
         </div>
         <div class="sig-block">
             <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/firma-serafina.png" alt="Firma" style="height:48px;object-fit:contain;display:block;margin:0 auto;" onerror="this.style.display='none';this.nextElementSibling.style.height='32px'">
@@ -1798,7 +1802,7 @@ function modificaProfiloBiologo(id){
             </div>
             <div>
                 <label style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:5px;">Numero Ordine</label>
-                <input id="editOrdine" type="text" value="${b.ordine==='—'?'':b.ordine}" placeholder="es. AL-2847" style="width:100%;padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:9px;font-size:12px;color:var(--dark);background:white;box-sizing:border-box;">
+                <input id="editOrdine" type="text" value="${b.ordine==='—'?'':esc(b.ordine)}" placeholder="es. AL-2847" style="width:100%;padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:9px;font-size:12px;color:var(--dark);background:white;box-sizing:border-box;">
             </div>
         </div>
         <div style="display:flex;gap:8px;justify-content:flex-end;">
@@ -1828,11 +1832,11 @@ async function salvaProfiloBiologo(id){
 async function nominaResponsabile(id){
     const b = adminState.biologi.find(x=>x.id===id);
     if(!b) return;
-    if(!confirm(`Nominare "${b.nome}" come Responsabile Regionale per ${b.regione==='—'?'la sua regione':b.regione}?\n\nPotrà accedere al pannello admin e gestire i biologi della sua regione.`)) return;
+    if(!confirm(`Nominare "${esc(b.nome)}" come Responsabile Regionale per ${b.regione==='—'?'la sua regione':esc(b.regione)}?\n\nPotrà accedere al pannello admin e gestire i biologi della sua regione.`)) return;
     const { error } = await db.from('profiles').update({ role: 'regional_admin' }).eq('id', id);
     if(error){ showToast('Errore: '+error.message,'error'); return; }
     b.ruolo = 'regional_admin';
-    showToast(`${b.nome} nominato/a Responsabile Regionale ✓`);
+    showToast(`${esc(b.nome)} nominato/a Responsabile Regionale ✓`);
     aggiornaLicenze();
 
     // Chiedi se inviare email di notifica
@@ -1845,7 +1849,7 @@ async function nominaResponsabile(id){
 function apriPopupEmailNomina(b, regione){
     const oggetto = encodeURIComponent(`Accesso Pannello Admin S.A.N.E. — Responsabile ${regione}`);
     const corpo = encodeURIComponent(
-`Cara/o ${b.nome},
+`Cara/o ${esc(b.nome)},
 
 ti comunichiamo che sei stata/o nominata/o Responsabile Regionale per ${regione} nel programma S.A.N.E. Italia.
 
@@ -1867,14 +1871,14 @@ S.A.N.E. Italia`);
             <div style="width:56px;height:56px;background:#f5f3ff;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
                 <i class="fas fa-envelope" style="color:#7c3aed;font-size:22px;"></i>
             </div>
-            <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--dark);margin-bottom:10px;">Invia notifica a ${b.nome}?</h3>
+            <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--dark);margin-bottom:10px;">Invia notifica a ${esc(b.nome)}?</h3>
             <p style="color:#64748b;font-size:13px;line-height:1.6;margin-bottom:24px;">Si aprirà il tuo client email con un messaggio pre-compilato che spiega come accedere al pannello admin.</p>
             <p style="background:#f8fafc;border-radius:10px;padding:10px 14px;font-size:12px;color:#64748b;margin-bottom:24px;">
-                <i class="fas fa-at" style="color:#7c3aed;margin-right:6px;"></i>${b.email}
+                <i class="fas fa-at" style="color:#7c3aed;margin-right:6px;"></i>${esc(b.email)}
             </p>
             <div style="display:flex;gap:10px;">
                 <button onclick="this.closest('div[style*=fixed]').remove()" style="flex:1;background:#f1f5f9;border:none;border-radius:12px;padding:13px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:#64748b;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;">Non ora</button>
-                <a href="mailto:${b.email}?subject=${oggetto}&body=${corpo}" onclick="this.closest('div[style*=fixed]').remove()" style="flex:1;background:#7c3aed;border:none;border-radius:12px;padding:13px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:white;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;"><i class="fas fa-paper-plane"></i> Invia Email</a>
+                <a href="mailto:${esc(b.email)}?subject=${oggetto}&body=${corpo}" onclick="this.closest('div[style*=fixed]').remove()" style="flex:1;background:#7c3aed;border:none;border-radius:12px;padding:13px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:white;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;"><i class="fas fa-paper-plane"></i> Invia Email</a>
             </div>
         </div>`;
     document.body.appendChild(overlay);
@@ -1884,11 +1888,11 @@ S.A.N.E. Italia`);
 async function rimuoviResponsabile(id){
     const b = adminState.biologi.find(x=>x.id===id);
     if(!b) return;
-    if(!confirm(`Rimuovere il ruolo di Responsabile Regionale a "${b.nome}"?\n\nTornerà ad essere un biologo normale.`)) return;
+    if(!confirm(`Rimuovere il ruolo di Responsabile Regionale a "${esc(b.nome)}"?\n\nTornerà ad essere un biologo normale.`)) return;
     const { error } = await db.from('profiles').update({ role: 'biologo' }).eq('id', id);
     if(error){ showToast('Errore: '+error.message,'error'); return; }
     b.ruolo = 'biologo';
-    showToast(`Ruolo rimosso — ${b.nome} è ora un biologo normale ✓`);
+    showToast(`Ruolo rimosso — ${esc(b.nome)} è ora un biologo normale ✓`);
     aggiornaLicenze();
 }
 
@@ -2049,8 +2053,8 @@ function aggiornaNazionale(){
         <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #f1f5f9;">
             <div style="width:28px;height:28px;background:${i===0?'#F4A261':i===1?'#94a3b8':i===2?'#d97706':'#e2e8f0'};border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:white;flex-shrink:0;">#${i+1}</div>
             <div style="flex:1;">
-                <div style="font-weight:700;font-size:13px;color:var(--dark);">${b.nome}</div>
-                <div style="font-size:11px;color:#94a3b8;">${b.regione}</div>
+                <div style="font-weight:700;font-size:13px;color:var(--dark);">${esc(b.nome)}</div>
+                <div style="font-size:11px;color:#94a3b8;">${esc(b.regione)}</div>
             </div>
             <div style="text-align:right;">
                 <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--teal);">${b.classi||0}</div>
@@ -2097,7 +2101,7 @@ async function verificaScadenzeAuto(){
     // Banner notifica
     const banner = document.createElement('div');
     banner.style.cssText='position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;background:#dc2626;color:white;padding:10px 20px;border-radius:12px;font-size:12px;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,0.2);display:flex;align-items:center;gap:8px;';
-    banner.innerHTML=`<i class="fas fa-clock"></i> ${scaduti.length} licenz${scaduti.length===1?'a':'e'} scadut${scaduti.length===1?'a':'e'} aggiornata${scaduti.length===1?'':'e'} automaticamente: ${scaduti.map(b=>b.nome).join(', ')} <button onclick="this.parentElement.remove()" style="margin-left:8px;background:rgba(255,255,255,0.2);border:none;color:white;border-radius:6px;padding:2px 8px;cursor:pointer;">✕</button>`;
+    banner.innerHTML=`<i class="fas fa-clock"></i> ${scaduti.length} licenz${scaduti.length===1?'a':'e'} scadut${scaduti.length===1?'a':'e'} aggiornata${scaduti.length===1?'':'e'} automaticamente: ${scaduti.map(b=>esc(b.nome)).join(', ')} <button onclick="this.parentElement.remove()" style="margin-left:8px;background:rgba(255,255,255,0.2);border:none;color:white;border-radius:6px;padding:2px 8px;cursor:pointer;">✕</button>`;
     document.body.appendChild(banner);
     setTimeout(()=>banner.remove(), 8000);
 }
@@ -2166,7 +2170,7 @@ async function caricaLog(){
     // Popola select biologo
     const sel = document.getElementById('logFiltroBiologo');
     const nomi = [...new Map(_logData.map(r=>[r.biologo_id, r.biologo_nome])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
-    sel.innerHTML = '<option value="">Tutti</option>' + nomi.map(([id,nome])=>`<option value="${id}">${nome}</option>`).join('');
+    sel.innerHTML = '<option value="">Tutti</option>' + nomi.map(([id,nome])=>`<option value="${id}">${esc(nome)}</option>`).join('');
 
     renderLog();
 }
@@ -2211,7 +2215,7 @@ function renderLog(){
                 const det  = Object.entries(r.dettaglio||{}).filter(([k])=>k!=='admin_id').map(([k,v])=>`<span style="background:#f1f5f9;padding:1px 6px;border-radius:5px;margin-right:3px;font-size:10px;">${v}</span>`).join('');
                 return `<tr style="border-bottom:1px solid #f1f5f9;background:${i%2===0?'white':'#fafafa'};" onmouseover="this.style.background='#f0fdf9'" onmouseout="this.style.background='${i%2===0?'white':'#fafafa'}'">
                     <td style="padding:10px 16px;white-space:nowrap;color:#64748b;">${data}<span style="color:#94a3b8;margin-left:6px;">${ora}</span></td>
-                    <td style="padding:10px 16px;font-weight:600;color:var(--dark);">${r.biologo_nome}</td>
+                    <td style="padding:10px 16px;font-weight:600;color:var(--dark);">${esc(r.biologo_nome)}</td>
                     <td style="padding:10px 16px;white-space:nowrap;">
                         <span style="display:inline-flex;align-items:center;gap:5px;background:${meta.color}18;color:${meta.color};padding:3px 9px;border-radius:7px;font-weight:700;font-size:11px;">
                             <i class="fas ${meta.icon}" style="font-size:9px;"></i>${meta.label}
@@ -2241,7 +2245,7 @@ function esportaLogCSV(){
     const csv = ['Data,Ora,Biologo,Evento,Dettaglio', ...righe.map(r=>{
         const dt = new Date(r.created_at);
         const det = Object.entries(r.dettaglio||{}).filter(([k])=>k!=='admin_id').map(([k,v])=>`${k}:${v}`).join(' | ');
-        return `"${dt.toLocaleDateString('it-IT')}","${dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}","${r.biologo_nome}","${LOG_LABELS[r.azione]?.label||r.azione}","${det}"`;
+        return `"${dt.toLocaleDateString('it-IT')}","${dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}","${esc(r.biologo_nome)}","${LOG_LABELS[r.azione]?.label||r.azione}","${det}"`;
     })].join('\n');
     const a=document.createElement('a');
     a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
@@ -2334,11 +2338,11 @@ function renderAdminAutovalutazioni(){
         return `<div class="bio-row">
             <div style="flex:1;min-width:0;">
                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
-                    <span style="font-weight:700;font-size:14px;color:var(--dark);">${nomeScuola}</span>
-                    ${comune?`<span style="font-size:11px;color:#94a3b8;">${comune}</span>`:''}
+                    <span style="font-weight:700;font-size:14px;color:var(--dark);">${esc(nomeScuola)}</span>
+                    ${comune?`<span style="font-size:11px;color:#94a3b8;">${esc(comune)}</span>`:''}
                 </div>
                 <div style="font-size:11px;color:#64748b;margin-bottom:6px;">
-                    <i class="fas fa-user" style="color:var(--teal);margin-right:4px;"></i>${nomeBiologo}
+                    <i class="fas fa-user" style="color:var(--teal);margin-right:4px;"></i>${esc(nomeBiologo)}
                     &nbsp;·&nbsp; A.S. ${a.anno_scolastico||'—'}
                 </div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
@@ -2442,7 +2446,7 @@ async function generaCertificatoAdmin(autovId){
     }).join('');
 
     cert.document.open();
-    cert.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Certificato SANE — ${nomeScuola}</title>
+    cert.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Certificato SANE — ${esc(nomeScuola)}</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         *{box-sizing:border-box;margin:0;padding:0;}
@@ -2464,8 +2468,8 @@ async function generaCertificatoAdmin(autovId){
             </div>
         </div>
         <div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.18em;margin-bottom:12px;">Certificato di Qualità Alimentare Scolastica</div>
-        <h2 style="font-size:28px;color:#0A2647;margin-bottom:4px;">${nomeScuola}</h2>
-        <p style="color:#64748b;font-size:13px;margin-bottom:28px;">Anno Scolastico ${a.anno_scolastico||'—'}${comune?' &middot; '+comune:''}</p>
+        <h2 style="font-size:28px;color:#0A2647;margin-bottom:4px;">${esc(nomeScuola)}</h2>
+        <p style="color:#64748b;font-size:13px;margin-bottom:28px;">Anno Scolastico ${a.anno_scolastico||'—'}${comune?' &middot; '+esc(comune):''}</p>
         <div class="score-big">${pts}/${maxPts}</div>
         <div style="font-size:20px;font-weight:700;color:#0A2647;margin:10px 0 18px;">Livello <span style="color:#00A896;">${livello}</span></div>
         <div style="display:inline-block;background:#00A896;color:white;padding:7px 24px;border-radius:99px;font-weight:700;font-size:13px;letter-spacing:0.05em;">★ Scuola Certificata SANE Italia</div>
@@ -2476,7 +2480,7 @@ async function generaCertificatoAdmin(autovId){
         <div class="firma-row">
             <div>
                 <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Biologo Responsabile</div>
-                <div style="font-size:15px;font-weight:700;color:#0A2647;">${nomeBiologo}</div>
+                <div style="font-size:15px;font-weight:700;color:#0A2647;">${esc(nomeBiologo)}</div>
             </div>
             <div style="text-align:right;">
                 <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Data Certificazione</div>
