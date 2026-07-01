@@ -80,7 +80,7 @@ serve(async (req) => {
                 <p style="color:#475569;font-size:13px;margin:0 0 6px;"><strong>Nome:</strong> ${nome}</p>
                 <p style="color:#475569;font-size:13px;margin:0;"><strong>Email:</strong> ${email}</p>
               </div>
-              <a href="https://www.sane-italia.it/admin.html"
+              <a href="https://sane-italia.it/admin.html"
                  style="display:block;background:#00A896;color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">
                 Vai al pannello Admin →
               </a>
