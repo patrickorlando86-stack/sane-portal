@@ -366,17 +366,27 @@ section{padding:4.5rem 4rem}
 .ser-role{font-size:.78rem;color:var(--gl);margin-top:.2rem;letter-spacing:.04em}
 .ser-creds{margin-top:1.2rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
 .ser-cred{font-size:.76rem;padding:.5rem .7rem;background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);border-left:2px solid var(--gl);border-radius:0 4px 4px 0}
-.team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.6rem;margin:2rem auto 0;max-width:820px}
-.team-card{background:var(--g);color:#fff;padding:2.2rem;border-radius:16px}
+.team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.4rem;margin:2rem auto 0;max-width:960px}
+.team-card{background:var(--g);color:#fff;padding:1.7rem 1.9rem;border-radius:16px;align-self:start}
 .team-card-alt{background:var(--cr);color:var(--g)}
-.team-top{display:flex;gap:1.2rem;align-items:center;margin-bottom:1.5rem}
+.team-top{display:flex;gap:1.2rem;align-items:center;margin-bottom:1.1rem}
 .team-card-alt .ser-init{background:var(--tc);color:#fff}
 .team-card-alt .ser-name{color:var(--g)}
 .team-card-alt .ser-role{color:var(--gm)}
 .team-card-alt .ser-creds .ser-cred{background:rgba(10,38,71,.07);color:var(--g);border-left-color:var(--gm)}
 .team-bio{font-size:.88rem;line-height:1.8;margin-top:.9rem}
+.team-bio:first-child{margin-top:0}
 .team-card .team-bio{color:rgba(255,255,255,.7)}
 .team-card-alt .team-bio{color:var(--gr)}
+/* Accordion bio */
+.bio-toggle{margin-top:1rem;display:inline-flex;align-items:center;gap:.5rem;background:none;border:0;padding:0;cursor:pointer;font-family:inherit;font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:inherit;opacity:.75;transition:opacity .2s}
+.bio-toggle:hover{opacity:1}
+.team-card-alt .bio-toggle{color:var(--gm);opacity:1}
+.bio-toggle i{font-size:.7rem;transition:transform .3s}
+.bio-toggle[aria-expanded="true"] i{transform:rotate(180deg)}
+.team-bio-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
+.team-bio-wrap.open{grid-template-rows:1fr}
+.team-bio-inner{overflow:hidden}
 #team{background:var(--wh)}
 
 /* NUMERI (stat band) */
@@ -561,8 +571,11 @@ footer a:hover{color:var(--gl)}
         <div><div class="ser-name">Serafina Cardaci</div><div class="ser-role" data-k="ser_role"></div></div>
       </div>
       <div class="ser-creds" id="ser-creds"></div>
-      <p class="team-bio" data-k="ser_p1"></p>
-      <p class="team-bio" data-k="ser_p2"></p>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="team-bio-wrap"><div class="team-bio-inner">
+        <p class="team-bio" data-k="ser_p1"></p>
+        <p class="team-bio" data-k="ser_p2"></p>
+      </div></div>
     </div>
     <div class="team-card team-card-alt">
       <div class="team-top">
@@ -572,8 +585,11 @@ footer a:hover{color:var(--gl)}
         <div><div class="ser-name">Patrick Orlando</div><div class="ser-role" data-k="pat_role"></div></div>
       </div>
       <div class="ser-creds" id="pat-creds"></div>
-      <p class="team-bio" data-k="pat_p1"></p>
-      <p class="team-bio" data-k="pat_p2"></p>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="team-bio-wrap"><div class="team-bio-inner">
+        <p class="team-bio" data-k="pat_p1"></p>
+        <p class="team-bio" data-k="pat_p2"></p>
+      </div></div>
     </div>
     <div class="team-card team-card-alt">
       <div class="team-top">
@@ -583,8 +599,11 @@ footer a:hover{color:var(--gl)}
         <div><div class="ser-name">Sara Comandi</div><div class="ser-role" data-k="sara_role"></div></div>
       </div>
       <div class="ser-creds" id="sara-creds"></div>
-      <p class="team-bio" data-k="sara_p1"></p>
-      <p class="team-bio" data-k="sara_p2"></p>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="team-bio-wrap"><div class="team-bio-inner">
+        <p class="team-bio" data-k="sara_p1"></p>
+        <p class="team-bio" data-k="sara_p2"></p>
+      </div></div>
     </div>
     <div class="team-card">
       <div class="team-top">
@@ -594,8 +613,11 @@ footer a:hover{color:var(--gl)}
         <div><div class="ser-name">Amelia Zarauza</div><div class="ser-role" data-k="ame_role"></div></div>
       </div>
       <div class="ser-creds" id="ame-creds"></div>
-      <p class="team-bio" data-k="ame_p1"></p>
-      <p class="team-bio" data-k="ame_p2"></p>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="team-bio-wrap"><div class="team-bio-inner">
+        <p class="team-bio" data-k="ame_p1"></p>
+        <p class="team-bio" data-k="ame_p2"></p>
+      </div></div>
     </div>
   </div>
 </section>
@@ -755,6 +777,7 @@ const T = {
     steps:[{n:"01",t:"Conosciamo gli Alimenti",d:"Scopriamo i gruppi alimentari, le proprietà nutrizionali e come costruire un'alimentazione equilibrata."},{n:"02",t:"Il Piatto Equilibrato",d:"Le proporzioni Harvard (50/25/25), la varietà e la qualità nel piatto quotidiano — con l'app «Il Piatto Sano»."},{n:"03",t:"Energia in Movimento",d:"Il legame tra alimentazione, attività fisica e benessere: come il cibo diventa carburante."},{n:"04",t:"Lo Zaino della Salute",d:"Cosa portare a scuola, come fare spesa consapevole e leggere le etichette degli alimenti."},{n:"05",t:"Cibo, Ambiente e Cultura",d:"Stagionalità, filiera corta, tradizioni alimentari e impatto ambientale delle nostre scelte."},{n:"06",t:"Allergie e Sicurezza",d:"Riconoscere i 14 allergeni EU, gestire le intolleranze in sicurezza a scuola e in famiglia."}],
     ser_eyebrow:"La nostra fondatrice scientifica",
     ser_heading:"Scienza, passione e <em>metodo.</em>",
+    bio_more:"Leggi la bio",
     ser_role:"Biologa Nutrizionista · Responsabile Scientifica",
     ser_creds:["<i class='fas fa-microscope'></i> Biologa Nutrizionista","<i class='fas fa-book'></i> Ideatrice del programma «Mangiare Bene e Crescere Meglio»","<i class='fas fa-school'></i> Responsabile Scientifica S.A.N.E. Italia","<i class='fas fa-globe'></i> www.serafinacardacinutrizione.com"],
     ser_p1:"La Dott.ssa Serafina Cardaci è la mente scientifica del programma. Ha progettato i 6 moduli di «Mangiare Bene, Crescere Meglio» integrando le più recenti evidenze in nutrizione pediatrica con un approccio pratico, ludico e misurabile.",
@@ -851,6 +874,7 @@ const T = {
     steps:[{n:"01",t:"Conocemos los Alimentos",d:"Descubrimos los grupos alimentarios, las propiedades nutricionales y cómo construir una alimentación equilibrada."},{n:"02",t:"El Plato Equilibrado",d:"Las proporciones Harvard (½ fruta y verdura, ¼ cereales, ¼ proteínas), la variedad y la calidad en el plato diario — con la app «Il Piatto Sano»."},{n:"03",t:"Energía en Movimiento",d:"El vínculo entre alimentación, actividad física y bienestar: cómo el alimento se convierte en energía."},{n:"04",t:"La Mochila de la Salud",d:"Qué llevar a la escuela, cómo hacer una compra consciente y leer las etiquetas de los alimentos."},{n:"05",t:"Alimentación, Ambiente y Cultura",d:"Estacionalidad, cadena corta, tradiciones alimentarias e impacto ambiental de nuestras elecciones."},{n:"06",t:"Alergias y Seguridad",d:"Reconocer los 14 alérgenos UE, gestionar las intolerancias con seguridad en la escuela y en familia."}],
     ser_eyebrow:"Nuestra fundadora científica",
     ser_heading:"Ciencia, pasión y <em>método.</em>",
+    bio_more:"Leer la bio",
     ser_role:"Cofundadora & Directora Científica",
     ser_creds:["<i class='fas fa-microscope'></i> Bióloga Nutricionista","<i class='fas fa-book'></i> Especialista en nutrición pediátrica y alergias","🧠 Creadora del programa «Mangiare Bene e Crescere Meglio»","📋 Responsable científica S.A.N.E. Italia"],
     ser_p1:"Serafina Cardaci cofundó S.A.N.E. Italia con una visión clara: llevar a las escuelas italianas un programa que enseñe a los niños a vivir con seguridad con sus alergias e intolerancias.",
@@ -947,6 +971,7 @@ const T = {
     steps:[{n:"01",t:"Getting to Know Food",d:"We discover food groups, nutritional properties and how to build a balanced diet."},{n:"02",t:"The Balanced Plate",d:"The Harvard proportions (½ fruit & veg, ¼ grains, ¼ protein), variety and quality on the daily plate — with the «Il Piatto Sano» app."},{n:"03",t:"Energy in Motion",d:"The link between food, physical activity and wellbeing: how food becomes fuel."},{n:"04",t:"The Health Backpack",d:"What to bring to school, how to shop consciously and read food labels."},{n:"05",t:"Food, Environment and Culture",d:"Seasonality, short supply chains, food traditions and the environmental impact of our choices."},{n:"06",t:"Allergies and Safety",d:"Recognising the 14 EU allergens, managing intolerances safely at school and at home."}],
     ser_eyebrow:"Our scientific founder",
     ser_heading:"Science, passion and <em>method.</em>",
+    bio_more:"Read bio",
     ser_role:"Co-founder & Scientific Director",
     ser_creds:["<i class='fas fa-microscope'></i> Nutritionist Biologist","<i class='fas fa-book'></i> Specialist in paediatric nutrition & allergies","🧠 Creator of the «Mangiare Bene e Crescere Meglio» programme","📋 Scientific Director, S.A.N.E. Italia"],
     ser_p1:"Serafina Cardaci co-founded S.A.N.E. Italia with a clear vision: to bring Italian schools a programme that teaches children not just about good nutrition, but how to live safely with their allergies and intolerances.",
@@ -1113,6 +1138,15 @@ function render(l) {
 }
 
 function setLang(l) { lang = l; render(l); }
+
+// Accordion bio del team
+document.querySelectorAll('.bio-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const wrap = btn.nextElementSibling;
+    const open = wrap.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+});
 
 render('it');
 </script>
