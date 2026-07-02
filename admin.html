@@ -659,7 +659,7 @@ const SUPABASE_URL = 'https://hjfosliokfskftmoukxa.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqZm9zbGlva2Zza2Z0bW91a3hhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDY3NTEsImV4cCI6MjA5MDYyMjc1MX0.eX9BL0tIy83zZ49hxzxFloH24hGIcbMRb2AsmCOiF9k';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'sane-admin-session' } });
-const FN_BASE = 'https://saneportal.netlify.app/.netlify/functions';
+const FN_BASE = 'https://hjfosliokfskftmoukxa.supabase.co/functions/v1';
 // Escape HTML: i dati inseriti dai biologi (nome, ordine, nomi scuole/classi…)
 // finiscono in innerHTML nel pannello admin. Senza escape un biologo potrebbe
 // iniettare <script>/<img onerror> ed eseguirlo nella sessione dell'admin (XSS).
