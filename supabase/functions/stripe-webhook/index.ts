@@ -36,7 +36,7 @@ function unixToDate(sec: number | null | undefined) {
 // Email di avviso all'admin quando arriva un nuovo abbonato.
 // Riusa Resend come notifica-approvazione. Blindata: non lancia mai
 // (il webhook deve rispondere 200 a Stripe anche se l'email fallisce).
-const ADMIN_EMAIL = "info@daop.it";
+const ADMIN_EMAIL = "patrick.orlando86@gmail.com";
 async function notificaAdminNuovoAbbonato(subscriberEmail: string | null) {
   const apiKey = Deno.env.get("RESEND_API_KEY");
   if (!apiKey) { console.error("⚠️ RESEND_API_KEY non impostata: salto l'email di notifica"); return; }
