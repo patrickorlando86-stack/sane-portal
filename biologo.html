@@ -1368,7 +1368,7 @@ async function inizializzaApp(user){
 }
 
 // ─── PAYWALL / ABBONAMENTO STRIPE + CODICI ────────────────────
-const FN_BASE='https://saneportal.netlify.app/.netlify/functions';
+const FN_BASE='https://hjfosliokfskftmoukxa.supabase.co/functions/v1';
 
 async function _accessToken(){
     const {data}=await db.auth.getSession();
