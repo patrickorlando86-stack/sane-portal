@@ -4068,7 +4068,7 @@ async function generaCertificatoAutovalutazione(autovId){
     }).join('');
 
     cert.document.open();
-    cert.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Certificato SANE — ${sc?sc.nome:''}</title>
+    cert.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Certificato SANE — ${sc?esc(sc.nome):''}</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         *{box-sizing:border-box;margin:0;padding:0;}
@@ -4090,8 +4090,8 @@ async function generaCertificatoAutovalutazione(autovId){
             </div>
         </div>
         <div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.18em;margin-bottom:12px;">Certificato di Qualità Alimentare Scolastica</div>
-        <h2 style="font-size:28px;color:#0A2647;margin-bottom:4px;">${sc?sc.nome:''}</h2>
-        <p style="color:#64748b;font-size:13px;margin-bottom:28px;">Anno Scolastico ${autov.anno_scolastico||'—'}${sc&&sc.comune?' &middot; '+sc.comune:''}</p>
+        <h2 style="font-size:28px;color:#0A2647;margin-bottom:4px;">${sc?esc(sc.nome):''}</h2>
+        <p style="color:#64748b;font-size:13px;margin-bottom:28px;">Anno Scolastico ${autov.anno_scolastico||'—'}${sc&&sc.comune?' &middot; '+esc(sc.comune):''}</p>
         <div class="score-big">${pts}/${maxPts}</div>
         <div style="font-size:20px;font-weight:700;color:#0A2647;margin:10px 0 18px;">Livello <span style="color:#00A896;">${livello}</span></div>
         <div style="display:inline-block;background:#00A896;color:white;padding:7px 24px;border-radius:99px;font-weight:700;font-size:13px;letter-spacing:0.05em;">★ Scuola Certificata SANE Italia</div>
@@ -4102,7 +4102,7 @@ async function generaCertificatoAutovalutazione(autovId){
         <div class="firma-row">
             <div>
                 <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Biologo Responsabile</div>
-                <div style="font-size:15px;font-weight:700;color:#0A2647;">${appState.utente?appState.utente.nome:''}</div>
+                <div style="font-size:15px;font-weight:700;color:#0A2647;">${appState.utente?esc(appState.utente.nome):''}</div>
             </div>
             <div style="text-align:right;">
                 <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Data Certificazione</div>
