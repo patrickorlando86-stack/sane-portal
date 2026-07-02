@@ -6,6 +6,11 @@
 
 (function (global) {
 
+    // Escape HTML: nomi scuola/classe/biologo ecc. finiscono in document.write.
+    // Senza escape un dato "ostile" esegue codice nella finestra della relazione
+    // (rilevante soprattutto in viewAs, dove a generarla è l'admin).
+    function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
     // ---- Mappa domande ----
     const DOMANDE_INFO = {
         d1:  { testo: 'Il Piatto Sano è composto da',                area: 'Conoscenze Nutrizionali', corretta: 'A' },
@@ -194,8 +199,8 @@
             const nPreC  = pre.filter(r=>r.classe_id===c.id).length;
             const nPostC = post.filter(r=>r.classe_id===c.id).length;
             return `<tr>
-                <td><strong>${c.nome_classe||'—'}</strong></td>
-                <td class="num">${c.tipo_scuola||'—'}</td>
+                <td><strong>${esc(c.nome_classe||'—')}</strong></td>
+                <td class="num">${esc(c.tipo_scuola||'—')}</td>
                 <td class="num">${c.num_studenti||'—'}</td>
                 <td class="num">${oreC.toFixed(1)}</td>
                 <td class="num">${modC}/6</td>
@@ -322,7 +327,7 @@ if(document.getElementById('${dId}')){
                 <div class="dist-grid">${distCardsHTML}</div>` : ''}
 
                 <div class="callout callout-blue">
-                    <strong>Interpretazione:</strong> [DA COMPLETARE — Descrivere qui le osservazioni specifiche sull'area "${area}" nel contesto dell'istituto ${scuola?.nome||''}. Commentare eventuali differenze tra classi, età, genere o altri fattori contestuali osservati durante la somministrazione.]
+                    <strong>Interpretazione:</strong> [DA COMPLETARE — Descrivere qui le osservazioni specifiche sull'area "${area}" nel contesto dell'istituto ${esc(scuola?.nome||'')}. Commentare eventuali differenze tra classi, età, genere o altri fattori contestuali osservati durante la somministrazione.]
                 </div>
             </div>`;
 
@@ -389,7 +394,7 @@ if(document.getElementById('chartGlobale')){
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Articolo Scientifico — ${scuola?.nome||'S.A.N.E.'} · ${anno}</title>
+<title>Articolo Scientifico — ${esc(scuola?.nome||'S.A.N.E.')} · ${esc(anno)}</title>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"><\/script>
 <style>
@@ -518,12 +523,12 @@ figure.fig figcaption{font-size:.82rem;font-style:italic;color:var(--muted);text
 
 <!-- ===== TESTATA ===== -->
 <div class="journal-header">
-  <div class="journal-tag">S.A.N.E. Italia · Progetto Mangiare Bene · Anno Scolastico ${anno}</div>
+  <div class="journal-tag">S.A.N.E. Italia · Progetto Mangiare Bene · Anno Scolastico ${esc(anno)}</div>
   <h1 class="art-title">Valutazione dell'Efficacia di un Intervento di Educazione Alimentare nelle Scuole:<br>Studio Pre-Post su Conoscenze, Abitudini e Stili di Vita</h1>
   <p class="art-subtitle">An evaluation of a school-based nutritional education program using pre-post questionnaire design</p>
   <div class="art-meta sans">
-    <span>✍️ <strong>${biologo.nome||'[Autore]'}</strong>, Biologo Nutrizionista${biologo.ordine?' · N° Ordine: '+biologo.ordine:''}</span>
-    <span>🏫 ${scuola?.nome||'[Istituto]'}${scuola?.comune?', '+scuola.comune:''}</span>
+    <span>✍️ <strong>${esc(biologo.nome||'[Autore]')}</strong>, Biologo Nutrizionista${biologo.ordine?' · N° Ordine: '+esc(biologo.ordine):''}</span>
+    <span>🏫 ${esc(scuola?.nome||'[Istituto]')}${scuola?.comune?', '+esc(scuola.comune):''}</span>
     <span>📅 ${oggi}</span>
     <span>📋 Versione questionario: ${versione}</span>
   </div>
@@ -534,7 +539,7 @@ figure.fig figcaption{font-size:.82rem;font-style:italic;color:var(--muted);text
   <h2>Abstract</h2>
   <div class="abstract-row"><strong>Background.</strong> L'obesità infantile e le scorrette abitudini alimentari rappresentano una delle principali sfide di salute pubblica in Italia e in Europa. I programmi di educazione alimentare nelle scuole costituiscono uno strumento di prevenzione primaria raccomandato dall'Organizzazione Mondiale della Sanità (OMS) e dalle Linee Guida per la Sana Alimentazione Italiana (CREA, 2018).</div>
   <div class="abstract-row"><strong>Obiettivi.</strong> Valutare l'efficacia del Progetto S.A.N.E. "Mangiare Bene" nel migliorare le conoscenze nutrizionali, le abitudini alimentari e la consapevolezza sull'attività fisica di studenti in età scolare, attraverso un disegno pre-sperimentale a misure ripetute (PRE-POST).</div>
-  <div class="abstract-row"><strong>Metodi.</strong> Sono stati coinvolti ${nTot} studenti di ${classi.length} class${classi.length===1?'e':'i'} dell'Istituto ${scuola?.nome||'[Istituto]'}, ${scuola?.comune||''}. Il programma ha previsto ${classi[0]?.tipo_pacchetto||6} moduli didattici per un totale di ${oreErogate.toFixed(0)} ore erogate. La valutazione è stata condotta tramite questionario a risposta multipla (versione ${versione}, ${nDomande} item) somministrato prima (PRE, n=${nPre}) e dopo (POST, n=${nPost}) l'intervento.</div>
+  <div class="abstract-row"><strong>Metodi.</strong> Sono stati coinvolti ${nTot} studenti di ${classi.length} class${classi.length===1?'e':'i'} dell'Istituto ${esc(scuola?.nome||'[Istituto]')}, ${esc(scuola?.comune||'')}. Il programma ha previsto ${classi[0]?.tipo_pacchetto||6} moduli didattici per un totale di ${oreErogate.toFixed(0)} ore erogate. La valutazione è stata condotta tramite questionario a risposta multipla (versione ${versione}, ${nDomande} item) somministrato prima (PRE, n=${nPre}) e dopo (POST, n=${nPost}) l'intervento.</div>
   <div class="abstract-row"><strong>Risultati.</strong> ${abstractRisultati} ${deltaMedia!=null&&deltaMedia>0?`Il miglioramento osservato (Δ = ${deltaStr(deltaMedia)}) indica un effetto positivo dell'intervento sulle conoscenze nutrizionali del campione.`:deltaMedia!=null&&deltaMedia<0?`Si osserva una variazione negativa (Δ = ${deltaStr(deltaMedia)}) che richiede un'analisi approfondita delle cause (si veda la Discussione).`:'I dati disponibili sono parziali (solo fase PRE o POST).'}</div>
   <div class="abstract-row"><strong>Conclusioni.</strong> [DA COMPLETARE — Sintesi delle conclusioni principali e delle implicazioni per la pratica professionale e la salute pubblica.]</div>
   <div class="keywords"><strong>Parole chiave:</strong> educazione alimentare, scuola, studio pre-post, nutrizione pediatrica, promozione della salute, prevenzione obesità infantile</div>
@@ -551,7 +556,7 @@ figure.fig figcaption{font-size:.82rem;font-style:italic;color:var(--muted);text
     [DA COMPLETARE — Descrivere qui le motivazioni specifiche che hanno portato all'implementazione del progetto in questo istituto: es. richiesta della dirigenza scolastica, segnalazioni dei docenti, risultati di indagini preliminari sul territorio, ecc.]
   </div>
 
-  <p>Il presente studio si propone di valutare l'efficacia del Progetto Mangiare Bene dell'associazione S.A.N.E. Italia nell'istituto ${scuola?.nome||'[Istituto]'} durante l'anno scolastico ${anno}, mediante un disegno di ricerca pre-sperimentale a misure ripetute (pre-post test).</p>
+  <p>Il presente studio si propone di valutare l'efficacia del Progetto Mangiare Bene dell'associazione S.A.N.E. Italia nell'istituto ${esc(scuola?.nome||'[Istituto]')} durante l'anno scolastico ${esc(anno)}, mediante un disegno di ricerca pre-sperimentale a misure ripetute (pre-post test).</p>
 </div>
 
 <!-- ===== 2. MATERIALI E METODI ===== -->
@@ -562,7 +567,7 @@ figure.fig figcaption{font-size:.82rem;font-style:italic;color:var(--muted);text
   <p>È stato adottato un disegno pre-sperimentale a misure ripetute (one-group pretest-posttest design) [7]. La valutazione è stata condotta in due fasi: una rilevazione iniziale (PRE) effettuata prima dell'avvio del programma educativo e una rilevazione finale (POST) al termine dell'ultimo modulo didattico.</p>
 
   <h3>2.2 Popolazione e campione</h3>
-  <p>Il programma ha coinvolto ${classi.length} class${classi.length===1?'e':'i'} dell'Istituto ${scuola?.nome||'[Istituto]'}${scuola?.comune?', '+scuola.comune:''}, per un totale di ${totStudenti} studenti iscritti. La partecipazione al questionario è avvenuta su base volontaria e con il consenso della dirigenza scolastica.</p>
+  <p>Il programma ha coinvolto ${classi.length} class${classi.length===1?'e':'i'} dell'Istituto ${esc(scuola?.nome||'[Istituto]')}${scuola?.comune?', '+esc(scuola.comune):''}, per un totale di ${totStudenti} studenti iscritti. La partecipazione al questionario è avvenuta su base volontaria e con il consenso della dirigenza scolastica.</p>
 
   <div class="overflow-x">
   <table class="sci-table">
@@ -721,10 +726,10 @@ figure.fig figcaption{font-size:.82rem;font-style:italic;color:var(--muted);text
 <!-- ===== FIRMA ===== -->
 <div class="firma-section">
   <h2 class="sec-h" style="border-bottom:none;margin-bottom:8px;">Dichiarazione dell'Autore</h2>
-  <p style="font-size:.9rem;color:var(--muted);">Il sottoscritto dichiara che i dati riportati nel presente articolo sono veritieri e corrispondono alle rilevazioni effettuate nell'ambito del Progetto Mangiare Bene, A.S. ${anno}.</p>
+  <p style="font-size:.9rem;color:var(--muted);">Il sottoscritto dichiara che i dati riportati nel presente articolo sono veritieri e corrispondono alle rilevazioni effettuate nell'ambito del Progetto Mangiare Bene, A.S. ${esc(anno)}.</p>
   <div class="firma-line"></div>
-  <div style="font-weight:700;color:var(--blue-dark);margin-bottom:4px;">${biologo.nome||'[Biologo Nutrizionista]'}</div>
-  <div class="firma-label">Biologo Nutrizionista${biologo.ordine?' · Ordine Nazionale dei Biologi n° '+biologo.ordine:''}</div>
+  <div style="font-weight:700;color:var(--blue-dark);margin-bottom:4px;">${esc(biologo.nome||'[Biologo Nutrizionista]')}</div>
+  <div class="firma-label">Biologo Nutrizionista${biologo.ordine?' · Ordine Nazionale dei Biologi n° '+esc(biologo.ordine):''}</div>
   <div class="firma-label" style="margin-top:12px;">Data: ___________________&nbsp;&nbsp;&nbsp;&nbsp;Luogo: ___________________</div>
 </div>
 
@@ -732,7 +737,7 @@ figure.fig figcaption{font-size:.82rem;font-style:italic;color:var(--muted);text
 
 <!-- FOOTER -->
 <div class="art-footer">
-  <strong>S.A.N.E. Italia · Progetto Mangiare Bene</strong> · Anno Scolastico ${anno}<br>
+  <strong>S.A.N.E. Italia · Progetto Mangiare Bene</strong> · Anno Scolastico ${esc(anno)}<br>
   Documento generato automaticamente dal portale S.A.N.E. il ${oggi} · Dati riservati · Non divulgare senza autorizzazione
 </div>
 
