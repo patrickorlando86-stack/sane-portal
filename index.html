@@ -366,7 +366,7 @@ section{padding:4.5rem 4rem}
 .ser-role{font-size:.78rem;color:var(--gl);margin-top:.2rem;letter-spacing:.04em}
 .ser-creds{margin-top:1.2rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
 .ser-cred{font-size:.76rem;padding:.5rem .7rem;background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);border-left:2px solid var(--gl);border-radius:0 4px 4px 0}
-.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin-top:2rem}
+.team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.6rem;margin:2rem auto 0;max-width:820px}
 .team-card{background:var(--g);color:#fff;padding:2.2rem;border-radius:16px}
 .team-card-alt{background:var(--cr);color:var(--g)}
 .team-top{display:flex;gap:1.2rem;align-items:center;margin-bottom:1.5rem}
@@ -575,6 +575,17 @@ footer a:hover{color:var(--gl)}
       <p class="team-bio" data-k="pat_p1"></p>
       <p class="team-bio" data-k="pat_p2"></p>
     </div>
+    <div class="team-card team-card-alt">
+      <div class="team-top">
+        <div class="ser-init" style="border-color:rgba(10,38,71,.12)">
+          <img src="/immagini/logo/sara.webp" alt="Sara Comandi">
+        </div>
+        <div><div class="ser-name">Sara Comandi</div><div class="ser-role" data-k="sara_role"></div></div>
+      </div>
+      <div class="ser-creds" id="sara-creds"></div>
+      <p class="team-bio" data-k="sara_p1"></p>
+      <p class="team-bio" data-k="sara_p2"></p>
+    </div>
     <div class="team-card">
       <div class="team-top">
         <div class="ser-init">
@@ -750,7 +761,11 @@ const T = {
     ser_p2:"Il primo pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — con circa 100 studenti — ha dimostrato l'efficacia del programma nel migliorare consapevolezza alimentare e gestione delle allergie.",
     ser_cta:"Entra nella rete S.A.N.E.",
     team_eyebrow:"Il team",
-    team_title:"Tre competenze, <em>un'unica missione.</em>",
+    team_title:"Quattro competenze, <em>un'unica missione.</em>",
+    sara_role:"Responsabile S.A.N.E. Toscana · Biologa Nutrizionista",
+    sara_creds:["<i class='fas fa-microscope'></i> Biologa Nutrizionista","<i class='fas fa-map-marker-alt'></i> Responsabile S.A.N.E. Toscana","<i class='fas fa-chalkboard-teacher'></i> Educatrice del progetto pilota (5 classi, ~100 studenti)","<i class='fas fa-school'></i> Referente territoriale · Provincia di Livorno"],
+    sara_p1:"La Dott.ssa Sara Comandi è la Responsabile S.A.N.E. per la Toscana. Biologa nutrizionista, porta il programma nelle scuole del territorio e cura il rapporto con istituti, docenti e famiglie.",
+    sara_p2:"Ha condotto in prima persona le lezioni del progetto pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — 5 classi, circa 100 studenti — traducendo i moduli scientifici in esperienza concreta in classe.",
     ame_role:"Referente Medica del Progetto · Pediatra Allergologa",
     ame_creds:["<i class='fas fa-stethoscope'></i> Medico Pediatra","<i class='fas fa-pills'></i> Specialista in Allergologia, Immunologia e Medicina Ambientale","<i class='fas fa-graduation-cap'></i> Vicedirettrice della Specializzazione in Allergologia e Immunologia (UBA)","<i class='fas fa-earth-americas'></i> Università di Buenos Aires (Argentina)"],
     ame_p1:"La Dott.ssa Amelia Zarauza è la referente medica del progetto. Medico pediatra specializzata in allergologia, immunologia e medicina ambientale, garantisce il rigore clinico dei contenuti su allergie e sicurezza alimentare.",
@@ -842,7 +857,11 @@ const T = {
     ser_p2:"El primer piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo — con cerca de 100 estudiantes — demostró que el juego es la herramienta más eficaz para hacer la seguridad alimentaria concreta y memorable.",
     ser_cta:"Únete a la red S.A.N.E.",
     team_eyebrow:"El equipo",
-    team_title:"Tres competencias, <em>una sola misión.</em>",
+    team_title:"Cuatro competencias, <em>una sola misión.</em>",
+    sara_role:"Responsable S.A.N.E. Toscana · Bióloga Nutricionista",
+    sara_creds:["<i class='fas fa-microscope'></i> Bióloga Nutricionista","<i class='fas fa-map-marker-alt'></i> Responsable S.A.N.E. Toscana","<i class='fas fa-chalkboard-teacher'></i> Educadora del proyecto piloto (5 clases, ~100 alumnos)","<i class='fas fa-school'></i> Referente territorial · Provincia de Livorno"],
+    sara_p1:"La Dra. Sara Comandi es la Responsable de S.A.N.E. para la Toscana. Bióloga nutricionista, lleva el programa a las escuelas del territorio y cuida la relación con centros, docentes y familias.",
+    sara_p2:"Impartió personalmente las clases del proyecto piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo — 5 clases, unos 100 alumnos — traduciendo los módulos científicos en experiencia concreta en el aula.",
     ame_role:"Referente Médica del Proyecto · Pediatra Alergóloga",
     ame_creds:["<i class='fas fa-stethoscope'></i> Médica Pediatra","<i class='fas fa-pills'></i> Especialista en Alergia, Inmunología y Medicina Ambiental","<i class='fas fa-graduation-cap'></i> Subdirectora de la Carrera de Especialistas en Alergia e Inmunología (UBA)","<i class='fas fa-earth-americas'></i> Universidad de Buenos Aires (Argentina)"],
     ame_p1:"La Dra. Amelia Zarauza es la referente médica del proyecto. Médica pediatra especializada en alergia, inmunología y medicina ambiental, garantiza el rigor clínico de los contenidos sobre alergias y seguridad alimentaria.",
@@ -934,7 +953,11 @@ const T = {
     ser_p2:"The first pilot at I.C. «Carducci–Fattori» in Rosignano Marittimo — with around 100 students — proved that play is the most effective tool for making food safety concrete and memorable.",
     ser_cta:"Join the S.A.N.E. network",
     team_eyebrow:"The team",
-    team_title:"Three expertises, <em>one mission.</em>",
+    team_title:"Four expertises, <em>one mission.</em>",
+    sara_role:"S.A.N.E. Tuscany Lead · Nutritionist Biologist",
+    sara_creds:["<i class='fas fa-microscope'></i> Nutritionist Biologist","<i class='fas fa-map-marker-alt'></i> S.A.N.E. Tuscany Lead","<i class='fas fa-chalkboard-teacher'></i> Pilot-programme educator (5 classes, ~100 students)","<i class='fas fa-school'></i> Local coordinator · Province of Livorno"],
+    sara_p1:"Dr Sara Comandi is the S.A.N.E. lead for Tuscany. A nutritionist biologist, she brings the programme into local schools and manages the relationship with institutes, teachers and families.",
+    sara_p2:"She personally delivered the pilot-programme lessons at I.C. «Carducci–Fattori» in Rosignano Marittimo — 5 classes, around 100 students — turning the scientific modules into concrete classroom experience.",
     ame_role:"Project Medical Advisor · Paediatric Allergist",
     ame_creds:["<i class='fas fa-stethoscope'></i> Paediatrician","<i class='fas fa-pills'></i> Specialist in Allergy, Immunology & Environmental Medicine","<i class='fas fa-graduation-cap'></i> Deputy Director of the Allergy & Immunology Specialisation (UBA)","<i class='fas fa-earth-americas'></i> University of Buenos Aires (Argentina)"],
     ame_p1:"Dr. Amelia Zarauza is the project's medical advisor. A paediatrician specialised in allergy, immunology and environmental medicine, she ensures the clinical rigour of the content on allergies and food safety.",
@@ -1034,6 +1057,11 @@ function render(l) {
 
   // pat creds
   document.getElementById('pat-creds').innerHTML = t.pat_creds.map(c =>
+    `<div class="ser-cred">${c}</div>`
+  ).join('');
+
+  // sara creds
+  document.getElementById('sara-creds').innerHTML = t.sara_creds.map(c =>
     `<div class="ser-cred">${c}</div>`
   ).join('');
 
