@@ -664,6 +664,9 @@ const FN_BASE = 'https://saneportal.netlify.app/.netlify/functions';
 // finiscono in innerHTML nel pannello admin. Senza escape un biologo potrebbe
 // iniettare <script>/<img onerror> ed eseguirlo nella sessione dell'admin (XSS).
 function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// Cella CSV sicura: neutralizza la formula-injection (prefissi = + - @ tab CR)
+// anteponendo un apice, e applica il quoting CSV (raddoppia le virgolette).
+function csvCell(v){ let s=String(v==null?'':v); if(/^[=+\-@\t\r]/.test(s)) s="'"+s; return '"'+s.replace(/"/g,'""')+'"'; }
 
 // ============================================================
 // STATO
@@ -1919,7 +1922,7 @@ function esportaCSV(){
     ]);
 
     const csv = [intestazione, ...righe]
-        .map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(';'))
+        .map(r => r.map(csvCell).join(';'))
         .join('\n');
 
     const bom = '\uFEFF'; // BOM per Excel italiano
@@ -2073,7 +2076,7 @@ function exportCSV(){
         b.scadenza||'—', b.scuole, b.classi||0, b.studenti||0,
         b.miglioramento ? '+'+b.miglioramento : '—'
     ]);
-    const csv = [headers, ...rows].map(r=>r.join(',')).join('\n');
+    const csv = [headers, ...rows].map(r=>r.map(csvCell).join(',')).join('\n');
     const blob = new Blob([csv], {type:'text/csv'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -2245,7 +2248,7 @@ function esportaLogCSV(){
     const csv = ['Data,Ora,Biologo,Evento,Dettaglio', ...righe.map(r=>{
         const dt = new Date(r.created_at);
         const det = Object.entries(r.dettaglio||{}).filter(([k])=>k!=='admin_id').map(([k,v])=>`${k}:${v}`).join(' | ');
-        return `"${dt.toLocaleDateString('it-IT')}","${dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}","${esc(r.biologo_nome)}","${LOG_LABELS[r.azione]?.label||r.azione}","${det}"`;
+        return [dt.toLocaleDateString('it-IT'), dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}), r.biologo_nome, LOG_LABELS[r.azione]?.label||r.azione, det].map(csvCell).join(',');
     })].join('\n');
     const a=document.createElement('a');
     a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
