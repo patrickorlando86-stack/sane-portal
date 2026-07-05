@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Lingua automatica: alla prima visita su / reindirizza a /es/ o /en/
+     in base alla lingua del browser (fallback inglese per le altre lingue).
+     La scelta manuale dal selettore lingua (.lb) viene salvata e vince
+     sempre sul rilevamento. Mai attivo per i crawler (SEO) né fuori da /.
+     NB: questo script arriva anche in en/es via build-langs.js, ma lì il
+     guard sul pathname lo disattiva. -->
+<script>
+(function(){
+  var KEY='sane-lang';
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a.lb');
+    if(!a)return;
+    var href=a.getAttribute('href')||'';
+    var l=href.indexOf('/es/')>-1?'es':href.indexOf('/en/')>-1?'en':'it';
+    try{localStorage.setItem(KEY,l);}catch(err){}
+  },true);
+  if(location.pathname!=='/'&&location.pathname!=='/index.html')return;
+  if(/bot|crawl|spider|slurp|lighthouse|headless/i.test(navigator.userAgent))return;
+  var saved=null;try{saved=localStorage.getItem(KEY);}catch(err){}
+  if(saved==='it')return;
+  var lang=saved||(navigator.language||'it').slice(0,2).toLowerCase();
+  if(lang==='it')return;
+  location.replace(lang==='es'?'/es/':'/en/');
+})();
+</script>
 <!-- Google tag (gtag.js) — GA4 + Consent Mode v2 -->
 <script>
   window.dataLayer = window.dataLayer || [];
