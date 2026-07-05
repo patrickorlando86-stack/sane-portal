@@ -6,7 +6,9 @@
     <title>S.A.N.E. Italia | Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/reportProfessionale.js"></script>
@@ -206,7 +208,7 @@
 
 <!-- INIT LOADER -->
 <div id="initLoader" style="position:fixed;inset:0;z-index:250;background:#0A2647;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;transition:opacity 0.4s;">
-    <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="SANE" style="height:72px;" onerror="this.style.display='none'">
+    <img src="/immagini/logo/logo2.webp" alt="SANE" style="height:72px;" onerror="this.style.display='none'">
     <div style="color:white;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">S.A.N.E. Admin</div>
     <div style="color:rgba(255,255,255,0.5);font-size:12px;display:flex;align-items:center;gap:8px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round" style="animation:spin 1s linear infinite;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
@@ -1719,10 +1721,10 @@ tbody td{padding:${tdPad};color:#334155;border-bottom:1px solid #e2e8f0;}
 <div class="border-outer"><div class="border-inner">
 
     <div style="display:flex;justify-content:center;align-items:center;gap:${headerGap};margin-bottom:${headerMb};">
-        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo3.webp" alt="Mangiare bene, crescere meglio" style="height:${logoH};">
+        <img src="/immagini/logo/logo3.webp" alt="Mangiare bene, crescere meglio" style="height:${logoH};">
         <div style="width:1px;height:${isCompact?'52px':'70px'};background:#e2e8f0;"></div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-            <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" style="height:${isCompact?'38px':'52px'};">
+            <img src="/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" style="height:${isCompact?'38px':'52px'};">
             <span style="font-family:'Syne',sans-serif;font-size:${isCompact?'11px':'12px'};font-weight:800;color:#0A2647;letter-spacing:0.05em;">S.A.N.E. Italia</span>
         </div>
     </div>
@@ -1768,7 +1770,7 @@ tbody td{padding:${tdPad};color:#334155;border-bottom:1px solid #e2e8f0;}
             <div class="sig-name">${esc(b.nome)}</div>
         </div>
         <div class="sig-block">
-            <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/firma-serafina.png" alt="Firma" style="height:48px;object-fit:contain;display:block;margin:0 auto;" onerror="this.style.display='none';this.nextElementSibling.style.height='32px'">
+            <img src="/immagini/logo/firma-serafina.png" alt="Firma" style="height:48px;object-fit:contain;display:block;margin:0 auto;" onerror="this.style.display='none';this.nextElementSibling.style.height='32px'">
             <div style="height:0;"></div>
             <div class="sig-line"></div>
             <div class="sig-label">Responsabile S.A.N.E. Italia</div>
@@ -2450,7 +2452,7 @@ async function generaCertificatoAdmin(autovId){
 
     cert.document.open();
     cert.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Certificato SANE — ${esc(nomeScuola)}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         *{box-sizing:border-box;margin:0;padding:0;}
         body{font-family:'Inter',sans-serif;background:#f0f4f8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px;}

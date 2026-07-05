@@ -2,7 +2,9 @@
    Tracciamento delegato: un solo listener sul document, nessuna modifica
    ai singoli elementi. Si appoggia al tag gtag.js gia presente nell'head.
    Eventi inviati:
-     - file_download      : click su link .pdf (es. locandina)
+     - scarica_pdf        : click su link .pdf (es. locandina)
+                            (nome custom per non collidere con l'evento
+                            "file_download" della Misurazione avanzata GA4)
      - contatto_email     : click su link mailto: (incl. CTA adesione/candidatura)
      - contatto_telefono  : click su link tel:
      - contatto_whatsapp  : click su link WhatsApp
@@ -36,7 +38,7 @@
 
     // Download PDF
     if (/\.pdf(\?|#|$)/i.test(hrefL)) {
-      track('file_download', {
+      track('scarica_pdf', {
         file_name: hrefL.split('/').pop().split(/[?#]/)[0],
         link_text: text.slice(0, 100)
       });

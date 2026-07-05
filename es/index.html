@@ -1,19 +1,53 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<!-- Google tag (gtag.js) — GA4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-T5V2HS6D0R"></script>
+<!-- Lingua automatica: alla prima visita su / reindirizza a /es/ o /en/
+     in base alla lingua del browser (fallback inglese per le altre lingue).
+     La scelta manuale dal selettore lingua (.lb) viene salvata e vince
+     sempre sul rilevamento. Mai attivo per i crawler (SEO) né fuori da /.
+     NB: questo script arriva anche in en/es via build-langs.js, ma lì il
+     guard sul pathname lo disattiva. -->
+<script>
+(function(){
+  var KEY='sane-lang';
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a.lb');
+    if(!a)return;
+    var href=a.getAttribute('href')||'';
+    var l=href.indexOf('/es/')>-1?'es':href.indexOf('/en/')>-1?'en':'it';
+    try{localStorage.setItem(KEY,l);}catch(err){}
+  },true);
+  if(location.pathname!=='/'&&location.pathname!=='/index.html')return;
+  if(/bot|crawl|spider|slurp|lighthouse|headless/i.test(navigator.userAgent))return;
+  var saved=null;try{saved=localStorage.getItem(KEY);}catch(err){}
+  if(saved==='it')return;
+  var lang=saved||(navigator.language||'it').slice(0,2).toLowerCase();
+  if(lang==='it')return;
+  location.replace(lang==='es'?'/es/':'/en/');
+})();
+</script>
+<!-- Google tag (gtag.js) — GA4 + Consent Mode v2 -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  gtag('consent', 'default', {
+    analytics_storage: 'denied',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    wait_for_update: 500
+  });
   gtag('js', new Date());
+  gtag('set', 'user_properties', { lingua: document.documentElement.lang || 'it' });
   gtag('config', 'G-T5V2HS6D0R');
 </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T5V2HS6D0R"></script>
+<script defer src="/js/consent.js"></script>
 <script defer src="/js/ga-events.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/webp" href="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
-<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
+<link rel="icon" type="image/webp" href="/immagini/logo/logo2.webp">
+<link rel="apple-touch-icon" href="/immagini/logo/logo2.webp">
 <meta name="theme-color" content="#0A2647">
 <title>S.A.N.E. Italia — Educación Alimentaria y Seguridad Alimentaria en las Escuelas</title>
 <meta name="description" content="S.A.N.E. Italia es la red de biólogos nutricionistas que lleva educación alimentaria y seguridad alimentaria a las escuelas. El programa «Mangiare Bene, Crescere Meglio» y el juego educativo «Il Piatto Sano» (web y Android), con gestión personalizada de los 14 alérgenos UE. Dirección científica Dott.ssa Serafina Cardaci, Bióloga Nutricionista.">
@@ -31,7 +65,7 @@
 <meta property="og:url" content="https://sane-italia.it/es/">
 <meta property="og:title" content="S.A.N.E. Italia — Educación Alimentaria en las Escuelas">
 <meta property="og:description" content="La red de biólogos nutricionistas para la educación y la seguridad alimentaria en las escuelas. Programa «Mangiare Bene, Crescere Meglio» y juego educativo «Il Piatto Sano» (web y Android) con gestión personalizada de los 14 alérgenos UE.">
-<meta property="og:image" content="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
+<meta property="og:image" content="https://sane-italia.it/immagini/logo/logo2.webp">
 <meta property="og:image:width" content="800">
 <meta property="og:image:height" content="800">
 <meta property="og:image:alt" content="S.A.N.E. Italia">
@@ -42,7 +76,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="S.A.N.E. Italia — Educación Alimentaria en las Escuelas">
 <meta name="twitter:description" content="Red de biólogos nutricionistas para educación y seguridad alimentaria en las escuelas. Programa «Mangiare Bene, Crescere Meglio» y juego «Il Piatto Sano» (web y Android), gestión 14 alérgenos UE.">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
+<meta name="twitter:image" content="https://sane-italia.it/immagini/logo/logo2.webp">
 <meta name="twitter:image:alt" content="S.A.N.E. Italia">
 
 <!-- Schema.org strutturato (Google capisce meglio il sito) -->
@@ -53,7 +87,7 @@
   "name": "S.A.N.E. Italia",
   "alternateName": "Mangiare Bene, Crescere Meglio",
   "url": "https://sane-italia.it",
-  "logo": "https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp",
+  "logo": "https://sane-italia.it/immagini/logo/logo2.webp",
   "description": "Programma di educazione alimentare strutturato in 6 moduli per scuole di ogni ordine e grado, con il gioco educativo Il Piatto Sano (6 mini-giochi su web e Android, incluso l'allenamento all'uso dell'autoiniettore) e gestione personalizzata delle allergie alimentari.",
   "address": {
     "@type": "PostalAddress",
@@ -98,7 +132,7 @@
   "name": "Il Piatto Sano",
   "alternateName": "The Healthy Plate",
   "url": "https://gioco.sane-italia.it",
-  "image": "https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logogioco.webp",
+  "image": "https://sane-italia.it/immagini/logo/logogioco.webp",
   "description": "Gioco educativo gratuito di educazione alimentare e sicurezza alimentare per bambini e ragazzi dai 6 ai 18 anni. Trilingue (IT/ES/EN), funziona su smartphone, tablet e LIM come sito web e app Android. Sei mini-giochi: Il Piatto Sano, Il Coraggio di Agire (con allenamento all'uso dell'autoiniettore), Quiz Alimentare, Piramide Alimentare, Stagionalità e Detective Etichette.",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Web, Android",
@@ -167,7 +201,8 @@
 <!-- /FAQ-LD -->
 <link rel="preload" as="image" href="/immagini/logo/logo3.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -362,21 +397,31 @@ section{padding:4.5rem 4rem}
 /* TEAM */
 .ser-init{width:68px;height:68px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:1.4rem;font-weight:800;color:var(--g);flex-shrink:0;overflow:hidden;border:3px solid rgba(255,255,255,.15)}
 .ser-init img{width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:50%}
-.ser-name{font-family:'Inter',sans-serif;font-size:1.2rem;font-weight:700}
-.ser-role{font-size:.78rem;color:var(--gl);margin-top:.2rem;letter-spacing:.04em}
+.ser-name{font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:700;line-height:1.25}
+.ser-role{font-size:.76rem;color:var(--gl);margin-top:.25rem;letter-spacing:.03em}
 .ser-creds{margin-top:1.2rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
 .ser-cred{font-size:.76rem;padding:.5rem .7rem;background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);border-left:2px solid var(--gl);border-radius:0 4px 4px 0}
-.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin-top:2rem}
-.team-card{background:var(--g);color:#fff;padding:2.2rem;border-radius:16px}
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:2rem auto 0;max-width:1120px}
+.team-card{background:var(--g);color:#fff;padding:1.7rem 1.3rem;border-radius:16px;align-self:start;text-align:center}
 .team-card-alt{background:var(--cr);color:var(--g)}
-.team-top{display:flex;gap:1.2rem;align-items:center;margin-bottom:1.5rem}
+.team-top{display:flex;flex-direction:column;gap:.7rem;align-items:center;margin-bottom:1rem}
 .team-card-alt .ser-init{background:var(--tc);color:#fff}
 .team-card-alt .ser-name{color:var(--g)}
 .team-card-alt .ser-role{color:var(--gm)}
 .team-card-alt .ser-creds .ser-cred{background:rgba(10,38,71,.07);color:var(--g);border-left-color:var(--gm)}
 .team-bio{font-size:.88rem;line-height:1.8;margin-top:.9rem}
+.team-bio:first-child{margin-top:0}
 .team-card .team-bio{color:rgba(255,255,255,.7)}
 .team-card-alt .team-bio{color:var(--gr)}
+/* Accordion bio */
+.bio-toggle{margin-top:1rem;display:inline-flex;align-items:center;gap:.5rem;background:none;border:0;padding:0;cursor:pointer;font-family:inherit;font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:inherit;opacity:.75;transition:opacity .2s}
+.bio-toggle:hover{opacity:1}
+.team-card-alt .bio-toggle{color:var(--gm);opacity:1}
+.bio-toggle i{font-size:.7rem;transition:transform .3s}
+.bio-toggle[aria-expanded="true"] i{transform:rotate(180deg)}
+.team-bio-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
+.team-bio-wrap.open{grid-template-rows:1fr}
+.team-bio-inner{overflow:hidden}
 #team{background:var(--wh)}
 
 /* NUMERI (stat band) */
@@ -417,7 +462,8 @@ section{padding:4.5rem 4rem}
 .ed-name{font-size:.92rem;font-weight:700;color:var(--g)}
 .ed-role{font-size:.76rem;color:var(--gr)}
 
-@media(max-width:980px){.team-grid{grid-template-columns:1fr;max-width:560px;margin-left:auto;margin-right:auto}}
+@media(max-width:980px){.team-grid{grid-template-columns:repeat(2,1fr);max-width:620px}}
+@media(max-width:520px){.team-grid{grid-template-columns:1fr;max-width:340px}}
 @media(max-width:860px){.field-grid{grid-template-columns:1fr}}
 @media(max-width:860px){.statband-sec{padding:1.8rem 1.2rem}.statband{gap:.6rem}.statband-l{font-size:.72rem}.quote-box{padding:1.8rem 1.4rem}}
 
@@ -485,7 +531,7 @@ footer a:hover{color:var(--gl)}
 <!-- NAV -->
 <nav>
   <a href="#" class="logo">
-    <img src="/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
+    <img src="/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" width="800" height="800">
     <span class="logo-text">S.A.N.E. <span>Italia</span></span>
   </a>
   <ul class="nav-links">
@@ -556,35 +602,58 @@ footer a:hover{color:var(--gl)}
     <div class="team-card">
       <div class="team-top">
         <div class="ser-init">
-          <img src="/immagini/logo/serafina.webp" alt="Serafina Cardaci">
+          <img src="/immagini/logo/serafina.webp" alt="Serafina Cardaci" width="399" height="536" loading="lazy">
         </div>
         <div><div class="ser-name">Serafina Cardaci</div><div class="ser-role" data-k="ser_role"></div></div>
       </div>
       <div class="ser-creds" id="ser-creds"></div>
-      <p class="team-bio" data-k="ser_p1"></p>
-      <p class="team-bio" data-k="ser_p2"></p>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="team-bio-wrap"><div class="team-bio-inner">
+        <p class="team-bio" data-k="ser_p1"></p>
+        <p class="team-bio" data-k="ser_p2"></p>
+      </div></div>
     </div>
     <div class="team-card team-card-alt">
       <div class="team-top">
         <div class="ser-init" style="border-color:rgba(10,38,71,.12)">
-          <img src="/immagini/logo/patrick.webp" alt="Patrick Orlando">
+          <img src="/immagini/logo/patrick.webp" alt="Patrick Orlando" width="320" height="400" loading="lazy">
         </div>
         <div><div class="ser-name">Patrick Orlando</div><div class="ser-role" data-k="pat_role"></div></div>
       </div>
       <div class="ser-creds" id="pat-creds"></div>
-      <p class="team-bio" data-k="pat_p1"></p>
-      <p class="team-bio" data-k="pat_p2"></p>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="team-bio-wrap"><div class="team-bio-inner">
+        <p class="team-bio" data-k="pat_p1"></p>
+        <p class="team-bio" data-k="pat_p2"></p>
+      </div></div>
+    </div>
+    <div class="team-card team-card-alt">
+      <div class="team-top">
+        <div class="ser-init" style="border-color:rgba(10,38,71,.12)">
+          <img src="/immagini/logo/sara.webp" alt="Sara Comandi" width="160" height="160" loading="lazy">
+        </div>
+        <div><div class="ser-name">Sara Comandi</div><div class="ser-role" data-k="sara_role"></div></div>
+      </div>
+      <div class="ser-creds" id="sara-creds"></div>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="team-bio-wrap"><div class="team-bio-inner">
+        <p class="team-bio" data-k="sara_p1"></p>
+        <p class="team-bio" data-k="sara_p2"></p>
+      </div></div>
     </div>
     <div class="team-card">
       <div class="team-top">
         <div class="ser-init">
-          <img src="/immagini/logo/amelia.webp" alt="Amelia Zarauza">
+          <img src="/immagini/logo/amelia.webp" alt="Amelia Zarauza" width="300" height="400" loading="lazy">
         </div>
         <div><div class="ser-name">Amelia Zarauza</div><div class="ser-role" data-k="ame_role"></div></div>
       </div>
       <div class="ser-creds" id="ame-creds"></div>
-      <p class="team-bio" data-k="ame_p1"></p>
-      <p class="team-bio" data-k="ame_p2"></p>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="team-bio-wrap"><div class="team-bio-inner">
+        <p class="team-bio" data-k="ame_p1"></p>
+        <p class="team-bio" data-k="ame_p2"></p>
+      </div></div>
     </div>
   </div>
 </section>
@@ -623,7 +692,7 @@ footer a:hover{color:var(--gl)}
   </div>
   <p class="allerg-badge" data-k="allerg_badge"></p>
   <div class="coraggio">
-    <img class="coraggio-img" src="/immagini/carosello/tempo.webp" alt="Il Coraggio di Agire — allenamento all'uso dell'autoiniettore" width="1874" height="1874" loading="lazy">
+    <img class="coraggio-img" src="/immagini/carosello/tempo.webp" alt="Il Coraggio di Agire — allenamento all'uso dell'autoiniettore" width="800" height="800" loading="lazy">
     <div class="coraggio-txt">
       <span class="coraggio-tag" data-k="coraggio_tag"></span>
       <h3 class="coraggio-h" data-k="coraggio_h"></h3>
@@ -744,13 +813,18 @@ const T = {
     steps:[{n:"01",t:"Conosciamo gli Alimenti",d:"Scopriamo i gruppi alimentari, le proprietà nutrizionali e come costruire un'alimentazione equilibrata."},{n:"02",t:"Il Piatto Equilibrato",d:"Le proporzioni Harvard (50/25/25), la varietà e la qualità nel piatto quotidiano — con l'app «Il Piatto Sano»."},{n:"03",t:"Energia in Movimento",d:"Il legame tra alimentazione, attività fisica e benessere: come il cibo diventa carburante."},{n:"04",t:"Lo Zaino della Salute",d:"Cosa portare a scuola, come fare spesa consapevole e leggere le etichette degli alimenti."},{n:"05",t:"Cibo, Ambiente e Cultura",d:"Stagionalità, filiera corta, tradizioni alimentari e impatto ambientale delle nostre scelte."},{n:"06",t:"Allergie e Sicurezza",d:"Riconoscere i 14 allergeni EU, gestire le intolleranze in sicurezza a scuola e in famiglia."}],
     ser_eyebrow:"La nostra fondatrice scientifica",
     ser_heading:"Scienza, passione e <em>metodo.</em>",
+    bio_more:"Leggi la bio",
     ser_role:"Biologa Nutrizionista · Responsabile Scientifica",
     ser_creds:["<i class='fas fa-microscope'></i> Biologa Nutrizionista","<i class='fas fa-book'></i> Ideatrice del programma «Mangiare Bene e Crescere Meglio»","<i class='fas fa-school'></i> Responsabile Scientifica S.A.N.E. Italia","<i class='fas fa-globe'></i> www.serafinacardacinutrizione.com"],
     ser_p1:"La Dott.ssa Serafina Cardaci è la mente scientifica del programma. Ha progettato i 6 moduli di «Mangiare Bene, Crescere Meglio» integrando le più recenti evidenze in nutrizione pediatrica con un approccio pratico, ludico e misurabile.",
     ser_p2:"Il primo pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — con circa 100 studenti — ha dimostrato l'efficacia del programma nel migliorare consapevolezza alimentare e gestione delle allergie.",
     ser_cta:"Entra nella rete S.A.N.E.",
     team_eyebrow:"Il team",
-    team_title:"Tre competenze, <em>un'unica missione.</em>",
+    team_title:"Quattro competenze, <em>un'unica missione.</em>",
+    sara_role:"Responsabile S.A.N.E. Toscana · Biologa Nutrizionista",
+    sara_creds:["<i class='fas fa-microscope'></i> Biologa Nutrizionista","<i class='fas fa-map-marker-alt'></i> Responsabile S.A.N.E. Toscana","<i class='fas fa-chalkboard-teacher'></i> Educatrice del progetto pilota (5 classi, ~100 studenti)","<i class='fas fa-school'></i> Referente territoriale · Provincia di Livorno"],
+    sara_p1:"La Dott.ssa Sara Comandi è la Responsabile S.A.N.E. per la Toscana. Biologa nutrizionista, porta il programma nelle scuole del territorio e cura il rapporto con istituti, docenti e famiglie.",
+    sara_p2:"Ha condotto in prima persona le lezioni del progetto pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — 5 classi, circa 100 studenti — traducendo i moduli scientifici in esperienza concreta in classe.",
     ame_role:"Referente Medica del Progetto · Pediatra Allergologa",
     ame_creds:["<i class='fas fa-stethoscope'></i> Medico Pediatra","<i class='fas fa-pills'></i> Specialista in Allergologia, Immunologia e Medicina Ambientale","<i class='fas fa-graduation-cap'></i> Vicedirettrice della Specializzazione in Allergologia e Immunologia (UBA)","<i class='fas fa-earth-americas'></i> Università di Buenos Aires (Argentina)"],
     ame_p1:"La Dott.ssa Amelia Zarauza è la referente medica del progetto. Medico pediatra specializzata in allergologia, immunologia e medicina ambientale, garantisce il rigore clinico dei contenuti su allergie e sicurezza alimentare.",
@@ -781,8 +855,8 @@ const T = {
     contact_title:"Porta S.A.N.E. nella tua <em>scuola</em> o territorio.",
     contact_desc:"Sei un dirigente scolastico, un biologo nutrizionista, un genitore di un bambino con allergie o un ente locale? Scrivici.",
     ci:[
-      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Biologa Nutrizionista · Responsabile Scientifica",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
-      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"Sviluppatore App · Partner Tecnologico e Media",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"}
+      {type:"person",img:"/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Biologa Nutrizionista · Responsabile Scientifica",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
+      {type:"person",img:"/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"Sviluppatore App · Partner Tecnologico e Media",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"}
     ],
     footer:"Sicurezza · Alimentazione · Nutrizione · Educazione"
   },
@@ -836,13 +910,18 @@ const T = {
     steps:[{n:"01",t:"Conocemos los Alimentos",d:"Descubrimos los grupos alimentarios, las propiedades nutricionales y cómo construir una alimentación equilibrada."},{n:"02",t:"El Plato Equilibrado",d:"Las proporciones Harvard (½ fruta y verdura, ¼ cereales, ¼ proteínas), la variedad y la calidad en el plato diario — con la app «Il Piatto Sano»."},{n:"03",t:"Energía en Movimiento",d:"El vínculo entre alimentación, actividad física y bienestar: cómo el alimento se convierte en energía."},{n:"04",t:"La Mochila de la Salud",d:"Qué llevar a la escuela, cómo hacer una compra consciente y leer las etiquetas de los alimentos."},{n:"05",t:"Alimentación, Ambiente y Cultura",d:"Estacionalidad, cadena corta, tradiciones alimentarias e impacto ambiental de nuestras elecciones."},{n:"06",t:"Alergias y Seguridad",d:"Reconocer los 14 alérgenos UE, gestionar las intolerancias con seguridad en la escuela y en familia."}],
     ser_eyebrow:"Nuestra fundadora científica",
     ser_heading:"Ciencia, pasión y <em>método.</em>",
+    bio_more:"Leer la bio",
     ser_role:"Cofundadora & Directora Científica",
     ser_creds:["<i class='fas fa-microscope'></i> Bióloga Nutricionista","<i class='fas fa-book'></i> Especialista en nutrición pediátrica y alergias","🧠 Creadora del programa «Mangiare Bene e Crescere Meglio»","📋 Responsable científica S.A.N.E. Italia"],
     ser_p1:"Serafina Cardaci cofundó S.A.N.E. Italia con una visión clara: llevar a las escuelas italianas un programa que enseñe a los niños a vivir con seguridad con sus alergias e intolerancias.",
     ser_p2:"El primer piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo — con cerca de 100 estudiantes — demostró que el juego es la herramienta más eficaz para hacer la seguridad alimentaria concreta y memorable.",
     ser_cta:"Únete a la red S.A.N.E.",
     team_eyebrow:"El equipo",
-    team_title:"Tres competencias, <em>una sola misión.</em>",
+    team_title:"Cuatro competencias, <em>una sola misión.</em>",
+    sara_role:"Responsable S.A.N.E. Toscana · Bióloga Nutricionista",
+    sara_creds:["<i class='fas fa-microscope'></i> Bióloga Nutricionista","<i class='fas fa-map-marker-alt'></i> Responsable S.A.N.E. Toscana","<i class='fas fa-chalkboard-teacher'></i> Educadora del proyecto piloto (5 clases, ~100 alumnos)","<i class='fas fa-school'></i> Referente territorial · Provincia de Livorno"],
+    sara_p1:"La Dra. Sara Comandi es la Responsable de S.A.N.E. para la Toscana. Bióloga nutricionista, lleva el programa a las escuelas del territorio y cuida la relación con centros, docentes y familias.",
+    sara_p2:"Impartió personalmente las clases del proyecto piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo — 5 clases, unos 100 alumnos — traduciendo los módulos científicos en experiencia concreta en el aula.",
     ame_role:"Referente Médica del Proyecto · Pediatra Alergóloga",
     ame_creds:["<i class='fas fa-stethoscope'></i> Médica Pediatra","<i class='fas fa-pills'></i> Especialista en Alergia, Inmunología y Medicina Ambiental","<i class='fas fa-graduation-cap'></i> Subdirectora de la Carrera de Especialistas en Alergia e Inmunología (UBA)","<i class='fas fa-earth-americas'></i> Universidad de Buenos Aires (Argentina)"],
     ame_p1:"La Dra. Amelia Zarauza es la referente médica del proyecto. Médica pediatra especializada en alergia, inmunología y medicina ambiental, garantiza el rigor clínico de los contenidos sobre alergias y seguridad alimentaria.",
@@ -873,8 +952,8 @@ const T = {
     contact_title:"Lleva S.A.N.E. a tu <em>escuela</em> o territorio.",
     contact_desc:"¿Eres director escolar, biólogo nutricionista, padre de un niño con alergias o entidad local? Escríbenos.",
     ci:[
-      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Bióloga Nutricionista · Responsable Científica",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
-      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"Desarrollador App · Partner Tecnológico y Media",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"}
+      {type:"person",img:"/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Bióloga Nutricionista · Responsable Científica",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
+      {type:"person",img:"/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"Desarrollador App · Partner Tecnológico y Media",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"}
     ],
     footer:"Ciencia Alimentaria Nutricional Educativa"
   },
@@ -928,13 +1007,18 @@ const T = {
     steps:[{n:"01",t:"Getting to Know Food",d:"We discover food groups, nutritional properties and how to build a balanced diet."},{n:"02",t:"The Balanced Plate",d:"The Harvard proportions (½ fruit & veg, ¼ grains, ¼ protein), variety and quality on the daily plate — with the «Il Piatto Sano» app."},{n:"03",t:"Energy in Motion",d:"The link between food, physical activity and wellbeing: how food becomes fuel."},{n:"04",t:"The Health Backpack",d:"What to bring to school, how to shop consciously and read food labels."},{n:"05",t:"Food, Environment and Culture",d:"Seasonality, short supply chains, food traditions and the environmental impact of our choices."},{n:"06",t:"Allergies and Safety",d:"Recognising the 14 EU allergens, managing intolerances safely at school and at home."}],
     ser_eyebrow:"Our scientific founder",
     ser_heading:"Science, passion and <em>method.</em>",
+    bio_more:"Read bio",
     ser_role:"Co-founder & Scientific Director",
     ser_creds:["<i class='fas fa-microscope'></i> Nutritionist Biologist","<i class='fas fa-book'></i> Specialist in paediatric nutrition & allergies","🧠 Creator of the «Mangiare Bene e Crescere Meglio» programme","📋 Scientific Director, S.A.N.E. Italia"],
     ser_p1:"Serafina Cardaci co-founded S.A.N.E. Italia with a clear vision: to bring Italian schools a programme that teaches children not just about good nutrition, but how to live safely with their allergies and intolerances.",
     ser_p2:"The first pilot at I.C. «Carducci–Fattori» in Rosignano Marittimo — with around 100 students — proved that play is the most effective tool for making food safety concrete and memorable.",
     ser_cta:"Join the S.A.N.E. network",
     team_eyebrow:"The team",
-    team_title:"Three expertises, <em>one mission.</em>",
+    team_title:"Four expertises, <em>one mission.</em>",
+    sara_role:"S.A.N.E. Tuscany Lead · Nutritionist Biologist",
+    sara_creds:["<i class='fas fa-microscope'></i> Nutritionist Biologist","<i class='fas fa-map-marker-alt'></i> S.A.N.E. Tuscany Lead","<i class='fas fa-chalkboard-teacher'></i> Pilot-programme educator (5 classes, ~100 students)","<i class='fas fa-school'></i> Local coordinator · Province of Livorno"],
+    sara_p1:"Dr Sara Comandi is the S.A.N.E. lead for Tuscany. A nutritionist biologist, she brings the programme into local schools and manages the relationship with institutes, teachers and families.",
+    sara_p2:"She personally delivered the pilot-programme lessons at I.C. «Carducci–Fattori» in Rosignano Marittimo — 5 classes, around 100 students — turning the scientific modules into concrete classroom experience.",
     ame_role:"Project Medical Advisor · Paediatric Allergist",
     ame_creds:["<i class='fas fa-stethoscope'></i> Paediatrician","<i class='fas fa-pills'></i> Specialist in Allergy, Immunology & Environmental Medicine","<i class='fas fa-graduation-cap'></i> Deputy Director of the Allergy & Immunology Specialisation (UBA)","<i class='fas fa-earth-americas'></i> University of Buenos Aires (Argentina)"],
     ame_p1:"Dr. Amelia Zarauza is the project's medical advisor. A paediatrician specialised in allergy, immunology and environmental medicine, she ensures the clinical rigour of the content on allergies and food safety.",
@@ -965,8 +1049,8 @@ const T = {
     contact_title:"Bring S.A.N.E. to your <em>school</em> or area.",
     contact_desc:"Are you a school principal, a nutritionist biologist, a parent of an allergic child, or a local authority? Write to us.",
     ci:[
-      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Nutritionist Biologist · Scientific Director",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
-      {type:"person",img:"https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"App Developer · Technology & Media Partner",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"}
+      {type:"person",img:"/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Nutritionist Biologist · Scientific Director",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
+      {type:"person",img:"/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"App Developer · Technology & Media Partner",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"}
     ],
     footer:"Scientific Alimentary Nutritional Education"
   }
@@ -1037,6 +1121,11 @@ function render(l) {
     `<div class="ser-cred">${c}</div>`
   ).join('');
 
+  // sara creds
+  document.getElementById('sara-creds').innerHTML = t.sara_creds.map(c =>
+    `<div class="ser-cred">${c}</div>`
+  ).join('');
+
   // amelia creds
   document.getElementById('ame-creds').innerHTML = t.ame_creds.map(c =>
     `<div class="ser-cred">${c}</div>`
@@ -1085,6 +1174,15 @@ function render(l) {
 }
 
 function setLang(l) { lang = l; render(l); }
+
+// Accordion bio del team
+document.querySelectorAll('.bio-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const wrap = btn.nextElementSibling;
+    const open = wrap.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+});
 
 render('es');
 </script>

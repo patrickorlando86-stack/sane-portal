@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- Google tag (gtag.js) — GA4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-T5V2HS6D0R"></script>
+<!-- Google tag (gtag.js) — GA4 + Consent Mode v2 -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  gtag('consent', 'default', {
+    analytics_storage: 'denied',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    wait_for_update: 500
+  });
   gtag('js', new Date());
+  gtag('set', 'user_properties', { lingua: document.documentElement.lang || 'it' });
   gtag('config', 'G-T5V2HS6D0R');
 </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T5V2HS6D0R"></script>
+<script defer src="/js/consent.js"></script>
 <script defer src="/js/ga-events.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,18 +30,18 @@
 <meta property="og:url" content="https://sane-italia.it/biologi.html">
 <meta property="og:title" content="I Biologi S.A.N.E. | S.A.N.E. Italia">
 <meta property="og:description" content="Professionisti certificati per l'educazione alimentare nelle scuole. Selezionati e formati dalla Dott.ssa Serafina Cardaci.">
-<meta property="og:image" content="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
+<meta property="og:image" content="https://sane-italia.it/immagini/logo/logo2.webp">
 <meta property="og:locale" content="it_IT">
 <meta property="og:site_name" content="S.A.N.E. Italia">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="I Biologi S.A.N.E. | S.A.N.E. Italia">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp">
+<meta name="twitter:image" content="https://sane-italia.it/immagini/logo/logo2.webp">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebPage","name":"I Biologi S.A.N.E. Italia","url":"https://sane-italia.it/biologi.html","isPartOf":{"@type":"WebSite","name":"S.A.N.E. Italia","url":"https://sane-italia.it"}}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -173,7 +182,7 @@ footer a:hover{color:var(--gl)}
 
 <nav>
   <a href="index.html" class="logo">
-    <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
+    <img src="/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
     <span class="logo-text">S.A.N.E. <span>Italia</span></span>
   </a>
   <ul class="nav-links">
@@ -205,7 +214,7 @@ footer a:hover{color:var(--gl)}
     </div>
     <div class="hero-visual">
       <div class="hero-visual-card">
-        <img src="https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
+        <img src="/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
       </div>
     </div>
   </div>

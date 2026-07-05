@@ -1,21 +1,32 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <!-- Google tag (gtag.js) — GA4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T5V2HS6D0R"></script>
+    <!-- Google tag (gtag.js) — GA4 + Consent Mode v2 -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        wait_for_update: 500
+      });
       gtag('js', new Date());
+      gtag('set', 'user_properties', { lingua: document.documentElement.lang || 'it' });
       gtag('config', 'G-T5V2HS6D0R');
     </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T5V2HS6D0R"></script>
+    <script defer src="/js/consent.js"></script>
     <script defer src="/js/ga-events.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>S.A.N.E. Italia | Autovalutazione Scuola</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root{--dark:#0A2647;--teal:#00A896;--teal-light:#00C9B1;}
         *{box-sizing:border-box;margin:0;padding:0;}

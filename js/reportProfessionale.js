@@ -105,9 +105,7 @@
         const dataOggi = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' });
 
         // Logo
-        const logoB64 = await fetchImgBase64(
-            'https://raw.githubusercontent.com/patrickorlando86-stack/sane-portal/main/immagini/logo/logo2.webp'
-        );
+        const logoB64 = await fetchImgBase64('/immagini/logo/logo2.webp');
 
         // ---- Helper builders ----
         const p = (text, opts = {}) => new Paragraph({
