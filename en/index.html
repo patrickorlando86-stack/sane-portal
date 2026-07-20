@@ -618,6 +618,20 @@ footer a:hover{color:var(--gl)}
         <p class="team-bio" data-k="pat_p2"></p>
       </div></div>
     </div>
+    <div class="team-card team-card-alt">
+      <div class="team-top">
+        <div class="ser-init" style="border-color:rgba(10,38,71,.12)">
+          <img src="/immagini/logo/sara.webp" alt="Sara Comandi" width="160" height="160" loading="lazy">
+        </div>
+        <div><div class="ser-name">Sara Comandi</div><div class="ser-role" data-k="sara_role"></div></div>
+      </div>
+      <div class="ser-creds" id="sara-creds"></div>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="team-bio-wrap"><div class="team-bio-inner">
+        <p class="team-bio" data-k="sara_p1"></p>
+        <p class="team-bio" data-k="sara_p2"></p>
+      </div></div>
+    </div>
   </div>
 </section>
 
@@ -679,6 +693,16 @@ footer a:hover{color:var(--gl)}
     <figure class="field-card"><img src="/immagini/pilota/classe-gioco.webp" alt="Il gioco «Il Piatto Sano» proiettato alla LIM durante una lezione del programma S.A.N.E." loading="lazy"><figcaption class="field-cap" data-k="field_cap1"></figcaption></figure>
     <figure class="field-card"><img src="/immagini/pilota/classe-allergie.webp" alt="Lezione sul modulo allergie alimentari e i 14 allergeni EU del programma S.A.N.E." loading="lazy"><figcaption class="field-cap" data-k="field_cap2"></figcaption></figure>
     <figure class="field-card"><img src="/immagini/pilota/classe-stampa.webp" alt="Il progetto pilota Mangiare Bene, Crescere Meglio sulla stampa locale" loading="lazy"><figcaption class="field-cap" data-k="field_cap3"></figcaption></figure>
+  </div>
+  <div class="field-credit">
+    <span class="field-credit-lead" data-k="educator_lead"></span>
+    <div class="field-educator">
+      <div class="ed-av">SC</div>
+      <div class="ed-txt">
+        <span class="ed-name">Sara Comandi</span>
+        <span class="ed-role" data-k="educator_role"></span>
+      </div>
+    </div>
   </div>
   <p class="field-meta" data-k="field_meta"></p>
 </section>
@@ -771,7 +795,11 @@ const T = {
     ser_p2:"Il primo pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — con circa 100 studenti — ha dimostrato l'efficacia del programma nel migliorare consapevolezza alimentare e gestione delle allergie.",
     ser_cta:"Entra nella rete S.A.N.E.",
     team_eyebrow:"Il team",
-    team_title:"Due competenze, <em>un'unica missione.</em>",
+    team_title:"Tre competenze, <em>un'unica missione.</em>",
+    sara_role:"Responsabile S.A.N.E. Toscana · Biologa Nutrizionista",
+    sara_creds:["<i class='fas fa-microscope'></i> Biologa Nutrizionista","<i class='fas fa-map-marker-alt'></i> Responsabile S.A.N.E. Toscana","<i class='fas fa-chalkboard-teacher'></i> Educatrice del progetto pilota (5 classi, ~100 studenti)","<i class='fas fa-school'></i> Referente territoriale · Provincia di Livorno"],
+    sara_p1:"La Dott.ssa Sara Comandi è la Responsabile S.A.N.E. per la Toscana. Biologa nutrizionista, porta il programma nelle scuole del territorio e cura il rapporto con istituti, docenti e famiglie.",
+    sara_p2:"Ha condotto in prima persona le lezioni del progetto pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — 5 classi, circa 100 studenti — traducendo i moduli scientifici in esperienza concreta in classe.",
     pat_role:"Sviluppatore App · Partner Tecnologico e Media",
     pat_creds:["<i class='fas fa-gamepad'></i> Sviluppatore dell'app «Il Piatto Sano»","<i class='fas fa-laptop-code'></i> Partner Tecnologico e Media S.A.N.E. Italia","<i class='fas fa-radio'></i> Comunicatore — Radio PNR · Venerdì Tech","<i class='fas fa-pen-nib'></i> Autore — libri e musica"],
     pat_p1:"L'Ing. Patrick Orlando è il co-fondatore e sviluppatore dell'app «Il Piatto Sano», il cuore digitale del programma. Disponibile su browser, tablet, LIM e Android, il gioco rende l'educazione alimentare interattiva, personalizzata e multilingua.",
@@ -785,6 +813,8 @@ const T = {
     field_cap2:"Il modulo dedicato alle allergie e ai 14 allergeni EU.",
     field_cap3:"Il progetto pilota raccontato dalla stampa locale.",
     field_meta:"Marzo–aprile 2026: 5 classi, circa 100 ragazzi all'I.C. «Carducci–Fattori» di Rosignano Marittimo. Fonti ufficiali: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Istituto Carducci–Fattori</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Comune di Rosignano Marittimo</a>.",
+    educator_lead:"Lezioni del pilota condotte da",
+    educator_role:"Biologa Nutrizionista · Referente territoriale (Provincia di Livorno)",
     quote_eyebrow:"Le istituzioni che ci sostengono",
     quote_title:"Cosa dicono di <em>S.A.N.E.</em>",
     quote_text:"«Abbiamo accolto questo progetto perché nutrirsi in maniera giusta è molto importante, specialmente per i ragazzi e le ragazze.»",
@@ -857,7 +887,11 @@ const T = {
     ser_p2:"El primer piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo — con cerca de 100 estudiantes — demostró que el juego es la herramienta más eficaz para hacer la seguridad alimentaria concreta y memorable.",
     ser_cta:"Únete a la red S.A.N.E.",
     team_eyebrow:"El equipo",
-    team_title:"Dos competencias, <em>una sola misión.</em>",
+    team_title:"Tres competencias, <em>una sola misión.</em>",
+    sara_role:"Responsable S.A.N.E. Toscana · Bióloga Nutricionista",
+    sara_creds:["<i class='fas fa-microscope'></i> Bióloga Nutricionista","<i class='fas fa-map-marker-alt'></i> Responsable S.A.N.E. Toscana","<i class='fas fa-chalkboard-teacher'></i> Educadora del proyecto piloto (5 clases, ~100 alumnos)","<i class='fas fa-school'></i> Referente territorial · Provincia de Livorno"],
+    sara_p1:"La Dra. Sara Comandi es la Responsable de S.A.N.E. para la Toscana. Bióloga nutricionista, lleva el programa a las escuelas del territorio y cuida la relación con centros, docentes y familias.",
+    sara_p2:"Impartió personalmente las clases del proyecto piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo — 5 clases, unos 100 alumnos — traduciendo los módulos científicos en experiencia concreta en el aula.",
     pat_role:"Cofundador & Director Comercial",
     pat_creds:["<i class='fas fa-gamepad'></i> Creador del juego educativo «Il Piatto Sano»","<i class='fas fa-earth-europe'></i> Desarrollo comercial y alianzas","<i class='fas fa-radio'></i> Comunicador — Radio PNR · Venerdì Tech","<i class='fas fa-pen-nib'></i> Autor — libros y música"],
     pat_p1:"Patrick Orlando es el cofundador y creador del juego educativo «Il Piatto Sano». Se ocupa del desarrollo comercial de S.A.N.E. Italia, la construcción de redes de biólogos nutricionistas y las alianzas institucionales.",
@@ -871,6 +905,8 @@ const T = {
     field_cap2:"El módulo dedicado a las alergias y los 14 alérgenos UE.",
     field_cap3:"El proyecto piloto en la prensa local.",
     field_meta:"Marzo–abril de 2026: 5 clases, unos 100 chicos en el I.C. «Carducci–Fattori» de Rosignano Marittimo. Fuentes oficiales: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Instituto Carducci–Fattori</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Ayuntamiento de Rosignano Marittimo</a>.",
+    educator_lead:"Clases del piloto impartidas por",
+    educator_role:"Bióloga Nutricionista · Referente territorial (Provincia de Livorno)",
     quote_eyebrow:"Las instituciones que nos respaldan",
     quote_title:"Qué dicen de <em>S.A.N.E.</em>",
     quote_text:"«Acogimos este proyecto porque alimentarse de la manera correcta es muy importante, especialmente para los chicos y las chicas.»",
@@ -943,7 +979,11 @@ const T = {
     ser_p2:"The first pilot at I.C. «Carducci–Fattori» in Rosignano Marittimo — with around 100 students — proved that play is the most effective tool for making food safety concrete and memorable.",
     ser_cta:"Join the S.A.N.E. network",
     team_eyebrow:"The team",
-    team_title:"Two expertises, <em>one mission.</em>",
+    team_title:"Three expertises, <em>one mission.</em>",
+    sara_role:"S.A.N.E. Tuscany Lead · Nutritionist Biologist",
+    sara_creds:["<i class='fas fa-microscope'></i> Nutritionist Biologist","<i class='fas fa-map-marker-alt'></i> S.A.N.E. Tuscany Lead","<i class='fas fa-chalkboard-teacher'></i> Pilot-programme educator (5 classes, ~100 students)","<i class='fas fa-school'></i> Local coordinator · Province of Livorno"],
+    sara_p1:"Dr Sara Comandi is the S.A.N.E. lead for Tuscany. A nutritionist biologist, she brings the programme into local schools and manages the relationship with institutes, teachers and families.",
+    sara_p2:"She personally delivered the pilot-programme lessons at I.C. «Carducci–Fattori» in Rosignano Marittimo — 5 classes, around 100 students — turning the scientific modules into concrete classroom experience.",
     pat_role:"Co-founder & Commercial Director",
     pat_creds:["<i class='fas fa-gamepad'></i> Creator of the «Il Piatto Sano» educational game","<i class='fas fa-earth-europe'></i> Commercial development & partnerships","<i class='fas fa-radio'></i> Communicator — Radio PNR · Venerdì Tech","<i class='fas fa-pen-nib'></i> Author — books and music"],
     pat_p1:"Patrick Orlando is the co-founder and creator of the «Il Piatto Sano» educational game. He leads the commercial development of S.A.N.E. Italia, building networks of nutritionist biologists across Italy and institutional partnerships.",
@@ -957,6 +997,8 @@ const T = {
     field_cap2:"The module on allergies and the 14 EU allergens.",
     field_cap3:"The pilot project covered by the local press.",
     field_meta:"March–April 2026: 5 classes, around 100 students at I.C. «Carducci–Fattori» in Rosignano Marittimo. Official sources: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Carducci–Fattori School</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Municipality of Rosignano Marittimo</a>.",
+    educator_lead:"Pilot lessons delivered by",
+    educator_role:"Nutritionist Biologist · Local coordinator (Province of Livorno)",
     quote_eyebrow:"The institutions backing us",
     quote_title:"What they say about <em>S.A.N.E.</em>",
     quote_text:"«We embraced this project because eating the right way is very important, especially for boys and girls.»",
@@ -1037,6 +1079,11 @@ function render(l) {
 
   // pat creds
   document.getElementById('pat-creds').innerHTML = t.pat_creds.map(c =>
+    `<div class="ser-cred">${c}</div>`
+  ).join('');
+
+  // sara creds
+  document.getElementById('sara-creds').innerHTML = t.sara_creds.map(c =>
     `<div class="ser-cred">${c}</div>`
   ).join('');
 
