@@ -180,6 +180,30 @@
     },
     {
       "@type": "Question",
+      "name": "How much does the programme cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "There are two options: the «Il Piatto Sano Class Kit», for teachers working independently, and the «Full SANE Programme» with the nutritionist biologist in the classroom. Costs depend on the number of classes: write to us for a tailored quote."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do we need an IWB or tablets in class?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The game runs in any browser, including smartphones and computers. The interactive whiteboard is recommended for class mode, but not required."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can the programme be funded?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes: the programme is compatible with MIUR funds and the Italian «Carta del Docente». We'll help you find the option that best fits your school's budget."
+      }
+    },
+    {
+      "@type": "Question",
       "name": "How can my school join?",
       "acceptedAnswer": {
         "@type": "Answer",
@@ -194,342 +218,260 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --g:#0A2647;        /* navy — primary brand */
-  --gm:#00A896;       /* teal */
-  --gl:#00C9B1;       /* teal-light */
-  --cr:#EEF5FA;       /* light blue-tint background */
-  --tc:#F4A261;       /* warm accent orange */
-  --or:#C9A84C;       /* gold for stat numbers */
-  --wh:#F5F9FC;       /* cool off-white */
-  --gr:#5A6A7A;       /* blue-gray body text */
-  --dn:#061828;       /* deep navy for footer */
-}
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:var(--wh);color:var(--g);overflow-x:hidden}
-/* accessibilità: focus visibile da tastiera */
-a:focus-visible,button:focus-visible,.lb:focus-visible{outline:3px solid var(--gl);outline-offset:2px;border-radius:4px}
-
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:.9rem 3rem;background:rgba(10,38,71,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(0,168,150,.2);gap:1rem}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo img{height:38px;width:auto}
-.logo-text{font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:.03em}
-.logo-text span{color:var(--gl)}
-.nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-size:.76rem;font-weight:500;letter-spacing:.08em;text-decoration:none;color:rgba(255,255,255,.65);text-transform:uppercase;border-bottom:2px solid transparent;padding-bottom:.2rem;transition:color .2s,border-color .2s;white-space:nowrap}
-.nav-links a:hover{color:var(--gl);border-bottom-color:var(--gl)}
-.nav-right{display:flex;align-items:center;gap:.9rem}
-.lang-sw{display:flex;gap:.3rem}
-.lb{background:none;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.68rem;font-weight:600;letter-spacing:.08em;padding:.3rem .6rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;text-transform:uppercase;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:28px;min-width:34px}
-.lb:hover,.lb.active{background:var(--gm);color:#fff;border-color:var(--gm)}
-.nav-cta{background:var(--gm);color:#fff;padding:.48rem 1.2rem;font-size:.76rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:background .2s,transform .15s;border-radius:6px;white-space:nowrap}
-.nav-cta:hover{background:var(--gl);transform:translateY(-1px)}
-.nav-portale{background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.3);padding:.44rem 1rem;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:all .2s;border-radius:6px;white-space:nowrap}
-.nav-portale:hover{background:rgba(255,255,255,.1);border-color:var(--gl);color:#fff}
-.nav-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:40px;padding:8px;background:transparent;border:1.5px solid rgba(255,255,255,.3);border-radius:6px;cursor:pointer}
-.nav-toggle span{display:block;height:2px;width:100%;background:#fff;border-radius:2px;transition:transform .25s,opacity .25s}
-nav.nav-open .nav-toggle span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-nav.nav-open .nav-toggle span:nth-child(2){opacity:0}
-nav.nav-open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+/* ============ CSS specifico della homepage ============ */
 
 /* HERO */
-.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center;padding:6rem 4rem 3.5rem;background:linear-gradient(135deg,#EEF5FA 0%,#e3f4f0 55%,#d2efe8 100%);overflow:hidden}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center;padding:6.5rem var(--pad-x) 3.5rem;background:linear-gradient(135deg,#EEF5FA 0%,#e3f4f0 55%,#d2efe8 100%);overflow:hidden}
 .hero-l{display:flex;flex-direction:column;justify-content:center}
-.eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gm);margin-bottom:1.2rem}
-.hero-title{font-family:'Inter',sans-serif;font-size:clamp(2.4rem,4.5vw,4.2rem);line-height:1.08;font-weight:800;color:var(--g)}
-.hero-title .em{color:var(--gm)}
-.hero-sub{font-size:.98rem;font-weight:400;line-height:1.8;color:var(--gr);margin-top:1.5rem;max-width:460px}
-.hero-allergie{display:inline-flex;align-items:center;gap:.55rem;align-self:flex-start;margin-top:1.5rem;background:#fff;border:1px solid rgba(244,162,97,.55);border-radius:999px;padding:.5rem 1rem;font-size:.82rem;font-weight:600;color:var(--g);box-shadow:0 2px 12px rgba(10,38,71,.07)}
-.hero-allergie-dot{width:9px;height:9px;border-radius:50%;background:#F4A261;box-shadow:0 0 0 4px rgba(244,162,97,.2);flex-shrink:0}
-.hero-cta{display:flex;align-items:center;gap:1rem;margin-top:1.9rem;flex-wrap:wrap}
-.gplay{display:inline-flex;transition:transform .15s}
-.gplay:hover{transform:translateY(-2px)}
-.gplay img{height:52px;width:auto;display:block}
-.hero-app-img{display:block;width:100%;max-width:560px;height:auto;border-radius:22px;box-shadow:0 18px 50px rgba(10,38,71,.22);margin:0 auto}
-.hero-projlogo{display:block;width:100%;max-width:340px;height:auto;margin:0 auto;border-radius:50%;box-shadow:0 14px 32px rgba(10,38,71,.16)}
-.hero-btns{display:flex;gap:.8rem;margin-top:1.6rem;flex-wrap:wrap}
-.btn-p{background:var(--g);color:#fff;padding:.8rem 2rem;font-size:.86rem;font-weight:600;letter-spacing:.04em;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;border-radius:8px}
-.btn-p:hover{background:var(--gm);transform:translateY(-2px)}
-.btn-s{background:transparent;color:var(--g);padding:.8rem 2rem;font-size:.86rem;font-weight:600;letter-spacing:.04em;border:2px solid var(--g);cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;border-radius:8px}
-.btn-s:hover{border-color:var(--gm);color:var(--gm)}
-.hero-dl{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;font-size:.78rem;color:var(--gr);text-decoration:none;transition:color .2s;font-weight:500}
+.hero-title{font-size:clamp(2.4rem,4.5vw,4.2rem);line-height:1.08;font-weight:800;color:var(--g)}
+.hero-title em{font-style:normal;color:var(--gm)}
+.hero-sub{font-size:var(--fs-base);font-weight:400;line-height:1.8;color:var(--gr);margin-top:1.5rem;max-width:480px}
+.hero-allergie{display:inline-flex;align-items:center;gap:.55rem;align-self:flex-start;margin-top:1.5rem;background:#fff;border:1px solid rgba(244,162,97,.55);border-radius:999px;padding:.5rem 1rem;font-size:.86rem;font-weight:600;color:var(--g);box-shadow:var(--shadow-sm)}
+.hero-allergie-dot{width:9px;height:9px;border-radius:50%;background:var(--tc);box-shadow:0 0 0 4px rgba(244,162,97,.2);flex-shrink:0}
+.hero-btns{display:flex;gap:.8rem;margin-top:1.7rem;flex-wrap:wrap}
+.hero-dl{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;font-size:.82rem;color:var(--gr);text-decoration:none;transition:color .2s;font-weight:500}
 .hero-dl::before{content:"↓";font-size:.9rem;color:var(--gm)}
 .hero-dl:hover{color:var(--gm)}
-.hero-r{display:flex;align-items:center;justify-content:center;position:relative}
-.hero-r-inner{position:relative;z-index:2;width:100%;max-width:440px;padding:2.5rem 2.8rem;display:flex;flex-direction:column;gap:.85rem}
-.hero-r-logo{width:128px;height:auto;align-self:flex-start;background:#fff;border-radius:16px;padding:.5rem;box-shadow:0 8px 24px rgba(0,0,0,.18);margin-bottom:.4rem}
-.hero-r-eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gl)}
-.hero-r-title{font-family:'Inter',sans-serif;font-size:1.55rem;font-weight:800;color:#fff;line-height:1.1}
-.hero-r-text{font-size:.86rem;line-height:1.6;color:rgba(255,255,255,.72)}
-.hero-r-text strong{color:var(--gl);font-weight:700}
-.stats{position:relative;z-index:2;display:flex;flex-direction:column;gap:.7rem;width:100%;margin-top:.6rem}
-.stat{display:flex;align-items:center;gap:1rem;background:rgba(255,255,255,.05);border:1px solid rgba(0,168,150,.25);padding:.9rem 1.2rem;border-radius:12px;transition:border-color .2s}
-.stat:hover{border-color:rgba(0,168,150,.55)}
-.stat-n{font-family:'Inter',sans-serif;font-size:2.1rem;font-weight:800;color:var(--gl);line-height:1;flex-shrink:0;min-width:3.4rem}
-.stat-l{font-size:.78rem;color:rgba(255,255,255,.65);line-height:1.45}
+.hero-r{display:flex;align-items:center;justify-content:center}
+.hero-projlogo{display:block;width:100%;max-width:340px;height:auto;margin:0 auto;border-radius:50%;box-shadow:0 14px 32px rgba(10,38,71,.16)}
 
-/* ACRONYM */
-.acr{background:var(--g);border-top:3px solid var(--gm);border-bottom:3px solid var(--gm);display:grid;grid-template-columns:repeat(4,1fr);padding:2rem 3rem;gap:.8rem}
-.acr-item{text-align:center}
-.acr-l{font-family:'Inter',sans-serif;font-size:2.4rem;font-weight:800;color:var(--gl);line-height:1}
-.acr-w{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);margin-top:.25rem}
-.acr-d{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:.25rem;line-height:1.4}
+/* NUMERI (stat band) */
+.statband-sec{background:var(--g);padding:2.4rem var(--pad-x)}
+.statband{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1100px;margin:0 auto}
+.statband-item{text-align:center}
+.statband-n{font-size:clamp(1.9rem,3.6vw,2.8rem);font-weight:800;color:var(--gl);line-height:1}
+.statband-l{font-size:.84rem;color:var(--on-navy-soft);margin-top:.45rem;line-height:1.45}
 
 /* CHI SIAMO */
 .chisiamo-sec{background:#fff}
 .chisiamo-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:3.5rem;align-items:center}
-.chisiamo-lead{font-size:1rem;color:var(--gr);line-height:1.85;margin-top:1.1rem}
-.chi-stats{display:flex;gap:2rem;margin-top:2rem;flex-wrap:wrap}
-.chi-stat{display:flex;align-items:baseline;gap:.6rem;text-align:left}
-.chi-stat-n{font-family:'Inter',sans-serif;font-size:2.2rem;font-weight:800;color:var(--gm);line-height:1}
-.chi-stat-l{font-size:.82rem;color:var(--gr);max-width:200px;line-height:1.45}
+.chisiamo-lead{font-size:var(--fs-base);color:var(--gr);line-height:1.85;margin-top:1.1rem}
+.chisiamo-lead strong{color:var(--g)}
 /* fascia verticale S A N E */
-.sane-band{display:flex;flex-direction:column;background:var(--g);border-radius:16px;overflow:hidden;box-shadow:0 14px 40px rgba(10,38,71,.18)}
+.sane-band{display:flex;flex-direction:column;background:var(--g);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 14px 40px rgba(10,38,71,.18)}
 .sane-pillar{display:flex;align-items:center;gap:1.1rem;padding:1.25rem 1.6rem;border-bottom:1px solid rgba(255,255,255,.08)}
 .sane-pillar:last-child{border-bottom:none}
-.sane-l{font-family:'Inter',sans-serif;font-size:2.1rem;font-weight:800;color:var(--gl);width:2rem;text-align:center;flex-shrink:0;line-height:1}
+.sane-l{font-size:2.1rem;font-weight:800;color:var(--gl);width:2rem;text-align:center;flex-shrink:0;line-height:1}
 .sane-txt{display:flex;flex-direction:column}
-.sane-w{font-size:.86rem;font-weight:700;color:#fff;letter-spacing:.05em;text-transform:uppercase}
-.sane-d{font-size:.76rem;color:rgba(255,255,255,.6);margin-top:.15rem;line-height:1.4}
+.sane-w{font-size:.88rem;font-weight:700;color:#fff;letter-spacing:.05em;text-transform:uppercase}
+.sane-d{font-size:.8rem;color:var(--on-navy-soft);margin-top:.15rem;line-height:1.4}
 
-/* SECTIONS */
-section{padding:4.5rem 4rem}
-.sec-title{font-family:'Inter',sans-serif;font-size:clamp(1.6rem,2.8vw,2.4rem);font-weight:700;line-height:1.15;color:var(--g);max-width:700px}
-.sec-title em{font-style:normal;color:var(--gm)}
-
-/* ABOUT */
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
-.about-text p{font-size:.97rem;line-height:1.85;color:var(--gr);margin-top:1.2rem}
-.about-text strong{color:var(--g)}
-.facts-sec{background:#fff}
-.facts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
-.facts-grid .badge{margin-bottom:0}
-.badge{background:var(--g);color:#fff;padding:2rem;margin-bottom:1.2rem;border-radius:12px}
-.badge-label{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gl);margin-bottom:.4rem}
-.badge-val{font-family:'Inter',sans-serif;font-size:1.15rem;font-weight:700;line-height:1.3}
-.badge-sub{font-size:.8rem;color:rgba(255,255,255,.6);margin-top:.25rem}
-.badge-alt{background:var(--cr);color:var(--g);border-left:4px solid var(--gm)}
-.badge-alt .badge-label{color:var(--gm)}
-.badge-alt .badge-val{color:var(--g)}
-.badge-alt .badge-sub{color:var(--gr)}
-
-/* GAME */
-.game-sec{background:var(--cr)}
-.game-intro{font-size:.97rem;color:var(--gr);margin-top:1rem;max-width:600px;line-height:1.75}
-.game-head{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;margin-bottom:2.8rem}
-.game-head-visual{display:flex;flex-direction:column;align-items:flex-start;gap:1.1rem}
-.game-banner{width:100%;max-width:480px;height:auto;border-radius:20px;box-shadow:0 14px 40px rgba(10,38,71,.18)}
-.game-head-visual .hero-allergie,.game-head-visual .hero-cta{margin-top:0}
-.game-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
-.game-card{display:flex;gap:1.1rem;align-items:center;background:#fff;padding:1.1rem;border-left:4px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:10px;box-shadow:0 2px 12px rgba(10,38,71,.06)}
-.game-card:hover{border-color:var(--gm);transform:translateY(-3px)}
-.game-img{width:104px;height:104px;flex-shrink:0;border-radius:14px;object-fit:cover;box-shadow:0 2px 8px rgba(10,38,71,.12)}
-.game-icon{width:104px;height:104px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2.8rem;background:var(--cr);border-radius:14px}
-.game-body{flex:1;min-width:0}
-.game-top{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.45rem}
-.game-card h4{font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;color:var(--g)}
-.game-card p{font-size:.82rem;color:var(--gr);line-height:1.55}
-.game-tag{font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.18rem .5rem;border-radius:999px;background:var(--gm);color:#fff;white-space:nowrap;flex-shrink:0}
-.game-tag.tag-pro{background:var(--gl);color:var(--g)}
-.tag{background:rgba(0,168,150,.15);border:1px solid rgba(0,168,150,.3);padding:.3rem .7rem;font-size:.7rem;color:var(--gl);letter-spacing:.04em;border-radius:4px;transition:background .2s}
-.tag:hover{background:var(--gm);border-color:var(--gm);color:#fff}
-
-/* SICUREZZA & ALLERGIE */
-.allerg-sec{background:var(--g);color:#fff}
-.allerg-sec .eyebrow{color:var(--gl)}
-.allerg-sec .sec-title{color:#fff;max-width:100%}
-.allerg-lead{font-size:1rem;line-height:1.85;color:rgba(255,255,255,.78);max-width:780px;margin-top:1.1rem}
-.allerg-lead strong{color:var(--gl);font-weight:700}
-.allerg-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.4rem}
-.allerg-step{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.6rem 1.5rem}
-.allerg-step-n{font-family:'Inter',sans-serif;font-size:1.6rem;font-weight:800;color:var(--tc);line-height:1;margin-bottom:.5rem}
-.allerg-step h4{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:.45rem}
-.allerg-step p{font-size:.83rem;line-height:1.65;color:rgba(255,255,255,.6)}
-.allerg-chips-wrap{margin-top:2.6rem}
-.allerg-chips-title{font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gl);margin-bottom:1rem}
-.allerg-chips{display:flex;flex-wrap:wrap;gap:.6rem}
-.allerg-chip{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.06);border:1px solid rgba(0,168,150,.3);border-radius:999px;padding:.5rem .95rem;font-size:.83rem;font-weight:500;color:#fff}
-.allerg-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gl);flex-shrink:0}
-.allerg-badge{margin-top:2.4rem;display:flex;align-items:flex-start;gap:.75rem;font-size:.84rem;line-height:1.6;color:rgba(255,255,255,.75);background:rgba(0,201,177,.1);border:1px solid rgba(0,201,177,.25);border-radius:12px;padding:1rem 1.3rem;max-width:780px}
-.allerg-badge::before{content:"\f0f1";font-family:"Font Awesome 6 Free";font-weight:900;color:var(--gl);font-size:1.05rem;flex-shrink:0;margin-top:.05rem}
-@media(max-width:860px){.allerg-steps{grid-template-columns:1fr}}
-/* «Il Coraggio di Agire» (riquadro emergenza) */
-.coraggio{display:grid;grid-template-columns:180px 1fr;gap:1.8rem;align-items:center;margin-top:2.4rem;background:rgba(244,162,97,.1);border:1px solid rgba(244,162,97,.35);border-left:4px solid var(--tc);border-radius:16px;padding:1.5rem}
-.coraggio-img{width:180px;height:180px;border-radius:12px;display:block;object-fit:cover;flex-shrink:0}
-.coraggio-tag{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--tc);color:var(--g);padding:.28rem .65rem;border-radius:999px;margin-bottom:.8rem}
-.coraggio-h{font-family:'Inter',sans-serif;font-size:1.35rem;font-weight:800;color:#fff;margin-bottom:.55rem}
-.coraggio-lead{font-size:.9rem;line-height:1.7;color:rgba(255,255,255,.8);margin-bottom:1.2rem}
-.coraggio-lead strong{color:var(--tc);font-weight:700}
-.coraggio-btn{display:inline-block;background:var(--tc);color:var(--g);font-weight:700;font-size:.85rem;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none;transition:transform .15s,background .2s}
-.coraggio-btn:hover{transform:translateY(-2px);background:#f6b277}
-@media(max-width:860px){.coraggio{grid-template-columns:1fr;text-align:center}.coraggio-img{margin:0 auto}}
-
-/* TARGET */
-.target-sec{background:#fff}
-.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem}
-.card{background:var(--wh);padding:2rem;border-top:3px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:0 0 10px 10px;box-shadow:0 2px 16px rgba(10,38,71,.06)}
-.card:hover{border-color:var(--gm);transform:translateY(-4px)}
-.card-icon{font-size:1.7rem;margin-bottom:.9rem;color:var(--gm)}
-.card h3{font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:700;color:var(--g);margin-bottom:.6rem}
-.card p{font-size:.86rem;line-height:1.7;color:var(--gr)}
-.card ul{font-size:.82rem;color:var(--gr);margin-top:.7rem;padding-left:1.1rem}
-.card ul li{margin-bottom:.35rem;line-height:1.5}
-
-/* METHOD */
+/* METHOD (i 6 moduli) */
 .method-sec{background:var(--g);color:#fff}
 .method-sec .sec-title{color:#fff;max-width:100%}
 .method-sec .eyebrow{color:var(--gl)}
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.5rem}
 .step{background:rgba(255,255,255,.05);padding:1.8rem 1.6rem;border-radius:14px;border:1px solid rgba(255,255,255,.08);transition:transform .2s,background .2s,box-shadow .2s}
 .step:hover{background:rgba(255,255,255,.09);transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.25)}
-.step-n{font-family:'Inter',sans-serif;font-size:2.6rem;font-weight:800;line-height:1;margin-bottom:.55rem}
-.step h4{font-size:.92rem;font-weight:600;color:#fff;margin-bottom:.5rem}
-.step p{font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.65}
+.step-n{font-size:2.6rem;font-weight:800;line-height:1;margin-bottom:.55rem}
+.step h3{font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.5rem}
+.step p{font-size:.88rem;color:var(--on-navy-soft);line-height:1.65}
 
-/* TEAM */
-.ser-init{width:68px;height:68px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:1.4rem;font-weight:800;color:var(--g);flex-shrink:0;overflow:hidden;border:3px solid rgba(255,255,255,.15)}
-.ser-init img{width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:50%}
-.ser-name{font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:700;line-height:1.25}
-.ser-role{font-size:.76rem;color:var(--gl);margin-top:.25rem;letter-spacing:.03em}
-.ser-creds{margin-top:1.2rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
-.ser-cred{font-size:.76rem;padding:.5rem .7rem;background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);border-left:2px solid var(--gl);border-radius:0 4px 4px 0}
-.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:2rem auto 0;max-width:1120px}
-.team-card{background:var(--g);color:#fff;padding:1.7rem 1.3rem;border-radius:16px;align-self:start;text-align:center}
-.team-card-alt{background:var(--cr);color:var(--g)}
-.team-top{display:flex;flex-direction:column;gap:.7rem;align-items:center;margin-bottom:1rem}
-.team-card-alt .ser-init{background:var(--tc);color:#fff}
-.team-card-alt .ser-name{color:var(--g)}
-.team-card-alt .ser-role{color:var(--gm)}
-.team-card-alt .ser-creds .ser-cred{background:rgba(10,38,71,.07);color:var(--g);border-left-color:var(--gm)}
-.team-bio{font-size:.88rem;line-height:1.8;margin-top:.9rem}
-.team-bio:first-child{margin-top:0}
-.team-card .team-bio{color:rgba(255,255,255,.7)}
-.team-card-alt .team-bio{color:var(--gr)}
-/* Accordion bio */
-.bio-toggle{margin-top:1rem;display:inline-flex;align-items:center;gap:.5rem;background:none;border:0;padding:0;cursor:pointer;font-family:inherit;font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:inherit;opacity:.75;transition:opacity .2s}
-.bio-toggle:hover{opacity:1}
-.team-card-alt .bio-toggle{color:var(--gm);opacity:1}
-.bio-toggle i{font-size:.7rem;transition:transform .3s}
-.bio-toggle[aria-expanded="true"] i{transform:rotate(180deg)}
-.team-bio-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
-.team-bio-wrap.open{grid-template-rows:1fr}
-.team-bio-inner{overflow:hidden}
-#team{background:var(--wh)}
+/* GAME */
+.game-sec{background:var(--cr)}
+.game-intro{font-size:var(--fs-base);color:var(--gr);margin-top:1rem;max-width:600px;line-height:1.75}
+.game-head{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;margin-bottom:2.8rem}
+.game-head-visual{display:flex;flex-direction:column;align-items:flex-start;gap:1.1rem}
+.game-banner{width:100%;max-width:480px;height:auto;border-radius:20px;box-shadow:0 14px 40px rgba(10,38,71,.18)}
+.game-cta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.gplay{display:inline-flex;transition:transform .15s}
+.gplay:hover{transform:translateY(-2px)}
+.gplay img{height:52px;width:auto;display:block}
+.game-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.game-card{display:flex;gap:1.1rem;align-items:center;background:#fff;padding:1.1rem;border-left:4px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:10px;box-shadow:var(--shadow-sm)}
+.game-card:hover{border-color:var(--gm);transform:translateY(-3px)}
+.game-img{width:104px;height:104px;flex-shrink:0;border-radius:14px;object-fit:cover;box-shadow:0 2px 8px rgba(10,38,71,.12)}
+.game-icon{width:104px;height:104px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2.8rem;background:var(--cr);border-radius:14px}
+.game-body{flex:1;min-width:0}
+.game-top{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.45rem}
+.game-card h3{font-size:1rem;font-weight:700;color:var(--g)}
+.game-card p{font-size:var(--fs-sm);color:var(--gr);line-height:1.55}
+.game-tag{font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.18rem .5rem;border-radius:999px;background:var(--gm);color:#fff;white-space:nowrap;flex-shrink:0}
+.game-tag.tag-pro{background:var(--gl);color:var(--g)}
 
-/* NUMERI (stat band) */
-.statband-sec{background:var(--g);padding:2.4rem 4rem}
-.statband{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:920px;margin:0 auto}
-.statband-item{text-align:center}
-.statband-n{font-family:'Inter',sans-serif;font-size:clamp(2rem,4vw,2.9rem);font-weight:800;color:var(--gl);line-height:1}
-.statband-l{font-size:.8rem;color:rgba(255,255,255,.72);margin-top:.45rem;line-height:1.45}
-
-/* TESTIMONIANZA */
-.quote-sec{background:var(--cr);text-align:center}
-.quote-sec .sec-title{margin:0 auto}
-.quote-box{max-width:760px;margin:1.6rem auto 0;background:#fff;border-radius:16px;padding:2.4rem;box-shadow:0 10px 36px rgba(10,38,71,.08);border-top:4px solid var(--gm)}
-.quote-text{font-size:1.05rem;line-height:1.8;color:var(--g);font-style:italic}
-.quote-author{font-size:.85rem;font-weight:700;color:var(--gm);margin-top:1.2rem;letter-spacing:.02em}
-
-/* FAQ */
-.faq-sec{background:#fff}
-.faq-list{max-width:820px;margin:2rem auto 0;display:flex;flex-direction:column;gap:.8rem}
-.faq-item{background:var(--wh);border:1px solid rgba(10,38,71,.08);border-left:4px solid var(--gl);border-radius:12px;padding:1.3rem 1.6rem}
-.faq-q{font-size:.98rem;font-weight:700;color:var(--g)}
-.faq-a{font-size:.88rem;line-height:1.7;color:var(--gr);margin-top:.5rem}
+/* SICUREZZA & ALLERGIE */
+.allerg-sec{background:var(--g);color:#fff}
+.allerg-sec .eyebrow{color:var(--gl)}
+.allerg-sec .sec-title{color:#fff;max-width:100%}
+.allerg-lead{font-size:var(--fs-lg);line-height:1.85;color:var(--on-navy);max-width:780px;margin-top:1.1rem}
+.allerg-lead strong{color:var(--gl);font-weight:700}
+.allerg-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.4rem}
+.allerg-step{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.6rem 1.5rem}
+.allerg-step-n{font-size:1.6rem;font-weight:800;color:var(--tc);line-height:1;margin-bottom:.5rem}
+.allerg-step h3{font-size:.98rem;font-weight:700;color:#fff;margin-bottom:.45rem}
+.allerg-step p{font-size:.88rem;line-height:1.65;color:var(--on-navy-soft)}
+.allerg-chips-wrap{margin-top:2.6rem}
+.allerg-chips-title{font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gl);margin-bottom:1rem}
+.allerg-chips{display:flex;flex-wrap:wrap;gap:.6rem}
+.allerg-chip{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.06);border:1px solid rgba(0,168,150,.3);border-radius:999px;padding:.5rem .95rem;font-size:.86rem;font-weight:500;color:#fff}
+.allerg-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gl);flex-shrink:0}
+/* «Il Coraggio di Agire» (riquadro emergenza) */
+.coraggio{display:grid;grid-template-columns:180px 1fr;gap:1.8rem;align-items:center;margin-top:2.4rem;background:rgba(244,162,97,.1);border:1px solid rgba(244,162,97,.35);border-left:4px solid var(--tc);border-radius:var(--r-lg);padding:1.5rem}
+.coraggio-img{width:180px;height:180px;border-radius:12px;display:block;object-fit:cover;flex-shrink:0}
+.coraggio-tag{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--tc);color:var(--g);padding:.28rem .65rem;border-radius:999px;margin-bottom:.8rem}
+.coraggio-h{font-size:1.35rem;font-weight:800;color:#fff;margin-bottom:.55rem}
+.coraggio-lead{font-size:.94rem;line-height:1.7;color:var(--on-navy);margin-bottom:1.2rem}
+.coraggio-lead strong{color:var(--tc);font-weight:700}
+.coraggio-btn{display:inline-block;background:var(--tc);color:var(--g);font-weight:700;font-size:.88rem;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none;transition:transform .15s,background .2s}
+.coraggio-btn:hover{transform:translateY(-2px);background:#f6b277}
 
 /* IN CLASSE (foto pilota) */
 .field-sec{background:var(--cr)}
 .field-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2rem}
 .field-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(10,38,71,.08)}
 .field-card img{width:100%;aspect-ratio:4/3;height:auto;object-fit:cover;display:block}
-.field-cap{font-size:.8rem;color:var(--gr);padding:.85rem 1.05rem;line-height:1.5}
-.field-meta{margin-top:1.4rem;font-size:.86rem;color:var(--gr);line-height:1.75;max-width:760px}
+.field-cap{font-size:.86rem;color:var(--gr);padding:.85rem 1.05rem;line-height:1.5}
+.field-meta{margin-top:1.4rem;font-size:.9rem;color:var(--gr);line-height:1.75;max-width:760px}
 .field-meta a{color:var(--gm);text-decoration:none;font-weight:600}
 .field-meta a:hover{text-decoration:underline}
 .field-credit{margin-top:1.9rem}
-.field-credit-lead{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gm);display:block;margin-bottom:.7rem}
+.field-credit-lead{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gm);display:block;margin-bottom:.7rem}
 .field-educator{display:inline-flex;align-items:center;gap:.9rem;background:#fff;border:1px solid rgba(10,38,71,.08);border-radius:999px;padding:.55rem 1.3rem .55rem .55rem;box-shadow:0 4px 16px rgba(10,38,71,.07)}
-.ed-av{width:46px;height:46px;border-radius:50%;background:var(--gm);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;flex-shrink:0;font-family:'Inter',sans-serif}
+.ed-av{width:46px;height:46px;border-radius:50%;background:var(--gm);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;flex-shrink:0}
 .ed-txt{display:flex;flex-direction:column;line-height:1.3}
 .ed-name{font-size:.92rem;font-weight:700;color:var(--g)}
-.ed-role{font-size:.76rem;color:var(--gr)}
+.ed-role{font-size:.8rem;color:var(--gr)}
 
-@media(max-width:980px){.team-grid{grid-template-columns:repeat(2,1fr);max-width:620px}}
-@media(max-width:520px){.team-grid{grid-template-columns:1fr;max-width:340px}}
-@media(max-width:860px){.field-grid{grid-template-columns:1fr}}
-@media(max-width:860px){.statband-sec{padding:1.8rem 1.2rem}.statband{gap:.6rem}.statband-l{font-size:.72rem}.quote-box{padding:1.8rem 1.4rem}}
+/* TESTIMONIANZA */
+.quote-sec{background:#fff;text-align:center}
+.quote-sec .sec-title{margin:0 auto}
+.quote-box{max-width:760px;margin:1.6rem auto 0;background:var(--wh);border-radius:var(--r-lg);padding:2.4rem;box-shadow:var(--shadow-md);border-top:4px solid var(--gm)}
+.quote-text{font-size:1.05rem;line-height:1.8;color:var(--g);font-style:italic}
+.quote-author{font-size:.88rem;font-weight:700;color:var(--gm);margin-top:1.2rem;letter-spacing:.02em}
 
-/* PARTNER */
-.partner-sec{background:var(--g);text-align:center}
-.partner-sec .sec-title{color:#fff;margin:0 auto}
-.partner-sec .eyebrow{color:var(--gl)}
-.partner-list{display:flex;gap:3rem;justify-content:center;flex-wrap:wrap;margin-top:2.5rem}
-.partner-item{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.05em;cursor:default;transition:color .2s}
-.partner-item:hover{color:var(--gl)}
+/* TARGET */
+.target-sec{background:var(--wh)}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem}
+.card{display:flex;flex-direction:column;background:#fff;padding:2rem;border-top:3px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:0 0 10px 10px;box-shadow:0 2px 16px rgba(10,38,71,.06)}
+.card:hover{border-color:var(--gm);transform:translateY(-4px)}
+.card-icon{font-size:1.7rem;margin-bottom:.9rem;color:var(--gm)}
+.card h3{font-size:1.1rem;font-weight:700;color:var(--g);margin-bottom:.6rem}
+.card p{font-size:var(--fs-sm);line-height:1.7;color:var(--gr)}
+.card ul{font-size:.88rem;color:var(--gr);margin-top:.7rem;padding-left:1.1rem}
+.card ul li{margin-bottom:.35rem;line-height:1.5}
+.card-link{margin-top:auto;padding-top:1.1rem;font-size:.86rem;font-weight:700;color:var(--gm);text-decoration:none}
+.card-link:hover{color:var(--gl)}
+
+/* TEAM */
+#team{background:#fff}
+.ser-init{width:68px;height:68px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:var(--g);flex-shrink:0;overflow:hidden;border:3px solid rgba(255,255,255,.15)}
+.ser-init img{width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:50%}
+.ser-name{font-size:1.05rem;font-weight:700;line-height:1.25}
+.ser-role{font-size:.8rem;color:var(--gl);margin-top:.25rem;letter-spacing:.03em}
+.ser-creds{margin-top:1.2rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
+.ser-cred{font-size:.8rem;padding:.5rem .7rem;background:rgba(255,255,255,.07);color:var(--on-navy);border-left:2px solid var(--gl);border-radius:0 4px 4px 0}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin:2rem auto 0;max-width:1120px}
+.team-card{background:var(--g);color:#fff;padding:1.7rem 1.3rem;border-radius:var(--r-lg);align-self:start;text-align:center}
+.team-card-alt{background:var(--cr);color:var(--g)}
+.team-top{display:flex;flex-direction:column;gap:.7rem;align-items:center;margin-bottom:1rem}
+.team-card-alt .ser-init{background:var(--tc);color:#fff}
+.team-card-alt .ser-name{color:var(--g)}
+.team-card-alt .ser-role{color:var(--gm)}
+.team-card-alt .ser-creds .ser-cred{background:rgba(10,38,71,.07);color:var(--g);border-left-color:var(--gm)}
+.team-bio{font-size:.9rem;line-height:1.8;margin-top:.9rem}
+.team-bio:first-child{margin-top:0}
+.team-card .team-bio{color:var(--on-navy-soft)}
+.team-card-alt .team-bio{color:var(--gr)}
+/* Accordion bio */
+.bio-toggle{margin-top:1rem;display:inline-flex;align-items:center;gap:.5rem;background:none;border:0;padding:0;cursor:pointer;font-family:inherit;font-size:.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:inherit;opacity:.8;transition:opacity .2s}
+.bio-toggle:hover{opacity:1}
+.team-card-alt .bio-toggle{color:var(--gm);opacity:1}
+.bio-toggle .ic{font-size:.7rem;transition:transform .3s}
+.bio-toggle[aria-expanded="true"] .ic{transform:rotate(180deg)}
+.team-bio-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
+.team-bio-wrap.open{grid-template-rows:1fr}
+.team-bio-inner{overflow:hidden}
+
+/* FAQ */
+.faq-sec{background:var(--wh)}
+.faq-list{max-width:820px;margin:2rem auto 0;display:flex;flex-direction:column;gap:.8rem}
+.faq-item{background:#fff;border:1px solid rgba(10,38,71,.08);border-left:4px solid var(--gl);border-radius:12px;padding:0}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:1rem;font-size:1rem;font-weight:700;color:var(--g);padding:1.15rem 1.6rem;cursor:pointer;list-style:none}
+.faq-q::-webkit-details-marker{display:none}
+.faq-q .ic{color:var(--gm);transition:transform .3s;flex-shrink:0}
+.faq-item[open] .faq-q .ic{transform:rotate(180deg)}
+.faq-a{font-size:.95rem;line-height:1.7;color:var(--gr);padding:0 1.6rem 1.2rem}
 
 /* CONTACT */
-.contact-sec{background:var(--g);color:#fff;padding:4.5rem 4rem}
+.contact-sec{background:var(--g);color:#fff}
 .contact-sec .sec-title{color:#fff;max-width:100%}
 .contact-sec .eyebrow{color:var(--gl)}
-.contact-sec .desc{color:rgba(255,255,255,.6);margin-top:1rem;line-height:1.8;font-size:.95rem;max-width:600px}
-.contact-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2.5rem}
-.cc{background:rgba(255,255,255,.06);border:1px solid rgba(0,201,177,.2);border-radius:16px;padding:1.8rem 2rem;transition:border-color .2s,background .2s}
+.contact-sec .desc{color:var(--on-navy-soft);margin-top:1rem;line-height:1.8;font-size:var(--fs-base);max-width:600px}
+.contact-wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:1.5rem;margin-top:2.5rem;align-items:start}
+.contact-cards{display:flex;flex-direction:column;gap:1.5rem}
+.cc{background:rgba(255,255,255,.06);border:1px solid rgba(0,201,177,.2);border-radius:var(--r-lg);padding:1.8rem 2rem;transition:border-color .2s,background .2s}
 .cc:hover{background:rgba(255,255,255,.1);border-color:var(--gl)}
 .cc-head{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem}
-.cc-avatar{width:44px;height:44px;border-radius:50%;overflow:hidden;background:var(--gl);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:var(--g);flex-shrink:0}
-.cc-avatar img{width:100%;height:100%;object-fit:cover;object-position:top}
-.cc-name{font-size:.95rem;font-weight:700;color:#fff;line-height:1.2}
-.cc-role{font-size:.7rem;color:var(--gl);margin-top:.15rem;letter-spacing:.03em}
+.cc-name{font-size:.98rem;font-weight:700;color:#fff;line-height:1.2}
+.cc-role{font-size:.76rem;color:var(--gl);margin-top:.15rem;letter-spacing:.03em}
 .cc-lines{display:flex;flex-direction:column;gap:.5rem}
-.cc-line{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:rgba(255,255,255,.75)}
-.cc-line a{color:rgba(255,255,255,.75);text-decoration:none;transition:color .2s}
+.cc-line{display:flex;align-items:center;gap:.6rem;font-size:.88rem;color:var(--on-navy)}
+.cc-line .ic{color:var(--gl)}
+.cc-line a{color:var(--on-navy);text-decoration:none;transition:color .2s}
 .cc-line a:hover{color:var(--gl)}
-.cc-socials{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.1)}
-.cc-social{font-size:.78rem;color:rgba(255,255,255,.6);text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;transition:color .2s;font-weight:500}
+.cc-socials{display:flex;gap:.9rem;flex-wrap:wrap;margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.1)}
+.cc-social{font-size:.82rem;color:var(--on-navy-soft);text-decoration:none;display:inline-flex;align-items:center;gap:.35rem;transition:color .2s;font-weight:500}
 .cc-social:hover{color:var(--gl)}
-.cc-portal{grid-column:1/-1;background:rgba(0,201,177,.12);border-color:var(--gl);text-decoration:none;display:flex;align-items:center;justify-content:space-between;padding:1.4rem 2rem}
-.cc-portal:hover{background:rgba(0,201,177,.22)}
-.cc-portal-text{font-size:.95rem;font-weight:600;color:#fff}
-.cc-portal-sub{font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.2rem}
-.cc-arrow{font-size:1.4rem;color:var(--gl)}
+/* form contatti (mailto) */
+.cform{background:rgba(255,255,255,.06);border:1px solid rgba(0,201,177,.2);border-radius:var(--r-lg);padding:1.8rem 2rem;display:flex;flex-direction:column;gap:1rem}
+.cform-title{font-size:1.05rem;font-weight:700;color:#fff}
+.cform label{display:flex;flex-direction:column;gap:.4rem;font-size:.8rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--gl)}
+.cform input,.cform select,.cform textarea{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.95rem;padding:.7rem .9rem;width:100%}
+.cform select option{color:var(--g);background:#fff}
+.cform textarea{min-height:120px;resize:vertical}
+.cform input::placeholder,.cform textarea::placeholder{color:rgba(255,255,255,.4)}
+.cform .btn-p{background:var(--gm);align-self:flex-start}
+.cform .btn-p:hover{background:var(--gl)}
+.cform-note{font-size:.78rem;color:rgba(255,255,255,.55)}
 
-footer{background:var(--dn);color:rgba(255,255,255,.35);padding:1.8rem 4rem;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;letter-spacing:.05em}
-footer strong{color:rgba(255,255,255,.7)}
-footer a{color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s}
-footer a:hover{color:var(--gl)}
-
+/* RESPONSIVE homepage */
+@media(max-width:980px){.team-grid{grid-template-columns:1fr;max-width:440px}}
 @media(max-width:860px){
-  nav{padding:.8rem 1.2rem;flex-wrap:wrap}
-  .logo{order:0}
-  .nav-toggle{display:flex;order:1}
-  .nav-links{order:2;flex-basis:100%;display:none;flex-direction:column;gap:.2rem;margin-top:.9rem}
-  .nav-right{order:3;flex-basis:100%;display:none;flex-direction:column;align-items:stretch;gap:.7rem;margin-top:.6rem;padding-top:.9rem;border-top:1px solid rgba(255,255,255,.12)}
-  nav.nav-open .nav-links,nav.nav-open .nav-right{display:flex}
-  .nav-links a{display:block;padding:.7rem .2rem;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.08)}
-  .lang-sw{gap:.4rem}
-  .nav-portale,.nav-cta{text-align:center}
   .hero{grid-template-columns:1fr;padding:5.5rem 1.5rem 2.5rem;gap:2rem}
-  .hero-l{padding:0}
-  .acr{grid-template-columns:repeat(2,1fr);padding:1.5rem}
-  section{padding:2.5rem 1.5rem}
-  .contact-sec{padding:2.5rem 1.5rem}
-  .contact-cards{grid-template-columns:1fr}
-  .about-grid{grid-template-columns:1fr;gap:2rem}
-  .facts-grid{grid-template-columns:1fr}
+  .statband-sec{padding:1.8rem 1.2rem}
+  .statband{grid-template-columns:repeat(2,1fr);gap:1.1rem .6rem}
+  .statband-l{font-size:.76rem}
   .chisiamo-grid{grid-template-columns:1fr;gap:2rem}
-  .game-cards{grid-template-columns:1fr}
-  .game-head{grid-template-columns:1fr;gap:2rem}
-  .cards-grid{grid-template-columns:1fr}
   .steps{grid-template-columns:repeat(2,1fr)}
-  footer{flex-direction:column;gap:.8rem;text-align:center;padding:1.5rem}
+  .game-head{grid-template-columns:1fr;gap:2rem}
+  .game-cards{grid-template-columns:1fr}
+  .allerg-steps{grid-template-columns:1fr}
+  .coraggio{grid-template-columns:1fr;text-align:center}
+  .coraggio-img{margin:0 auto}
+  .field-grid{grid-template-columns:1fr}
+  .quote-box{padding:1.8rem 1.4rem}
+  .cards-grid{grid-template-columns:1fr}
+  .contact-wrap{grid-template-columns:1fr}
 }
+@media(max-width:560px){.steps{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
+
+<!-- Sprite icone SVG (sostituisce Font Awesome) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-school" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/><path d="M22 10v6"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-microscope" viewBox="0 0 24 24"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+  <symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-presentation" viewBox="0 0 24 24"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></symbol>
+  <symbol id="i-gamepad" viewBox="0 0 24 24"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect x="2" y="6" width="20" height="12" rx="2"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
+  <symbol id="i-radio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.2 19.1 19.1"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37a4 4 0 1 1-7.914 1.174A4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></symbol>
+  <symbol id="i-facebook" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></symbol>
+  <symbol id="i-linkedin" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Skip to content</a>
 
 <!-- NAV -->
 <nav>
@@ -538,11 +480,11 @@ footer a:hover{color:var(--gl)}
     <span class="logo-text">S.A.N.E. <span>Italia</span></span>
   </a>
   <ul class="nav-links" id="navMenu">
-    <li><a href="#chisiamo" data-k="nav0"></a></li>
-    <li><a href="#team" data-k="nav1"></a></li>
-    <li><a href="#game" data-k="nav2"></a></li>
-    <li><a href="/scuole.html">Scuole Aderenti</a></li>
-    <li><a href="/biologi.html">I Biologi</a></li>
+    <li><a href="#chisiamo" data-k="nav0">Who we are</a></li>
+    <li><a href="#method" data-k="nav1">The programme</a></li>
+    <li><a href="#game" data-k="nav2">The game</a></li>
+    <li><a href="/scuole.html" data-k="nav3">Partner Schools</a></li>
+    <li><a href="/biologi.html" data-k="nav4">The Biologists</a></li>
   </ul>
   <div class="nav-right">
     <div class="lang-sw">
@@ -551,12 +493,14 @@ footer a:hover{color:var(--gl)}
       <a class="lb active" href="/en/">EN</a>
     </div>
     <a href="/portale.html" class="nav-portale">🔐 Portale</a>
-    <a href="#contact" class="nav-cta" data-k="nav_cta"></a>
+    <a href="#contact" class="nav-cta" data-k="nav_cta">Contact us</a>
   </div>
   <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="navMenu">
     <span></span><span></span><span></span>
   </button>
 </nav>
+
+<main id="main">
 
 <!-- HERO -->
 <section class="hero">
@@ -564,20 +508,26 @@ footer a:hover{color:var(--gl)}
     <p class="eyebrow" data-k="hero_eyebrow">Food Education Programme · Schools of All Levels</p>
     <h1 class="hero-title" data-k="hero_title">Mangiare Bene,<br><em>Crescere Meglio.</em></h1>
     <p class="hero-sub" data-k="hero_sub">A structured path of 6 thematic modules, designed by a qualified Nutritionist Biologist, combining in-person sessions, interactive digital tools and active family involvement. For children and teens aged 6 to 18.</p>
+    <div class="hero-allergie"><span class="hero-allergie-dot"></span><span data-k="hero_allergie">The only game with personalised management of the 14 EU allergens</span></div>
     <div class="hero-btns">
-      <a href="https://gioco.sane-italia.it" target="_blank" rel="noopener" class="btn-p" data-k="hero_btn1"></a>
-      <a href="#contact" class="btn-s" data-k="hero_btn2"></a>
+      <a href="https://gioco.sane-italia.it" target="_blank" rel="noopener" class="btn-p" data-k="hero_btn1">Try the app for free</a>
+      <a href="#contact" class="btn-s" data-k="hero_btn2">Talk to us</a>
     </div>
-    <a href="/locandina.pdf" target="_blank" rel="noopener" class="hero-dl" data-k="hero_dl"></a>
+    <a href="/locandina.pdf" target="_blank" rel="noopener" class="hero-dl" data-k="hero_dl">Download the brochure (PDF)</a>
   </div>
   <div class="hero-r">
     <img class="hero-projlogo" src="/immagini/logo/logo3.webp" alt="Mangiare Bene, Crescere Meglio" width="1600" height="1600" fetchpriority="high">
   </div>
 </section>
 
+<!-- PATROCINI -->
+<section class="trust-sec" aria-label="Patrocini">
+  <div class="trust-inner"><!-- @gen:trust-list --><span class="trust-lead">Under the patronage of</span><span class="trust-item">Comune di Novi Ligure</span><span class="trust-item">Ordine dei Biologi di Piemonte, Liguria e Valle d'Aosta</span><!-- @/gen:trust-list --></div>
+</section>
+
 <!-- NUMERI -->
 <section class="statband-sec">
-  <div class="statband" id="statband"></div>
+  <div class="statband"><!-- @gen:statband --><div class="statband-item"><div class="statband-n">6</div><div class="statband-l">thematic modules — from nutrition to allergy management</div></div><div class="statband-item"><div class="statband-n">14</div><div class="statband-l">EU allergens managed in the «Il Piatto Sano» app</div></div><div class="statband-item"><div class="statband-n">6–18</div><div class="statband-l">years old — the age range the programme is designed for</div></div><div class="statband-item"><div class="statband-n">+117%</div><div class="statband-l">average PRE/POST improvement in food-awareness tests</div></div><!-- @/gen:statband --></div>
 </section>
 
 <!-- CHI SIAMO -->
@@ -589,34 +539,115 @@ footer a:hover{color:var(--gl)}
       <p class="chisiamo-lead" data-k="chi_p1">S.A.N.E. Italia is a network of nutritionist biologists bringing food education and food safety into schools. The name sums up our four pillars: <strong>Safety</strong>, <strong>Food</strong>, <strong>Nutrition</strong>, <strong>Education</strong>.</p>
       <p class="chisiamo-lead" data-k="chi_p2">Under the scientific direction of Dr. Serafina Cardaci, we developed the «Mangiare Bene, Crescere Meglio» programme and the «Il Piatto Sano» educational game, with a practical, playful and measurable approach. The first pilot at I.C. «Carducci–Fattori» in Rosignano Marittimo involved around 100 students.</p>
     </div>
-    <div class="sane-band" id="sane-pillars"></div>
+    <div class="sane-band"><!-- @gen:sane-pillars --><div class="sane-pillar"><span class="sane-l">S</span><span class="sane-txt"><span class="sane-w">Safety</span><span class="sane-d">Food safety in the classroom</span></span></div><div class="sane-pillar"><span class="sane-l">A</span><span class="sane-txt"><span class="sane-w">Alimentation</span><span class="sane-d">Correct eating habits at the table</span></span></div><div class="sane-pillar"><span class="sane-l">N</span><span class="sane-txt"><span class="sane-w">Nutrition</span><span class="sane-d">Expertise of the Nutritionist Biologist</span></span></div><div class="sane-pillar"><span class="sane-l">E</span><span class="sane-txt"><span class="sane-w">Education</span><span class="sane-d">A playful, measurable method</span></span></div><!-- @/gen:sane-pillars --></div>
   </div>
 </section>
 
 <!-- METHOD (i 6 moduli del programma) -->
 <section id="method" class="method-sec">
-  <p class="eyebrow" data-k="method_eyebrow"></p>
+  <p class="eyebrow" data-k="method_eyebrow">The 6 programme modules</p>
   <h2 class="sec-title" data-k="method_title">A complete path, <em>from nutrition to safety.</em></h2>
-  <div class="steps" id="steps"></div>
+  <div class="steps"><!-- @gen:steps --><div class="step" style="border-top:3px solid #00C9B1"><div class="step-n" style="color:#00C9B1">01</div><h3>Getting to Know Food</h3><p>We discover food groups, nutritional properties and how to build a balanced diet.</p></div><div class="step" style="border-top:3px solid #F4A261"><div class="step-n" style="color:#F4A261">02</div><h3>The Balanced Plate</h3><p>The Harvard proportions (½ fruit & veg, ¼ grains, ¼ protein), variety and quality on the daily plate — with the «Il Piatto Sano» app.</p></div><div class="step" style="border-top:3px solid #4DA3FF"><div class="step-n" style="color:#4DA3FF">03</div><h3>Energy in Motion</h3><p>The link between food, physical activity and wellbeing: how food becomes fuel.</p></div><div class="step" style="border-top:3px solid #6BCB77"><div class="step-n" style="color:#6BCB77">04</div><h3>The Health Backpack</h3><p>What to bring to school, how to shop consciously and read food labels.</p></div><div class="step" style="border-top:3px solid #B98CFF"><div class="step-n" style="color:#B98CFF">05</div><h3>Food, Environment and Culture</h3><p>Seasonality, short supply chains, food traditions and the environmental impact of our choices.</p></div><div class="step" style="border-top:3px solid #FF7B9C"><div class="step-n" style="color:#FF7B9C">06</div><h3>Allergies and Safety</h3><p>Recognising the 14 EU allergens, managing intolerances safely at school and at home.</p></div><!-- @/gen:steps --></div>
+</section>
+
+<!-- GAME -->
+<section id="game" class="game-sec">
+  <div class="game-head">
+    <div class="game-head-text">
+      <p class="eyebrow" data-k="game_eyebrow">The programme's digital tool</p>
+      <h2 class="sec-title" data-k="game_title">The <em>«Il Piatto Sano»</em> game — 6 educational mini-games.</h2>
+      <p class="game-intro" data-k="game_sub">The digital heart of the «Mangiare Bene, Crescere Meglio» programme: a game on web, tablet, IWB and Android, guided by the «Serafina» mascot. Multilingual (IT/EN/ES), it personally manages all 14 mandatory EU allergens for each child, with 2 difficulty levels and a class mode. Two games are free; the others are paid.</p>
+    </div>
+    <div class="game-head-visual">
+      <img class="game-banner" src="/immagini/logo/logogioco.webp" alt="Il Piatto Sano" width="1376" height="768" loading="lazy">
+      <div class="game-cta">
+        <a href="https://gioco.sane-italia.it" target="_blank" rel="noopener" class="btn-p" data-k="hero_btn1">Try the app for free</a>
+        <a href="https://play.google.com/store/apps/details?id=com.daop.ilpiattosano&amp;utm_source=emea_Med" target="_blank" rel="noopener" class="gplay" aria-label="Get it on Google Play">
+          <img id="gplay-badge" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" loading="lazy">
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="game-cards"><!-- @gen:game-cards --><div class="game-card"><img class="game-img" src="/immagini/carosello/piattosano.webp" alt="The Healthy Plate" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>The Healthy Plate</h3><span class="game-tag">Free</span></div><p>Build a balanced meal following the Harvard model (½ fruit & veg, ¼ whole grains, ¼ protein) while respecting your allergies</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/tempo.webp" alt="The Courage to Act" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>The Courage to Act</h3><span class="game-tag">Free</span></div><p>Interactive story about a severe allergic reaction: choose what to do in an emergency and train step by step on using the auto-injector (EpiPen, Jext, Emerade, Fastjekt)</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/quiz.webp" alt="Food Quiz" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Food Quiz</h3><span class="game-tag tag-pro">Premium</span></div><p>Nutrition, allergies, food waste, myths and seasonality with timer, streak and power-ups</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/piramide.webp" alt="Food Pyramid" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Food Pyramid</h3><span class="game-tag tag-pro">Premium</span></div><p>The Mediterranean pyramid and food pyramids from around the world</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/stagioni.webp" alt="Seasonality" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Seasonality</h3><span class="game-tag tag-pro">Premium</span></div><p>Recognise seasonal fruit and vegetables</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/etichetta.webp" alt="Label Detective" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Label Detective</h3><span class="game-tag tag-pro">Premium</span></div><p>Read labels and spot allergens in bold, then match each food to its allergens across 3 levels</p></div></div><!-- @/gen:game-cards --></div>
+</section>
+
+<!-- SICUREZZA & ALLERGIE -->
+<section id="allergeni" class="allerg-sec">
+  <p class="eyebrow" data-k="allerg_eyebrow">Food safety · what makes us unique</p>
+  <h2 class="sec-title" data-k="allerg_title">Allergies: <em>no one manages them like we do.</em></h2>
+  <p class="allerg-lead" data-k="allerg_lead">In Italy <strong>6–8% of children</strong> have food allergies. It's not a whim or a trend: it's safety. That's why «Il Piatto Sano» is the <strong>only educational game that personally manages the 14 mandatory EU allergens</strong> for each child.</p>
+  <div class="allerg-steps"><!-- @gen:allerg-steps --><div class="allerg-step"><div class="allerg-step-n">01</div><h3>Set the profile</h3><p>Select the allergies and intolerances of the individual child or the whole class.</p></div><div class="allerg-step"><div class="allerg-step-n">02</div><h3>The game adapts</h3><p>Risky foods are flagged and personalised in real time, with 2 difficulty levels.</p></div><div class="allerg-step"><div class="allerg-step-n">03</div><h3>Learn safely</h3><p>The child recognises allergens on labels and learns how to act in an emergency with the auto-injector.</p></div><!-- @/gen:allerg-steps --></div>
+  <div class="allerg-chips-wrap">
+    <p class="allerg-chips-title" data-k="allerg_chips_title">The 14 mandatory EU allergens managed by the app</p>
+    <div class="allerg-chips"><!-- @gen:allerg-chips --><span class="allerg-chip">Gluten</span><span class="allerg-chip">Crustaceans</span><span class="allerg-chip">Eggs</span><span class="allerg-chip">Fish</span><span class="allerg-chip">Peanuts</span><span class="allerg-chip">Soya</span><span class="allerg-chip">Milk</span><span class="allerg-chip">Tree nuts</span><span class="allerg-chip">Celery</span><span class="allerg-chip">Mustard</span><span class="allerg-chip">Sesame</span><span class="allerg-chip">Sulphur dioxide</span><span class="allerg-chip">Lupin</span><span class="allerg-chip">Molluscs</span><!-- @/gen:allerg-chips --></div>
+  </div>
+  <div class="coraggio">
+    <img class="coraggio-img" src="/immagini/carosello/tempo.webp" alt="Il Coraggio di Agire — allenamento all'uso dell'autoiniettore" width="800" height="800" loading="lazy">
+    <div class="coraggio-txt">
+      <span class="coraggio-tag" data-k="coraggio_tag">Free game</span>
+      <h3 class="coraggio-h" data-k="coraggio_h">«The Courage to Act»</h3>
+      <p class="coraggio-lead" data-k="coraggio_lead">In an allergic emergency, <strong>every second counts</strong>. In this interactive story the child experiences a severe allergic reaction, chooses what to do and trains <strong>step by step on using the auto-injector</strong> (EpiPen, Jext, Emerade, Fastjekt). One of a kind — and free.</p>
+      <a href="https://gioco.sane-italia.it" target="_blank" rel="noopener" class="coraggio-btn" data-k="coraggio_btn">Try «The Courage to Act»</a>
+    </div>
+  </div>
+</section>
+
+<!-- IN CLASSE (foto pilota) -->
+<section class="field-sec">
+  <p class="eyebrow" data-k="field_eyebrow">In the field · 2026 pilot</p>
+  <h2 class="sec-title" data-k="field_title">The programme <em>in the classroom.</em></h2>
+  <div class="field-grid">
+    <figure class="field-card"><img src="/immagini/pilota/classe-gioco.webp" alt="Il gioco «Il Piatto Sano» proiettato alla LIM durante una lezione del programma S.A.N.E." loading="lazy"><figcaption class="field-cap" data-k="field_cap1">The «Il Piatto Sano» game on the IWB during a lesson.</figcaption></figure>
+    <figure class="field-card"><img src="/immagini/pilota/classe-allergie.webp" alt="Lezione sul modulo allergie alimentari e i 14 allergeni EU del programma S.A.N.E." loading="lazy"><figcaption class="field-cap" data-k="field_cap2">The module on allergies and the 14 EU allergens.</figcaption></figure>
+    <figure class="field-card"><img src="/immagini/pilota/classe-stampa.webp" alt="Il progetto pilota Mangiare Bene, Crescere Meglio sulla stampa locale" loading="lazy"><figcaption class="field-cap" data-k="field_cap3">The pilot project covered by the local press.</figcaption></figure>
+  </div>
+  <div class="field-credit">
+    <span class="field-credit-lead" data-k="educator_lead">Pilot lessons delivered by</span>
+    <div class="field-educator">
+      <div class="ed-av">SC</div>
+      <div class="ed-txt">
+        <span class="ed-name">Sara Comandi</span>
+        <span class="ed-role" data-k="educator_role">Nutritionist Biologist · Local coordinator (Province of Livorno)</span>
+      </div>
+    </div>
+  </div>
+  <p class="field-meta" data-k="field_meta">March–April 2026: 5 classes, around 100 students at I.C. «Carducci–Fattori» in Rosignano Marittimo. Official sources: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Carducci–Fattori School</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Municipality of Rosignano Marittimo</a>.</p>
+</section>
+
+<!-- TESTIMONIANZA -->
+<section class="quote-sec">
+  <p class="eyebrow" data-k="quote_eyebrow">The institutions backing us</p>
+  <h2 class="sec-title" data-k="quote_title">What they say about <em>S.A.N.E.</em></h2>
+  <div class="quote-box">
+    <p class="quote-text" data-k="quote_text">«We embraced this project because eating the right way is very important, especially for boys and girls.»</p>
+    <div class="quote-author" data-k="quote_author">— Cristina Santinelli, Councillor for Educational Policy · Municipality of Rosignano Marittimo</div>
+  </div>
+</section>
+
+<!-- TARGET -->
+<section id="target" class="target-sec">
+  <p class="eyebrow" data-k="target_eyebrow">Who we serve</p>
+  <h2 class="sec-title" data-k="target_title">A programme that speaks to everyone.</h2>
+  <div class="cards-grid"><!-- @gen:cards-grid --><div class="card"><div class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-school"/></svg></div><h3>Schools & institutions</h3><p>Structured programme with per-student allergen management, fully integrable into the curriculum.</p><ul><li>Pathways for primary, secondary and high school</li><li>Personalised allergen management per class</li><li>Teacher training included</li><li>Compatible with MIUR funding schemes</li></ul><a class="card-link" href="/scuole.html">How to join →</a></div><div class="card"><div class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></div><h3>Families</h3><p>Practical tools for parents of children with allergies and intolerances, in sync with school.</p><ul><li>Allergy & label-reading workshops</li><li>Access to «Il Piatto Sano» game</li><li>Safe shopping practical guides</li><li>Certified nutritionist support</li></ul><a class="card-link" href="#contact">Write to us →</a></div><div class="card"><div class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-microscope"/></svg></div><h3>Nutritionist biologists</h3><p>Certified professional network with operational tools to bring S.A.N.E. to your area.</p><ul><li>S.A.N.E. Educator certification</li><li>ECM credits via FNOB</li><li>Dedicated operational portal</li><li>Commercial and marketing support</li></ul><a class="card-link" href="/biologi.html">Join the network →</a></div><!-- @/gen:cards-grid --></div>
 </section>
 
 <!-- TEAM (fondatori) -->
 <section id="team">
-  <p class="eyebrow" data-k="team_eyebrow"></p>
-  <h2 class="sec-title" data-k="team_title"></h2>
+  <p class="eyebrow" data-k="team_eyebrow">The team</p>
+  <h2 class="sec-title" data-k="team_title">Three expertises, <em>one mission.</em></h2>
   <div class="team-grid">
     <div class="team-card">
       <div class="team-top">
         <div class="ser-init">
           <img src="/immagini/logo/serafina.webp" alt="Serafina Cardaci" width="399" height="536" loading="lazy">
         </div>
-        <div><div class="ser-name">Serafina Cardaci</div><div class="ser-role" data-k="ser_role"></div></div>
+        <div><div class="ser-name">Serafina Cardaci</div><div class="ser-role" data-k="ser_role">Nutritionist Biologist · Scientific Director</div></div>
       </div>
-      <div class="ser-creds" id="ser-creds"></div>
-      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="ser-creds"><!-- @gen:ser-creds --><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-microscope'/></svg> Nutritionist Biologist</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-book'/></svg> Creator of the «Mangiare Bene e Crescere Meglio» programme</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-school'/></svg> Scientific Director, S.A.N.E. Italia</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-globe'/></svg> www.serafinacardacinutrizione.com</div><!-- @/gen:ser-creds --></div>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more">Read bio</span> <svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
       <div class="team-bio-wrap"><div class="team-bio-inner">
-        <p class="team-bio" data-k="ser_p1"></p>
-        <p class="team-bio" data-k="ser_p2"></p>
+        <p class="team-bio" data-k="ser_p1">Dr. Serafina Cardaci is the scientific mind of the programme. She designed the 6 modules of «Mangiare Bene, Crescere Meglio», combining the latest evidence in paediatric nutrition with a practical, playful and measurable approach.</p>
+        <p class="team-bio" data-k="ser_p2">The first pilot at I.C. «Carducci–Fattori» in Rosignano Marittimo — with around 100 students — proved the programme's effectiveness in improving food awareness and allergy management.</p>
       </div></div>
     </div>
     <div class="team-card team-card-alt">
@@ -624,13 +655,13 @@ footer a:hover{color:var(--gl)}
         <div class="ser-init" style="border-color:rgba(10,38,71,.12)">
           <img src="/immagini/logo/patrick.webp" alt="Patrick Orlando" width="320" height="400" loading="lazy">
         </div>
-        <div><div class="ser-name">Patrick Orlando</div><div class="ser-role" data-k="pat_role"></div></div>
+        <div><div class="ser-name">Patrick Orlando</div><div class="ser-role" data-k="pat_role">App Developer · Technology & Media Partner</div></div>
       </div>
-      <div class="ser-creds" id="pat-creds"></div>
-      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="ser-creds"><!-- @gen:pat-creds --><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-gamepad'/></svg> Developer of the «Il Piatto Sano» app</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-code'/></svg> Technology & Media Partner, S.A.N.E. Italia</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-radio'/></svg> Communicator — Radio PNR · Venerdì Tech</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-pen'/></svg> Author — books and music</div><!-- @/gen:pat-creds --></div>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more">Read bio</span> <svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
       <div class="team-bio-wrap"><div class="team-bio-inner">
-        <p class="team-bio" data-k="pat_p1"></p>
-        <p class="team-bio" data-k="pat_p2"></p>
+        <p class="team-bio" data-k="pat_p1">Patrick Orlando is the co-founder and developer of the «Il Piatto Sano» app, the digital heart of the programme. Available on web, tablet, IWB and Android, the game makes food education interactive, personalised and multilingual.</p>
+        <p class="team-bio" data-k="pat_p2">He looks after the technology and media side of S.A.N.E. Italia: platform development, communication and spreading the programme across the country.</p>
       </div></div>
     </div>
     <div class="team-card team-card-alt">
@@ -638,514 +669,119 @@ footer a:hover{color:var(--gl)}
         <div class="ser-init" style="border-color:rgba(10,38,71,.12)">
           <img src="/immagini/logo/sara.webp" alt="Sara Comandi" width="160" height="160" loading="lazy">
         </div>
-        <div><div class="ser-name">Sara Comandi</div><div class="ser-role" data-k="sara_role"></div></div>
+        <div><div class="ser-name">Sara Comandi</div><div class="ser-role" data-k="sara_role">S.A.N.E. Tuscany Lead · Nutritionist Biologist</div></div>
       </div>
-      <div class="ser-creds" id="sara-creds"></div>
-      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more"></span> <i class="fas fa-chevron-down"></i></button>
+      <div class="ser-creds"><!-- @gen:sara-creds --><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-microscope'/></svg> Nutritionist Biologist</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-map-pin'/></svg> S.A.N.E. Tuscany Lead</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-presentation'/></svg> Pilot-programme educator (5 classes, ~100 students)</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-school'/></svg> Local coordinator · Province of Livorno</div><!-- @/gen:sara-creds --></div>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more">Read bio</span> <svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
       <div class="team-bio-wrap"><div class="team-bio-inner">
-        <p class="team-bio" data-k="sara_p1"></p>
-        <p class="team-bio" data-k="sara_p2"></p>
+        <p class="team-bio" data-k="sara_p1">Dr Sara Comandi is the S.A.N.E. lead for Tuscany. A nutritionist biologist, she brings the programme into local schools and manages the relationship with institutes, teachers and families.</p>
+        <p class="team-bio" data-k="sara_p2">She personally delivered the pilot-programme lessons at I.C. «Carducci–Fattori» in Rosignano Marittimo — 5 classes, around 100 students — turning the scientific modules into concrete classroom experience.</p>
       </div></div>
     </div>
   </div>
 </section>
 
-<!-- GAME -->
-<section id="game" class="game-sec">
-  <div class="game-head">
-    <div class="game-head-text">
-      <p class="eyebrow" data-k="game_eyebrow"></p>
-      <h2 class="sec-title" data-k="game_title"><em>«Il Piatto Sano»</em> — 6 educational mini-games.</h2>
-      <p class="game-intro" data-k="game_sub"></p>
-    </div>
-    <div class="game-head-visual">
-      <img class="game-banner" src="/immagini/logo/logogioco.webp" alt="Il Piatto Sano" width="1376" height="768" loading="lazy">
-      <div class="hero-allergie"><span class="hero-allergie-dot"></span><span data-k="hero_allergie"></span></div>
-      <div class="hero-cta">
-        <a href="https://gioco.sane-italia.it" target="_blank" class="btn-p" data-k="hero_btn1"></a>
-        <a href="https://play.google.com/store/apps/details?id=com.daop.ilpiattosano&amp;utm_source=emea_Med" target="_blank" rel="noopener" class="gplay" aria-label="Disponibile su Google Play">
-          <img id="gplay-badge" src="https://play.google.com/intl/it_it/badges/static/images/badges/it_badge_web_generic.png" alt="Disponibile su Google Play" loading="lazy">
-        </a>
-      </div>
-    </div>
-  </div>
-  <div class="game-cards" id="game-cards"></div>
-</section>
-
-<!-- SICUREZZA & ALLERGIE -->
-<section id="allergeni" class="allerg-sec">
-  <p class="eyebrow" data-k="allerg_eyebrow"></p>
-  <h2 class="sec-title" data-k="allerg_title"></h2>
-  <p class="allerg-lead" data-k="allerg_lead"></p>
-  <div class="allerg-steps" id="allerg-steps"></div>
-  <div class="allerg-chips-wrap">
-    <p class="allerg-chips-title" data-k="allerg_chips_title"></p>
-    <div class="allerg-chips" id="allerg-chips"></div>
-  </div>
-  <div class="coraggio">
-    <img class="coraggio-img" src="/immagini/carosello/tempo.webp" alt="Il Coraggio di Agire — allenamento all'uso dell'autoiniettore" width="800" height="800" loading="lazy">
-    <div class="coraggio-txt">
-      <span class="coraggio-tag" data-k="coraggio_tag"></span>
-      <h3 class="coraggio-h" data-k="coraggio_h"></h3>
-      <p class="coraggio-lead" data-k="coraggio_lead"></p>
-      <a href="https://gioco.sane-italia.it" target="_blank" rel="noopener" class="coraggio-btn" data-k="coraggio_btn"></a>
-    </div>
-  </div>
-</section>
-
-<!-- TARGET -->
-<section id="target" class="target-sec">
-  <p class="eyebrow" data-k="target_eyebrow"></p>
-  <h2 class="sec-title" data-k="target_title"></h2>
-  <div class="cards-grid" id="cards-grid"></div>
-</section>
-
-<!-- IN CLASSE (foto pilota) -->
-<section class="field-sec">
-  <p class="eyebrow" data-k="field_eyebrow"></p>
-  <h2 class="sec-title" data-k="field_title"></h2>
-  <div class="field-grid">
-    <figure class="field-card"><img src="/immagini/pilota/classe-gioco.webp" alt="Il gioco «Il Piatto Sano» proiettato alla LIM durante una lezione del programma S.A.N.E." loading="lazy"><figcaption class="field-cap" data-k="field_cap1"></figcaption></figure>
-    <figure class="field-card"><img src="/immagini/pilota/classe-allergie.webp" alt="Lezione sul modulo allergie alimentari e i 14 allergeni EU del programma S.A.N.E." loading="lazy"><figcaption class="field-cap" data-k="field_cap2"></figcaption></figure>
-    <figure class="field-card"><img src="/immagini/pilota/classe-stampa.webp" alt="Il progetto pilota Mangiare Bene, Crescere Meglio sulla stampa locale" loading="lazy"><figcaption class="field-cap" data-k="field_cap3"></figcaption></figure>
-  </div>
-  <div class="field-credit">
-    <span class="field-credit-lead" data-k="educator_lead"></span>
-    <div class="field-educator">
-      <div class="ed-av">SC</div>
-      <div class="ed-txt">
-        <span class="ed-name">Sara Comandi</span>
-        <span class="ed-role" data-k="educator_role"></span>
-      </div>
-    </div>
-  </div>
-  <p class="field-meta" data-k="field_meta"></p>
-</section>
-
-<!-- TESTIMONIANZA -->
-<section class="quote-sec">
-  <p class="eyebrow" data-k="quote_eyebrow"></p>
-  <h2 class="sec-title" data-k="quote_title"></h2>
-  <div class="quote-box">
-    <p class="quote-text" data-k="quote_text"></p>
-    <div class="quote-author" data-k="quote_author"></div>
-  </div>
-</section>
-
 <!-- FAQ -->
 <section class="faq-sec">
-  <p class="eyebrow" data-k="faq_eyebrow"></p>
-  <h2 class="sec-title" data-k="faq_title"></h2>
-  <div class="faq-list" id="faq-list"></div>
+  <p class="eyebrow" data-k="faq_eyebrow">Frequently asked questions</p>
+  <h2 class="sec-title" data-k="faq_title">Answers to the <em>most common questions.</em></h2>
+  <div class="faq-list"><!-- @gen:faq-list --><details class="faq-item"><summary class="faq-q">Who is the S.A.N.E. programme for?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">For schools of all levels — primary, secondary and high school — for children and teens aged 6 to 18. It actively involves teachers and families too.</div></details><details class="faq-item"><summary class="faq-q">Is the «Il Piatto Sano» game free?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">Yes. Two of the six mini-games are completely free (The Healthy Plate and The Courage to Act, with auto-injector training). The other four unlock with a code. The game runs on web, tablet, IWB and Android, in Italian, Spanish and English.</div></details><details class="faq-item"><summary class="faq-q">How does allergen management work?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">The app personally manages all 14 mandatory EU allergens for each child, with two difficulty levels and a class mode designed for the interactive whiteboard.</div></details><details class="faq-item"><summary class="faq-q">How much does the programme cost?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">There are two options: the «Il Piatto Sano Class Kit», for teachers working independently, and the «Full SANE Programme» with the nutritionist biologist in the classroom. Costs depend on the number of classes: write to us for a tailored quote.</div></details><details class="faq-item"><summary class="faq-q">Do we need an IWB or tablets in class?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">No. The game runs in any browser, including smartphones and computers. The interactive whiteboard is recommended for class mode, but not required.</div></details><details class="faq-item"><summary class="faq-q">Can the programme be funded?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">Yes: the programme is compatible with MIUR funds and the Italian «Carta del Docente». We'll help you find the option that best fits your school's budget.</div></details><details class="faq-item"><summary class="faq-q">How can my school join?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">Write to us from the Contact section: we'll connect you with a certified S.A.N.E. nutritionist biologist in your area to build the path best suited to your school.</div></details><!-- @/gen:faq-list --></div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact" class="contact-sec">
-  <p class="eyebrow" data-k="contact_eyebrow"></p>
-  <h2 class="sec-title" data-k="contact_title"></h2>
-  <p class="desc" data-k="contact_desc"></p>
-  <div class="contact-cards" id="contact-cards"></div>
+  <p class="eyebrow" data-k="contact_eyebrow">Contact</p>
+  <h2 class="sec-title" data-k="contact_title">Bring S.A.N.E. to your <em>school</em> or area.</h2>
+  <p class="desc" data-k="contact_desc">Are you a school principal, a nutritionist biologist, a parent of an allergic child, or a local authority? Write to us.</p>
+  <div class="contact-wrap">
+    <form class="cform" id="contact-form">
+      <div class="cform-title" data-k="form_title">Send us a message</div>
+      <label><span data-k="form_name">Full name</span><input type="text" id="cf-name" autocomplete="name" required></label>
+      <label><span data-k="form_role">Who are you?</span><select id="cf-role"><!-- @gen:form-roles --><option>School principal or teacher</option><option>Parent</option><option>Nutritionist biologist</option><option>Local authority or institution</option><option>Other</option><!-- @/gen:form-roles --></select></label>
+      <label><span data-k="form_msg">Your message</span><textarea id="cf-msg" required></textarea></label>
+      <button type="submit" class="btn-p" data-k="form_send">Send the message</button>
+      <p class="cform-note" data-k="form_note">The message will open in your email app, ready to send.</p>
+    </form>
+    <div class="contact-cards"><!-- @gen:contact-cards --><div class="cc">
+        <div class="cc-head">
+          <div><div class="cc-name">Dott.ssa Serafina Cardaci</div><div class="cc-role">Nutritionist Biologist · Scientific Director</div></div>
+        </div>
+        <div class="cc-lines">
+          <div class="cc-line"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg> <a href="mailto:serafinacardaci@gmail.com">serafinacardaci@gmail.com</a></div>
+          <div class="cc-line"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg> <a href="tel:+393473750087">+39 347 375 0087</a></div>
+          <div class="cc-line"><svg class="ic" aria-hidden="true"><use href="#i-map-pin"/></svg> Via Mazzini 129 — Novi Ligure (AL)</div>
+          <div class="cc-line"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg> <a href="https://www.serafinacardacinutrizione.com/" target="_blank" rel="noopener">serafinacardacinutrizione.com</a></div>
+        </div>
+        <div class="cc-socials">
+          <a href="https://www.instagram.com/sery.cardaci.nutrizionista/" target="_blank" rel="noopener" class="cc-social"><svg class="ic" aria-hidden="true"><use href="#i-instagram"/></svg> Instagram</a>
+          <a href="https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/" target="_blank" rel="noopener" class="cc-social"><svg class="ic" aria-hidden="true"><use href="#i-facebook"/></svg> Facebook</a>
+          <a href="https://www.linkedin.com/in/serafina-cardaci-70707793/" target="_blank" rel="noopener" class="cc-social"><svg class="ic" aria-hidden="true"><use href="#i-linkedin"/></svg> LinkedIn</a>
+        </div>
+      </div><div class="cc">
+        <div class="cc-head">
+          <div><div class="cc-name">Ing. Patrick Orlando</div><div class="cc-role">App Developer · Technology & Media Partner</div></div>
+        </div>
+        <div class="cc-lines">
+          <div class="cc-line"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg> <a href="mailto:patrick.orlando@libero.it">patrick.orlando@libero.it</a></div>
+          <div class="cc-line"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg> <a href="tel:+393471834091">+39 347 183 4091</a></div>
+          
+          
+        </div>
+        <div class="cc-socials">
+          
+          
+          <a href="https://www.linkedin.com/in/patrickorlando86/?locale=it" target="_blank" rel="noopener" class="cc-social"><svg class="ic" aria-hidden="true"><use href="#i-linkedin"/></svg> LinkedIn</a>
+        </div>
+      </div><!-- @/gen:contact-cards --></div>
+  </div>
 </section>
 
+</main>
+
 <footer>
-  <div><strong>S.A.N.E. Italia</strong> — <span data-k="footer"></span></div>
-  <div>© 2025–2026 Dott.ssa Serafina Cardaci &amp; Ing. Patrick Orlando — Tutti i diritti riservati</div>
+  <div class="ft-grid">
+    <div class="ft-brand">
+      <a href="/" class="logo">
+        <img src="/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" width="800" height="800">
+        <span class="logo-text">S.A.N.E. <span>Italia</span></span>
+      </a>
+      <p class="ft-payoff" data-k="ft_payoff">The network of nutritionist biologists bringing food education and food safety into Italian schools.</p>
+    </div>
+    <nav class="ft-col" aria-label="Mappa del sito">
+      <h2 class="ft-h" data-k="ft_explore">Explore</h2>
+      <ul>
+        <li><a href="#chisiamo" data-k="nav0">Who we are</a></li>
+        <li><a href="#method" data-k="ft_l_moduli">The 6 modules</a></li>
+        <li><a href="#game" data-k="ft_l_gioco">The «Il Piatto Sano» game</a></li>
+        <li><a href="/scuole.html" data-k="ft_l_scuole">Partner Schools</a></li>
+        <li><a href="/biologi.html" data-k="ft_l_biologi">The Biologists</a></li>
+        <li><a href="#contact" data-k="ft_l_contatti">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="ft-col">
+      <h2 class="ft-h" data-k="ft_contact_h">Contact</h2>
+      <div style="display:flex;flex-direction:column;gap:.55rem">
+        <div class="ft-line"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg><a href="mailto:serafinacardaci@gmail.com">serafinacardaci@gmail.com</a></div>
+        <div class="ft-line"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg><a href="tel:+393473750087">+39 347 375 0087</a></div>
+        <div class="ft-line"><svg class="ic" aria-hidden="true"><use href="#i-map-pin"/></svg><span>Via Mazzini 129 — Novi Ligure (AL)</span></div>
+      </div>
+    </div>
+    <div class="ft-col">
+      <h2 class="ft-h" data-k="ft_legal_h">Information</h2>
+      <ul>
+        <li><a href="/privacy.html" data-k="ft_privacy">Privacy & Cookie Policy</a></li>
+        <li><a href="/portale.html" data-k="ft_portale">Operators' portal</a></li>
+        <li><a href="https://gioco.sane-italia.it" target="_blank" rel="noopener" data-k="ft_gioco_link">Play «Il Piatto Sano»</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ft-bottom">
+    <div><strong>S.A.N.E. Italia</strong> — <span data-k="footer">Safety · Food · Nutrition · Education</span></div>
+    <div>© 2025–2026 Dott.ssa Serafina Cardaci &amp; Ing. Patrick Orlando — Tutti i diritti riservati</div>
+  </div>
 </footer>
 
 <script>
-const T = {
-  it: {
-    nav:["Chi siamo","Il team","L'app"],
-    nav_cta:"Contattaci",
-    hero_eyebrow:"Programma di Educazione Alimentare · Scuole di Ogni Ordine e Grado",
-    hero_title:"Mangiare Bene,<br><em>Crescere Meglio.</em>",
-    hero_sub:"Un percorso strutturato in 6 moduli tematici, progettato da una Biologa Nutrizionista qualificata, che integra interventi in presenza, strumenti digitali interattivi e coinvolgimento attivo delle famiglie. Rivolto a bambini e ragazzi dai 6 ai 18 anni.",
-    hero_btn1:"Prova l'app gratuita",hero_btn2:"Parla con noi",hero_dl:"Scarica la locandina (PDF)",
-    hero_allergie:"Unico gioco con gestione personalizzata dei 14 allergeni EU",
-    sane_kicker:"L'organizzazione",
-    sane_title:"S.A.N.E. Italia",
-    sane_text:"<strong>S</strong>icurezza, <strong>A</strong>limentazione, <strong>N</strong>utrizione, <strong>E</strong>ducazione: la rete di biologi nutrizionisti che porta nelle scuole il programma «Mangiare Bene, Crescere Meglio».",
-    stat1_label:"moduli tematici del programma — dalla nutrizione alle allergie",
-    stat2_label:"allergeni EU gestiti nell'app «Il Piatto Sano»",
-    stat3_label:"anni — fascia d'età a cui è rivolto il programma",
-    acr:[{l:"S",w:"Sicurezza",d:"Sicurezza alimentare in classe"},{l:"A",w:"Alimentazione",d:"Corrette abitudini a tavola"},{l:"N",w:"Nutrizione",d:"Expertise della Biologa Nutrizionista"},{l:"E",w:"Educazione",d:"Metodo ludico e misurabile"}],
-    chi_eyebrow:"Chi siamo",
-    chi_title:"Chi è <em>S.A.N.E. Italia</em>.",
-    chi_p1:"S.A.N.E. Italia è una rete di biologi nutrizionisti che porta l'educazione alimentare e la sicurezza alimentare nelle scuole. Il nome riassume i nostri quattro pilastri: <strong>Sicurezza</strong>, <strong>Alimentazione</strong>, <strong>Nutrizione</strong>, <strong>Educazione</strong>.",
-    chi_p2:"Sotto la guida scientifica della Dott.ssa Serafina Cardaci, abbiamo sviluppato il programma «Mangiare Bene, Crescere Meglio» e il gioco educativo «Il Piatto Sano», con un approccio pratico, ludico e misurabile. Il primo pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo ha coinvolto circa 100 studenti.",
-    about_eyebrow:"Il programma",
-    about_title:"<em>Mangiare Bene, Crescere Meglio</em> — educazione alimentare strutturata.",
-    about_p1:"Un percorso in 6 moduli tematici pensato per le scuole di ogni ordine e grado, progettato dalla Dott.ssa Serafina Cardaci, Biologa Nutrizionista. Ogni modulo combina lezioni in presenza, strumenti digitali e attività per coinvolgere attivamente le famiglie.",
-    about_p2:"Il programma include il gioco educativo <strong>«Il Piatto Sano»</strong> — disponibile su browser, tablet, LIM e Android — con 6 mini-giochi (di cui 2 gratuiti, incluso l'allenamento all'uso dell'autoiniettore), gestione personalizzata dei 14 allergeni EU e modalità multilingua (IT/EN/ES).",
-    about_p3:"S.A.N.E. Italia è la piattaforma digitale che supporta i professionisti della nutrizione, le istituzioni scolastiche e la valutazione dell'impatto educativo del programma.",
-    b1_label:"Il programma",b1_val:"Mangiare Bene, Crescere Meglio",b1_sub:"6 moduli · scuole di ogni ordine e grado · bambini e ragazzi 6–18 anni",
-    b2_label:"Il gioco del programma",b2_val:"«Il Piatto Sano»",b2_sub:"Browser · Tablet · LIM · Android · IT/EN/ES",
-    b3_label:"Primo pilota",b3_val:'I.C. "Carducci–Fattori"',b3_sub:"Rosignano Marittimo — ~100 studenti coinvolti",
-    game_eyebrow:"Lo strumento digitale del programma",
-    game_title:"Il gioco <em>«Il Piatto Sano»</em> — 6 mini-giochi educativi.",
-    game_sub:"Il cuore digitale del programma «Mangiare Bene, Crescere Meglio»: un gioco su browser, tablet, LIM e Android, guidato dalla mascotte Serafina. Multilingua (IT/EN/ES), gestisce in modo personalizzato tutti i 14 allergeni obbligatori EU per ogni bambino, con 2 livelli di difficoltà e modalità classe. Due giochi sono gratuiti, gli altri sono a pagamento.",
-    games:[{img:"piattosano.webp",icon:"🍽️",name:"Il Piatto Sano",desc:"Componi il piatto equilibrato secondo il modello di Harvard (½ frutta e verdura, ¼ cereali integrali, ¼ proteine) rispettando le tue allergie",tag:"Gratis"},{img:"tempo.webp",icon:"🚨",name:"Il Coraggio di Agire",desc:"Storia interattiva su una reazione allergica grave: scegli cosa fare in emergenza e allenati all'uso dell'autoiniettore (EpiPen, Jext, Emerade, Fastjekt) passo per passo",tag:"Gratis"},{img:"quiz.webp",icon:"❓",name:"Quiz Alimentare",desc:"Nutrizione, allergie, spreco, miti e stagionalità con timer, streak e power-up",tag:"Premium",pro:true},{img:"piramide.webp",icon:"🔺",name:"Piramide Alimentare",desc:"La piramide mediterranea e le piramidi alimentari del mondo",tag:"Premium",pro:true},{img:"stagioni.webp",icon:"🌿",name:"Stagionalità",desc:"Riconosci la frutta e la verdura di stagione",tag:"Premium",pro:true},{img:"etichetta.webp",icon:"🔍",name:"Detective Etichette",desc:"Leggi le etichette e trova gli allergeni in grassetto, poi abbina ogni alimento ai suoi allergeni su 3 livelli",tag:"Premium",pro:true}],
-    allergens_title:"Gestione 14 allergeni EU",
-    allergens_sub:"L'app gestisce in modo personalizzato tutti i 14 allergeni obbligatori EU per ogni bambino, con 2 livelli di difficoltà e modalità LIM per la classe.",
-    allergens:["Glutine","Crostacei","Uova","Pesce","Arachidi","Soia","Latte","Frutta a guscio","Sedano","Senape","Sesamo","Anidride solforosa","Lupini","Molluschi"],
-    allerg_eyebrow:"Sicurezza alimentare · ciò che ci rende unici",
-    allerg_title:"Allergie: <em>nessuno le gestisce come noi.</em>",
-    allerg_lead:"In Italia il <strong>6–8% dei bambini</strong> soffre di allergie alimentari. Non è un capriccio, non è una moda: è sicurezza. Per questo «Il Piatto Sano» è l'<strong>unico gioco educativo che gestisce in modo personalizzato i 14 allergeni obbligatori EU</strong> per ogni singolo bambino.",
-    allerg_steps:[{n:"01",t:"Imposti il profilo",d:"Selezioni gli allergeni e le intolleranze del singolo bambino o dell'intera classe."},{n:"02",t:"Il gioco si adatta",d:"I cibi a rischio vengono segnalati e personalizzati in tempo reale, con 2 livelli di difficoltà."},{n:"03",t:"Impara in sicurezza",d:"Il bambino riconosce gli allergeni nelle etichette e impara come agire in emergenza con l'autoiniettore."}],
-    allerg_chips_title:"I 14 allergeni obbligatori EU gestiti dall'app",
-    coraggio_tag:"Gioco gratuito",
-    coraggio_h:"«Il Coraggio di Agire»",
-    coraggio_lead:"In un'emergenza allergica, <strong>ogni secondo conta</strong>. In questa storia interattiva il bambino vive una reazione allergica grave, sceglie cosa fare e si allena <strong>passo per passo all'uso dell'autoiniettore</strong> (EpiPen, Jext, Emerade, Fastjekt). Unico nel suo genere — e gratuito.",
-    coraggio_btn:"Prova «Il Coraggio di Agire»",
-    target_eyebrow:"A chi ci rivolgiamo",target_title:"Un programma che parla a tutti.",
-    cards:[{icon:"<i class='fas fa-school'></i>",title:"Scuole e istituti",desc:"Programma strutturato con gestione allergeni per ogni studente, integrabile nel curriculo.",li:["Percorsi per primaria, secondaria e superiori","Gestione allergeni personalizzata per classe","Formazione docenti inclusa","Compatibile con MIUR / Carta del Docente"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Famiglie",desc:"Strumenti concreti per genitori di bambini con allergie e intolleranze, in sinergia con la scuola.",li:["Workshop su allergie e lettura etichette","Accesso al gioco «Il Piatto Sano»","Guide pratiche per la spesa sicura","Supporto nutrizionista certificato"]},{icon:"<i class='fas fa-microscope'></i>",title:"Biologi nutrizionisti",desc:"Network professionale certificato con strumenti operativi per portare S.A.N.E. nel proprio territorio.",li:["Certificazione S.A.N.E. Educator","Crediti ECM via FNOB","Portale operativo dedicato","Supporto commerciale e marketing"]}],
-    method_eyebrow:"I 6 moduli del programma",method_title:"Un percorso completo, <em>dalla nutrizione alla sicurezza.</em>",
-    steps:[{n:"01",t:"Conosciamo gli Alimenti",d:"Scopriamo i gruppi alimentari, le proprietà nutrizionali e come costruire un'alimentazione equilibrata."},{n:"02",t:"Il Piatto Equilibrato",d:"Le proporzioni Harvard (50/25/25), la varietà e la qualità nel piatto quotidiano — con l'app «Il Piatto Sano»."},{n:"03",t:"Energia in Movimento",d:"Il legame tra alimentazione, attività fisica e benessere: come il cibo diventa carburante."},{n:"04",t:"Lo Zaino della Salute",d:"Cosa portare a scuola, come fare spesa consapevole e leggere le etichette degli alimenti."},{n:"05",t:"Cibo, Ambiente e Cultura",d:"Stagionalità, filiera corta, tradizioni alimentari e impatto ambientale delle nostre scelte."},{n:"06",t:"Allergie e Sicurezza",d:"Riconoscere i 14 allergeni EU, gestire le intolleranze in sicurezza a scuola e in famiglia."}],
-    ser_eyebrow:"La nostra fondatrice scientifica",
-    ser_heading:"Scienza, passione e <em>metodo.</em>",
-    bio_more:"Leggi la bio",
-    ser_role:"Biologa Nutrizionista · Responsabile Scientifica",
-    ser_creds:["<i class='fas fa-microscope'></i> Biologa Nutrizionista","<i class='fas fa-book'></i> Ideatrice del programma «Mangiare Bene e Crescere Meglio»","<i class='fas fa-school'></i> Responsabile Scientifica S.A.N.E. Italia","<i class='fas fa-globe'></i> www.serafinacardacinutrizione.com"],
-    ser_p1:"La Dott.ssa Serafina Cardaci è la mente scientifica del programma. Ha progettato i 6 moduli di «Mangiare Bene, Crescere Meglio» integrando le più recenti evidenze in nutrizione pediatrica con un approccio pratico, ludico e misurabile.",
-    ser_p2:"Il primo pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — con circa 100 studenti — ha dimostrato l'efficacia del programma nel migliorare consapevolezza alimentare e gestione delle allergie.",
-    ser_cta:"Entra nella rete S.A.N.E.",
-    team_eyebrow:"Il team",
-    team_title:"Tre competenze, <em>un'unica missione.</em>",
-    sara_role:"Responsabile S.A.N.E. Toscana · Biologa Nutrizionista",
-    sara_creds:["<i class='fas fa-microscope'></i> Biologa Nutrizionista","<i class='fas fa-map-marker-alt'></i> Responsabile S.A.N.E. Toscana","<i class='fas fa-chalkboard-teacher'></i> Educatrice del progetto pilota (5 classi, ~100 studenti)","<i class='fas fa-school'></i> Referente territoriale · Provincia di Livorno"],
-    sara_p1:"La Dott.ssa Sara Comandi è la Responsabile S.A.N.E. per la Toscana. Biologa nutrizionista, porta il programma nelle scuole del territorio e cura il rapporto con istituti, docenti e famiglie.",
-    sara_p2:"Ha condotto in prima persona le lezioni del progetto pilota all'I.C. «Carducci–Fattori» di Rosignano Marittimo — 5 classi, circa 100 studenti — traducendo i moduli scientifici in esperienza concreta in classe.",
-    pat_role:"Sviluppatore App · Partner Tecnologico e Media",
-    pat_creds:["<i class='fas fa-gamepad'></i> Sviluppatore dell'app «Il Piatto Sano»","<i class='fas fa-laptop-code'></i> Partner Tecnologico e Media S.A.N.E. Italia","<i class='fas fa-radio'></i> Comunicatore — Radio PNR · Venerdì Tech","<i class='fas fa-pen-nib'></i> Autore — libri e musica"],
-    pat_p1:"L'Ing. Patrick Orlando è il co-fondatore e sviluppatore dell'app «Il Piatto Sano», il cuore digitale del programma. Disponibile su browser, tablet, LIM e Android, il gioco rende l'educazione alimentare interattiva, personalizzata e multilingua.",
-    pat_p2:"Si occupa della parte tecnologica e media di S.A.N.E. Italia: sviluppo della piattaforma, comunicazione e diffusione del programma sul territorio.",
-    partner_eyebrow:"Riconoscimenti e partnership",partner_title:"Con il supporto delle istituzioni.",
-    trust_lead:"Con il supporto di",
-    partners:["Senato della Repubblica","ENPAB","I.C. Carducci–Fattori","DAOP APS","Google Play"],
-    field_eyebrow:"Sul campo · pilota 2026",
-    field_title:"Il programma <em>in classe.</em>",
-    field_cap1:"Il gioco «Il Piatto Sano» alla LIM durante una lezione.",
-    field_cap2:"Il modulo dedicato alle allergie e ai 14 allergeni EU.",
-    field_cap3:"Il progetto pilota raccontato dalla stampa locale.",
-    field_meta:"Marzo–aprile 2026: 5 classi, circa 100 ragazzi all'I.C. «Carducci–Fattori» di Rosignano Marittimo. Fonti ufficiali: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Istituto Carducci–Fattori</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Comune di Rosignano Marittimo</a>.",
-    educator_lead:"Lezioni del pilota condotte da",
-    educator_role:"Biologa Nutrizionista · Referente territoriale (Provincia di Livorno)",
-    quote_eyebrow:"Le istituzioni che ci sostengono",
-    quote_title:"Cosa dicono di <em>S.A.N.E.</em>",
-    quote_text:"«Abbiamo accolto questo progetto perché nutrirsi in maniera giusta è molto importante, specialmente per i ragazzi e le ragazze.»",
-    quote_author:"— Cristina Santinelli, Assessora alle Politiche Educative · Comune di Rosignano Marittimo",
-    faq_eyebrow:"Domande frequenti",
-    faq_title:"Le risposte alle domande <em>più comuni.</em>",
-    faqs:[{q:"A chi è rivolto il programma S.A.N.E.?",a:"A tutte le scuole di ogni ordine e grado — primaria, secondaria e superiori — per bambini e ragazzi dai 6 ai 18 anni. Coinvolge attivamente anche docenti e famiglie."},{q:"Il gioco «Il Piatto Sano» è gratuito?",a:"Sì. Due dei sei mini-giochi sono completamente gratuiti (Il Piatto Sano e Il Coraggio di Agire, con l'allenamento all'uso dell'autoiniettore). Gli altri quattro si sbloccano con un codice. Il gioco è disponibile su browser, tablet, LIM e Android, in italiano, spagnolo e inglese."},{q:"Come funziona la gestione delle allergie?",a:"L'app gestisce in modo personalizzato tutti i 14 allergeni obbligatori EU per ogni bambino, con due livelli di difficoltà e una modalità classe pensata per la LIM."},{q:"Come può aderire la mia scuola?",a:"Scrivici dalla sezione Contatti: ti mettiamo in contatto con un biologo nutrizionista certificato S.A.N.E. del tuo territorio per costruire il percorso più adatto alla tua scuola."}],
-    contact_eyebrow:"Contatti",
-    contact_title:"Porta S.A.N.E. nella tua <em>scuola</em> o territorio.",
-    contact_desc:"Sei un dirigente scolastico, un biologo nutrizionista, un genitore di un bambino con allergie o un ente locale? Scrivici.",
-    ci:[
-      {type:"person",img:"/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Biologa Nutrizionista · Responsabile Scientifica",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
-      {type:"person",img:"/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"Sviluppatore App · Partner Tecnologico e Media",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"}
-    ],
-    footer:"Sicurezza · Alimentazione · Nutrizione · Educazione"
-  },
-  es: {
-    nav:["Quiénes somos","El equipo","La app"],
-    nav_cta:"Contáctanos",
-    hero_eyebrow:"Programa de Educación Alimentaria · Escuelas de Todos los Niveles",
-    hero_title:"Mangiare Bene,<br><em>Crescere Meglio.</em>",
-    hero_sub:"Un recorrido estructurado en 6 módulos temáticos, diseñado por una Bióloga Nutricionista cualificada, que integra intervenciones presenciales, herramientas digitales interactivas y la participación activa de las familias. Dirigido a niños y jóvenes de 6 a 18 años.",
-    hero_btn1:"Prueba la app gratis",hero_btn2:"Habla con nosotros",hero_dl:"Descargar el folleto (PDF)",
-    hero_allergie:"Único juego con gestión personalizada de los 14 alérgenos UE",
-    sane_kicker:"La organización",
-    sane_title:"S.A.N.E. Italia",
-    sane_text:"La red de biólogos nutricionistas que lleva a las escuelas el programa «Mangiare Bene, Crescere Meglio», con un enfoque <strong>científico, alimentario, nutricional y educativo</strong>.",
-    stat1_label:"módulos temáticos del programa — de la nutrición a las alergias",
-    stat2_label:"alérgenos EU gestionados en la app «Il Piatto Sano»",
-    stat3_label:"años — franja de edad a la que va dirigido el programa",
-    acr:[{l:"S",w:"Ciencia",d:"Bases científicas certificadas"},{l:"A",w:"Alimentaria",d:"Conductas alimenticias correctas"},{l:"N",w:"Nutricional",d:"Expertise de biólogos nutricionistas"},{l:"E",w:"Educativa",d:"Método lúdico para escuela y familia"}],
-    chi_eyebrow:"Quiénes somos",
-    chi_title:"Qué es <em>S.A.N.E. Italia</em>.",
-    chi_p1:"S.A.N.E. Italia es una red de biólogos nutricionistas que lleva la educación alimentaria y la seguridad alimentaria a las escuelas. El nombre resume nuestros cuatro pilares: <strong>Seguridad</strong>, <strong>Alimentación</strong>, <strong>Nutrición</strong>, <strong>Educación</strong>.",
-    chi_p2:"Bajo la dirección científica de la Dra. Serafina Cardaci, hemos desarrollado el programa «Mangiare Bene, Crescere Meglio» y el juego educativo «Il Piatto Sano», con un enfoque práctico, lúdico y medible. El primer piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo involucró a unos 100 estudiantes.",
-    about_eyebrow:"El programa",
-    about_title:"El primer programa escolar que enseña a <em>gestionar alergias e intolerancias.</em>",
-    about_p1:"S.A.N.E. Italia nace de una convicción clara: la seguridad alimentaria es un derecho de cada niño. No solo nutrición correcta, sino la capacidad real de reconocer alérgenos, leer etiquetas y gestionar intolerancias de forma autónoma y segura.",
-    about_p2:"Nuestra herramienta distintiva es «Il Piatto Sano», el juego educativo digital que integra la gestión personalizada de alergias e intolerancias — para niños y jóvenes de 6 a 18 años, con 6 mini-juegos (2 gratuitos, incluido el entrenamiento en el uso del autoinyector), disponible en la web y en Android, en italiano, inglés y español.",
-    about_p3:"El modelo S.A.N.E. se articula en una red de biólogos nutricionistas certificados que llevan el programa a las escuelas con un enfoque científico, lúdico y medible.",
-    b1_label:"Herramienta insignia",b1_val:"«Il Piatto Sano»",b1_sub:"El único juego educativo con gestión personalizada de alérgenos",
-    b2_label:"Disponible en",b2_val:"Web · Android · PWA",b2_sub:"IT / EN / ES — niños y jóvenes 6–18 años",
-    b3_label:"Primer piloto",b3_val:'I.C. "Carducci–Fattori"',b3_sub:"Rosignano Marittimo — ~100 estudiantes",
-    game_eyebrow:"La herramienta insignia",
-    game_title:"<em>«Il Piatto Sano»</em> — 6 mini-juegos educativos.",
-    game_sub:"El corazón digital del programa: un juego en la web, tablet, PDI y Android, guiado por la mascota Serafina. Multilingüe (IT/EN/ES), gestiona de forma personalizada los 14 alérgenos obligatorios de la UE para cada niño, con 2 niveles de dificultad y modo clase. Dos juegos son gratuitos; los demás son de pago.",
-    games:[{img:"piattosano.webp",icon:"🍽️",name:"Il Piatto Sano",desc:"Compón la comida equilibrada según el modelo de Harvard (½ fruta y verdura, ¼ cereales integrales, ¼ proteínas) respetando tus alergias",tag:"Gratis"},{img:"tempo.webp",icon:"🚨",name:"El Coraje de Actuar",desc:"Historia interactiva sobre una reacción alérgica grave: elige qué hacer en una emergencia y entrénate en el uso del autoinyector (EpiPen, Jext, Emerade, Fastjekt) paso a paso",tag:"Gratis"},{img:"quiz.webp",icon:"❓",name:"Quiz Alimentario",desc:"Nutrición, alergias, desperdicio, mitos y estacionalidad con cronómetro, racha y power-ups",tag:"Premium",pro:true},{img:"piramide.webp",icon:"🔺",name:"Pirámide Alimentaria",desc:"La pirámide mediterránea y las pirámides alimentarias del mundo",tag:"Premium",pro:true},{img:"stagioni.webp",icon:"🌱",name:"Estacionalidad",desc:"Reconoce la fruta y la verdura de temporada",tag:"Premium",pro:true},{img:"etichetta.webp",icon:"🔍",name:"Detective Etiquetas",desc:"Lee las etiquetas y encuentra los alérgenos en negrita, luego asocia cada alimento a sus alérgenos en 3 niveles",tag:"Premium",pro:true}],
-    allergens_title:"Gestión de alérgenos integrada",
-    allergens_sub:"El primer juego escolar que gestiona los 14 alérgenos obligatorios UE de forma personalizada para cada niño.",
-    allergens:["Gluten","Crustáceos","Huevos","Pescado","Cacahuetes","Soja","Leche","Frutos secos","Apio","Mostaza","Sésamo","Dióxido de azufre","Altramuces","Moluscos"],
-    allerg_eyebrow:"Seguridad alimentaria · lo que nos hace únicos",
-    allerg_title:"Alergias: <em>nadie las gestiona como nosotros.</em>",
-    allerg_lead:"En Italia el <strong>6–8% de los niños</strong> sufre alergias alimentarias. No es un capricho ni una moda: es seguridad. Por eso «Il Piatto Sano» es el <strong>único juego educativo que gestiona de forma personalizada los 14 alérgenos obligatorios UE</strong> para cada niño.",
-    allerg_steps:[{n:"01",t:"Configuras el perfil",d:"Seleccionas las alergias e intolerancias del niño o de toda la clase."},{n:"02",t:"El juego se adapta",d:"Los alimentos de riesgo se señalan y personalizan en tiempo real, con 2 niveles de dificultad."},{n:"03",t:"Aprende con seguridad",d:"El niño reconoce los alérgenos en las etiquetas y aprende cómo actuar en una emergencia con el autoinyector."}],
-    allerg_chips_title:"Los 14 alérgenos obligatorios UE que gestiona la app",
-    coraggio_tag:"Juego gratuito",
-    coraggio_h:"«El Coraje de Actuar»",
-    coraggio_lead:"En una emergencia alérgica, <strong>cada segundo cuenta</strong>. En esta historia interactiva el niño vive una reacción alérgica grave, elige qué hacer y se entrena <strong>paso a paso en el uso del autoinyector</strong> (EpiPen, Jext, Emerade, Fastjekt). Único en su género — y gratuito.",
-    coraggio_btn:"Prueba «El Coraje de Actuar»",
-    target_eyebrow:"A quién nos dirigimos",target_title:"Un programa que habla a todos.",
-    cards:[{icon:"<i class='fas fa-school'></i>",title:"Escuelas e institutos",desc:"Programa estructurado con gestión de alérgenos para cada estudiante, integrable en el currículo.",li:["Rutas para primaria, secundaria y superior","Gestión personalizada de alérgenos por clase","Formación docente incluida","Compatible con convocatorias MIUR"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Familias",desc:"Herramientas concretas para padres de niños con alergias e intolerancias, en sintonía con la escuela.",li:["Talleres sobre alergias y lectura de etiquetas","Acceso al juego «Il Piatto Sano»","Guías prácticas de compra segura","Apoyo de nutricionista certificado"]},{icon:"<i class='fas fa-microscope'></i>",title:"Biólogos nutricionistas",desc:"Red profesional certificada con herramientas operativas para llevar S.A.N.E. a tu territorio.",li:["Certificación S.A.N.E. Educator","Créditos ECM vía FNOB","Portal operativo dedicado","Apoyo comercial y marketing"]}],
-    method_eyebrow:"Los 6 módulos del programa",method_title:"Un recorrido completo, <em>de la nutrición a la seguridad.</em>",
-    steps:[{n:"01",t:"Conocemos los Alimentos",d:"Descubrimos los grupos alimentarios, las propiedades nutricionales y cómo construir una alimentación equilibrada."},{n:"02",t:"El Plato Equilibrado",d:"Las proporciones Harvard (½ fruta y verdura, ¼ cereales, ¼ proteínas), la variedad y la calidad en el plato diario — con la app «Il Piatto Sano»."},{n:"03",t:"Energía en Movimiento",d:"El vínculo entre alimentación, actividad física y bienestar: cómo el alimento se convierte en energía."},{n:"04",t:"La Mochila de la Salud",d:"Qué llevar a la escuela, cómo hacer una compra consciente y leer las etiquetas de los alimentos."},{n:"05",t:"Alimentación, Ambiente y Cultura",d:"Estacionalidad, cadena corta, tradiciones alimentarias e impacto ambiental de nuestras elecciones."},{n:"06",t:"Alergias y Seguridad",d:"Reconocer los 14 alérgenos UE, gestionar las intolerancias con seguridad en la escuela y en familia."}],
-    ser_eyebrow:"Nuestra fundadora científica",
-    ser_heading:"Ciencia, pasión y <em>método.</em>",
-    bio_more:"Leer la bio",
-    ser_role:"Cofundadora & Directora Científica",
-    ser_creds:["<i class='fas fa-microscope'></i> Bióloga Nutricionista","<i class='fas fa-book'></i> Especialista en nutrición pediátrica y alergias","🧠 Creadora del programa «Mangiare Bene e Crescere Meglio»","📋 Responsable científica S.A.N.E. Italia"],
-    ser_p1:"Serafina Cardaci cofundó S.A.N.E. Italia con una visión clara: llevar a las escuelas italianas un programa que enseñe a los niños a vivir con seguridad con sus alergias e intolerancias.",
-    ser_p2:"El primer piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo — con cerca de 100 estudiantes — demostró que el juego es la herramienta más eficaz para hacer la seguridad alimentaria concreta y memorable.",
-    ser_cta:"Únete a la red S.A.N.E.",
-    team_eyebrow:"El equipo",
-    team_title:"Tres competencias, <em>una sola misión.</em>",
-    sara_role:"Responsable S.A.N.E. Toscana · Bióloga Nutricionista",
-    sara_creds:["<i class='fas fa-microscope'></i> Bióloga Nutricionista","<i class='fas fa-map-marker-alt'></i> Responsable S.A.N.E. Toscana","<i class='fas fa-chalkboard-teacher'></i> Educadora del proyecto piloto (5 clases, ~100 alumnos)","<i class='fas fa-school'></i> Referente territorial · Provincia de Livorno"],
-    sara_p1:"La Dra. Sara Comandi es la Responsable de S.A.N.E. para la Toscana. Bióloga nutricionista, lleva el programa a las escuelas del territorio y cuida la relación con centros, docentes y familias.",
-    sara_p2:"Impartió personalmente las clases del proyecto piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo — 5 clases, unos 100 alumnos — traduciendo los módulos científicos en experiencia concreta en el aula.",
-    pat_role:"Cofundador & Director Comercial",
-    pat_creds:["<i class='fas fa-gamepad'></i> Creador del juego educativo «Il Piatto Sano»","<i class='fas fa-earth-europe'></i> Desarrollo comercial y alianzas","<i class='fas fa-radio'></i> Comunicador — Radio PNR · Venerdì Tech","<i class='fas fa-pen-nib'></i> Autor — libros y música"],
-    pat_p1:"Patrick Orlando es el cofundador y creador del juego educativo «Il Piatto Sano». Se ocupa del desarrollo comercial de S.A.N.E. Italia, la construcción de redes de biólogos nutricionistas y las alianzas institucionales.",
-    pat_p2:"Fundador de DAOP APS — comunidad family-friendly de Alessandria y Asti — y co-presentador de Venerdì Tech en Radio PNR, Patrick cree que la comunicación y la educación son herramientas poderosas para el cambio.",
-    partner_eyebrow:"Reconocimientos y alianzas",partner_title:"Con el apoyo de las instituciones.",
-    trust_lead:"Con el apoyo de",
-    partners:["Senado de la República","ENPAB","I.C. Carducci–Fattori","DAOP APS","Google Play"],
-    field_eyebrow:"Sobre el terreno · piloto 2026",
-    field_title:"El programa <em>en el aula.</em>",
-    field_cap1:"El juego «Il Piatto Sano» en la PDI durante una clase.",
-    field_cap2:"El módulo dedicado a las alergias y los 14 alérgenos UE.",
-    field_cap3:"El proyecto piloto en la prensa local.",
-    field_meta:"Marzo–abril de 2026: 5 clases, unos 100 chicos en el I.C. «Carducci–Fattori» de Rosignano Marittimo. Fuentes oficiales: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Instituto Carducci–Fattori</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Ayuntamiento de Rosignano Marittimo</a>.",
-    educator_lead:"Clases del piloto impartidas por",
-    educator_role:"Bióloga Nutricionista · Referente territorial (Provincia de Livorno)",
-    quote_eyebrow:"Las instituciones que nos respaldan",
-    quote_title:"Qué dicen de <em>S.A.N.E.</em>",
-    quote_text:"«Acogimos este proyecto porque alimentarse de la manera correcta es muy importante, especialmente para los chicos y las chicas.»",
-    quote_author:"— Cristina Santinelli, Concejala de Políticas Educativas · Ayuntamiento de Rosignano Marittimo",
-    faq_eyebrow:"Preguntas frecuentes",
-    faq_title:"Respuestas a las dudas <em>más comunes.</em>",
-    faqs:[{q:"¿A quién va dirigido el programa S.A.N.E.?",a:"A todas las escuelas de cualquier nivel — primaria, secundaria y bachillerato — para niños y jóvenes de 6 a 18 años. Involucra activamente también a docentes y familias."},{q:"¿El juego «Il Piatto Sano» es gratuito?",a:"Sí. Dos de los seis mini-juegos son totalmente gratuitos (Il Piatto Sano y El Coraje de Actuar, con el entrenamiento en el uso del autoinyector). Los otros cuatro se desbloquean con un código. El juego está disponible en la web, tablet, PDI y Android, en italiano, español e inglés."},{q:"¿Cómo funciona la gestión de las alergias?",a:"La app gestiona de forma personalizada los 14 alérgenos obligatorios de la UE para cada niño, con dos niveles de dificultad y un modo clase pensado para la PDI."},{q:"¿Cómo puede adherirse mi escuela?",a:"Escríbenos desde la sección Contacto: te ponemos en contacto con un biólogo nutricionista certificado S.A.N.E. de tu territorio para diseñar el recorrido más adecuado para tu escuela."}],
-    contact_eyebrow:"Contacto",
-    contact_title:"Lleva S.A.N.E. a tu <em>escuela</em> o territorio.",
-    contact_desc:"¿Eres director escolar, biólogo nutricionista, padre de un niño con alergias o entidad local? Escríbenos.",
-    ci:[
-      {type:"person",img:"/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Bióloga Nutricionista · Responsable Científica",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
-      {type:"person",img:"/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"Desarrollador App · Partner Tecnológico y Media",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"}
-    ],
-    footer:"Ciencia Alimentaria Nutricional Educativa"
-  },
-  en: {
-    nav:["Who we are","The team","The app"],
-    nav_cta:"Contact us",
-    hero_eyebrow:"Food Education Programme · Schools of All Levels",
-    hero_title:"Mangiare Bene,<br><em>Crescere Meglio.</em>",
-    hero_sub:"A structured path of 6 thematic modules, designed by a qualified Nutritionist Biologist, combining in-person sessions, interactive digital tools and active family involvement. For children and teens aged 6 to 18.",
-    hero_btn1:"Try the app for free",hero_btn2:"Talk to us",hero_dl:"Download the brochure (PDF)",
-    hero_allergie:"The only game with personalised management of the 14 EU allergens",
-    sane_kicker:"The organisation",
-    sane_title:"S.A.N.E. Italia",
-    sane_text:"The network of certified nutritionist biologists bringing the «Mangiare Bene, Crescere Meglio» programme to schools, with a <strong>scientific, alimentary, nutritional and educational</strong> approach.",
-    stat1_label:"thematic modules — from nutrition to allergy management",
-    stat2_label:"EU allergens managed in the «Il Piatto Sano» app",
-    stat3_label:"years old — the age range the programme is designed for",
-    acr:[{l:"S",w:"Scientific",d:"Certified, up-to-date scientific bases"},{l:"A",w:"Alimentary",d:"Correct eating behaviours from an early age"},{l:"N",w:"Nutritional",d:"Expertise of certified nutritionist biologists"},{l:"E",w:"Education",d:"A playful method for school and family"}],
-    chi_eyebrow:"Who we are",
-    chi_title:"What is <em>S.A.N.E. Italia</em>.",
-    chi_p1:"S.A.N.E. Italia is a network of nutritionist biologists bringing food education and food safety into schools. The name sums up our four pillars: <strong>Safety</strong>, <strong>Food</strong>, <strong>Nutrition</strong>, <strong>Education</strong>.",
-    chi_p2:"Under the scientific direction of Dr. Serafina Cardaci, we developed the «Mangiare Bene, Crescere Meglio» programme and the «Il Piatto Sano» educational game, with a practical, playful and measurable approach. The first pilot at I.C. «Carducci–Fattori» in Rosignano Marittimo involved around 100 students.",
-    about_eyebrow:"The programme",
-    about_title:"The first school programme that teaches children to <em>manage allergies and intolerances.</em>",
-    about_p1:"S.A.N.E. Italia was born from a clear conviction: food safety is every child's right. Not just proper nutrition, but the concrete ability to recognise allergens, read labels and manage intolerances independently and safely.",
-    about_p2:"Our distinctive tool is «Il Piatto Sano», the digital educational game that integrates personalised allergy and intolerance management — for children and teens aged 6 to 18, with 6 mini-games (2 free, including auto-injector training), available on the web and on Android, in Italian, English and Spanish.",
-    about_p3:"The S.A.N.E. model is built on a network of certified nutritionist biologists bringing the programme to schools with a scientific, playful and measurable approach.",
-    b1_label:"Flagship tool",b1_val:"«Il Piatto Sano»",b1_sub:"The only educational game with personalised allergen management",
-    b2_label:"Available on",b2_val:"Web · Android · PWA",b2_sub:"IT / EN / ES — children &amp; teens aged 6–18",
-    b3_label:"First pilot",b3_val:'I.C. "Carducci–Fattori"',b3_sub:"Rosignano Marittimo — ~100 students involved",
-    game_eyebrow:"The flagship tool",
-    game_title:"<em>«Il Piatto Sano»</em> — 6 educational mini-games.",
-    game_sub:"The digital heart of the programme: a game on web, tablet, IWB and Android, guided by the «Serafina» mascot. Multilingual (IT/EN/ES), it personally manages all 14 mandatory EU allergens for each child, with 2 difficulty levels and a class mode. Two games are free; the others are paid.",
-    games:[{img:"piattosano.webp",icon:"🍽️",name:"The Healthy Plate",desc:"Build a balanced meal following the Harvard model (½ fruit & veg, ¼ whole grains, ¼ protein) while respecting your allergies",tag:"Free"},{img:"tempo.webp",icon:"🚨",name:"The Courage to Act",desc:"Interactive story about a severe allergic reaction: choose what to do in an emergency and train step by step on using the auto-injector (EpiPen, Jext, Emerade, Fastjekt)",tag:"Free"},{img:"quiz.webp",icon:"❓",name:"Food Quiz",desc:"Nutrition, allergies, food waste, myths and seasonality with timer, streak and power-ups",tag:"Premium",pro:true},{img:"piramide.webp",icon:"🔺",name:"Food Pyramid",desc:"The Mediterranean pyramid and food pyramids from around the world",tag:"Premium",pro:true},{img:"stagioni.webp",icon:"🌱",name:"Seasonality",desc:"Recognise seasonal fruit and vegetables",tag:"Premium",pro:true},{img:"etichetta.webp",icon:"🔍",name:"Label Detective",desc:"Read labels and spot allergens in bold, then match each food to its allergens across 3 levels",tag:"Premium",pro:true}],
-    allergens_title:"Integrated allergen management",
-    allergens_sub:"The first school game to manage all 14 mandatory EU allergens in a personalised way for every child.",
-    allergens:["Gluten","Crustaceans","Eggs","Fish","Peanuts","Soya","Milk","Tree nuts","Celery","Mustard","Sesame","Sulphur dioxide","Lupin","Molluscs"],
-    allerg_eyebrow:"Food safety · what makes us unique",
-    allerg_title:"Allergies: <em>no one manages them like we do.</em>",
-    allerg_lead:"In Italy <strong>6–8% of children</strong> have food allergies. It's not a whim or a trend: it's safety. That's why «Il Piatto Sano» is the <strong>only educational game that personally manages the 14 mandatory EU allergens</strong> for each child.",
-    allerg_steps:[{n:"01",t:"Set the profile",d:"Select the allergies and intolerances of the individual child or the whole class."},{n:"02",t:"The game adapts",d:"Risky foods are flagged and personalised in real time, with 2 difficulty levels."},{n:"03",t:"Learn safely",d:"The child recognises allergens on labels and learns how to act in an emergency with the auto-injector."}],
-    allerg_chips_title:"The 14 mandatory EU allergens managed by the app",
-    coraggio_tag:"Free game",
-    coraggio_h:"«The Courage to Act»",
-    coraggio_lead:"In an allergic emergency, <strong>every second counts</strong>. In this interactive story the child experiences a severe allergic reaction, chooses what to do and trains <strong>step by step on using the auto-injector</strong> (EpiPen, Jext, Emerade, Fastjekt). One of a kind — and free.",
-    coraggio_btn:"Try «The Courage to Act»",
-    target_eyebrow:"Who we serve",target_title:"A programme that speaks to everyone.",
-    cards:[{icon:"<i class='fas fa-school'></i>",title:"Schools & institutions",desc:"Structured programme with per-student allergen management, fully integrable into the curriculum.",li:["Pathways for primary, secondary and high school","Personalised allergen management per class","Teacher training included","Compatible with MIUR funding schemes"]},{icon:"<i class='fas fa-people-roof'></i>",title:"Families",desc:"Practical tools for parents of children with allergies and intolerances, in sync with school.",li:["Allergy & label-reading workshops","Access to «Il Piatto Sano» game","Safe shopping practical guides","Individual certified biologist consultations"]},{icon:"<i class='fas fa-microscope'></i>",title:"Nutritionist biologists",desc:"Certified professional network with operational tools to bring S.A.N.E. to your area.",li:["S.A.N.E. Educator certification","ECM credits via FNOB","Dedicated operational portal","Commercial and marketing support"]}],
-    method_eyebrow:"The 6 programme modules",method_title:"A complete path, <em>from nutrition to safety.</em>",
-    steps:[{n:"01",t:"Getting to Know Food",d:"We discover food groups, nutritional properties and how to build a balanced diet."},{n:"02",t:"The Balanced Plate",d:"The Harvard proportions (½ fruit & veg, ¼ grains, ¼ protein), variety and quality on the daily plate — with the «Il Piatto Sano» app."},{n:"03",t:"Energy in Motion",d:"The link between food, physical activity and wellbeing: how food becomes fuel."},{n:"04",t:"The Health Backpack",d:"What to bring to school, how to shop consciously and read food labels."},{n:"05",t:"Food, Environment and Culture",d:"Seasonality, short supply chains, food traditions and the environmental impact of our choices."},{n:"06",t:"Allergies and Safety",d:"Recognising the 14 EU allergens, managing intolerances safely at school and at home."}],
-    ser_eyebrow:"Our scientific founder",
-    ser_heading:"Science, passion and <em>method.</em>",
-    bio_more:"Read bio",
-    ser_role:"Co-founder & Scientific Director",
-    ser_creds:["<i class='fas fa-microscope'></i> Nutritionist Biologist","<i class='fas fa-book'></i> Specialist in paediatric nutrition & allergies","🧠 Creator of the «Mangiare Bene e Crescere Meglio» programme","📋 Scientific Director, S.A.N.E. Italia"],
-    ser_p1:"Serafina Cardaci co-founded S.A.N.E. Italia with a clear vision: to bring Italian schools a programme that teaches children not just about good nutrition, but how to live safely with their allergies and intolerances.",
-    ser_p2:"The first pilot at I.C. «Carducci–Fattori» in Rosignano Marittimo — with around 100 students — proved that play is the most effective tool for making food safety concrete and memorable.",
-    ser_cta:"Join the S.A.N.E. network",
-    team_eyebrow:"The team",
-    team_title:"Three expertises, <em>one mission.</em>",
-    sara_role:"S.A.N.E. Tuscany Lead · Nutritionist Biologist",
-    sara_creds:["<i class='fas fa-microscope'></i> Nutritionist Biologist","<i class='fas fa-map-marker-alt'></i> S.A.N.E. Tuscany Lead","<i class='fas fa-chalkboard-teacher'></i> Pilot-programme educator (5 classes, ~100 students)","<i class='fas fa-school'></i> Local coordinator · Province of Livorno"],
-    sara_p1:"Dr Sara Comandi is the S.A.N.E. lead for Tuscany. A nutritionist biologist, she brings the programme into local schools and manages the relationship with institutes, teachers and families.",
-    sara_p2:"She personally delivered the pilot-programme lessons at I.C. «Carducci–Fattori» in Rosignano Marittimo — 5 classes, around 100 students — turning the scientific modules into concrete classroom experience.",
-    pat_role:"Co-founder & Commercial Director",
-    pat_creds:["<i class='fas fa-gamepad'></i> Creator of the «Il Piatto Sano» educational game","<i class='fas fa-earth-europe'></i> Commercial development & partnerships","<i class='fas fa-radio'></i> Communicator — Radio PNR · Venerdì Tech","<i class='fas fa-pen-nib'></i> Author — books and music"],
-    pat_p1:"Patrick Orlando is the co-founder and creator of the «Il Piatto Sano» educational game. He leads the commercial development of S.A.N.E. Italia, building networks of nutritionist biologists across Italy and institutional partnerships.",
-    pat_p2:"Founder of DAOP APS — the family-friendly community of Alessandria and Asti — and co-host of Venerdì Tech on Radio PNR, Patrick believes that communication and education are powerful tools for social change.",
-    partner_eyebrow:"Recognition & partnerships",partner_title:"Backed by institutions.",
-    trust_lead:"Backed by",
-    partners:["Italian Senate","ENPAB","I.C. Carducci–Fattori","DAOP APS","Google Play"],
-    field_eyebrow:"In the field · 2026 pilot",
-    field_title:"The programme <em>in the classroom.</em>",
-    field_cap1:"The «Il Piatto Sano» game on the IWB during a lesson.",
-    field_cap2:"The module on allergies and the 14 EU allergens.",
-    field_cap3:"The pilot project covered by the local press.",
-    field_meta:"March–April 2026: 5 classes, around 100 students at I.C. «Carducci–Fattori» in Rosignano Marittimo. Official sources: <a href='https://www.fattorirosignano.edu.it/mangiare-bene-crescere-meglio/' target='_blank' rel='noopener'>Carducci–Fattori School</a> · <a href='https://www.comune.rosignano.livorno.it/Novita/Notizie/MANGIARE-BENE-CRESCERE-MEGLIO-UN-PROGETTO-DI-EDUCAZIONE-ALIMENTARE-PER-CINQUE-CLASSI-DELL-ISTITUTO-COMPRENSIVO-CARDUCCI-FATTORI' target='_blank' rel='noopener'>Municipality of Rosignano Marittimo</a>.",
-    educator_lead:"Pilot lessons delivered by",
-    educator_role:"Nutritionist Biologist · Local coordinator (Province of Livorno)",
-    quote_eyebrow:"The institutions backing us",
-    quote_title:"What they say about <em>S.A.N.E.</em>",
-    quote_text:"«We embraced this project because eating the right way is very important, especially for boys and girls.»",
-    quote_author:"— Cristina Santinelli, Councillor for Educational Policy · Municipality of Rosignano Marittimo",
-    faq_eyebrow:"Frequently asked questions",
-    faq_title:"Answers to the <em>most common questions.</em>",
-    faqs:[{q:"Who is the S.A.N.E. programme for?",a:"For schools of all levels — primary, secondary and high school — for children and teens aged 6 to 18. It actively involves teachers and families too."},{q:"Is the «Il Piatto Sano» game free?",a:"Yes. Two of the six mini-games are completely free (The Healthy Plate and The Courage to Act, with auto-injector training). The other four unlock with a code. The game runs on web, tablet, IWB and Android, in Italian, Spanish and English."},{q:"How does allergen management work?",a:"The app personally manages all 14 mandatory EU allergens for each child, with two difficulty levels and a class mode designed for the interactive whiteboard."},{q:"How can my school join?",a:"Write to us from the Contact section: we'll connect you with a certified S.A.N.E. nutritionist biologist in your area to build the path best suited to your school."}],
-    contact_eyebrow:"Contact",
-    contact_title:"Bring S.A.N.E. to your <em>school</em> or area.",
-    contact_desc:"Are you a school principal, a nutritionist biologist, a parent of an allergic child, or a local authority? Write to us.",
-    ci:[
-      {type:"person",img:"/immagini/logo/serafina.webp",name:"Dott.ssa Serafina Cardaci",role:"Nutritionist Biologist · Scientific Director",email:"serafinacardaci@gmail.com",tel:"+39 347 375 0087",address:"Via Mazzini 129 — Novi Ligure (AL)",site:"https://www.serafinacardacinutrizione.com/",sitelabel:"serafinacardacinutrizione.com",ig:"https://www.instagram.com/sery.cardaci.nutrizionista/",fb:"https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/",li:"https://www.linkedin.com/in/serafina-cardaci-70707793/"},
-      {type:"person",img:"/immagini/logo/patrick.webp",name:"Ing. Patrick Orlando",role:"App Developer · Technology & Media Partner",email:"patrick.orlando@libero.it",tel:"+39 347 183 4091",li:"https://www.linkedin.com/in/patrickorlando86/?locale=it"}
-    ],
-    footer:"Scientific Alimentary Nutritional Education"
-  }
-};
-
-let lang = 'en';
-
-function render(l) {
-  const t = T[l];
-  document.documentElement.lang = l;
-
-  // nav links
-  document.querySelectorAll('[data-k]').forEach(el => {
-    const k = el.getAttribute('data-k');
-    if (k.startsWith('nav') && k !== 'nav_cta') {
-      const i = parseInt(k.replace('nav',''));
-      if (!isNaN(i)) { el.textContent = t.nav[i]; return; }
-    }
-    if (T[l][k] !== undefined) el.innerHTML = T[l][k];
-  });
-
-  // badge Google Play (multilingua)
-  const gp = {it:['it_it','it','Disponibile su Google Play'],es:['es_es','es','Disponible en Google Play'],en:['en_us','en','Get it on Google Play']}[l] || {it:['it_it','it','Disponibile su Google Play']}.it;
-  const gpBadge = document.getElementById('gplay-badge');
-  if (gpBadge) { gpBadge.src = `https://play.google.com/intl/${gp[0]}/badges/static/images/badges/${gp[1]}_badge_web_generic.png`; gpBadge.alt = gp[2]; }
-
-  // lang buttons
-  document.querySelectorAll('.lb').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase() === l));
-
-  // fascia verticale S A N E (in Chi siamo)
-  document.getElementById('sane-pillars').innerHTML = t.acr.map(a =>
-    `<div class="sane-pillar"><span class="sane-l">${a.l}</span><span class="sane-txt"><span class="sane-w">${a.w}</span><span class="sane-d">${a.d}</span></span></div>`
-  ).join('');
-
-  // game cards
-  document.getElementById('game-cards').innerHTML = t.games.map(g =>
-    `<div class="game-card">${g.img?`<img class="game-img" src="/immagini/carosello/${g.img}" alt="${g.name}" loading="lazy">`:`<div class="game-icon">${g.icon}</div>`}<div class="game-body"><div class="game-top"><h4>${g.name}</h4>${g.tag?`<span class="game-tag${g.pro?' tag-pro':''}">${g.tag}</span>`:''}</div><p>${g.desc}</p></div></div>`
-  ).join('');
-
-  // sicurezza & allergie: 3 step personalizzazione
-  document.getElementById('allerg-steps').innerHTML = t.allerg_steps.map(s =>
-    `<div class="allerg-step"><div class="allerg-step-n">${s.n}</div><h4>${s.t}</h4><p>${s.d}</p></div>`
-  ).join('');
-  // sicurezza & allergie: i 14 allergeni EU
-  document.getElementById('allerg-chips').innerHTML = t.allergens.map(a =>
-    `<span class="allerg-chip">${a}</span>`
-  ).join('');
-
-  // cards grid
-  document.getElementById('cards-grid').innerHTML = t.cards.map(c =>
-    `<div class="card"><div class="card-icon">${c.icon}</div><h3>${c.title}</h3><p>${c.desc}</p><ul>${c.li.map(l=>`<li>${l}</li>`).join('')}</ul></div>`
-  ).join('');
-
-  // moduli (6 card colorate)
-  const stepColors = ['#00C9B1','#F4A261','#4DA3FF','#6BCB77','#B98CFF','#FF7B9C'];
-  document.getElementById('steps').innerHTML = t.steps.map((s,i) => {
-    const c = stepColors[i % stepColors.length];
-    return `<div class="step" style="border-top:3px solid ${c}"><div class="step-n" style="color:${c}">${s.n}</div><h4>${s.t}</h4><p>${s.d}</p></div>`;
-  }).join('');
-
-  // ser creds
-  document.getElementById('ser-creds').innerHTML = t.ser_creds.map(c =>
-    `<div class="ser-cred">${c}</div>`
-  ).join('');
-
-  // pat creds
-  document.getElementById('pat-creds').innerHTML = t.pat_creds.map(c =>
-    `<div class="ser-cred">${c}</div>`
-  ).join('');
-
-  // sara creds
-  document.getElementById('sara-creds').innerHTML = t.sara_creds.map(c =>
-    `<div class="ser-cred">${c}</div>`
-  ).join('');
-
-  // numeri (stat band)
-  const statNums = ['6', '14', '6–18'];
-  document.getElementById('statband').innerHTML =
-    [t.stat1_label, t.stat2_label, t.stat3_label].map((l, i) =>
-      `<div class="statband-item"><div class="statband-n">${statNums[i]}</div><div class="statband-l">${l}</div></div>`
-    ).join('');
-
-  // FAQ
-  document.getElementById('faq-list').innerHTML = t.faqs.map(f =>
-    `<div class="faq-item"><div class="faq-q">${f.q}</div><div class="faq-a">${f.a}</div></div>`
-  ).join('');
-
-  // contact cards
-  document.getElementById('contact-cards').innerHTML = t.ci.map(c => {
-    if (c.type === 'person') {
-      return `<div class="cc">
-        <div class="cc-head">
-          <div><div class="cc-name">${c.name}</div><div class="cc-role">${c.role}</div></div>
-        </div>
-        <div class="cc-lines">
-          <div class="cc-line"><i class='fas fa-envelope'></i> <a href="mailto:${c.email}">${c.email}</a></div>
-          <div class="cc-line"><i class='fas fa-phone'></i> <a href="tel:${c.tel.replace(/\s/g,'')}">${c.tel}</a></div>
-          ${c.address ? `<div class="cc-line"><i class='fas fa-location-dot'></i> ${c.address}</div>` : ''}
-          ${c.site ? `<div class="cc-line"><i class='fas fa-globe'></i> <a href="${c.site}" target="_blank">${c.sitelabel}</a></div>` : ''}
-        </div>
-        <div class="cc-socials">
-          ${c.ig ? `<a href="${c.ig}" target="_blank" class="cc-social"><i class="fab fa-instagram"></i> Instagram</a>` : ''}
-          ${c.fb ? `<a href="${c.fb}" target="_blank" class="cc-social"><i class="fab fa-facebook"></i> Facebook</a>` : ''}
-          ${c.li ? `<a href="${c.li}" target="_blank" class="cc-social"><i class="fab fa-linkedin"></i> LinkedIn</a>` : ''}
-        </div>
-      </div>`;
-    }
-    if (c.type === 'portal') {
-      return `<a href="${c.href}" class="cc cc-portal">
-        <div><div class="cc-portal-text">🔐 ${c.label}</div><div class="cc-portal-sub">${c.sub}</div></div>
-        <div class="cc-arrow">→</div>
-      </a>`;
-    }
-    return '';
-  }).join('');
-}
-
-function setLang(l) { lang = l; render(l); }
-
 // Accordion bio del team
 document.querySelectorAll('.bio-toggle').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -1171,7 +807,20 @@ document.querySelectorAll('.bio-toggle').forEach(btn => {
   );
 })();
 
-render('en');
+// Form contatti: compone un mailto pronto da inviare (sito statico, nessun backend)
+(function(){
+  const form = document.getElementById('contact-form');
+  if (!form) return;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('cf-name').value.trim();
+    const role = document.getElementById('cf-role').value;
+    const msg  = document.getElementById('cf-msg').value.trim();
+    const subject = encodeURIComponent('[S.A.N.E. Italia] ' + role + ' — ' + name);
+    const body = encodeURIComponent(msg + '\n\n— ' + name);
+    location.href = 'mailto:serafinacardaci@gmail.com?subject=' + subject + '&body=' + body;
+  });
+})();
 </script>
 </body>
 </html>
