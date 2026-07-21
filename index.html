@@ -230,6 +230,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .nav-cta:hover{background:var(--gl);transform:translateY(-1px)}
 .nav-portale{background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.3);padding:.44rem 1rem;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:all .2s;border-radius:6px;white-space:nowrap}
 .nav-portale:hover{background:rgba(255,255,255,.1);border-color:var(--gl);color:#fff}
+.nav-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:40px;padding:8px;background:transparent;border:1.5px solid rgba(255,255,255,.3);border-radius:6px;cursor:pointer}
+.nav-toggle span{display:block;height:2px;width:100%;background:#fff;border-radius:2px;transition:transform .25s,opacity .25s}
+nav.nav-open .nav-toggle span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+nav.nav-open .nav-toggle span:nth-child(2){opacity:0}
+nav.nav-open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 
 /* HERO */
 .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center;padding:6rem 4rem 3.5rem;background:linear-gradient(135deg,#EEF5FA 0%,#e3f4f0 55%,#d2efe8 100%);overflow:hidden}
@@ -498,8 +503,15 @@ footer a{color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s}
 footer a:hover{color:var(--gl)}
 
 @media(max-width:860px){
-  nav{padding:.8rem 1.2rem}
-  .nav-links{display:none}
+  nav{padding:.8rem 1.2rem;flex-wrap:wrap}
+  .logo{order:0}
+  .nav-toggle{display:flex;order:1}
+  .nav-links{order:2;flex-basis:100%;display:none;flex-direction:column;gap:.2rem;margin-top:.9rem}
+  .nav-right{order:3;flex-basis:100%;display:none;flex-direction:column;align-items:stretch;gap:.7rem;margin-top:.6rem;padding-top:.9rem;border-top:1px solid rgba(255,255,255,.12)}
+  nav.nav-open .nav-links,nav.nav-open .nav-right{display:flex}
+  .nav-links a{display:block;padding:.7rem .2rem;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.08)}
+  .lang-sw{gap:.4rem}
+  .nav-portale,.nav-cta{text-align:center}
   .hero{grid-template-columns:1fr;padding:5.5rem 1.5rem 2.5rem;gap:2rem}
   .hero-l{padding:0}
   .acr{grid-template-columns:repeat(2,1fr);padding:1.5rem}
@@ -525,7 +537,7 @@ footer a:hover{color:var(--gl)}
     <img src="/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" width="800" height="800">
     <span class="logo-text">S.A.N.E. <span>Italia</span></span>
   </a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="navMenu">
     <li><a href="#chisiamo" data-k="nav0"></a></li>
     <li><a href="#team" data-k="nav1"></a></li>
     <li><a href="#game" data-k="nav2"></a></li>
@@ -541,6 +553,9 @@ footer a:hover{color:var(--gl)}
     <a href="/portale.html" class="nav-portale">🔐 Portale</a>
     <a href="#contact" class="nav-cta" data-k="nav_cta"></a>
   </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="navMenu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- HERO -->
@@ -1139,6 +1154,22 @@ document.querySelectorAll('.bio-toggle').forEach(btn => {
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
 });
+
+// Menu mobile (hamburger)
+(function(){
+  const nav = document.querySelector('nav');
+  const toggle = document.getElementById('navToggle');
+  if (!nav || !toggle) return;
+  function setOpen(open){
+    nav.classList.toggle('nav-open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  toggle.addEventListener('click', () => setOpen(!nav.classList.contains('nav-open')));
+  // chiudi il menu quando si clicca un link di navigazione
+  nav.querySelectorAll('.nav-links a, .nav-cta').forEach(a =>
+    a.addEventListener('click', () => setOpen(false))
+  );
+})();
 
 render('it');
 </script>
