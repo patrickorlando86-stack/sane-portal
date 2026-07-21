@@ -43,41 +43,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<link rel="stylesheet" href="/css/site.css">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --g:#0A2647;--gm:#00A896;--gl:#00C9B1;--cr:#EEF5FA;
-  --tc:#F4A261;--wh:#F5F9FC;--gr:#5A6A7A;--dn:#061828;
-}
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:var(--wh);color:var(--g);overflow-x:hidden}
-
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:.9rem 3rem;background:rgba(10,38,71,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(0,168,150,.2);gap:1rem}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo img{height:38px;width:auto}
-.logo-text{font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:.03em}
-.logo-text span{color:var(--gl)}
-.nav-links{display:flex;gap:1.5rem;list-style:none}
-.nav-links a{font-size:.76rem;font-weight:500;letter-spacing:.08em;text-decoration:none;color:rgba(255,255,255,.65);text-transform:uppercase;border-bottom:2px solid transparent;padding-bottom:.2rem;transition:color .2s,border-color .2s}
-.nav-links a:hover{color:var(--gl);border-bottom-color:var(--gl)}
-.nav-links a.current{color:#fff;border-bottom-color:var(--gl)}
-.nav-right{display:flex;align-items:center;gap:.9rem}
-.lang-sw{display:flex;gap:.3rem}
-.lb{background:none;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.68rem;font-weight:600;letter-spacing:.08em;padding:.22rem .55rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;text-transform:uppercase;border-radius:3px}
-.lb:hover,.lb.active{background:var(--gm);color:#fff;border-color:var(--gm)}
-.nav-cta{background:var(--gm);color:#fff;padding:.48rem 1.2rem;font-size:.76rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:background .2s,transform .15s;border-radius:6px;white-space:nowrap}
-.nav-cta:hover{background:var(--gl);transform:translateY(-1px)}
-.nav-portale{background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.3);padding:.44rem 1rem;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:all .2s;border-radius:6px;white-space:nowrap}
-.nav-portale:hover{background:rgba(255,255,255,.1);border-color:var(--gl);color:#fff}
-.nav-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:40px;padding:8px;background:transparent;border:1.5px solid rgba(255,255,255,.3);border-radius:6px;cursor:pointer}
-.nav-toggle span{display:block;height:2px;width:100%;background:#fff;border-radius:2px;transition:transform .25s,opacity .25s}
-nav.nav-open .nav-toggle span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-nav.nav-open .nav-toggle span:nth-child(2){opacity:0}
-nav.nav-open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-
 /* HERO */
-.page-hero{background:linear-gradient(135deg,var(--g) 0%,#0d3460 100%);padding:8rem 4rem 5rem;position:relative;overflow:hidden}
+.page-hero{background:linear-gradient(135deg,var(--g) 0%,#0d3460 100%);padding:8rem var(--pad-x) 5rem;position:relative;overflow:hidden}
 .page-hero::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,150,.14) 0%,transparent 70%);top:-200px;right:-100px;pointer-events:none}
 .page-hero::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.08) 0%,transparent 70%);bottom:-100px;left:5%;pointer-events:none}
 .page-hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.5fr .9fr;gap:3rem;align-items:center;max-width:1180px}
@@ -85,28 +54,25 @@ nav.nav-open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45
 .hero-visual{display:flex;justify-content:center}
 .hero-visual-card{background:#fff;border-radius:24px;padding:1.8rem 2rem;box-shadow:0 18px 44px rgba(0,0,0,.28)}
 .hero-visual-card img{width:100%;max-width:210px;height:auto;display:block}
-.eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gm);margin-bottom:1.2rem}
 .page-hero .eyebrow{color:var(--gl)}
 .page-hero-title{font-family:'Inter',sans-serif;font-size:clamp(2.2rem,4vw,3.8rem);line-height:1.08;font-weight:800;color:#fff;margin-bottom:1.2rem}
 .page-hero-title em{font-style:normal;color:var(--gl)}
 .page-hero-sub{font-size:1.05rem;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:.9rem;line-height:1.5}
-.page-hero-desc{font-size:.95rem;color:rgba(255,255,255,.6);line-height:1.85;max-width:640px}
+.page-hero-desc{font-size:.95rem;color:var(--on-navy-soft);line-height:1.85;max-width:640px}
 
 /* STATS */
-.stats-sec{background:#fff;padding:3.5rem 4rem}
-.sec-title{font-family:'Inter',sans-serif;font-size:clamp(1.6rem,2.8vw,2.4rem);font-weight:700;line-height:1.15;color:var(--g);max-width:700px}
-.sec-title em{font-style:normal;color:var(--gm)}
+.stats-sec{background:#fff;padding:3.5rem var(--pad-x)}
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
 .stat-card{background:var(--g);padding:2.2rem 2rem;border-radius:14px;text-align:center;position:relative;overflow:hidden}
 .stat-card::before{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(0,201,177,.08);top:-30px;right:-30px;pointer-events:none}
 .stat-num{font-family:'Inter',sans-serif;font-size:3rem;font-weight:800;color:var(--gl);line-height:1;margin-bottom:.5rem}
-.stat-label{font-size:.82rem;color:rgba(255,255,255,.65);line-height:1.5;font-weight:500}
+.stat-label{font-size:.88rem;color:var(--on-navy-soft);line-height:1.5;font-weight:500}
 
 /* SEZIONI */
-.sec-desc{font-size:.92rem;color:var(--gr);margin-top:.8rem;line-height:1.8;max-width:640px}
+.sec-desc{font-size:.95rem;color:var(--gr);margin-top:.8rem;line-height:1.8;max-width:640px}
 
 /* MAPPA */
-.map-sec{background:#fff;padding:4rem}
+.map-sec{background:#fff;padding:4rem var(--pad-x)}
 .map-legend{display:flex;gap:1.5rem;margin:1.2rem 0;flex-wrap:wrap}
 .legend-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--g)}
 .legend-dot{width:14px;height:14px;border-radius:2px;flex-shrink:0}
@@ -115,7 +81,7 @@ nav.nav-open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45
 #mappa-biologi{width:100%;height:500px;border-radius:14px;border:1px solid rgba(10,38,71,.1);box-shadow:0 4px 24px rgba(10,38,71,.08)}
 
 /* BIOLOGI GRID */
-.biologi-sec{background:var(--cr);padding:4rem}
+.biologi-sec{background:var(--cr);padding:4rem var(--pad-x)}
 .biologi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
 .biologo-card{background:var(--wh);border-radius:12px;overflow:hidden;border:1px solid rgba(10,38,71,.08);box-shadow:0 2px 16px rgba(10,38,71,.05);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column}
 .biologo-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(10,38,71,.12)}
@@ -123,30 +89,30 @@ nav.nav-open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45
 .biologo-avatar{width:72px;height:72px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:800;color:var(--g);overflow:hidden;border:3px solid rgba(255,255,255,.2)}
 .biologo-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:50%}
 .biologo-nome{font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;color:#fff;line-height:1.3}
-.biologo-titolo{font-size:.75rem;color:var(--gl);font-weight:500;letter-spacing:.03em}
+.biologo-titolo{font-size:.8rem;color:var(--gl);font-weight:500;letter-spacing:.03em}
 .biologo-body{padding:1.4rem;flex:1;display:flex;flex-direction:column;gap:.6rem}
 .biologo-ruolo{font-size:.82rem;font-weight:600;color:var(--g);line-height:1.4}
-.biologo-regione{font-size:.76rem;color:var(--gr);display:flex;align-items:center;gap:.4rem}
-.biologo-spec{font-size:.76rem;color:var(--gr);line-height:1.55;padding-top:.4rem;border-top:1px solid rgba(10,38,71,.07)}
+.biologo-regione{font-size:.82rem;color:var(--gr);display:flex;align-items:center;gap:.4rem}
+.biologo-spec{font-size:.84rem;color:var(--gr);line-height:1.55;padding-top:.4rem;border-top:1px solid rgba(10,38,71,.07)}
 .cert-badge{display:inline-flex;align-items:center;gap:.35rem;background:rgba(0,168,150,.1);border:1px solid rgba(0,168,150,.25);color:var(--gm);font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .7rem;border-radius:20px;margin-top:auto;align-self:flex-start}
 
 /* NOTA CONTATTI (callout) */
 .biologi-cols{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center;margin-top:1.5rem}
 .nota-box{background:rgba(0,168,150,.07);border:1px solid rgba(0,168,150,.22);border-left:4px solid var(--gm);border-radius:12px;padding:1.6rem 2rem}
 .biologi-cols .nota-box{align-self:center}
-.nota-text{font-size:.9rem;color:var(--gr);line-height:1.8}
+.nota-text{font-size:.95rem;color:var(--gr);line-height:1.8}
 .nota-text strong{color:var(--g)}
 
 /* CANDIDATURA */
-.candidatura-sec{background:var(--cr);padding:4rem}
+.candidatura-sec{background:var(--cr);padding:4rem var(--pad-x)}
 .candidatura-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
 .candidatura-text .sec-title{max-width:100%}
 .candidatura-text p{font-size:.95rem;color:var(--gr);margin-top:1rem;line-height:1.85}
 .candidatura-card{background:var(--g);border-radius:16px;padding:2.4rem;color:#fff}
 .candidatura-card-title{font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:.6rem}
-.candidatura-card-sub{font-size:.83rem;color:rgba(255,255,255,.6);margin-bottom:1.6rem;line-height:1.7}
+.candidatura-card-sub{font-size:.9rem;color:var(--on-navy-soft);margin-bottom:1.6rem;line-height:1.7}
 .req-list{list-style:none;display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.8rem}
-.req-list li{font-size:.82rem;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
+.req-list li{font-size:.88rem;color:var(--on-navy);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
 .req-list li::before{content:"→";color:var(--gl);font-weight:700;flex-shrink:0}
 .cand-btns{display:flex;flex-direction:column;gap:.7rem}
 .btn-cta{display:inline-block;background:var(--gm);color:#fff;padding:.8rem 1.8rem;font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;border-radius:8px;transition:all .2s;text-align:center}
@@ -155,17 +121,11 @@ nav.nav-open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45
 .btn-cta-outline:hover{border-color:var(--gl);color:#fff;background:rgba(255,255,255,.07)}
 
 /* CTA SCUOLE */
-.cta-scuole-sec{background:linear-gradient(135deg,var(--gm) 0%,var(--gl) 100%);padding:4rem;text-align:center}
+.cta-scuole-sec{background:linear-gradient(135deg,var(--gm) 0%,var(--gl) 100%);padding:4rem var(--pad-x);text-align:center}
 .cta-scuole-sec h2{font-family:'Inter',sans-serif;font-size:clamp(1.4rem,2.8vw,2rem);font-weight:800;color:#fff;margin-bottom:.9rem;line-height:1.2}
 .cta-scuole-sec p{font-size:.95rem;color:rgba(255,255,255,.85);margin-bottom:2rem;line-height:1.75;max-width:520px;margin-left:auto;margin-right:auto}
 .btn-white{background:#fff;color:var(--g);padding:.85rem 2.2rem;font-size:.9rem;font-weight:700;letter-spacing:.04em;text-decoration:none;border-radius:8px;transition:all .2s;display:inline-block}
 .btn-white:hover{background:var(--cr);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15)}
-
-/* FOOTER */
-footer{background:var(--dn);color:rgba(255,255,255,.35);padding:1.8rem 4rem;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;letter-spacing:.05em}
-footer strong{color:rgba(255,255,255,.7)}
-footer a{color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s}
-footer a:hover{color:var(--gl)}
 
 /* LEAFLET TOOLTIP */
 .leaflet-tooltip{font-family:'Inter',sans-serif;font-size:.78rem;border:none;border-radius:6px;box-shadow:0 2px 12px rgba(10,38,71,.15);padding:.4rem .7rem}
@@ -173,25 +133,24 @@ footer a:hover{color:var(--gl)}
 /* RESPONSIVE */
 @media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}.biologi-grid{grid-template-columns:1fr 1fr}.candidatura-inner{grid-template-columns:1fr}.biologi-cols{grid-template-columns:1fr;gap:2rem}}
 @media(max-width:860px){
-  nav{padding:.8rem 1.2rem;flex-wrap:wrap}
-  .logo{order:0}
-  .nav-toggle{display:flex;order:1}
-  .nav-links{order:2;flex-basis:100%;display:none;flex-direction:column;gap:.2rem;margin-top:.9rem}
-  .nav-right{order:3;flex-basis:100%;display:none;flex-direction:column;align-items:stretch;gap:.7rem;margin-top:.6rem;padding-top:.9rem;border-top:1px solid rgba(255,255,255,.12)}
-  nav.nav-open .nav-links,nav.nav-open .nav-right{display:flex}
-  .nav-links a{display:block;padding:.7rem .2rem;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.08)}
-  .lang-sw{gap:.4rem}
-  .nav-portale,.nav-cta{text-align:center}
   .page-hero{padding:6rem 1.5rem 3.5rem}
   .page-hero-grid{grid-template-columns:1fr}
   .hero-visual{display:none}
   .stats-sec,.biologi-sec,.map-sec,.candidatura-sec,.cta-scuole-sec{padding:2.5rem 1.5rem}
-  footer{flex-direction:column;gap:.8rem;text-align:center;padding:1.5rem}
 }
 @media(max-width:600px){.stats-grid{grid-template-columns:1fr}.biologi-grid{grid-template-columns:1fr}#mappa-biologi{height:340px}}
 </style>
 </head>
 <body>
+
+<!-- Sprite icone SVG -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main" data-k="skip_link"></a>
 
 <nav>
   <a href="index.html" class="logo">
@@ -200,7 +159,7 @@ footer a:hover{color:var(--gl)}
   </a>
   <ul class="nav-links" id="navMenu">
     <li><a href="index.html#chisiamo" data-k="nav0"></a></li>
-    <li><a href="index.html#team" data-k="nav1"></a></li>
+    <li><a href="index.html#method" data-k="nav1"></a></li>
     <li><a href="index.html#game" data-k="nav2"></a></li>
     <li><a href="scuole.html" data-k="nav3"></a></li>
     <li><a href="biologi.html" class="current" data-k="nav4"></a></li>
@@ -218,6 +177,8 @@ footer a:hover{color:var(--gl)}
     <span></span><span></span><span></span>
   </button>
 </nav>
+
+<main id="main">
 
 <!-- HERO -->
 <section class="page-hero">
@@ -310,9 +271,49 @@ footer a:hover{color:var(--gl)}
   <a id="cta-scuole-btn" href="#" class="btn-white" data-k="cta_scuole_btn"></a>
 </section>
 
+</main>
+
 <footer>
-  <div><strong>S.A.N.E. Italia</strong> &mdash; <span data-k="footer"></span></div>
-  <div>&copy; 2025&ndash;2026 Dott.ssa Serafina Cardaci &amp; Ing. Patrick Orlando &mdash; Tutti i diritti riservati</div>
+  <div class="ft-grid">
+    <div class="ft-brand">
+      <a href="/" class="logo">
+        <img src="/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" width="800" height="800">
+        <span class="logo-text">S.A.N.E. <span>Italia</span></span>
+      </a>
+      <p class="ft-payoff" data-k="ft_payoff"></p>
+    </div>
+    <nav class="ft-col" aria-label="Mappa del sito">
+      <h2 class="ft-h" data-k="ft_explore"></h2>
+      <ul>
+        <li><a href="/#chisiamo" data-k="nav0"></a></li>
+        <li><a href="/#method" data-k="ft_l_moduli"></a></li>
+        <li><a href="/#game" data-k="ft_l_gioco"></a></li>
+        <li><a href="/scuole.html" data-k="ft_l_scuole"></a></li>
+        <li><a href="/biologi.html" data-k="ft_l_biologi"></a></li>
+        <li><a href="/#contact" data-k="ft_l_contatti"></a></li>
+      </ul>
+    </nav>
+    <div class="ft-col">
+      <h2 class="ft-h" data-k="ft_contact_h"></h2>
+      <div style="display:flex;flex-direction:column;gap:.55rem">
+        <div class="ft-line"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg><a href="mailto:serafinacardaci@gmail.com">serafinacardaci@gmail.com</a></div>
+        <div class="ft-line"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg><a href="tel:+393473750087">+39 347 375 0087</a></div>
+        <div class="ft-line"><svg class="ic" aria-hidden="true"><use href="#i-map-pin"/></svg><span>Via Mazzini 129 — Novi Ligure (AL)</span></div>
+      </div>
+    </div>
+    <div class="ft-col">
+      <h2 class="ft-h" data-k="ft_legal_h"></h2>
+      <ul>
+        <li><a href="/privacy.html" data-k="ft_privacy"></a></li>
+        <li><a href="/portale.html" data-k="ft_portale"></a></li>
+        <li><a href="https://gioco.sane-italia.it" target="_blank" rel="noopener" data-k="ft_gioco_link"></a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ft-bottom">
+    <div><strong>S.A.N.E. Italia</strong> &mdash; <span data-k="footer"></span></div>
+    <div>&copy; 2025&ndash;2026 Dott.ssa Serafina Cardaci &amp; Ing. Patrick Orlando &mdash; Tutti i diritti riservati</div>
+  </div>
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
@@ -324,7 +325,7 @@ const regioniAttive = ["Piemonte", "Toscana"];
 // =====================
 const T = {
   it: {
-    nav: ["Chi siamo", "Il team", "L'app", "Scuole Aderenti", "I Biologi"],
+    nav: ["Chi siamo", "Il programma", "Il gioco", "Scuole Aderenti", "I Biologi"],
     nav_cta: "Contattaci",
     hero_eyebrow: "Rete professionale S.A.N.E. Italia · Biologi Nutrizionisti Certificati",
     hero_title: "I Biologi <em>S.A.N.E.</em>",
@@ -366,10 +367,23 @@ const T = {
     cta_scuole_desc: "Verifica se e disponibile un professionista S.A.N.E. nella tua regione. Gestiamo direttamente ogni richiesta per garantire la qualita del programma.",
     cta_scuole_btn: "Verifica disponibilita nella tua regione",
     cta_scuole_href: "mailto:serafinacardaci@gmail.com?subject=Richiesta%20biologo%20S.A.N.E.%20-%20%5Binserire%20regione%5D&body=Buongiorno%2C%0Avorrei%20sapere%20se%20e%20disponibile%20un%20biologo%20S.A.N.E.%20nella%20mia%20regione.%0AProvincia%3A%20___",
-    footer: "Sicurezza · Alimentazione · Nutrizione · Educazione"
+    footer: "Sicurezza · Alimentazione · Nutrizione · Educazione",
+    skip_link: "Vai al contenuto",
+    ft_payoff: "La rete di biologi nutrizionisti che porta l'educazione alimentare e la sicurezza alimentare nelle scuole italiane.",
+    ft_explore: "Esplora",
+    ft_l_moduli: "I 6 moduli",
+    ft_l_gioco: "Il gioco «Il Piatto Sano»",
+    ft_l_scuole: "Scuole Aderenti",
+    ft_l_biologi: "I Biologi",
+    ft_l_contatti: "Contatti",
+    ft_contact_h: "Contatti",
+    ft_legal_h: "Informazioni",
+    ft_privacy: "Privacy & Cookie Policy",
+    ft_portale: "Portale operatori",
+    ft_gioco_link: "Gioca a «Il Piatto Sano»"
   },
   es: {
-    nav: ["Quienes somos", "El equipo", "La app", "Escuelas Adheridas", "Los Biologos"],
+    nav: ["Quienes somos", "El programa", "El juego", "Escuelas Adheridas", "Los Biologos"],
     nav_cta: "Contactanos",
     hero_eyebrow: "Red profesional S.A.N.E. Italia · Biologos Nutricionistas Certificados",
     hero_title: "Los Biologos <em>S.A.N.E.</em>",
@@ -411,10 +425,23 @@ const T = {
     cta_scuole_desc: "Verifica si hay un profesional S.A.N.E. disponible en tu region. Gestionamos directamente cada solicitud para garantizar la calidad del programa.",
     cta_scuole_btn: "Verificar disponibilidad en tu region",
     cta_scuole_href: "mailto:serafinacardaci@gmail.com?subject=Solicitud%20biologo%20S.A.N.E.%20-%20%5Binsertar%20region%5D&body=Buenos%20dias%2C%20quisiera%20saber%20si%20hay%20un%20biologo%20S.A.N.E.%20disponible%20en%20mi%20region.",
-    footer: "Ciencia Alimentaria Nutricional Educativa"
+    footer: "Seguridad · Alimentación · Nutrición · Educación",
+    skip_link: "Ir al contenido",
+    ft_payoff: "La red de biólogos nutricionistas que lleva la educación alimentaria y la seguridad alimentaria a las escuelas italianas.",
+    ft_explore: "Explora",
+    ft_l_moduli: "Los 6 módulos",
+    ft_l_gioco: "El juego «Il Piatto Sano»",
+    ft_l_scuole: "Escuelas Adheridas",
+    ft_l_biologi: "Los Biólogos",
+    ft_l_contatti: "Contacto",
+    ft_contact_h: "Contacto",
+    ft_legal_h: "Información",
+    ft_privacy: "Privacidad & Cookies",
+    ft_portale: "Portal operadores",
+    ft_gioco_link: "Juega a «Il Piatto Sano»"
   },
   en: {
-    nav: ["Who we are", "The team", "The app", "Partner Schools", "The Biologists"],
+    nav: ["Who we are", "The programme", "The game", "Partner Schools", "The Biologists"],
     nav_cta: "Contact us",
     hero_eyebrow: "S.A.N.E. Italia Professional Network · Certified Nutritionist Biologists",
     hero_title: "The S.A.N.E. <em>Biologists</em>",
@@ -456,7 +483,20 @@ const T = {
     cta_scuole_desc: "Check whether a S.A.N.E. professional is available in your region. We manage every request directly to guarantee programme quality.",
     cta_scuole_btn: "Check availability in your region",
     cta_scuole_href: "mailto:serafinacardaci@gmail.com?subject=S.A.N.E.%20biologist%20request%20-%20%5Binsert%20region%5D&body=Hello%2C%0AI%20would%20like%20to%20know%20if%20a%20S.A.N.E.%20biologist%20is%20available%20in%20my%20region.%0AProvince%3A%20___",
-    footer: "Scientific Alimentary Nutritional Education"
+    footer: "Safety · Food · Nutrition · Education",
+    skip_link: "Skip to content",
+    ft_payoff: "The network of nutritionist biologists bringing food education and food safety into Italian schools.",
+    ft_explore: "Explore",
+    ft_l_moduli: "The 6 modules",
+    ft_l_gioco: "The «Il Piatto Sano» game",
+    ft_l_scuole: "Partner Schools",
+    ft_l_biologi: "The Biologists",
+    ft_l_contatti: "Contact",
+    ft_contact_h: "Contact",
+    ft_legal_h: "Information",
+    ft_privacy: "Privacy & Cookie Policy",
+    ft_portale: "Operators' portal",
+    ft_gioco_link: "Play «Il Piatto Sano»"
   }
 };
 
