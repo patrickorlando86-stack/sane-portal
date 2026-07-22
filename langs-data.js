@@ -11,7 +11,7 @@ const ic = (name) => `<svg class='ic' aria-hidden='true'><use href='#i-${name}'/
 
 const T = {
   it: {
-    nav: ["Chi siamo", "Il programma", "Il gioco", "Scuole Aderenti", "I Biologi"],
+    nav: ["Chi siamo", "Il programma", "Il gioco", "Scuole Aderenti", "I Biologi", "Il team"],
     nav_cta: "Contattaci",
     hero_eyebrow: "Programma di Educazione Alimentare · Scuole di Ogni Ordine e Grado",
     hero_title: "Mangiare Bene,<br><em>Crescere Meglio.</em>",
@@ -146,7 +146,7 @@ const T = {
   },
 
   es: {
-    nav: ["Quiénes somos", "El programa", "El juego", "Escuelas Adheridas", "Los Biólogos"],
+    nav: ["Quiénes somos", "El programa", "El juego", "Escuelas Adheridas", "Los Biólogos", "El equipo"],
     nav_cta: "Contáctanos",
     hero_eyebrow: "Programa de Educación Alimentaria · Escuelas de Todos los Niveles",
     hero_title: "Mangiare Bene,<br><em>Crescere Meglio.</em>",
@@ -281,7 +281,7 @@ const T = {
   },
 
   en: {
-    nav: ["Who we are", "The programme", "The game", "Partner Schools", "The Biologists"],
+    nav: ["Who we are", "The programme", "The game", "Partner Schools", "The Biologists", "The team"],
     nav_cta: "Contact us",
     hero_eyebrow: "Food Education Programme · Schools of All Levels",
     hero_title: "Mangiare Bene,<br><em>Crescere Meglio.</em>",
