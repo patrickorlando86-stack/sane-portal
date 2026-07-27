@@ -127,8 +127,8 @@ const T = {
     form_send: "Invia il messaggio",
     form_note: "Il messaggio si aprirà nel tuo programma di posta, pronto da inviare.",
     ci: [
-      { type: "person", img: "/immagini/logo/serafina.webp", name: "Dott.ssa Serafina Cardaci", role: "Biologa Nutrizionista · Responsabile Scientifica", email: "serafinacardaci@gmail.com", tel: "+39 347 375 0087", address: "Via Mazzini 129 — Novi Ligure (AL)", site: "https://www.serafinacardacinutrizione.com/", sitelabel: "serafinacardacinutrizione.com", ig: "https://www.instagram.com/sery.cardaci.nutrizionista/", fb: "https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/", li: "https://www.linkedin.com/in/serafina-cardaci-70707793/" },
-      { type: "person", img: "/immagini/logo/patrick.webp", name: "Ing. Patrick Orlando", role: "Sviluppatore App · Partner Tecnologico e Media", email: "patrick.orlando@libero.it", tel: "+39 347 183 4091", li: "https://www.linkedin.com/in/patrickorlando86/?locale=it" }
+      { type: "person", img: "/immagini/logo/serafina.webp", name: "Dott.ssa Serafina Cardaci", role: "Biologa Nutrizionista · Responsabile Scientifica", tel: "+39 347 375 0087", address: "Via Mazzini 129 — Novi Ligure (AL)", site: "https://www.serafinacardacinutrizione.com/", sitelabel: "serafinacardacinutrizione.com", ig: "https://www.instagram.com/sery.cardaci.nutrizionista/", fb: "https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/", li: "https://www.linkedin.com/in/serafina-cardaci-70707793/" },
+      { type: "person", img: "/immagini/logo/patrick.webp", name: "Ing. Patrick Orlando", role: "Sviluppatore App · Partner Tecnologico e Media", tel: "+39 347 183 4091", li: "https://www.linkedin.com/in/patrickorlando86/?locale=it" }
     ],
     footer: "Sicurezza · Alimentazione · Nutrizione · Educazione",
     ft_payoff: "La rete di biologi nutrizionisti che porta l'educazione alimentare e la sicurezza alimentare nelle scuole italiane.",
@@ -262,8 +262,8 @@ const T = {
     form_send: "Enviar el mensaje",
     form_note: "El mensaje se abrirá en tu programa de correo, listo para enviar.",
     ci: [
-      { type: "person", img: "/immagini/logo/serafina.webp", name: "Dott.ssa Serafina Cardaci", role: "Bióloga Nutricionista · Responsable Científica", email: "serafinacardaci@gmail.com", tel: "+39 347 375 0087", address: "Via Mazzini 129 — Novi Ligure (AL)", site: "https://www.serafinacardacinutrizione.com/", sitelabel: "serafinacardacinutrizione.com", ig: "https://www.instagram.com/sery.cardaci.nutrizionista/", fb: "https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/", li: "https://www.linkedin.com/in/serafina-cardaci-70707793/" },
-      { type: "person", img: "/immagini/logo/patrick.webp", name: "Ing. Patrick Orlando", role: "Desarrollador App · Partner Tecnológico y Media", email: "patrick.orlando@libero.it", tel: "+39 347 183 4091", li: "https://www.linkedin.com/in/patrickorlando86/?locale=it" }
+      { type: "person", img: "/immagini/logo/serafina.webp", name: "Dott.ssa Serafina Cardaci", role: "Bióloga Nutricionista · Responsable Científica", tel: "+39 347 375 0087", address: "Via Mazzini 129 — Novi Ligure (AL)", site: "https://www.serafinacardacinutrizione.com/", sitelabel: "serafinacardacinutrizione.com", ig: "https://www.instagram.com/sery.cardaci.nutrizionista/", fb: "https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/", li: "https://www.linkedin.com/in/serafina-cardaci-70707793/" },
+      { type: "person", img: "/immagini/logo/patrick.webp", name: "Ing. Patrick Orlando", role: "Desarrollador App · Partner Tecnológico y Media", tel: "+39 347 183 4091", li: "https://www.linkedin.com/in/patrickorlando86/?locale=it" }
     ],
     footer: "Seguridad · Alimentación · Nutrición · Educación",
     ft_payoff: "La red de biólogos nutricionistas que lleva la educación alimentaria y la seguridad alimentaria a las escuelas italianas.",
@@ -397,8 +397,8 @@ const T = {
     form_send: "Send the message",
     form_note: "The message will open in your email app, ready to send.",
     ci: [
-      { type: "person", img: "/immagini/logo/serafina.webp", name: "Dott.ssa Serafina Cardaci", role: "Nutritionist Biologist · Scientific Director", email: "serafinacardaci@gmail.com", tel: "+39 347 375 0087", address: "Via Mazzini 129 — Novi Ligure (AL)", site: "https://www.serafinacardacinutrizione.com/", sitelabel: "serafinacardacinutrizione.com", ig: "https://www.instagram.com/sery.cardaci.nutrizionista/", fb: "https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/", li: "https://www.linkedin.com/in/serafina-cardaci-70707793/" },
-      { type: "person", img: "/immagini/logo/patrick.webp", name: "Ing. Patrick Orlando", role: "App Developer · Technology & Media Partner", email: "patrick.orlando@libero.it", tel: "+39 347 183 4091", li: "https://www.linkedin.com/in/patrickorlando86/?locale=it" }
+      { type: "person", img: "/immagini/logo/serafina.webp", name: "Dott.ssa Serafina Cardaci", role: "Nutritionist Biologist · Scientific Director", tel: "+39 347 375 0087", address: "Via Mazzini 129 — Novi Ligure (AL)", site: "https://www.serafinacardacinutrizione.com/", sitelabel: "serafinacardacinutrizione.com", ig: "https://www.instagram.com/sery.cardaci.nutrizionista/", fb: "https://www.facebook.com/Dott.ssaSerafinaCardaciNutrizionista/", li: "https://www.linkedin.com/in/serafina-cardaci-70707793/" },
+      { type: "person", img: "/immagini/logo/patrick.webp", name: "Ing. Patrick Orlando", role: "App Developer · Technology & Media Partner", tel: "+39 347 183 4091", li: "https://www.linkedin.com/in/patrickorlando86/?locale=it" }
     ],
     footer: "Safety · Food · Nutrition · Education",
     ft_payoff: "The network of nutritionist biologists bringing food education and food safety into Italian schools.",
@@ -476,7 +476,7 @@ const TPL = {
           <div><div class="cc-name">${c.name}</div><div class="cc-role">${c.role}</div></div>
         </div>
         <div class="cc-lines">
-          <div class="cc-line"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg> <a href="mailto:${c.email}">${c.email}</a></div>
+          ${c.email ? `<div class="cc-line"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg> <a href="mailto:${c.email}">${c.email}</a></div>` : ''}
           <div class="cc-line"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg> <a href="tel:${c.tel.replace(/\s/g, '')}">${c.tel}</a></div>
           ${c.address ? `<div class="cc-line"><svg class="ic" aria-hidden="true"><use href="#i-map-pin"/></svg> ${c.address}</div>` : ''}
           ${c.site ? `<div class="cc-line"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg> <a href="${c.site}" target="_blank" rel="noopener">${c.sitelabel}</a></div>` : ''}

@@ -68,13 +68,13 @@ serve(async (_req) => {
                   ? 'Questo è un <strong>ultimo promemoria</strong>. Dopo la scadenza non potrai più accedere al portale.'
                   : 'Per continuare ad accedere al portale è necessario rinnovare la licenza.'}
               </p>
-              <a href="mailto:patrick.orlando@libero.it?subject=Rinnovo licenza SANE Italia"
+              <a href="mailto:info@sane-italia.it?subject=Rinnovo licenza SANE Italia"
                  style="display:block;background:${urgente ? '#ef4444' : '#F4A261'};color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">
                 Contatta l'amministratore →
               </a>
               <p style="color:#94a3b8;font-size:11px;text-align:center;margin:0;">Se hai già rinnovato, ignora questa email.</p>
             </div>
-            <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · patrick.orlando@libero.it</p>
+            <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · info@sane-italia.it</p>
           </div>
         `
       })

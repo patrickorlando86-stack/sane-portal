@@ -1151,7 +1151,7 @@ function buildMailtoPromemoria(email, nome, scadenza){
     const dataFmt = new Date(scadenza).toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
     const oggetto = encodeURIComponent(`Rinnovo licenza S.A.N.E. Italia — scadenza ${dataFmt}`);
     const corpo = encodeURIComponent(
-        `Gentile ${nome},\n\nla tua licenza per il Portale Biologi S.A.N.E. Italia scadrà il ${dataFmt}.\n\nPer rinnovare la tua licenza e continuare ad accedere al portale, ti invitiamo a contattarci rispondendo a questa email.\n\nGrazie per il tuo impegno nel programma S.A.N.E. Italia.\n\nIl team S.A.N.E. Italia\npatrick.orlando86@gmail.com`
+        `Gentile ${nome},\n\nla tua licenza per il Portale Biologi S.A.N.E. Italia scadrà il ${dataFmt}.\n\nPer rinnovare la tua licenza e continuare ad accedere al portale, ti invitiamo a contattarci rispondendo a questa email.\n\nGrazie per il tuo impegno nel programma S.A.N.E. Italia.\n\nIl team S.A.N.E. Italia\ninfo@sane-italia.it`
     );
     return `mailto:${email}?subject=${oggetto}&body=${corpo}`;
 }

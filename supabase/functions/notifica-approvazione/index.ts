@@ -44,7 +44,7 @@ serve(async (req) => {
             </a>
             <p style="color:#94a3b8;font-size:11px;text-align:center;margin:0;">Usa la tua email e la password scelta in fase di registrazione.</p>
           </div>
-          <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · patrick.orlando@libero.it</p>
+          <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · info@sane-italia.it</p>
         </div>
       `
     })

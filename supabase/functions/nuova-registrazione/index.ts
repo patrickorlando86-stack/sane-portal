@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-const ADMIN_EMAIL = "patrick.orlando86@gmail.com"
+const ADMIN_EMAIL = "info@sane-italia.it"
 
 serve(async (req) => {
   const body = await req.json()
@@ -46,9 +46,9 @@ serve(async (req) => {
                   ⏱ I tempi di approvazione sono solitamente di <strong>24-48 ore</strong> lavorative.
                 </p>
               </div>
-              <p style="color:#94a3b8;font-size:11px;text-align:center;margin:0;">Per informazioni: <a href="mailto:patrick.orlando@libero.it" style="color:#00A896;">patrick.orlando@libero.it</a></p>
+              <p style="color:#94a3b8;font-size:11px;text-align:center;margin:0;">Per informazioni: <a href="mailto:info@sane-italia.it" style="color:#00A896;">info@sane-italia.it</a></p>
             </div>
-            <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · patrick.orlando@libero.it</p>
+            <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · info@sane-italia.it</p>
           </div>
         `
       })
