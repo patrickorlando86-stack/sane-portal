@@ -13,7 +13,7 @@
 # pretendere un token valido per essere chiamata. Deve corrispondere a com'è
 # configurata adesso ciascuna funzione, altrimenti il deploy la cambia e
 # smette di funzionare. Se aggiungi una funzione, aggiungila anche qui con
-# il flag giusto.
+# il flag giusto: senza flag = Verify JWT acceso, con flag = spento.
 
 name: Deploy Edge Functions
 
@@ -50,8 +50,9 @@ jobs:
           supabase functions deploy stripe-webhook  --project-ref "$PROJECT_REF" --no-verify-jwt
 
       # Funzioni di notifica, innescate da trigger/webhook del database.
-      # I flag qui sotto vanno confermati guardando il toggle "Verify JWT" di
-      # ciascuna nel pannello Supabase, prima di fidarsi di questo workflow.
+      # Verificato sul pannello il 2026-07-27: tutte e tre hanno "Verify JWT"
+      # ACCESO, quindi vanno deployate senza --no-verify-jwt (è il default
+      # della CLI). Non aggiungere il flag qui sotto: le romperebbe.
       - name: Funzioni di notifica
         run: |
           supabase functions deploy nuova-registrazione   --project-ref "$PROJECT_REF"
