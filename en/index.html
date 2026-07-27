@@ -408,6 +408,9 @@
 .contact-sec .sec-title{color:#fff;max-width:100%}
 .contact-sec .eyebrow{color:var(--gl)}
 .contact-sec .desc{color:var(--on-navy-soft);margin-top:1rem;line-height:1.8;font-size:var(--fs-base);max-width:600px}
+.contact-mail{display:inline-flex;align-items:center;gap:.55rem;margin-top:1.2rem;color:var(--gl);text-decoration:none;font-size:1.05rem;font-weight:700;transition:opacity .2s}
+.contact-mail:hover{opacity:.75}
+.contact-mail .ic{width:18px;height:18px;flex-shrink:0}
 .contact-wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:1.5rem;margin-top:2.5rem;align-items:start}
 .contact-cards{display:flex;flex-direction:column;gap:1.5rem}
 .cc{background:rgba(255,255,255,.06);border:1px solid rgba(0,201,177,.2);border-radius:var(--r-lg);padding:1.8rem 2rem;transition:border-color .2s,background .2s}
@@ -720,6 +723,7 @@
   <p class="eyebrow" data-k="contact_eyebrow">Contact</p>
   <h2 class="sec-title" data-k="contact_title">Bring S.A.N.E. to your <em>school</em> or area.</h2>
   <p class="desc" data-k="contact_desc">Are you a school principal, a nutritionist biologist, a parent of an allergic child, or a local authority? Write to us.</p>
+  <a class="contact-mail" href="mailto:info@sane-italia.it"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg>info@sane-italia.it</a>
   <div class="contact-wrap">
     <form class="cform" id="contact-form">
       <div class="cform-title" data-k="form_title">Send us a message</div>
