@@ -231,155 +231,225 @@
 <style>
 /* ============ CSS specifico della homepage ============ */
 
-/* HERO */
-.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center;padding:6.5rem var(--pad-x) 3.5rem;background:linear-gradient(135deg,#EEF5FA 0%,#e3f4f0 55%,#d2efe8 100%);overflow:hidden}
+/* ---- HERO ---- */
+.hero{position:relative;display:grid;grid-template-columns:1.02fr .98fr;gap:3.5rem;align-items:center;padding:8.5rem var(--pad-x) 5.5rem;background:linear-gradient(155deg,#F4FAFD 0%,#E6F4F1 48%,#D6EFE9 100%);overflow:hidden;isolation:isolate}
+/* aloni di colore che danno profondità al fondo */
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;pointer-events:none;z-index:-1}
+.hero::before{width:640px;height:640px;top:-220px;right:-160px;background:radial-gradient(circle,rgba(0,201,177,.28) 0%,rgba(0,201,177,0) 68%)}
+.hero::after{width:520px;height:520px;bottom:-220px;left:-140px;background:radial-gradient(circle,rgba(244,162,97,.22) 0%,rgba(244,162,97,0) 68%)}
 .hero-l{display:flex;flex-direction:column;justify-content:center}
-.hero-title{font-size:clamp(2.4rem,4.5vw,4.2rem);line-height:1.08;font-weight:800;color:var(--g)}
-.hero-title em{font-style:normal;color:var(--gm)}
-.hero-sub{font-size:var(--fs-base);font-weight:400;line-height:1.8;color:var(--gr);margin-top:1.5rem;max-width:480px}
-.hero-allergie{display:inline-flex;align-items:center;gap:.55rem;align-self:flex-start;margin-top:1.5rem;background:#fff;border:1px solid rgba(244,162,97,.55);border-radius:999px;padding:.5rem 1rem;font-size:.86rem;font-weight:600;color:var(--g);box-shadow:var(--shadow-sm)}
-.hero-allergie-dot{width:9px;height:9px;border-radius:50%;background:var(--tc);box-shadow:0 0 0 4px rgba(244,162,97,.2);flex-shrink:0}
-.hero-btns{display:flex;gap:.8rem;margin-top:1.7rem;flex-wrap:wrap}
-.hero-dl{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;font-size:.82rem;color:var(--gr);text-decoration:none;transition:color .2s;font-weight:500}
+/* entrata scaglionata dell'hero: CSS puro, così non dipende dal JS */
+@keyframes heroIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.hero-l>*{animation:heroIn .85s var(--ease-out) both}
+.hero-l>*:nth-child(1){animation-delay:.04s}
+.hero-l>*:nth-child(2){animation-delay:.12s}
+.hero-l>*:nth-child(3){animation-delay:.2s}
+.hero-l>*:nth-child(4){animation-delay:.28s}
+.hero-l>*:nth-child(5){animation-delay:.36s}
+.hero-l>*:nth-child(6){animation-delay:.44s}
+.hero-r{animation:heroIn 1s var(--ease-out) .2s both}
+.hero-title{font-size:clamp(2.5rem,5vw,4.5rem);line-height:1.04;font-weight:800;letter-spacing:-.035em;color:var(--g)}
+.hero-title em{font-style:normal;background:linear-gradient(100deg,var(--gm) 0%,var(--gl) 55%,#3FD9C4 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--gm)}
+.hero-sub{font-size:var(--fs-base);font-weight:400;line-height:1.75;color:var(--gr);margin-top:1.6rem;max-width:520px}
+.hero-allergie{display:inline-flex;align-items:center;gap:.6rem;align-self:flex-start;margin-top:1.6rem;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);border:1px solid rgba(244,162,97,.5);border-radius:var(--r-pill);padding:.55rem 1.1rem;font-size:.88rem;font-weight:600;color:var(--g);box-shadow:var(--sh-1)}
+.hero-allergie-dot{position:relative;width:9px;height:9px;border-radius:50%;background:var(--tc);flex-shrink:0}
+/* onda che pulsa attorno al pallino */
+.hero-allergie-dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;background:var(--tc);opacity:.35;animation:pulse 2.6s var(--ease-out) infinite}
+@keyframes pulse{0%{transform:scale(.6);opacity:.45}70%{transform:scale(1.9);opacity:0}100%{opacity:0}}
+.hero-btns{display:flex;gap:.9rem;margin-top:2rem;flex-wrap:wrap}
+.hero-dl{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.2rem;font-size:.86rem;color:var(--gr);text-decoration:none;transition:color .2s,gap .2s var(--ease);font-weight:600}
 .hero-dl::before{content:"↓";font-size:.9rem;color:var(--gm)}
-.hero-dl:hover{color:var(--gm)}
+.hero-dl:hover{color:var(--gm);gap:.75rem}
+
+/* composizione visiva: foto del pilota + card in vetro */
 .hero-r{display:flex;align-items:center;justify-content:center}
-.hero-projlogo{display:block;width:100%;max-width:340px;height:auto;margin:0 auto;border-radius:50%;box-shadow:0 14px 32px rgba(10,38,71,.16)}
+.hero-visual{position:relative;width:100%;max-width:520px}
+.hero-photo{position:relative;border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-3);border:6px solid rgba(255,255,255,.9)}
+.hero-photo img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover}
+/* velo navy in basso: stacca le card dal fondo della foto */
+.hero-photo::after{content:"";position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(to top,rgba(10,38,71,.42),transparent)}
+.hero-badge{position:absolute;display:flex;align-items:center;gap:.8rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.9);border-radius:var(--r-md);padding:.85rem 1.15rem;box-shadow:var(--sh-2);animation:float 7s var(--ease-out) infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.hero-badge-1{top:1.6rem;left:-1.8rem}
+.hero-badge-2{bottom:1.6rem;right:-1.8rem;animation-delay:-3.5s}
+.hero-badge-ic{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex-shrink:0;border-radius:var(--r-sm);background:var(--grad-teal);color:#fff;font-size:1.05rem}
+.hero-badge-2 .hero-badge-ic{background:linear-gradient(135deg,var(--tc),#f7bc86)}
+.hero-badge-txt{display:flex;flex-direction:column;line-height:1.25}
+.hero-badge-n{font-size:.98rem;font-weight:800;color:var(--g);letter-spacing:-.01em}
+.hero-badge-l{font-size:.74rem;color:var(--gr);font-weight:500}
+/* logo di progetto agganciato all'angolo della foto */
+.hero-seal{position:absolute;top:-1.6rem;right:-1.2rem;width:92px;height:92px;border-radius:50%;background:#fff;padding:5px;box-shadow:var(--sh-2)}
+.hero-seal img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
 
-/* NUMERI (stat band) */
-.statband-sec{background:var(--g);padding:2.4rem var(--pad-x)}
-.statband{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1100px;margin:0 auto}
-.statband-item{text-align:center}
-.statband-n{font-size:clamp(1.9rem,3.6vw,2.8rem);font-weight:800;color:var(--gl);line-height:1}
-.statband-l{font-size:.84rem;color:var(--on-navy-soft);margin-top:.45rem;line-height:1.45}
+/* ---- NUMERI (stat band) ---- */
+.statband-sec{background:var(--grad-navy);padding:3.2rem var(--pad-x);position:relative;overflow:hidden}
+.statband-sec::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,201,177,.2) 0%,transparent 62%);pointer-events:none}
+.statband{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1120px;margin:0 auto;position:relative}
+.statband-item{text-align:center;position:relative;padding:0 .6rem}
+/* separatori verticali sfumati fra i numeri */
+.statband-item+.statband-item::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:1px;background:linear-gradient(to bottom,transparent,rgba(255,255,255,.16),transparent)}
+.statband-n{font-size:clamp(2.1rem,4vw,3.1rem);font-weight:800;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#fff 0%,var(--gl) 130%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--gl)}
+.statband-l{font-size:.85rem;color:var(--on-navy-soft);margin-top:.6rem;line-height:1.5;max-width:230px;margin-inline:auto}
 
-/* CHI SIAMO */
-.chisiamo-sec{background:#fff}
-.chisiamo-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:3.5rem;align-items:center}
-.chisiamo-lead{font-size:var(--fs-base);color:var(--gr);line-height:1.85;margin-top:1.1rem}
-.chisiamo-lead strong{color:var(--g)}
+/* ---- CHI SIAMO ---- */
+.chisiamo-sec{background:linear-gradient(180deg,#fff 0%,#fff 62%,var(--cr) 100%)}
+.chisiamo-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:4rem;align-items:center}
+.chisiamo-lead{font-size:var(--fs-base);color:var(--gr);line-height:1.8;margin-top:1.2rem}
+.chisiamo-lead strong{color:var(--g);font-weight:700}
 /* fascia verticale S A N E */
-.sane-band{display:flex;flex-direction:column;background:var(--g);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 14px 40px rgba(10,38,71,.18)}
-.sane-pillar{display:flex;align-items:center;gap:1.1rem;padding:1.25rem 1.6rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.sane-band{display:flex;flex-direction:column;background:var(--grad-navy);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-3)}
+.sane-pillar{display:flex;align-items:center;gap:1.2rem;padding:1.35rem 1.7rem;border-bottom:1px solid rgba(255,255,255,.08);transition:background .25s var(--ease)}
 .sane-pillar:last-child{border-bottom:none}
-.sane-l{font-size:2.1rem;font-weight:800;color:var(--gl);width:2rem;text-align:center;flex-shrink:0;line-height:1}
+.sane-pillar:hover{background:rgba(0,201,177,.09)}
+.sane-l{display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:var(--g);width:44px;height:44px;flex-shrink:0;line-height:1;border-radius:var(--r-sm);background:var(--grad-teal);box-shadow:0 4px 14px rgba(0,168,150,.35)}
 .sane-txt{display:flex;flex-direction:column}
-.sane-w{font-size:.88rem;font-weight:700;color:#fff;letter-spacing:.05em;text-transform:uppercase}
-.sane-d{font-size:.8rem;color:var(--on-navy-soft);margin-top:.15rem;line-height:1.4}
+.sane-w{font-size:.88rem;font-weight:700;color:#fff;letter-spacing:.06em;text-transform:uppercase}
+.sane-d{font-size:.83rem;color:var(--on-navy-soft);margin-top:.2rem;line-height:1.45}
 
-/* METHOD (i 6 moduli) */
-.method-sec{background:var(--g);color:#fff}
+/* ---- METHOD (i 6 moduli) ---- */
+.method-sec{background:var(--grad-navy);color:#fff;overflow:hidden}
+.method-sec::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 85% 5%,rgba(0,201,177,.16) 0%,transparent 55%),radial-gradient(ellipse at 10% 95%,rgba(244,162,97,.1) 0%,transparent 55%);pointer-events:none}
+.method-sec>*{position:relative}
 .method-sec .sec-title{color:#fff;max-width:100%}
 .method-sec .eyebrow{color:var(--gl)}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.5rem}
-.step{background:rgba(255,255,255,.05);padding:1.8rem 1.6rem;border-radius:14px;border:1px solid rgba(255,255,255,.08);transition:transform .2s,background .2s,box-shadow .2s}
-.step:hover{background:rgba(255,255,255,.09);transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.25)}
-.step-n{font-size:2.6rem;font-weight:800;line-height:1;margin-bottom:.55rem}
-.step h3{font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.5rem}
-.step p{font-size:.88rem;color:var(--on-navy-soft);line-height:1.65}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;margin-top:2.8rem}
+/* la card modulo: il colore del modulo entra come alone al passaggio del mouse */
+.step{--c:var(--gl);position:relative;background:rgba(255,255,255,.055);padding:1.9rem 1.7rem;border-radius:var(--r-md);border:1px solid rgba(255,255,255,.09);overflow:hidden;transition:transform .3s var(--ease),background .3s var(--ease),box-shadow .3s var(--ease),border-color .3s var(--ease)}
+.step::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--c)}
+.step::after{content:"";position:absolute;top:-70%;left:50%;width:200%;height:140%;transform:translateX(-50%);background:radial-gradient(ellipse,var(--c) 0%,transparent 62%);opacity:0;transition:opacity .35s var(--ease);pointer-events:none}
+.step:hover{background:rgba(255,255,255,.09);transform:translateY(-6px);border-color:rgba(255,255,255,.16);box-shadow:var(--sh-dark)}
+.step:hover::after{opacity:.13}
+.step-n{font-size:2.8rem;font-weight:800;line-height:1;margin-bottom:.6rem;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:var(--c);position:relative}
+.step h3{font-size:1rem;font-weight:700;color:#fff;margin-bottom:.5rem}
+.step p{font-size:.9rem;color:var(--on-navy-soft);line-height:1.65}
 
-/* GAME */
-.game-sec{background:var(--cr)}
-.game-intro{font-size:var(--fs-base);color:var(--gr);margin-top:1rem;max-width:600px;line-height:1.75}
-.game-head{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;margin-bottom:2.8rem}
-.game-head-visual{display:flex;flex-direction:column;align-items:flex-start;gap:1.1rem}
-.game-banner{width:100%;max-width:480px;height:auto;border-radius:20px;box-shadow:0 14px 40px rgba(10,38,71,.18)}
+/* ---- GAME ---- */
+.game-sec{background:linear-gradient(180deg,var(--cr) 0%,#E7F3F1 100%)}
+.game-intro{font-size:var(--fs-base);color:var(--gr);margin-top:1.1rem;max-width:600px;line-height:1.75}
+.game-head{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center;margin-bottom:3rem}
+.game-head-visual{display:flex;flex-direction:column;align-items:flex-start;gap:1.3rem}
+.game-banner{width:100%;max-width:480px;height:auto;border-radius:var(--r-lg);box-shadow:var(--sh-3)}
 .game-cta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
-.gplay{display:inline-flex;transition:transform .15s}
-.gplay:hover{transform:translateY(-2px)}
+.gplay{display:inline-flex;transition:transform .2s var(--ease)}
+.gplay:hover{transform:translateY(-3px)}
 .gplay img{height:52px;width:auto;display:block}
 .game-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
-.game-card{display:flex;gap:1.1rem;align-items:center;background:#fff;padding:1.1rem;border-left:4px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:10px;box-shadow:var(--shadow-sm)}
-.game-card:hover{border-color:var(--gm);transform:translateY(-3px)}
-.game-img{width:104px;height:104px;flex-shrink:0;border-radius:14px;object-fit:cover;box-shadow:0 2px 8px rgba(10,38,71,.12)}
-.game-icon{width:104px;height:104px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2.8rem;background:var(--cr);border-radius:14px}
+.game-card{position:relative;display:flex;gap:1.2rem;align-items:center;background:#fff;padding:1.15rem;border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden;transition:transform .28s var(--ease),box-shadow .28s var(--ease)}
+/* filo teal verticale a sinistra, si ispessisce all'hover */
+.game-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--grad-teal);transition:width .28s var(--ease)}
+.game-card:hover{transform:translateY(-5px);box-shadow:var(--sh-2)}
+.game-card:hover::before{width:7px}
+.game-card:hover .game-img{transform:scale(1.06)}
+.game-img{width:104px;height:104px;flex-shrink:0;border-radius:var(--r-sm);object-fit:cover;box-shadow:var(--sh-1);transition:transform .35s var(--ease)}
+.game-icon{width:104px;height:104px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2.8rem;background:var(--cr);border-radius:var(--r-sm)}
 .game-body{flex:1;min-width:0}
 .game-top{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.45rem}
-.game-card h3{font-size:1rem;font-weight:700;color:var(--g)}
+.game-card h3{font-size:1.05rem;font-weight:700;color:var(--g);letter-spacing:-.01em}
 .game-card p{font-size:var(--fs-sm);color:var(--gr);line-height:1.55}
-.game-tag{font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.18rem .5rem;border-radius:999px;background:var(--gm);color:#fff;white-space:nowrap;flex-shrink:0}
-.game-tag.tag-pro{background:var(--gl);color:var(--g)}
+.game-tag{font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.22rem .6rem;border-radius:var(--r-pill);background:var(--grad-teal);color:#fff;white-space:nowrap;flex-shrink:0}
+.game-tag.tag-pro{background:rgba(10,38,71,.07);color:var(--g)}
 
-/* SICUREZZA & ALLERGIE */
-.allerg-sec{background:var(--g);color:#fff}
+/* ---- SICUREZZA & ALLERGIE ---- */
+.allerg-sec{background:var(--grad-navy);color:#fff;overflow:hidden}
+.allerg-sec::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 15% 0%,rgba(244,162,97,.14) 0%,transparent 52%),radial-gradient(ellipse at 90% 100%,rgba(0,201,177,.16) 0%,transparent 55%);pointer-events:none}
+.allerg-sec>*{position:relative}
 .allerg-sec .eyebrow{color:var(--gl)}
 .allerg-sec .sec-title{color:#fff;max-width:100%}
-.allerg-lead{font-size:var(--fs-lg);line-height:1.85;color:var(--on-navy);max-width:780px;margin-top:1.1rem}
+.allerg-lead{font-size:var(--fs-lg);line-height:1.75;color:var(--on-navy);max-width:800px;margin-top:1.2rem}
 .allerg-lead strong{color:var(--gl);font-weight:700}
-.allerg-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.4rem}
-.allerg-step{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.6rem 1.5rem}
-.allerg-step-n{font-size:1.6rem;font-weight:800;color:var(--tc);line-height:1;margin-bottom:.5rem}
-.allerg-step h3{font-size:.98rem;font-weight:700;color:#fff;margin-bottom:.45rem}
-.allerg-step p{font-size:.88rem;line-height:1.65;color:var(--on-navy-soft)}
-.allerg-chips-wrap{margin-top:2.6rem}
-.allerg-chips-title{font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gl);margin-bottom:1rem}
+.allerg-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;margin-top:2.6rem}
+.allerg-step{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:var(--r-md);padding:1.7rem 1.6rem;transition:transform .28s var(--ease),background .28s var(--ease),border-color .28s var(--ease)}
+.allerg-step:hover{transform:translateY(-5px);background:rgba(255,255,255,.09);border-color:rgba(244,162,97,.35)}
+.allerg-step-n{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;font-size:.95rem;font-weight:800;color:var(--g);background:linear-gradient(135deg,var(--tc),#f7bc86);border-radius:var(--r-sm);line-height:1;margin-bottom:.9rem}
+.allerg-step h3{font-size:1rem;font-weight:700;color:#fff;margin-bottom:.45rem}
+.allerg-step p{font-size:.9rem;line-height:1.65;color:var(--on-navy-soft)}
+.allerg-chips-wrap{margin-top:2.8rem}
+.allerg-chips-title{font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gl);margin-bottom:1.1rem}
 .allerg-chips{display:flex;flex-wrap:wrap;gap:.6rem}
-.allerg-chip{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.06);border:1px solid rgba(0,168,150,.3);border-radius:999px;padding:.5rem .95rem;font-size:.86rem;font-weight:500;color:#fff}
+.allerg-chip{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.06);border:1px solid rgba(0,168,150,.3);border-radius:var(--r-pill);padding:.52rem 1rem;font-size:.87rem;font-weight:500;color:#fff;transition:background .22s var(--ease),border-color .22s var(--ease),transform .22s var(--ease)}
+.allerg-chip:hover{background:rgba(0,201,177,.16);border-color:var(--gl);transform:translateY(-2px)}
 .allerg-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gl);flex-shrink:0}
 /* «Il Coraggio di Agire» (riquadro emergenza) */
-.coraggio{display:grid;grid-template-columns:180px 1fr;gap:1.8rem;align-items:center;margin-top:2.4rem;background:rgba(244,162,97,.1);border:1px solid rgba(244,162,97,.35);border-left:4px solid var(--tc);border-radius:var(--r-lg);padding:1.5rem}
-.coraggio-img{width:180px;height:180px;border-radius:12px;display:block;object-fit:cover;flex-shrink:0}
-.coraggio-tag{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--tc);color:var(--g);padding:.28rem .65rem;border-radius:999px;margin-bottom:.8rem}
-.coraggio-h{font-size:1.35rem;font-weight:800;color:#fff;margin-bottom:.55rem}
-.coraggio-lead{font-size:.94rem;line-height:1.7;color:var(--on-navy);margin-bottom:1.2rem}
+.coraggio{display:grid;grid-template-columns:190px 1fr;gap:2rem;align-items:center;margin-top:2.8rem;background:linear-gradient(120deg,rgba(244,162,97,.16),rgba(244,162,97,.06));border:1px solid rgba(244,162,97,.32);border-left:4px solid var(--tc);border-radius:var(--r-lg);padding:1.8rem;box-shadow:var(--sh-dark)}
+.coraggio-img{width:190px;height:190px;border-radius:var(--r-md);display:block;object-fit:cover;flex-shrink:0;box-shadow:var(--sh-dark)}
+.coraggio-tag{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--tc);color:var(--g);padding:.3rem .7rem;border-radius:var(--r-pill);margin-bottom:.85rem}
+.coraggio-h{font-size:1.45rem;font-weight:800;color:#fff;margin-bottom:.6rem;letter-spacing:-.02em}
+.coraggio-lead{font-size:.96rem;line-height:1.7;color:var(--on-navy);margin-bottom:1.3rem}
 .coraggio-lead strong{color:var(--tc);font-weight:700}
-.coraggio-btn{display:inline-block;background:var(--tc);color:var(--g);font-weight:700;font-size:.88rem;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none;transition:transform .15s,background .2s}
-.coraggio-btn:hover{transform:translateY(-2px);background:#f6b277}
+.coraggio-btn{display:inline-block;background:var(--tc);color:var(--g);font-weight:700;font-size:.9rem;padding:.78rem 1.6rem;border-radius:var(--r-sm);text-decoration:none;transition:transform .22s var(--ease),box-shadow .22s var(--ease);box-shadow:0 6px 18px rgba(244,162,97,.3)}
+.coraggio-btn:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(244,162,97,.42)}
 
-/* IN CLASSE (foto pilota) */
-.field-sec{background:var(--cr)}
-.field-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2rem}
-.field-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(10,38,71,.08)}
-.field-card img{width:100%;aspect-ratio:4/3;height:auto;object-fit:cover;display:block}
-.field-cap{font-size:.86rem;color:var(--gr);padding:.85rem 1.05rem;line-height:1.5}
-.field-meta{margin-top:1.4rem;font-size:.9rem;color:var(--gr);line-height:1.75;max-width:760px}
+/* ---- IN CLASSE (foto pilota) ---- */
+.field-sec{background:linear-gradient(180deg,#E7F3F1 0%,var(--cr) 45%,var(--wh) 100%)}
+.field-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;margin-top:2.2rem}
+.field-card{background:#fff;border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-1);transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.field-card:hover{transform:translateY(-6px);box-shadow:var(--sh-2)}
+.field-card img{width:100%;aspect-ratio:4/3;height:auto;object-fit:cover;display:block;transition:transform .5s var(--ease)}
+.field-card:hover img{transform:scale(1.05)}
+.field-cap{font-size:.88rem;color:var(--gr);padding:.95rem 1.1rem;line-height:1.5}
+.field-meta{margin-top:1.6rem;font-size:.92rem;color:var(--gr);line-height:1.75;max-width:760px}
 .field-meta a{color:var(--gm);text-decoration:none;font-weight:600}
 .field-meta a:hover{text-decoration:underline}
-.field-credit{margin-top:1.9rem}
-.field-credit-lead{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gm);display:block;margin-bottom:.7rem}
-.field-educator{display:inline-flex;align-items:center;gap:.9rem;background:#fff;border:1px solid rgba(10,38,71,.08);border-radius:999px;padding:.55rem 1.3rem .55rem .55rem;box-shadow:0 4px 16px rgba(10,38,71,.07)}
-.ed-av{width:46px;height:46px;border-radius:50%;background:var(--gm);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;flex-shrink:0}
+.field-credit{margin-top:2rem}
+.field-credit-lead{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gm);display:block;margin-bottom:.8rem}
+.field-educator{display:inline-flex;align-items:center;gap:.9rem;background:#fff;border:1px solid rgba(10,38,71,.07);border-radius:var(--r-pill);padding:.55rem 1.4rem .55rem .55rem;box-shadow:var(--sh-1);transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
+.field-educator:hover{transform:translateY(-3px);box-shadow:var(--sh-2)}
+.ed-av{width:46px;height:46px;border-radius:50%;background:var(--grad-teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;flex-shrink:0;box-shadow:0 4px 12px rgba(0,168,150,.32)}
 .ed-txt{display:flex;flex-direction:column;line-height:1.3}
 .ed-name{font-size:.92rem;font-weight:700;color:var(--g)}
 .ed-role{font-size:.8rem;color:var(--gr)}
 
-/* TESTIMONIANZA */
-.quote-sec{background:#fff;text-align:center}
+/* ---- TESTIMONIANZA ---- */
+.quote-sec{background:linear-gradient(180deg,var(--wh) 0%,#fff 100%);text-align:center}
+.quote-sec .eyebrow{justify-content:center}
 .quote-sec .sec-title{margin:0 auto}
-.quote-box{max-width:760px;margin:1.6rem auto 0;background:var(--wh);border-radius:var(--r-lg);padding:2.4rem;box-shadow:var(--shadow-md);border-top:4px solid var(--gm)}
-.quote-text{font-size:1.05rem;line-height:1.8;color:var(--g);font-style:italic}
-.quote-author{font-size:.88rem;font-weight:700;color:var(--gm);margin-top:1.2rem;letter-spacing:.02em}
+.quote-box{position:relative;max-width:800px;margin:2rem auto 0;background:#fff;border-radius:var(--r-lg);padding:3rem 3.2rem 2.6rem;box-shadow:var(--sh-2)}
+/* virgolette decorative in filigrana */
+.quote-box::before{content:"\201C";position:absolute;top:-.15em;left:2rem;font-size:8rem;line-height:1;font-family:Georgia,serif;color:var(--gl);opacity:.16;pointer-events:none}
+.quote-box::after{content:"";position:absolute;top:0;left:15%;right:15%;height:4px;border-radius:0 0 4px 4px;background:var(--grad-teal)}
+.quote-text{position:relative;font-size:1.18rem;line-height:1.75;color:var(--g);font-style:italic;font-weight:500}
+.quote-author{font-size:.88rem;font-weight:700;color:var(--gm);margin-top:1.4rem;letter-spacing:.01em}
 
-/* TARGET */
-.target-sec{background:var(--wh)}
-.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem}
-.card{display:flex;flex-direction:column;background:#fff;padding:2rem;border-top:3px solid var(--gl);transition:border-color .2s,transform .2s;border-radius:0 0 10px 10px;box-shadow:0 2px 16px rgba(10,38,71,.06)}
-.card:hover{border-color:var(--gm);transform:translateY(-4px)}
-.card-icon{font-size:1.7rem;margin-bottom:.9rem;color:var(--gm)}
-.card h3{font-size:1.1rem;font-weight:700;color:var(--g);margin-bottom:.6rem}
+/* ---- TARGET ---- */
+.target-sec{background:linear-gradient(180deg,#fff 0%,var(--wh) 100%)}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.8rem}
+.card{position:relative;display:flex;flex-direction:column;background:#fff;padding:2.1rem;border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-teal);transform:scaleX(0);transform-origin:0 50%;transition:transform .4s var(--ease-out)}
+.card:hover{transform:translateY(-7px);box-shadow:var(--sh-2)}
+.card:hover::before{transform:scaleX(1)}
+/* icona dentro un quadrato smussato tinta teal */
+.card-icon{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;font-size:1.5rem;margin-bottom:1.1rem;color:var(--gm);background:rgba(0,168,150,.1);border-radius:var(--r-sm);transition:background .3s var(--ease),color .3s var(--ease)}
+.card:hover .card-icon{background:var(--grad-teal);color:#fff}
+.card h3{font-size:1.18rem;font-weight:700;color:var(--g);margin-bottom:.6rem;letter-spacing:-.015em}
 .card p{font-size:var(--fs-sm);line-height:1.7;color:var(--gr)}
-.card ul{font-size:.88rem;color:var(--gr);margin-top:.7rem;padding-left:1.1rem}
-.card ul li{margin-bottom:.35rem;line-height:1.5}
-.card-link{margin-top:auto;padding-top:1.1rem;font-size:.86rem;font-weight:700;color:var(--gm);text-decoration:none}
+.card ul{font-size:.9rem;color:var(--gr);margin-top:.9rem;padding-left:0;list-style:none}
+.card ul li{position:relative;margin-bottom:.45rem;line-height:1.5;padding-left:1.4rem}
+/* spunta al posto del pallino di lista */
+.card ul li::before{content:"";position:absolute;left:.15rem;top:.42em;width:.42rem;height:.7rem;border:solid var(--gm);border-width:0 2px 2px 0;transform:rotate(42deg)}
+.card-link{margin-top:auto;padding-top:1.3rem;font-size:.88rem;font-weight:700;color:var(--gm);text-decoration:none;transition:color .2s}
 .card-link:hover{color:var(--gl)}
 
-/* TEAM */
-#team{background:#fff}
-.ser-init{width:68px;height:68px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:var(--g);flex-shrink:0;overflow:hidden;border:3px solid rgba(255,255,255,.15)}
+/* ---- TEAM ---- */
+#team{background:var(--wh)}
+.ser-init{position:relative;width:84px;height:84px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:var(--g);flex-shrink:0;overflow:hidden;border:3px solid rgba(255,255,255,.9);box-shadow:var(--sh-1);transition:transform .3s var(--ease)}
+.team-card:hover .ser-init{transform:scale(1.05)}
 .ser-init img{width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:50%}
-.ser-name{font-size:1.05rem;font-weight:700;line-height:1.25}
-.ser-role{font-size:.8rem;color:var(--gl);margin-top:.25rem;letter-spacing:.03em}
-.ser-creds{margin-top:1.2rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
-.ser-cred{font-size:.8rem;padding:.5rem .7rem;background:rgba(255,255,255,.07);color:var(--on-navy);border-left:2px solid var(--gl);border-radius:0 4px 4px 0}
-.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin:2rem auto 0;max-width:1120px}
-.team-card{background:var(--g);color:#fff;padding:1.7rem 1.3rem;border-radius:var(--r-lg);align-self:start;text-align:center}
-.team-card-alt{background:var(--cr);color:var(--g)}
-.team-top{display:flex;flex-direction:column;gap:.7rem;align-items:center;margin-bottom:1rem}
-.team-card-alt .ser-init{background:var(--tc);color:#fff}
+.ser-name{font-size:1.08rem;font-weight:700;line-height:1.25;letter-spacing:-.015em}
+.ser-role{font-size:.8rem;color:var(--gl);margin-top:.3rem;letter-spacing:.02em;line-height:1.4}
+.ser-creds{margin-top:1.3rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
+.ser-cred{font-size:.81rem;line-height:1.45;padding:.55rem .75rem;background:rgba(255,255,255,.07);color:var(--on-navy);border-left:2px solid var(--gl);border-radius:0 var(--r-xs) var(--r-xs) 0}
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin:2.8rem auto 0;max-width:1200px}
+.team-card{position:relative;background:var(--grad-navy);color:#fff;padding:1.9rem 1.4rem;border-radius:var(--r-lg);align-self:start;text-align:center;box-shadow:var(--sh-2);overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.team-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-teal)}
+.team-card:hover{transform:translateY(-6px);box-shadow:var(--sh-3)}
+.team-card-alt{background:#fff;color:var(--g);border:1px solid rgba(10,38,71,.06)}
+.team-card-alt::before{background:linear-gradient(135deg,var(--tc),#f7bc86)}
+.team-top{display:flex;flex-direction:column;gap:.8rem;align-items:center;margin-bottom:1rem}
+.team-card-alt .ser-init{background:var(--tc);color:#fff;border-color:#fff}
 .team-card-alt .ser-name{color:var(--g)}
 .team-card-alt .ser-role{color:var(--gm)}
-.team-card-alt .ser-creds .ser-cred{background:rgba(10,38,71,.07);color:var(--g);border-left-color:var(--gm)}
-.team-bio{font-size:.9rem;line-height:1.8;margin-top:.9rem}
+.team-card-alt .ser-creds .ser-cred{background:rgba(10,38,71,.045);color:var(--g);border-left-color:var(--gm)}
+.team-bio{font-size:.9rem;line-height:1.75;margin-top:.9rem}
 .team-bio:first-child{margin-top:0}
 .team-card .team-bio{color:var(--on-navy-soft)}
 .team-card-alt .team-bio{color:var(--gr)}
@@ -393,28 +463,36 @@
 .team-bio-wrap.open{grid-template-rows:1fr}
 .team-bio-inner{overflow:hidden}
 
-/* FAQ */
-.faq-sec{background:var(--wh)}
-.faq-list{max-width:820px;margin:2rem auto 0;display:flex;flex-direction:column;gap:.8rem}
-.faq-item{background:#fff;border:1px solid rgba(10,38,71,.08);border-left:4px solid var(--gl);border-radius:12px;padding:0}
-.faq-q{display:flex;align-items:center;justify-content:space-between;gap:1rem;font-size:1rem;font-weight:700;color:var(--g);padding:1.15rem 1.6rem;cursor:pointer;list-style:none}
+/* ---- FAQ ---- */
+.faq-sec{background:linear-gradient(180deg,var(--wh) 0%,var(--cr) 100%)}
+.faq-list{max-width:840px;margin:2.4rem auto 0;display:flex;flex-direction:column;gap:.8rem}
+.faq-item{background:#fff;border:1px solid rgba(10,38,71,.07);border-radius:var(--r-sm);padding:0;overflow:hidden;box-shadow:var(--sh-1);transition:box-shadow .28s var(--ease),border-color .28s var(--ease)}
+.faq-item:hover{box-shadow:var(--sh-2)}
+.faq-item[open]{border-color:rgba(0,168,150,.3)}
+.faq-q{position:relative;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-size:1.02rem;font-weight:700;color:var(--g);padding:1.25rem 1.7rem;cursor:pointer;list-style:none;transition:color .2s}
 .faq-q::-webkit-details-marker{display:none}
-.faq-q .ic{color:var(--gm);transition:transform .3s;flex-shrink:0}
+/* barra teal a sinistra che compare quando la domanda è aperta */
+.faq-q::before{content:"";position:absolute;left:0;top:50%;height:0;width:3px;background:var(--grad-teal);transform:translateY(-50%);transition:height .3s var(--ease)}
+.faq-item[open] .faq-q::before{height:100%}
+.faq-q:hover{color:var(--gm)}
+.faq-q .ic{color:var(--gm);transition:transform .3s var(--ease);flex-shrink:0}
 .faq-item[open] .faq-q .ic{transform:rotate(180deg)}
-.faq-a{font-size:.95rem;line-height:1.7;color:var(--gr);padding:0 1.6rem 1.2rem}
+.faq-a{font-size:.97rem;line-height:1.75;color:var(--gr);padding:0 1.7rem 1.35rem}
 
-/* CONTACT */
-.contact-sec{background:var(--g);color:#fff}
+/* ---- CONTACT ---- */
+.contact-sec{background:var(--grad-navy);color:#fff;overflow:hidden}
+.contact-sec::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 80% 10%,rgba(0,201,177,.16) 0%,transparent 55%);pointer-events:none}
+.contact-sec>*{position:relative}
 .contact-sec .sec-title{color:#fff;max-width:100%}
 .contact-sec .eyebrow{color:var(--gl)}
-.contact-sec .desc{color:var(--on-navy-soft);margin-top:1rem;line-height:1.8;font-size:var(--fs-base);max-width:600px}
-.contact-mail{display:inline-flex;align-items:center;gap:.55rem;margin-top:1.2rem;color:var(--gl);text-decoration:none;font-size:1.05rem;font-weight:700;transition:opacity .2s}
-.contact-mail:hover{opacity:.75}
+.contact-sec .desc{color:var(--on-navy-soft);margin-top:1.1rem;line-height:1.75;font-size:var(--fs-base);max-width:620px}
+.contact-mail{display:inline-flex;align-items:center;gap:.6rem;margin-top:1.4rem;color:var(--gl);text-decoration:none;font-size:1.12rem;font-weight:700;transition:gap .2s var(--ease),opacity .2s}
+.contact-mail:hover{opacity:.8;gap:.85rem}
 .contact-mail .ic{width:18px;height:18px;flex-shrink:0}
-.contact-wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:1.5rem;margin-top:2.5rem;align-items:start}
+.contact-wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:1.5rem;margin-top:2.8rem;align-items:start}
 .contact-cards{display:flex;flex-direction:column;gap:1.5rem}
-.cc{background:rgba(255,255,255,.06);border:1px solid rgba(0,201,177,.2);border-radius:var(--r-lg);padding:1.8rem 2rem;transition:border-color .2s,background .2s}
-.cc:hover{background:rgba(255,255,255,.1);border-color:var(--gl)}
+.cc{background:rgba(255,255,255,.06);border:1px solid rgba(0,201,177,.2);border-radius:var(--r-lg);padding:1.9rem 2rem;transition:border-color .25s var(--ease),background .25s var(--ease),transform .25s var(--ease)}
+.cc:hover{background:rgba(255,255,255,.1);border-color:var(--gl);transform:translateY(-3px)}
 .cc-head{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem}
 .cc-name{font-size:.98rem;font-weight:700;color:#fff;line-height:1.2}
 .cc-role{font-size:.76rem;color:var(--gl);margin-top:.15rem;letter-spacing:.03em}
@@ -427,41 +505,70 @@
 .cc-social{font-size:.82rem;color:var(--on-navy-soft);text-decoration:none;display:inline-flex;align-items:center;gap:.35rem;transition:color .2s;font-weight:500}
 .cc-social:hover{color:var(--gl)}
 /* form contatti (mailto) */
-.cform{background:rgba(255,255,255,.06);border:1px solid rgba(0,201,177,.2);border-radius:var(--r-lg);padding:1.8rem 2rem;display:flex;flex-direction:column;gap:1rem}
-.cform-title{font-size:1.05rem;font-weight:700;color:#fff}
-.cform label{display:flex;flex-direction:column;gap:.4rem;font-size:.8rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--gl)}
-.cform input,.cform select,.cform textarea{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.95rem;padding:.7rem .9rem;width:100%}
+.cform{background:rgba(255,255,255,.06);border:1px solid rgba(0,201,177,.2);border-radius:var(--r-lg);padding:1.9rem 2rem;display:flex;flex-direction:column;gap:1rem}
+.cform-title{font-size:1.1rem;font-weight:700;color:#fff}
+.cform label{display:flex;flex-direction:column;gap:.45rem;font-size:.76rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gl)}
+.cform input,.cform select,.cform textarea{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:var(--r-xs);color:#fff;font-family:inherit;font-size:.97rem;padding:.8rem 1rem;width:100%;transition:border-color .22s var(--ease),background .22s var(--ease),box-shadow .22s var(--ease)}
+.cform input:hover,.cform select:hover,.cform textarea:hover{border-color:rgba(255,255,255,.3)}
+.cform input:focus,.cform select:focus,.cform textarea:focus{outline:none;border-color:var(--gl);background:rgba(255,255,255,.1);box-shadow:0 0 0 3px rgba(0,201,177,.2)}
 .cform select option{color:var(--g);background:#fff}
-.cform textarea{min-height:120px;resize:vertical}
+.cform textarea{min-height:128px;resize:vertical}
 .cform input::placeholder,.cform textarea::placeholder{color:rgba(255,255,255,.4)}
-.cform .btn-p{background:var(--gm);align-self:flex-start}
-.cform .btn-p:hover{background:var(--gl)}
-.cform-note{font-size:.78rem;color:rgba(255,255,255,.55)}
+.cform .btn-p{align-self:flex-start}
+.cform-note{font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.5}
 
-/* RESPONSIVE homepage */
-@media(max-width:980px){.team-grid{grid-template-columns:1fr;max-width:440px}}
+/* ---- RESPONSIVE homepage ---- */
+@media(max-width:1180px){
+  .team-grid{grid-template-columns:repeat(2,1fr);max-width:720px}
+  .hero-badge-1{left:-.6rem}
+  .hero-badge-2{right:-.6rem}
+}
+@media(max-width:980px){
+  .hero{gap:2.5rem}
+  .hero-seal{width:74px;height:74px;top:-1.1rem;right:-.6rem}
+}
 @media(max-width:860px){
-  .hero{grid-template-columns:1fr;padding:5.5rem 1.5rem 2.5rem;gap:2rem}
-  .hero-r{display:none}
-  .statband-sec{padding:1.8rem 1.2rem}
-  .statband{grid-template-columns:repeat(2,1fr);gap:1.1rem .6rem}
-  .statband-l{font-size:.76rem}
-  .chisiamo-grid{grid-template-columns:1fr;gap:2rem}
+  .hero{grid-template-columns:1fr;padding:6.5rem 1.5rem 3rem;gap:2.5rem}
+  /* su mobile la foto resta: è la prova che il programma esiste davvero */
+  .hero-r{display:flex}
+  .hero-visual{max-width:100%}
+  .hero-badge{animation:none}
+  .hero-badge-1{display:none}
+  .hero-badge-2{bottom:.9rem;right:.9rem;padding:.7rem .9rem}
+  .hero-seal{width:64px;height:64px;top:-1rem;right:-.4rem}
+  .statband-sec{padding:2.2rem 1.2rem}
+  .statband{grid-template-columns:repeat(2,1fr);gap:1.6rem .6rem}
+  .statband-item{padding:0}
+  .statband-item:nth-child(odd)::before{display:none}
+  .statband-l{font-size:.78rem}
+  .chisiamo-grid{grid-template-columns:1fr;gap:2.2rem}
   .steps{grid-template-columns:repeat(2,1fr)}
   .game-head{grid-template-columns:1fr;gap:2rem}
   .game-cards{grid-template-columns:1fr}
   .allerg-steps{grid-template-columns:1fr}
-  .coraggio{grid-template-columns:1fr;text-align:center}
+  .coraggio{grid-template-columns:1fr;text-align:center;padding:1.4rem}
   .coraggio-img{margin:0 auto}
   .field-grid{grid-template-columns:1fr}
-  .quote-box{padding:1.8rem 1.4rem}
+  .quote-box{padding:2.4rem 1.5rem 1.8rem}
+  .quote-box::before{left:.8rem;font-size:6rem}
+  .quote-text{font-size:1.06rem}
   .cards-grid{grid-template-columns:1fr}
+  .team-grid{grid-template-columns:1fr;max-width:440px}
   .contact-wrap{grid-template-columns:1fr}
+  .cc,.cform{padding:1.5rem 1.3rem}
 }
-@media(max-width:560px){.steps{grid-template-columns:1fr}}
+@media(max-width:560px){
+  .steps{grid-template-columns:1fr}
+  .game-card{flex-direction:column;align-items:flex-start;text-align:left}
+  .game-img,.game-icon{width:100%;height:150px}
+}
 </style>
+<!-- Il reveal allo scroll si attiva solo se il JS è disponibile: senza JS
+     (o con motion ridotto) i contenuti restano visibili da subito. -->
+<script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('js-reveal');</script>
 </head>
 <body>
+<div class="progress-bar" id="progressBar" aria-hidden="true"></div>
 
 <!-- Sprite icone SVG (sostituisce Font Awesome) -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
@@ -521,7 +628,7 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-l">
-    <p class="eyebrow" data-k="hero_eyebrow">Programa de Educación Alimentaria · Escuelas de Todos los Niveles</p>
+    <p class="eyebrow" data-reveal data-k="hero_eyebrow">Programa de Educación Alimentaria · Escuelas de Todos los Niveles</p>
     <h1 class="hero-title" data-k="hero_title">Mangiare Bene,<br><em>Crescere Meglio.</em></h1>
     <p class="hero-sub" data-k="hero_sub">Un recorrido estructurado en 6 módulos temáticos, diseñado por una Bióloga Nutricionista cualificada, que integra intervenciones presenciales, herramientas digitales interactivas y la participación activa de las familias. Dirigido a niños y jóvenes de 6 a 18 años.</p>
     <div class="hero-allergie"><span class="hero-allergie-dot"></span><span data-k="hero_allergie">Único juego con gestión personalizada de los 14 alérgenos UE</span></div>
@@ -532,7 +639,7 @@
     <a href="/locandina.pdf" target="_blank" rel="noopener" class="hero-dl" data-k="hero_dl">Descargar el folleto (PDF)</a>
   </div>
   <div class="hero-r">
-    <img class="hero-projlogo" src="/immagini/logo/logo3.webp" alt="Mangiare Bene, Crescere Meglio" width="1600" height="1600" fetchpriority="high">
+    <div class="hero-visual"><!-- @gen:hero-visual --><div class="hero-photo"><img src="/immagini/pilota/classe-gioco.webp" alt="Una clase del programa «Mangiare Bene, Crescere Meglio» con el juego «Il Piatto Sano» proyectado en la pizarra digital" width="1100" height="825" fetchpriority="high"></div><div class="hero-seal"><img src="/immagini/logo/logo3.webp" alt="" width="1600" height="1600"></div><div class="hero-badge hero-badge-1"><span class="hero-badge-ic"><svg class='ic' aria-hidden='true'><use href='#i-users'/></svg></span><span class="hero-badge-txt"><span class="hero-badge-n">~100 alumnos</span><span class="hero-badge-l">5 clases en el piloto 2026</span></span></div><div class="hero-badge hero-badge-2"><span class="hero-badge-ic"><svg class='ic' aria-hidden='true'><use href='#i-pill'/></svg></span><span class="hero-badge-txt"><span class="hero-badge-n">14 alérgenos UE</span><span class="hero-badge-l">gestionados para cada niño</span></span></div><!-- @/gen:hero-visual --></div>
   </div>
 </section>
 
@@ -543,38 +650,38 @@
 
 <!-- NUMERI -->
 <section class="statband-sec">
-  <div class="statband"><!-- @gen:statband --><div class="statband-item"><div class="statband-n">6</div><div class="statband-l">módulos temáticos del programa — de la nutrición a las alergias</div></div><div class="statband-item"><div class="statband-n">14</div><div class="statband-l">alérgenos UE gestionados en la app «Il Piatto Sano»</div></div><div class="statband-item"><div class="statband-n">6–18</div><div class="statband-l">años — franja de edad a la que va dirigido el programa</div></div><div class="statband-item"><div class="statband-n">+117%</div><div class="statband-l">mejora media PRE/POST en los tests de consciencia alimentaria</div></div><!-- @/gen:statband --></div>
+  <div class="statband" data-reveal-stagger><!-- @gen:statband --><div class="statband-item"><div class="statband-n">6</div><div class="statband-l">módulos temáticos del programa — de la nutrición a las alergias</div></div><div class="statband-item"><div class="statband-n">14</div><div class="statband-l">alérgenos UE gestionados en la app «Il Piatto Sano»</div></div><div class="statband-item"><div class="statband-n">6–18</div><div class="statband-l">años — franja de edad a la que va dirigido el programa</div></div><div class="statband-item"><div class="statband-n">+117%</div><div class="statband-l">mejora media PRE/POST en los tests de consciencia alimentaria</div></div><!-- @/gen:statband --></div>
 </section>
 
 <!-- CHI SIAMO -->
 <section id="chisiamo" class="chisiamo-sec">
   <div class="chisiamo-grid">
-    <div class="chisiamo-text">
-      <p class="eyebrow" data-k="chi_eyebrow">Quiénes somos</p>
-      <h2 class="sec-title" data-k="chi_title">Qué es <em>S.A.N.E. Italia</em>.</h2>
+    <div class="chisiamo-text" data-reveal>
+      <p class="eyebrow" data-reveal data-k="chi_eyebrow">Quiénes somos</p>
+      <h2 class="sec-title" data-reveal data-k="chi_title">Qué es <em>S.A.N.E. Italia</em>.</h2>
       <p class="chisiamo-lead" data-k="chi_p1">S.A.N.E. Italia es una red de biólogos nutricionistas que lleva la educación alimentaria y la seguridad alimentaria a las escuelas. El nombre resume nuestros cuatro pilares: <strong>Seguridad</strong>, <strong>Alimentación</strong>, <strong>Nutrición</strong>, <strong>Educación</strong>.</p>
       <p class="chisiamo-lead" data-k="chi_p2">Bajo la dirección científica de la Dra. Serafina Cardaci, hemos desarrollado el programa «Mangiare Bene, Crescere Meglio» y el juego educativo «Il Piatto Sano», con un enfoque práctico, lúdico y medible. El primer piloto en el I.C. «Carducci–Fattori» de Rosignano Marittimo involucró a unos 100 estudiantes.</p>
     </div>
-    <div class="sane-band"><!-- @gen:sane-pillars --><div class="sane-pillar"><span class="sane-l">S</span><span class="sane-txt"><span class="sane-w">Seguridad</span><span class="sane-d">Seguridad alimentaria en el aula</span></span></div><div class="sane-pillar"><span class="sane-l">A</span><span class="sane-txt"><span class="sane-w">Alimentación</span><span class="sane-d">Hábitos correctos en la mesa</span></span></div><div class="sane-pillar"><span class="sane-l">N</span><span class="sane-txt"><span class="sane-w">Nutrición</span><span class="sane-d">Expertise de la Bióloga Nutricionista</span></span></div><div class="sane-pillar"><span class="sane-l">E</span><span class="sane-txt"><span class="sane-w">Educación</span><span class="sane-d">Método lúdico y medible</span></span></div><!-- @/gen:sane-pillars --></div>
+    <div class="sane-band" data-reveal><!-- @gen:sane-pillars --><div class="sane-pillar"><span class="sane-l">S</span><span class="sane-txt"><span class="sane-w">Seguridad</span><span class="sane-d">Seguridad alimentaria en el aula</span></span></div><div class="sane-pillar"><span class="sane-l">A</span><span class="sane-txt"><span class="sane-w">Alimentación</span><span class="sane-d">Hábitos correctos en la mesa</span></span></div><div class="sane-pillar"><span class="sane-l">N</span><span class="sane-txt"><span class="sane-w">Nutrición</span><span class="sane-d">Expertise de la Bióloga Nutricionista</span></span></div><div class="sane-pillar"><span class="sane-l">E</span><span class="sane-txt"><span class="sane-w">Educación</span><span class="sane-d">Método lúdico y medible</span></span></div><!-- @/gen:sane-pillars --></div>
   </div>
 </section>
 
 <!-- METHOD (i 6 moduli del programma) -->
 <section id="method" class="method-sec">
-  <p class="eyebrow" data-k="method_eyebrow">Los 6 módulos del programa</p>
-  <h2 class="sec-title" data-k="method_title">Un recorrido completo, <em>de la nutrición a la seguridad.</em></h2>
-  <div class="steps"><!-- @gen:steps --><div class="step" style="border-top:3px solid #00C9B1"><div class="step-n" style="color:#00C9B1">01</div><h3>Conocemos los Alimentos</h3><p>Descubrimos los grupos alimentarios, las propiedades nutricionales y cómo construir una alimentación equilibrada.</p></div><div class="step" style="border-top:3px solid #F4A261"><div class="step-n" style="color:#F4A261">02</div><h3>El Plato Equilibrado</h3><p>Las proporciones Harvard (½ fruta y verdura, ¼ cereales, ¼ proteínas), la variedad y la calidad en el plato diario — con la app «Il Piatto Sano».</p></div><div class="step" style="border-top:3px solid #4DA3FF"><div class="step-n" style="color:#4DA3FF">03</div><h3>Energía en Movimiento</h3><p>El vínculo entre alimentación, actividad física y bienestar: cómo el alimento se convierte en energía.</p></div><div class="step" style="border-top:3px solid #6BCB77"><div class="step-n" style="color:#6BCB77">04</div><h3>La Mochila de la Salud</h3><p>Qué llevar a la escuela, cómo hacer una compra consciente y leer las etiquetas de los alimentos.</p></div><div class="step" style="border-top:3px solid #B98CFF"><div class="step-n" style="color:#B98CFF">05</div><h3>Alimentación, Ambiente y Cultura</h3><p>Estacionalidad, cadena corta, tradiciones alimentarias e impacto ambiental de nuestras elecciones.</p></div><div class="step" style="border-top:3px solid #FF7B9C"><div class="step-n" style="color:#FF7B9C">06</div><h3>Alergias y Seguridad</h3><p>Reconocer los 14 alérgenos UE, gestionar las intolerancias con seguridad en la escuela y en familia.</p></div><!-- @/gen:steps --></div>
+  <p class="eyebrow" data-reveal data-k="method_eyebrow">Los 6 módulos del programa</p>
+  <h2 class="sec-title" data-reveal data-k="method_title">Un recorrido completo, <em>de la nutrición a la seguridad.</em></h2>
+  <div class="steps" data-reveal-stagger><!-- @gen:steps --><div class="step" style="--c:#00C9B1"><div class="step-n">01</div><h3>Conocemos los Alimentos</h3><p>Descubrimos los grupos alimentarios, las propiedades nutricionales y cómo construir una alimentación equilibrada.</p></div><div class="step" style="--c:#F4A261"><div class="step-n">02</div><h3>El Plato Equilibrado</h3><p>Las proporciones Harvard (½ fruta y verdura, ¼ cereales, ¼ proteínas), la variedad y la calidad en el plato diario — con la app «Il Piatto Sano».</p></div><div class="step" style="--c:#4DA3FF"><div class="step-n">03</div><h3>Energía en Movimiento</h3><p>El vínculo entre alimentación, actividad física y bienestar: cómo el alimento se convierte en energía.</p></div><div class="step" style="--c:#6BCB77"><div class="step-n">04</div><h3>La Mochila de la Salud</h3><p>Qué llevar a la escuela, cómo hacer una compra consciente y leer las etiquetas de los alimentos.</p></div><div class="step" style="--c:#B98CFF"><div class="step-n">05</div><h3>Alimentación, Ambiente y Cultura</h3><p>Estacionalidad, cadena corta, tradiciones alimentarias e impacto ambiental de nuestras elecciones.</p></div><div class="step" style="--c:#FF7B9C"><div class="step-n">06</div><h3>Alergias y Seguridad</h3><p>Reconocer los 14 alérgenos UE, gestionar las intolerancias con seguridad en la escuela y en familia.</p></div><!-- @/gen:steps --></div>
 </section>
 
 <!-- GAME -->
 <section id="game" class="game-sec">
   <div class="game-head">
     <div class="game-head-text">
-      <p class="eyebrow" data-k="game_eyebrow">La herramienta digital del programa</p>
-      <h2 class="sec-title" data-k="game_title">El juego <em>«Il Piatto Sano»</em> — 6 mini-juegos educativos.</h2>
+      <p class="eyebrow" data-reveal data-k="game_eyebrow">La herramienta digital del programa</p>
+      <h2 class="sec-title" data-reveal data-k="game_title">El juego <em>«Il Piatto Sano»</em> — 6 mini-juegos educativos.</h2>
       <p class="game-intro" data-k="game_sub">El corazón digital del programa «Mangiare Bene, Crescere Meglio»: un juego en la web, tablet, PDI y Android, guiado por la mascota Serafina. Multilingüe (IT/EN/ES), gestiona de forma personalizada los 14 alérgenos obligatorios de la UE para cada niño, con 2 niveles de dificultad y modo clase. Dos juegos son gratuitos; los demás son de pago.</p>
     </div>
-    <div class="game-head-visual">
+    <div class="game-head-visual" data-reveal>
       <img class="game-banner" src="/immagini/logo/logogioco.webp" alt="Il Piatto Sano" width="1376" height="768" loading="lazy">
       <div class="game-cta">
         <a href="https://gioco.sane-italia.it" target="_blank" rel="noopener" class="btn-p" data-k="hero_btn1">Prueba la app gratis</a>
@@ -584,20 +691,20 @@
       </div>
     </div>
   </div>
-  <div class="game-cards"><!-- @gen:game-cards --><div class="game-card"><img class="game-img" src="/immagini/carosello/piattosano.webp" alt="Il Piatto Sano" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Il Piatto Sano</h3><span class="game-tag">Gratis</span></div><p>Compón la comida equilibrada según el modelo de Harvard (½ fruta y verdura, ¼ cereales integrales, ¼ proteínas) respetando tus alergias</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/tempo.webp" alt="El Coraje de Actuar" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>El Coraje de Actuar</h3><span class="game-tag">Gratis</span></div><p>Historia interactiva sobre una reacción alérgica grave: elige qué hacer en una emergencia y entrénate en el uso del autoinyector (EpiPen, Jext, Emerade, Fastjekt) paso a paso</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/quiz.webp" alt="Quiz Alimentario" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Quiz Alimentario</h3><span class="game-tag tag-pro">Premium</span></div><p>Nutrición, alergias, desperdicio, mitos y estacionalidad con cronómetro, racha y power-ups</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/piramide.webp" alt="Pirámide Alimentaria" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Pirámide Alimentaria</h3><span class="game-tag tag-pro">Premium</span></div><p>La pirámide mediterránea y las pirámides alimentarias del mundo</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/stagioni.webp" alt="Estacionalidad" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Estacionalidad</h3><span class="game-tag tag-pro">Premium</span></div><p>Reconoce la fruta y la verdura de temporada</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/etichetta.webp" alt="Detective Etiquetas" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Detective Etiquetas</h3><span class="game-tag tag-pro">Premium</span></div><p>Lee las etiquetas y encuentra los alérgenos en negrita, luego asocia cada alimento a sus alérgenos en 3 niveles</p></div></div><!-- @/gen:game-cards --></div>
+  <div class="game-cards" data-reveal-stagger><!-- @gen:game-cards --><div class="game-card"><img class="game-img" src="/immagini/carosello/piattosano.webp" alt="Il Piatto Sano" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Il Piatto Sano</h3><span class="game-tag">Gratis</span></div><p>Compón la comida equilibrada según el modelo de Harvard (½ fruta y verdura, ¼ cereales integrales, ¼ proteínas) respetando tus alergias</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/tempo.webp" alt="El Coraje de Actuar" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>El Coraje de Actuar</h3><span class="game-tag">Gratis</span></div><p>Historia interactiva sobre una reacción alérgica grave: elige qué hacer en una emergencia y entrénate en el uso del autoinyector (EpiPen, Jext, Emerade, Fastjekt) paso a paso</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/quiz.webp" alt="Quiz Alimentario" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Quiz Alimentario</h3><span class="game-tag tag-pro">Premium</span></div><p>Nutrición, alergias, desperdicio, mitos y estacionalidad con cronómetro, racha y power-ups</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/piramide.webp" alt="Pirámide Alimentaria" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Pirámide Alimentaria</h3><span class="game-tag tag-pro">Premium</span></div><p>La pirámide mediterránea y las pirámides alimentarias del mundo</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/stagioni.webp" alt="Estacionalidad" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Estacionalidad</h3><span class="game-tag tag-pro">Premium</span></div><p>Reconoce la fruta y la verdura de temporada</p></div></div><div class="game-card"><img class="game-img" src="/immagini/carosello/etichetta.webp" alt="Detective Etiquetas" loading="lazy" width="104" height="104"><div class="game-body"><div class="game-top"><h3>Detective Etiquetas</h3><span class="game-tag tag-pro">Premium</span></div><p>Lee las etiquetas y encuentra los alérgenos en negrita, luego asocia cada alimento a sus alérgenos en 3 niveles</p></div></div><!-- @/gen:game-cards --></div>
 </section>
 
 <!-- SICUREZZA & ALLERGIE -->
 <section id="allergeni" class="allerg-sec">
-  <p class="eyebrow" data-k="allerg_eyebrow">Seguridad alimentaria · lo que nos hace únicos</p>
-  <h2 class="sec-title" data-k="allerg_title">Alergias: <em>nadie las gestiona como nosotros.</em></h2>
+  <p class="eyebrow" data-reveal data-k="allerg_eyebrow">Seguridad alimentaria · lo que nos hace únicos</p>
+  <h2 class="sec-title" data-reveal data-k="allerg_title">Alergias: <em>nadie las gestiona como nosotros.</em></h2>
   <p class="allerg-lead" data-k="allerg_lead">En Italia el <strong>6–8% de los niños</strong> sufre alergias alimentarias. No es un capricho ni una moda: es seguridad. Por eso «Il Piatto Sano» es el <strong>único juego educativo que gestiona de forma personalizada los 14 alérgenos obligatorios UE</strong> para cada niño.</p>
-  <div class="allerg-steps"><!-- @gen:allerg-steps --><div class="allerg-step"><div class="allerg-step-n">01</div><h3>Configuras el perfil</h3><p>Seleccionas las alergias e intolerancias del niño o de toda la clase.</p></div><div class="allerg-step"><div class="allerg-step-n">02</div><h3>El juego se adapta</h3><p>Los alimentos de riesgo se señalan y personalizan en tiempo real, con 2 niveles de dificultad.</p></div><div class="allerg-step"><div class="allerg-step-n">03</div><h3>Aprende con seguridad</h3><p>El niño reconoce los alérgenos en las etiquetas y aprende cómo actuar en una emergencia con el autoinyector.</p></div><!-- @/gen:allerg-steps --></div>
+  <div class="allerg-steps" data-reveal-stagger><!-- @gen:allerg-steps --><div class="allerg-step"><div class="allerg-step-n">01</div><h3>Configuras el perfil</h3><p>Seleccionas las alergias e intolerancias del niño o de toda la clase.</p></div><div class="allerg-step"><div class="allerg-step-n">02</div><h3>El juego se adapta</h3><p>Los alimentos de riesgo se señalan y personalizan en tiempo real, con 2 niveles de dificultad.</p></div><div class="allerg-step"><div class="allerg-step-n">03</div><h3>Aprende con seguridad</h3><p>El niño reconoce los alérgenos en las etiquetas y aprende cómo actuar en una emergencia con el autoinyector.</p></div><!-- @/gen:allerg-steps --></div>
   <div class="allerg-chips-wrap">
     <p class="allerg-chips-title" data-k="allerg_chips_title">Los 14 alérgenos obligatorios UE que gestiona la app</p>
-    <div class="allerg-chips"><!-- @gen:allerg-chips --><span class="allerg-chip">Gluten</span><span class="allerg-chip">Crustáceos</span><span class="allerg-chip">Huevos</span><span class="allerg-chip">Pescado</span><span class="allerg-chip">Cacahuetes</span><span class="allerg-chip">Soja</span><span class="allerg-chip">Leche</span><span class="allerg-chip">Frutos secos</span><span class="allerg-chip">Apio</span><span class="allerg-chip">Mostaza</span><span class="allerg-chip">Sésamo</span><span class="allerg-chip">Dióxido de azufre</span><span class="allerg-chip">Altramuces</span><span class="allerg-chip">Moluscos</span><!-- @/gen:allerg-chips --></div>
+    <div class="allerg-chips" data-reveal-stagger><!-- @gen:allerg-chips --><span class="allerg-chip">Gluten</span><span class="allerg-chip">Crustáceos</span><span class="allerg-chip">Huevos</span><span class="allerg-chip">Pescado</span><span class="allerg-chip">Cacahuetes</span><span class="allerg-chip">Soja</span><span class="allerg-chip">Leche</span><span class="allerg-chip">Frutos secos</span><span class="allerg-chip">Apio</span><span class="allerg-chip">Mostaza</span><span class="allerg-chip">Sésamo</span><span class="allerg-chip">Dióxido de azufre</span><span class="allerg-chip">Altramuces</span><span class="allerg-chip">Moluscos</span><!-- @/gen:allerg-chips --></div>
   </div>
-  <div class="coraggio">
+  <div class="coraggio" data-reveal>
     <img class="coraggio-img" src="/immagini/carosello/tempo.webp" alt="Il Coraggio di Agire — allenamento all'uso dell'autoiniettore" width="800" height="800" loading="lazy">
     <div class="coraggio-txt">
       <span class="coraggio-tag" data-k="coraggio_tag">Juego gratuito</span>
@@ -610,14 +717,14 @@
 
 <!-- IN CLASSE (foto pilota) -->
 <section class="field-sec">
-  <p class="eyebrow" data-k="field_eyebrow">Sobre el terreno · piloto 2026</p>
-  <h2 class="sec-title" data-k="field_title">El programa <em>en el aula.</em></h2>
-  <div class="field-grid">
+  <p class="eyebrow" data-reveal data-k="field_eyebrow">Sobre el terreno · piloto 2026</p>
+  <h2 class="sec-title" data-reveal data-k="field_title">El programa <em>en el aula.</em></h2>
+  <div class="field-grid" data-reveal-stagger>
     <figure class="field-card"><img src="/immagini/pilota/classe-gioco.webp" alt="Il gioco «Il Piatto Sano» proiettato alla LIM durante una lezione del programma S.A.N.E." loading="lazy"><figcaption class="field-cap" data-k="field_cap1">El juego «Il Piatto Sano» en la PDI durante una clase.</figcaption></figure>
     <figure class="field-card"><img src="/immagini/pilota/classe-allergie.webp" alt="Lezione sul modulo allergie alimentari e i 14 allergeni EU del programma S.A.N.E." loading="lazy"><figcaption class="field-cap" data-k="field_cap2">El módulo dedicado a las alergias y los 14 alérgenos UE.</figcaption></figure>
     <figure class="field-card"><img src="/immagini/pilota/classe-stampa.webp" alt="Il progetto pilota Mangiare Bene, Crescere Meglio sulla stampa locale" loading="lazy"><figcaption class="field-cap" data-k="field_cap3">El proyecto piloto en la prensa local.</figcaption></figure>
   </div>
-  <div class="field-credit">
+  <div class="field-credit" data-reveal>
     <span class="field-credit-lead" data-k="educator_lead">Clases del piloto impartidas por</span>
     <div class="field-educator">
       <div class="ed-av">SC</div>
@@ -632,9 +739,9 @@
 
 <!-- TESTIMONIANZA -->
 <section class="quote-sec">
-  <p class="eyebrow" data-k="quote_eyebrow">Las instituciones que nos respaldan</p>
-  <h2 class="sec-title" data-k="quote_title">Qué dicen de <em>S.A.N.E.</em></h2>
-  <div class="quote-box">
+  <p class="eyebrow" data-reveal data-k="quote_eyebrow">Las instituciones que nos respaldan</p>
+  <h2 class="sec-title" data-reveal data-k="quote_title">Qué dicen de <em>S.A.N.E.</em></h2>
+  <div class="quote-box" data-reveal>
     <p class="quote-text" data-k="quote_text">«Acogimos este proyecto porque alimentarse de la manera correcta es muy importante, especialmente para los chicos y las chicas.»</p>
     <div class="quote-author" data-k="quote_author">— Cristina Santinelli, Concejala de Políticas Educativas · Ayuntamiento de Rosignano Marittimo</div>
   </div>
@@ -642,16 +749,16 @@
 
 <!-- TARGET -->
 <section id="target" class="target-sec">
-  <p class="eyebrow" data-k="target_eyebrow">A quién nos dirigimos</p>
-  <h2 class="sec-title" data-k="target_title">Un programa que habla a todos.</h2>
-  <div class="cards-grid"><!-- @gen:cards-grid --><div class="card"><div class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-school"/></svg></div><h3>Escuelas e institutos</h3><p>Programa estructurado con gestión de alérgenos para cada estudiante, integrable en el currículo.</p><ul><li>Rutas para primaria, secundaria y superior</li><li>Gestión personalizada de alérgenos por clase</li><li>Formación docente incluida</li><li>Compatible con convocatorias MIUR</li></ul><a class="card-link" href="/scuole.html">Cómo adherirse →</a></div><div class="card"><div class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></div><h3>Familias</h3><p>Herramientas concretas para padres de niños con alergias e intolerancias, en sintonía con la escuela.</p><ul><li>Talleres sobre alergias y lectura de etiquetas</li><li>Acceso al juego «Il Piatto Sano»</li><li>Guías prácticas de compra segura</li><li>Apoyo de nutricionista certificado</li></ul><a class="card-link" href="#contact">Escríbenos →</a></div><div class="card"><div class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-microscope"/></svg></div><h3>Biólogos nutricionistas</h3><p>Red profesional certificada con herramientas operativas para llevar S.A.N.E. a tu territorio.</p><ul><li>Certificación S.A.N.E. Educator</li><li>Créditos ECM vía FNOB</li><li>Portal operativo dedicado</li><li>Apoyo comercial y marketing</li></ul><a class="card-link" href="/biologi.html">Únete a la red →</a></div><!-- @/gen:cards-grid --></div>
+  <p class="eyebrow" data-reveal data-k="target_eyebrow">A quién nos dirigimos</p>
+  <h2 class="sec-title" data-reveal data-k="target_title">Un programa que habla a todos.</h2>
+  <div class="cards-grid" data-reveal-stagger><!-- @gen:cards-grid --><div class="card"><div class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-school"/></svg></div><h3>Escuelas e institutos</h3><p>Programa estructurado con gestión de alérgenos para cada estudiante, integrable en el currículo.</p><ul><li>Rutas para primaria, secundaria y superior</li><li>Gestión personalizada de alérgenos por clase</li><li>Formación docente incluida</li><li>Compatible con convocatorias MIUR</li></ul><a class="card-link" href="/scuole.html">Cómo adherirse →</a></div><div class="card"><div class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></div><h3>Familias</h3><p>Herramientas concretas para padres de niños con alergias e intolerancias, en sintonía con la escuela.</p><ul><li>Talleres sobre alergias y lectura de etiquetas</li><li>Acceso al juego «Il Piatto Sano»</li><li>Guías prácticas de compra segura</li><li>Apoyo de nutricionista certificado</li></ul><a class="card-link" href="#contact">Escríbenos →</a></div><div class="card"><div class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-microscope"/></svg></div><h3>Biólogos nutricionistas</h3><p>Red profesional certificada con herramientas operativas para llevar S.A.N.E. a tu territorio.</p><ul><li>Certificación S.A.N.E. Educator</li><li>Créditos ECM vía FNOB</li><li>Portal operativo dedicado</li><li>Apoyo comercial y marketing</li></ul><a class="card-link" href="/biologi.html">Únete a la red →</a></div><!-- @/gen:cards-grid --></div>
 </section>
 
 <!-- TEAM (fondatori) -->
 <section id="team">
-  <p class="eyebrow" data-k="team_eyebrow">El equipo</p>
-  <h2 class="sec-title" data-k="team_title">Cuatro competencias, <em>una sola misión.</em></h2>
-  <div class="team-grid">
+  <p class="eyebrow" data-reveal data-k="team_eyebrow">El equipo</p>
+  <h2 class="sec-title" data-reveal data-k="team_title">Cuatro competencias, <em>una sola misión.</em></h2>
+  <div class="team-grid" data-reveal-stagger>
     <div class="team-card">
       <div class="team-top">
         <div class="ser-init">
@@ -713,19 +820,19 @@
 
 <!-- FAQ -->
 <section class="faq-sec">
-  <p class="eyebrow" data-k="faq_eyebrow">Preguntas frecuentes</p>
-  <h2 class="sec-title" data-k="faq_title">Respuestas a las dudas <em>más comunes.</em></h2>
-  <div class="faq-list"><!-- @gen:faq-list --><details class="faq-item"><summary class="faq-q">¿A quién va dirigido el programa S.A.N.E.?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">A todas las escuelas de cualquier nivel — primaria, secundaria y bachillerato — para niños y jóvenes de 6 a 18 años. Involucra activamente también a docentes y familias.</div></details><details class="faq-item"><summary class="faq-q">¿El juego «Il Piatto Sano» es gratuito?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">Sí. Dos de los seis mini-juegos son totalmente gratuitos (Il Piatto Sano y El Coraje de Actuar, con el entrenamiento en el uso del autoinyector). Los otros cuatro se desbloquean con un código. El juego está disponible en la web, tablet, PDI y Android, en italiano, español e inglés.</div></details><details class="faq-item"><summary class="faq-q">¿Cómo funciona la gestión de las alergias?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">La app gestiona de forma personalizada los 14 alérgenos obligatorios de la UE para cada niño, con dos niveles de dificultad y un modo clase pensado para la PDI.</div></details><details class="faq-item"><summary class="faq-q">¿Cuánto cuesta el programa?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">Hay dos fórmulas de adhesión: el «Kit Clase Il Piatto Sano», para trabajar de forma autónoma con el docente, y el «Programa SANE Completo» con la bióloga nutricionista en el aula. Los costes varían según el número de clases: escríbenos para un presupuesto a medida.</div></details><details class="faq-item"><summary class="faq-q">¿Se necesitan PDI o tablets en clase?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">No. El juego funciona en cualquier navegador, también desde smartphone u ordenador. La PDI es recomendable para el modo clase, pero no es imprescindible.</div></details><details class="faq-item"><summary class="faq-q">¿El programa es financiable?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">Sí: el programa es compatible con los fondos MIUR y con la Carta del Docente. Te ayudamos a encontrar la fórmula más adecuada al presupuesto de tu escuela.</div></details><details class="faq-item"><summary class="faq-q">¿Cómo puede adherirse mi escuela?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">Escríbenos desde la sección Contacto: te ponemos en contacto con un biólogo nutricionista certificado S.A.N.E. de tu territorio para diseñar el recorrido más adecuado para tu escuela.</div></details><!-- @/gen:faq-list --></div>
+  <p class="eyebrow" data-reveal data-k="faq_eyebrow">Preguntas frecuentes</p>
+  <h2 class="sec-title" data-reveal data-k="faq_title">Respuestas a las dudas <em>más comunes.</em></h2>
+  <div class="faq-list" data-reveal-stagger><!-- @gen:faq-list --><details class="faq-item"><summary class="faq-q">¿A quién va dirigido el programa S.A.N.E.?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">A todas las escuelas de cualquier nivel — primaria, secundaria y bachillerato — para niños y jóvenes de 6 a 18 años. Involucra activamente también a docentes y familias.</div></details><details class="faq-item"><summary class="faq-q">¿El juego «Il Piatto Sano» es gratuito?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">Sí. Dos de los seis mini-juegos son totalmente gratuitos (Il Piatto Sano y El Coraje de Actuar, con el entrenamiento en el uso del autoinyector). Los otros cuatro se desbloquean con un código. El juego está disponible en la web, tablet, PDI y Android, en italiano, español e inglés.</div></details><details class="faq-item"><summary class="faq-q">¿Cómo funciona la gestión de las alergias?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">La app gestiona de forma personalizada los 14 alérgenos obligatorios de la UE para cada niño, con dos niveles de dificultad y un modo clase pensado para la PDI.</div></details><details class="faq-item"><summary class="faq-q">¿Cuánto cuesta el programa?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">Hay dos fórmulas de adhesión: el «Kit Clase Il Piatto Sano», para trabajar de forma autónoma con el docente, y el «Programa SANE Completo» con la bióloga nutricionista en el aula. Los costes varían según el número de clases: escríbenos para un presupuesto a medida.</div></details><details class="faq-item"><summary class="faq-q">¿Se necesitan PDI o tablets en clase?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">No. El juego funciona en cualquier navegador, también desde smartphone u ordenador. La PDI es recomendable para el modo clase, pero no es imprescindible.</div></details><details class="faq-item"><summary class="faq-q">¿El programa es financiable?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">Sí: el programa es compatible con los fondos MIUR y con la Carta del Docente. Te ayudamos a encontrar la fórmula más adecuada al presupuesto de tu escuela.</div></details><details class="faq-item"><summary class="faq-q">¿Cómo puede adherirse mi escuela?<svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary><div class="faq-a">Escríbenos desde la sección Contacto: te ponemos en contacto con un biólogo nutricionista certificado S.A.N.E. de tu territorio para diseñar el recorrido más adecuado para tu escuela.</div></details><!-- @/gen:faq-list --></div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact" class="contact-sec">
-  <p class="eyebrow" data-k="contact_eyebrow">Contacto</p>
-  <h2 class="sec-title" data-k="contact_title">Lleva S.A.N.E. a tu <em>escuela</em> o territorio.</h2>
+  <p class="eyebrow" data-reveal data-k="contact_eyebrow">Contacto</p>
+  <h2 class="sec-title" data-reveal data-k="contact_title">Lleva S.A.N.E. a tu <em>escuela</em> o territorio.</h2>
   <p class="desc" data-k="contact_desc">¿Eres director escolar, biólogo nutricionista, padre de un niño con alergias o entidad local? Escríbenos.</p>
   <a class="contact-mail" href="mailto:info@sane-italia.it"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg>info@sane-italia.it</a>
   <div class="contact-wrap">
-    <form class="cform" id="contact-form">
+    <form class="cform" id="contact-form" data-reveal>
       <div class="cform-title" data-k="form_title">Escríbenos un mensaje</div>
       <label><span data-k="form_name">Nombre y apellidos</span><input type="text" id="cf-name" autocomplete="name" required></label>
       <label><span data-k="form_role">¿Quién eres?</span><select id="cf-role"><!-- @gen:form-roles --><option>Director escolar o docente</option><option>Padre / madre</option><option>Biólogo/a nutricionista</option><option>Entidad o institución</option><option>Otro</option><!-- @/gen:form-roles --></select></label>
@@ -733,7 +840,7 @@
       <button type="submit" class="btn-p" data-k="form_send">Enviar el mensaje</button>
       <p class="cform-note" data-k="form_note">El mensaje se abrirá en tu programa de correo, listo para enviar.</p>
     </form>
-    <div class="contact-cards"><!-- @gen:contact-cards --><div class="cc">
+    <div class="contact-cards" data-reveal><!-- @gen:contact-cards --><div class="cc">
         <div class="cc-head">
           <div><div class="cc-name">Dott.ssa Serafina Cardaci</div><div class="cc-role">Bióloga Nutricionista · Responsable Científica</div></div>
         </div>
@@ -813,6 +920,69 @@
 </footer>
 
 <script>
+// Reveal allo scroll + conteggio dei numeri + nav compatta + barra di lettura.
+// Tutto opzionale: se il JS non parte, la pagina resta perfettamente leggibile.
+(function(){
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- nav compatta + barra di avanzamento (un solo listener, in rAF) ---
+  const nav = document.querySelector('body > nav');
+  const bar = document.getElementById('progressBar');
+  let ticking = false;
+  function onScroll(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      if (nav) nav.classList.toggle('scrolled', y > 40);
+      if (bar) {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(y / max, 1) : 0) + ')';
+      }
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Senza IntersectionObserver (o con motion ridotto) si toglie la classe:
+  // i contenuti tornano visibili invece di restare nascosti per sempre.
+  if (reduced || !('IntersectionObserver' in window)) {
+    document.documentElement.classList.remove('js-reveal');
+    return;
+  }
+
+  // --- reveal degli elementi quando entrano nel viewport ---
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('is-in');
+      io.unobserve(e.target);
+      if (e.target.classList.contains('statband')) countUp(e.target);
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: .12 });
+  document.querySelectorAll('[data-reveal],[data-reveal-stagger]').forEach(el => io.observe(el));
+
+  // --- conteggio progressivo dei numeri della fascia statistiche ---
+  // Salta i valori con intervallo (es. «6–18»): animarli non avrebbe senso.
+  function countUp(band){
+    band.querySelectorAll('.statband-n').forEach(el => {
+      const raw = el.textContent.trim();
+      if (raw.includes('–') || raw.includes('-')) return;
+      const m = raw.match(/^(\D*)(\d+)(\D*)$/);
+      if (!m) return;
+      const [, pre, numStr, post] = m, target = +numStr, dur = 1400, t0 = performance.now();
+      function step(now){
+        const p = Math.min((now - t0) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3); // ease-out cubica
+        el.textContent = pre + Math.round(target * eased) + post;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      el.textContent = pre + '0' + post;
+      requestAnimationFrame(step);
+    });
+  }
+})();
 // Accordion bio del team
 document.querySelectorAll('.bio-toggle').forEach(btn => {
   btn.addEventListener('click', () => {

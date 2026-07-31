@@ -18,6 +18,11 @@ const T = {
     hero_sub: "Un percorso strutturato in 6 moduli tematici, progettato da una Biologa Nutrizionista qualificata, che integra interventi in presenza, strumenti digitali interattivi e coinvolgimento attivo delle famiglie. Rivolto a bambini e ragazzi dai 6 ai 18 anni.",
     hero_btn1: "Prova l'app gratuita", hero_btn2: "Parla con noi", hero_dl: "Scarica la locandina (PDF)",
     hero_allergie: "Unico gioco con gestione personalizzata dei 14 allergeni EU",
+    hero_photo_alt: "Una lezione del programma «Mangiare Bene, Crescere Meglio» con il gioco «Il Piatto Sano» proiettato alla LIM",
+    hero_badges: [
+      { icon: "users", n: "~100 studenti", l: "5 classi nel pilota 2026" },
+      { icon: "pill", n: "14 allergeni EU", l: "gestiti per ogni bambino" }
+    ],
     trust_lead: "Con il patrocinio di",
     patroni: ["Comune di Novi Ligure", "Ordine dei Biologi di Piemonte, Liguria e Valle d'Aosta"],
     stat1_label: "moduli tematici del programma — dalla nutrizione alle allergie",
@@ -153,6 +158,11 @@ const T = {
     hero_sub: "Un recorrido estructurado en 6 módulos temáticos, diseñado por una Bióloga Nutricionista cualificada, que integra intervenciones presenciales, herramientas digitales interactivas y la participación activa de las familias. Dirigido a niños y jóvenes de 6 a 18 años.",
     hero_btn1: "Prueba la app gratis", hero_btn2: "Habla con nosotros", hero_dl: "Descargar el folleto (PDF)",
     hero_allergie: "Único juego con gestión personalizada de los 14 alérgenos UE",
+    hero_photo_alt: "Una clase del programa «Mangiare Bene, Crescere Meglio» con el juego «Il Piatto Sano» proyectado en la pizarra digital",
+    hero_badges: [
+      { icon: "users", n: "~100 alumnos", l: "5 clases en el piloto 2026" },
+      { icon: "pill", n: "14 alérgenos UE", l: "gestionados para cada niño" }
+    ],
     trust_lead: "Con el patrocinio de",
     patroni: ["Comune di Novi Ligure", "Ordine dei Biologi di Piemonte, Liguria e Valle d'Aosta"],
     stat1_label: "módulos temáticos del programa — de la nutrición a las alergias",
@@ -288,6 +298,11 @@ const T = {
     hero_sub: "A structured path of 6 thematic modules, designed by a qualified Nutritionist Biologist, combining in-person sessions, interactive digital tools and active family involvement. For children and teens aged 6 to 18.",
     hero_btn1: "Try the app for free", hero_btn2: "Talk to us", hero_dl: "Download the brochure (PDF)",
     hero_allergie: "The only game with personalised management of the 14 EU allergens",
+    hero_photo_alt: "A «Mangiare Bene, Crescere Meglio» class with the «Il Piatto Sano» game on the interactive whiteboard",
+    hero_badges: [
+      { icon: "users", n: "~100 students", l: "5 classes in the 2026 pilot" },
+      { icon: "pill", n: "14 EU allergens", l: "managed for every child" }
+    ],
     trust_lead: "Under the patronage of",
     patroni: ["Comune di Novi Ligure", "Ordine dei Biologi di Piemonte, Liguria e Valle d'Aosta"],
     stat1_label: "thematic modules — from nutrition to allergy management",
@@ -423,6 +438,14 @@ const T = {
 const stepColors = ['#00C9B1', '#F4A261', '#4DA3FF', '#6BCB77', '#B98CFF', '#FF7B9C'];
 
 const TPL = {
+  // composizione dell'hero: foto del pilota, sigillo col logo, card flottanti
+  'hero-visual': t =>
+    `<div class="hero-photo"><img src="/immagini/pilota/classe-gioco.webp" alt="${t.hero_photo_alt}" width="1100" height="825" fetchpriority="high"></div>` +
+    `<div class="hero-seal"><img src="/immagini/logo/logo3.webp" alt="" width="1600" height="1600"></div>` +
+    t.hero_badges.map((b, i) =>
+      `<div class="hero-badge hero-badge-${i + 1}"><span class="hero-badge-ic">${ic(b.icon)}</span><span class="hero-badge-txt"><span class="hero-badge-n">${b.n}</span><span class="hero-badge-l">${b.l}</span></span></div>`
+    ).join(''),
+
   'trust-list': t =>
     `<span class="trust-lead">${t.trust_lead}</span>` +
     t.patroni.map(p => `<span class="trust-item">${p}</span>`).join(''),
@@ -438,9 +461,10 @@ const TPL = {
     `<div class="sane-pillar"><span class="sane-l">${a.l}</span><span class="sane-txt"><span class="sane-w">${a.w}</span><span class="sane-d">${a.d}</span></span></div>`
   ).join(''),
 
+  // il colore del modulo passa dal CSS custom property --c (bordo, numero, alone)
   'steps': t => t.steps.map((s, i) => {
     const c = stepColors[i % stepColors.length];
-    return `<div class="step" style="border-top:3px solid ${c}"><div class="step-n" style="color:${c}">${s.n}</div><h3>${s.t}</h3><p>${s.d}</p></div>`;
+    return `<div class="step" style="--c:${c}"><div class="step-n">${s.n}</div><h3>${s.t}</h3><p>${s.d}</p></div>`;
   }).join(''),
 
   'game-cards': t => t.games.map(g =>
