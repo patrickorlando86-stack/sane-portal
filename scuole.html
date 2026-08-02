@@ -45,123 +45,111 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <link rel="stylesheet" href="/css/site.css">
 <style>
-/* HERO */
-.page-hero{background:linear-gradient(135deg,var(--g) 0%,#0d3460 100%);padding:8rem var(--pad-x) 5rem;position:relative;overflow:hidden}
-.page-hero::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,150,.14) 0%,transparent 70%);top:-200px;right:-100px;pointer-events:none}
-.page-hero::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.08) 0%,transparent 70%);bottom:-100px;left:5%;pointer-events:none}
-.hero-inner{position:relative;z-index:2;max-width:760px}
-.page-hero .eyebrow{color:var(--gl)}
-.page-hero-title{font-family:'Inter',sans-serif;font-size:clamp(2.2rem,4vw,3.8rem);line-height:1.08;font-weight:800;color:#fff;margin-bottom:1.2rem}
-.page-hero-title em{font-style:normal;color:var(--gl)}
-.page-hero-sub{font-size:1.05rem;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:.9rem;line-height:1.5}
-.page-hero-desc{font-size:.95rem;color:var(--on-navy-soft);line-height:1.85;max-width:640px}
+/* ============ CSS specifico di scuole.html ============
+   Hero, fascia numeri, mappa, bottoni e fascia CTA vivono in
+   /css/site.css (blocco «pagine interne»): qui resta solo ciò
+   che è proprio di questa pagina. */
 
-/* STATS */
-.stats-sec{background:#fff;padding:3.5rem var(--pad-x)}
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
-.stat-card{background:var(--g);padding:2.2rem 2rem;border-radius:14px;text-align:center;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(0,201,177,.08);top:-30px;right:-30px;pointer-events:none}
-.stat-num{font-family:'Inter',sans-serif;font-size:3rem;font-weight:800;color:var(--gl);line-height:1;margin-bottom:.5rem}
-.stat-unit{font-size:1.2rem;font-weight:800;color:var(--gl)}
-.stat-label{font-size:.88rem;color:var(--on-navy-soft);line-height:1.5;font-weight:500}
-
-/* MAPPA */
-.map-sec{background:var(--cr);padding:4rem var(--pad-x)}
-.sec-desc{font-size:.95rem;color:var(--gr);margin-top:.8rem;margin-bottom:1.5rem;line-height:1.8;max-width:640px}
-.map-legend{display:flex;gap:1.5rem;margin-bottom:1.2rem;flex-wrap:wrap}
-.legend-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--g)}
-.legend-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.5)}
-.legend-dot.completo{background:#00A896;border-color:#007a6e}
-.legend-dot.kit{background:#3b82f6;border-color:#2563eb}
-.legend-dot.attivazione{background:#f59e0b;border-color:#d97706}
-#mappa-italia{width:100%;height:480px;border-radius:14px;border:1px solid rgba(10,38,71,.1);box-shadow:0 4px 24px rgba(10,38,71,.08)}
-.attivazione-box{margin-top:1.1rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;font-size:.82rem}
+/* ---- MAPPA ---- */
+.map-sec{background:linear-gradient(180deg,var(--cr) 0%,#fff 100%)}
+.legend-dot.completo{background:#00A896;box-shadow:0 0 0 3px rgba(0,168,150,.18)}
+.legend-dot.kit{background:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.18)}
+.legend-dot.attivazione{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.18)}
+.attivazione-box{margin-top:1.2rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;font-size:.83rem}
 .attivazione-label{font-weight:700;color:var(--g)}
 .attivazione-chips{display:inline-flex;gap:.5rem;flex-wrap:wrap}
-.attivazione-chip{display:inline-flex;align-items:center;gap:.3rem;background:rgba(245,158,11,.12);color:#b45309;border:1px solid rgba(245,158,11,.4);padding:.22rem .7rem;border-radius:999px;font-weight:600}
+.attivazione-chip{display:inline-flex;align-items:center;gap:.3rem;background:rgba(245,158,11,.12);color:#b45309;border:1px solid rgba(245,158,11,.4);padding:.28rem .8rem;border-radius:var(--r-pill);font-weight:600;transition:background .22s var(--ease),transform .22s var(--ease)}
+.attivazione-chip:hover{background:rgba(245,158,11,.2);transform:translateY(-2px)}
 
-/* SCUOLE GRID */
-.scuole-sec{padding:4rem var(--pad-x);background:#fff}
-.scuole-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
-.scuola-card{background:var(--wh);border-radius:12px;overflow:hidden;border:1px solid rgba(10,38,71,.08);box-shadow:0 2px 16px rgba(10,38,71,.05);transition:transform .2s,box-shadow .2s}
-.scuola-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(10,38,71,.12)}
-.scuola-badge{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .6rem;border-radius:20px;margin-bottom:.9rem}
-.scuola-badge.completo{background:var(--gm);color:#fff}
-.scuola-badge.kit{background:#3b82f6;color:#fff}
-.scuola-badge.attivazione{background:#f59e0b;color:#fff}
-.scuola-body{padding:1.4rem}
-.scuola-nome{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;color:var(--g);margin-bottom:.4rem;line-height:1.3}
-.scuola-luogo{font-size:.84rem;color:var(--gr);margin-bottom:.9rem}
-.scuola-meta{display:flex;flex-direction:column;gap:.3rem}
-.scuola-meta-row{font-size:.82rem;color:var(--gr);display:flex;align-items:center;gap:.4rem;line-height:1.4}
-.scuola-meta-row strong{color:var(--g);font-weight:600}
-.scuola-testimonianza{margin-top:1rem;padding:.9rem;background:var(--cr);border-left:3px solid var(--gm);border-radius:0 6px 6px 0;font-size:.86rem;color:var(--gr);line-height:1.6;font-style:italic}
+/* ---- SCUOLE DELLA RETE ---- */
+.scuole-sec{background:linear-gradient(180deg,#fff 0%,var(--wh) 100%)}
+.scuole-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.6rem}
+.scuola-card{position:relative;background:#fff;border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-1);transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.scuola-card:hover{transform:translateY(-7px);box-shadow:var(--sh-2)}
+.scuola-badge{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.26rem .7rem;border-radius:var(--r-pill);margin-bottom:.9rem;color:#fff}
+.scuola-badge.completo{background:var(--grad-teal)}
+.scuola-badge.kit{background:linear-gradient(135deg,#3b82f6,#60a5fa)}
+.scuola-badge.attivazione{background:linear-gradient(135deg,#f59e0b,#fbbf24)}
+.scuola-body{padding:1.6rem}
+.scuola-nome{font-size:1.02rem;font-weight:700;color:var(--g);margin-bottom:.35rem;line-height:1.3;letter-spacing:-.015em}
+.scuola-luogo{font-size:.84rem;color:var(--gr);margin-bottom:1rem}
+.scuola-meta{display:flex;flex-direction:column;gap:.35rem}
+.scuola-meta-row{font-size:.84rem;color:var(--gr);display:flex;align-items:center;gap:.45rem;line-height:1.45}
+.scuola-meta-row strong{color:var(--g);font-weight:700;font-variant-numeric:tabular-nums}
+/* testimonianza: stessa filigrana di virgolette della home */
+.scuola-testimonianza{position:relative;margin-top:1.2rem;padding:1.1rem 1.1rem 1rem 1.2rem;background:var(--cr);border-left:3px solid var(--gm);border-radius:0 var(--r-sm) var(--r-sm) 0;font-size:.87rem;color:var(--gr);line-height:1.65;font-style:italic}
+.scuola-testimonianza::before{content:"\201C";position:absolute;top:-.05em;right:.5rem;font-size:3.4rem;line-height:1;font-family:Georgia,serif;color:var(--gl);opacity:.2;pointer-events:none}
 
-/* COME ADERIRE */
-.aderire-sec{background:var(--g);padding:4.5rem var(--pad-x)}
-.aderire-sec .sec-title{color:#fff}
+/* ---- COME ADERIRE ---- */
+.aderire-sec{background:var(--grad-navy);color:#fff;overflow:hidden}
+.aderire-sec::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 85% 5%,rgba(0,201,177,.16) 0%,transparent 55%),radial-gradient(ellipse at 10% 95%,rgba(59,130,246,.12) 0%,transparent 55%);pointer-events:none}
+.aderire-sec>*{position:relative}
+.aderire-sec .sec-title{color:#fff;max-width:100%}
 .aderire-sec .eyebrow{color:var(--gl)}
-.aderire-intro{font-size:.98rem;color:var(--on-navy-soft);margin-top:.8rem;margin-bottom:2.5rem;line-height:1.8;max-width:620px}
-.aderire-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
-.aderire-card{background:rgba(255,255,255,.05);border:1px solid rgba(0,201,177,.2);border-radius:16px;padding:2.4rem;transition:border-color .2s,background .2s;display:flex;flex-direction:column}
-.aderire-card:hover{background:rgba(255,255,255,.08);border-color:var(--gl)}
-.aderire-card.kit-card{border-top:3px solid #3b82f6}
-.aderire-card.completo-card{border-top:3px solid var(--gm)}
-.aderire-icon{font-size:2.4rem;margin-bottom:1.2rem}
-.aderire-tipo{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem}
-.kit-card .aderire-tipo{color:#60a5fa}
-.completo-card .aderire-tipo{color:var(--gl)}
-.aderire-nome{font-family:'Inter',sans-serif;font-size:1.25rem;font-weight:700;color:#fff;margin-bottom:.8rem;line-height:1.25}
-.aderire-desc-card{font-size:.92rem;color:var(--on-navy-soft);line-height:1.75;margin-bottom:1.4rem}
-.aderire-include-title{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.7rem}
-.aderire-items{list-style:none;display:flex;flex-direction:column;gap:.45rem;margin-bottom:1.4rem}
-.aderire-items li{font-size:.88rem;color:var(--on-navy);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
-.aderire-items li::before{content:"✓";font-weight:700;font-size:.8rem;flex-shrink:0;margin-top:.05rem}
-.kit-card .aderire-items li::before{color:#60a5fa}
-.completo-card .aderire-items li::before{color:var(--gl)}
-.aderire-ideale{background:rgba(255,255,255,.06);border-radius:8px;padding:.8rem 1rem;font-size:.85rem;color:var(--on-navy-soft);line-height:1.55;margin-bottom:1.6rem}
+.aderire-intro{font-size:var(--fs-base);color:var(--on-navy-soft);margin-top:1.1rem;margin-bottom:2.8rem;line-height:1.8;max-width:640px}
+.aderire-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.aderire-card{--c:var(--gl);position:relative;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:var(--r-lg);padding:2.4rem;overflow:hidden;display:flex;flex-direction:column;transition:transform .3s var(--ease),background .3s var(--ease),border-color .3s var(--ease),box-shadow .3s var(--ease)}
+.aderire-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--c)}
+/* alone del colore della modalità, come sulle card dei 6 moduli */
+.aderire-card::after{content:"";position:absolute;top:-70%;left:50%;width:200%;height:140%;transform:translateX(-50%);background:radial-gradient(ellipse,var(--c) 0%,transparent 62%);opacity:0;transition:opacity .35s var(--ease);pointer-events:none}
+.aderire-card>*{position:relative}
+.aderire-card:hover{transform:translateY(-6px);background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.16);box-shadow:var(--sh-dark)}
+.aderire-card:hover::after{opacity:.13}
+.aderire-card.kit-card{--c:#60a5fa}
+.aderire-card.completo-card{--c:var(--gl)}
+.aderire-tipo{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.6rem;color:var(--c)}
+.aderire-nome{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:.8rem;line-height:1.2;letter-spacing:-.02em}
+.aderire-desc-card{font-size:.93rem;color:var(--on-navy-soft);line-height:1.75;margin-bottom:1.5rem}
+.aderire-include-title{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--c);margin-bottom:.8rem}
+.aderire-items{list-style:none;display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem}
+.aderire-items li{font-size:.89rem;color:var(--on-navy);display:flex;align-items:flex-start;gap:.55rem;line-height:1.5}
+.aderire-items li::before{content:"✓";font-weight:700;font-size:.8rem;flex-shrink:0;margin-top:.05rem;color:var(--c)}
+.aderire-ideale{background:rgba(255,255,255,.06);border-radius:var(--r-sm);padding:.9rem 1.1rem;font-size:.86rem;color:var(--on-navy-soft);line-height:1.6;margin-bottom:1.7rem}
 .aderire-ideale strong{color:var(--on-navy)}
-.aderire-cta{margin-top:auto;display:inline-block;text-align:center;padding:.75rem 1.5rem;border-radius:8px;font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;transition:all .2s}
-.kit-card .aderire-cta{background:#3b82f6;color:#fff}
-.kit-card .aderire-cta:hover{background:#2563eb;transform:translateY(-2px)}
-.completo-card .aderire-cta{background:var(--gm);color:#fff}
-.completo-card .aderire-cta:hover{background:var(--gl);transform:translateY(-2px)}
+.aderire-cta{position:relative;overflow:hidden;margin-top:auto;display:block;text-align:center;padding:.85rem 1.5rem;border-radius:var(--r-sm);font-size:.88rem;font-weight:700;letter-spacing:.01em;text-decoration:none;color:#fff;transition:transform .22s var(--ease),box-shadow .22s var(--ease)}
+.aderire-cta::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.32) 50%,transparent 70%);transform:translateX(-110%);transition:transform .7s var(--ease-out)}
+.aderire-cta:hover::after{transform:translateX(110%)}
+.aderire-cta:hover{transform:translateY(-3px)}
+.kit-card .aderire-cta{background:linear-gradient(135deg,#3b82f6,#60a5fa);box-shadow:0 8px 22px rgba(59,130,246,.32)}
+.kit-card .aderire-cta:hover{box-shadow:0 14px 34px rgba(59,130,246,.42)}
+.completo-card .aderire-cta{background:var(--grad-teal);box-shadow:var(--sh-teal)}
+.completo-card .aderire-cta:hover{box-shadow:0 14px 34px rgba(0,168,150,.4)}
 
-/* CTA FINALE */
-.cta-finale{background:linear-gradient(135deg,var(--gm) 0%,var(--gl) 100%);padding:4rem var(--pad-x);text-align:center}
-.cta-finale h2{font-family:'Inter',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:#fff;margin-bottom:1rem;line-height:1.2}
-.cta-finale p{font-size:.97rem;color:rgba(255,255,255,.85);margin-bottom:2rem;line-height:1.75;max-width:560px;margin-left:auto;margin-right:auto}
-.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-.btn-white{background:#fff;color:var(--g);padding:.85rem 2.2rem;font-size:.9rem;font-weight:700;letter-spacing:.04em;text-decoration:none;border-radius:8px;transition:all .2s;display:inline-block}
-.btn-white:hover{background:var(--cr);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15)}
-.btn-outline-white{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.6);padding:.82rem 2.2rem;font-size:.9rem;font-weight:700;letter-spacing:.04em;text-decoration:none;border-radius:8px;transition:all .2s;display:inline-block}
-.btn-outline-white:hover{border-color:#fff;background:rgba(255,255,255,.1);transform:translateY(-2px)}
-
-/* LEAFLET POPUP */
-.leaflet-popup-content-wrapper{border-radius:10px;box-shadow:0 4px 20px rgba(10,38,71,.2)}
+/* ---- LEAFLET ---- */
+.leaflet-popup-content-wrapper{border-radius:var(--r-sm);box-shadow:var(--sh-2)}
 .leaflet-popup-content{margin:14px 18px;font-family:'Inter',sans-serif}
-.popup-nome{font-size:.9rem;font-weight:700;color:var(--g);margin-bottom:.3rem;line-height:1.3}
+.popup-nome{font-size:.92rem;font-weight:700;color:var(--g);margin-bottom:.3rem;line-height:1.3}
 .popup-luogo{font-size:.75rem;color:var(--gr);margin-bottom:.5rem}
-.popup-badge{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .55rem;border-radius:20px;margin-bottom:.5rem}
-.popup-badge.completo{background:var(--gm);color:#fff}
-.popup-badge.kit{background:#3b82f6;color:#fff}
-.popup-badge.attivazione{background:#f59e0b;color:#fff}
-.popup-meta{font-size:.74rem;color:var(--gr);display:flex;flex-direction:column;gap:.2rem}
+.popup-badge{display:inline-block;font-size:.63rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .6rem;border-radius:var(--r-pill);margin-bottom:.5rem;color:#fff}
+.popup-badge.completo{background:var(--gm)}
+.popup-badge.kit{background:#3b82f6}
+.popup-badge.attivazione{background:#f59e0b}
+.popup-meta{font-size:.75rem;color:var(--gr);display:flex;flex-direction:column;gap:.2rem}
 .popup-meta span strong{color:var(--g)}
 
-/* RESPONSIVE */
-@media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}.scuole-grid{grid-template-columns:1fr 1fr}.aderire-grid{grid-template-columns:1fr}}
-@media(max-width:860px){
-  .page-hero{padding:6rem 1.5rem 3.5rem}
-  .stats-sec,.scuole-sec,.aderire-sec,.map-sec,.cta-finale{padding:2.5rem 1.5rem}
+/* ---- RESPONSIVE ---- */
+@media(max-width:900px){
+  .scuole-grid{grid-template-columns:1fr 1fr}
+  .aderire-grid{grid-template-columns:1fr}
 }
-@media(max-width:600px){.stats-grid{grid-template-columns:1fr}.scuole-grid{grid-template-columns:1fr}#mappa-italia{height:320px}}
+@media(max-width:860px){
+  .aderire-card{padding:1.7rem 1.4rem}
+}
+@media(max-width:600px){
+  .scuole-grid{grid-template-columns:1fr}
+}
 </style>
+<!-- Il reveal allo scroll si attiva solo se il JS è disponibile: senza JS
+     (o con motion ridotto) i contenuti restano visibili da subito. -->
+<script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('js-reveal');</script>
 </head>
 <body>
+<div class="progress-bar" id="progressBar" aria-hidden="true"></div>
 
 <!-- Sprite icone SVG -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-school" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/><path d="M22 10v6"/></symbol>
+  <symbol id="i-gamepad" viewBox="0 0 24 24"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect x="2" y="6" width="20" height="12" rx="2"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
   <symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
@@ -178,6 +166,7 @@
     <li><a href="index.html#chisiamo" data-k="nav0"></a></li>
     <li><a href="index.html#method" data-k="nav1"></a></li>
     <li><a href="index.html#game" data-k="nav2"></a></li>
+    <li><a href="index.html#team" data-k="nav5"></a></li>
     <li><a href="scuole.html" class="current" data-k="nav3"></a></li>
     <li><a href="biologi.html" data-k="nav4"></a></li>
   </ul>
@@ -199,19 +188,33 @@
 
 <!-- HERO -->
 <section class="page-hero">
-  <div class="hero-inner">
+  <div class="page-hero-l">
     <p class="eyebrow" data-k="hero_eyebrow"></p>
     <h1 class="page-hero-title" data-k="hero_title"></h1>
     <p class="page-hero-sub" data-k="hero_sub"></p>
     <p class="page-hero-desc" data-k="hero_desc"></p>
   </div>
+  <div class="page-hero-r">
+    <div class="ph-visual">
+      <div class="ph-photo"><img id="hero-photo" src="/immagini/pilota/classe-gioco.webp" alt="" width="1100" height="825" fetchpriority="high"></div>
+      <div class="ph-seal"><img src="/immagini/logo/logo3.webp" alt="" width="1600" height="1600"></div>
+      <div class="ph-badge ph-badge-1">
+        <span class="ph-badge-ic"><svg class="ic" aria-hidden="true"><use href="#i-school"/></svg></span>
+        <span class="ph-badge-txt"><span class="ph-badge-n" data-k="hero_badge1_n"></span><span class="ph-badge-l" data-k="hero_badge1_l"></span></span>
+      </div>
+      <div class="ph-badge ph-badge-2">
+        <span class="ph-badge-ic"><svg class="ic" aria-hidden="true"><use href="#i-gamepad"/></svg></span>
+        <span class="ph-badge-txt"><span class="ph-badge-n" data-k="hero_badge2_n"></span><span class="ph-badge-l" data-k="hero_badge2_l"></span></span>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- STATISTICHE -->
 <section class="stats-sec">
-  <p class="eyebrow" data-k="stats_eyebrow"></p>
-  <h2 class="sec-title" data-k="stats_title"></h2>
-  <div class="stats-grid">
+  <p class="eyebrow" data-reveal data-k="stats_eyebrow"></p>
+  <h2 class="sec-title" data-reveal data-k="stats_title"></h2>
+  <div class="stats-grid" data-reveal-stagger>
     <div class="stat-card">
       <div class="stat-num" id="counter-scuole">0</div>
       <div class="stat-label" data-k="stat1_label"></div>
@@ -229,15 +232,15 @@
 
 <!-- MAPPA -->
 <section class="map-sec">
-  <p class="eyebrow" data-k="map_eyebrow"></p>
-  <h2 class="sec-title" data-k="map_title"></h2>
+  <p class="eyebrow" data-reveal data-k="map_eyebrow"></p>
+  <h2 class="sec-title" data-reveal data-k="map_title"></h2>
   <p class="sec-desc" data-k="map_desc"></p>
-  <div class="map-legend">
+  <div class="map-legend" data-reveal-stagger>
     <div class="legend-item"><div class="legend-dot completo"></div> <span data-k="legend_completo"></span></div>
     <div class="legend-item"><div class="legend-dot kit"></div> <span data-k="legend_kit"></span></div>
     <div class="legend-item"><div class="legend-dot attivazione"></div> <span data-k="legend_attivazione"></span></div>
   </div>
-  <div id="mappa-italia"></div>
+  <div id="mappa-italia" class="map-frame"></div>
   <div class="attivazione-box">
     <span class="attivazione-label" data-k="attivazione_titolo"></span>
     <span id="citta-attivazione" class="attivazione-chips"></span>
@@ -246,24 +249,24 @@
 
 <!-- LISTA SCUOLE -->
 <section class="scuole-sec">
-  <p class="eyebrow" data-k="scuole_eyebrow"></p>
-  <h2 class="sec-title" data-k="scuole_title"></h2>
-  <div class="scuole-grid" id="scuole-grid"></div>
+  <p class="eyebrow" data-reveal data-k="scuole_eyebrow"></p>
+  <h2 class="sec-title" data-reveal data-k="scuole_title"></h2>
+  <div class="scuole-grid" id="scuole-grid" data-reveal-stagger></div>
 </section>
 
 <!-- COME ADERIRE -->
 <section class="aderire-sec">
-  <p class="eyebrow" data-k="aderire_eyebrow"></p>
-  <h2 class="sec-title" data-k="aderire_title"></h2>
+  <p class="eyebrow" data-reveal data-k="aderire_eyebrow"></p>
+  <h2 class="sec-title" data-reveal data-k="aderire_title"></h2>
   <p class="aderire-intro" data-k="aderire_desc"></p>
-  <div class="aderire-grid" id="aderire-grid"></div>
+  <div class="aderire-grid" id="aderire-grid" data-reveal-stagger></div>
 </section>
 
 <!-- CTA FINALE -->
-<section class="cta-finale">
-  <h2 data-k="cta_title"></h2>
-  <p data-k="cta_desc"></p>
-  <div class="cta-btns">
+<section class="cta-band">
+  <h2 data-reveal data-k="cta_title"></h2>
+  <p data-reveal data-k="cta_desc"></p>
+  <div class="cta-btns" data-reveal>
     <a id="cta-btn1" href="#" class="btn-white" data-k="cta_btn1"></a>
     <a href="index.html#contact" class="btn-outline-white" data-k="cta_btn2"></a>
   </div>
@@ -367,12 +370,17 @@ const cittaAttivazione = [
 // =====================
 const T = {
   it: {
-    nav: ["Chi siamo", "Il programma", "Il gioco", "Scuole Aderenti", "I Biologi"],
+    nav: ["Chi siamo", "Il programma", "Il gioco", "Scuole Aderenti", "I Biologi", "Il team"],
     nav_cta: "Contattaci",
     hero_eyebrow: "Rete nazionale S.A.N.E. Italia · Educazione Alimentare",
     hero_title: "Il SANE <em>in Italia</em>",
     hero_sub: "Le scuole che hanno scelto di portare l'educazione alimentare in classe",
     hero_desc: "Un numero crescente di istituti scolastici italiani ha scelto di aderire alla rete S.A.N.E. Italia, portando ai propri studenti un percorso di educazione alimentare scientificamente validato. Ogni scuola contribuisce a costruire una generazione piu consapevole delle proprie scelte a tavola.",
+    hero_photo_alt: "Una classe della rete S.A.N.E. durante una lezione con il gioco «Il Piatto Sano» alla LIM",
+    hero_badge1_n: "Marzo–aprile 2026",
+    hero_badge1_l: "primo pilota in classe",
+    hero_badge2_n: "«Il Piatto Sano»",
+    hero_badge2_l: "in ogni percorso, kit o completo",
     stats_eyebrow: "I numeri della rete",
     stats_title: "L'impatto <em>misurabile</em> del programma nelle scuole italiane.",
     stat1_label: "scuola aderente alla rete S.A.N.E. Italia",
@@ -466,12 +474,17 @@ const T = {
     ft_gioco_link: "Gioca a «Il Piatto Sano»"
   },
   es: {
-    nav: ["Quienes somos", "El programa", "El juego", "Escuelas Adheridas", "Los Biologos"],
+    nav: ["Quienes somos", "El programa", "El juego", "Escuelas Adheridas", "Los Biologos", "El equipo"],
     nav_cta: "Contactanos",
     hero_eyebrow: "Red nacional S.A.N.E. Italia · Educacion Alimentaria",
     hero_title: "El SANE <em>en Italia</em>",
     hero_sub: "Las escuelas que han elegido llevar la educacion alimentaria al aula",
     hero_desc: "Un numero creciente de centros escolares italianos ha elegido adherirse a la red S.A.N.E. Italia, ofreciendo a sus estudiantes un recorrido de educacion alimentaria validado cientificamente. Cada escuela contribuye a construir una generacion mas consciente de sus elecciones en la mesa.",
+    hero_photo_alt: "Una clase de la red S.A.N.E. durante una leccion con el juego «Il Piatto Sano» en la pizarra digital",
+    hero_badge1_n: "Marzo–abril 2026",
+    hero_badge1_l: "primer piloto en el aula",
+    hero_badge2_n: "«Il Piatto Sano»",
+    hero_badge2_l: "en cada recorrido, kit o completo",
     stats_eyebrow: "Los numeros de la red",
     stats_title: "El impacto <em>medible</em> del programa en las escuelas italianas.",
     stat1_label: "escuela adherida a la red S.A.N.E. Italia",
@@ -565,12 +578,17 @@ const T = {
     ft_gioco_link: "Juega a «Il Piatto Sano»"
   },
   en: {
-    nav: ["Who we are", "The programme", "The game", "Partner Schools", "The Biologists"],
+    nav: ["Who we are", "The programme", "The game", "Partner Schools", "The Biologists", "The team"],
     nav_cta: "Contact us",
     hero_eyebrow: "S.A.N.E. Italia National Network · Food Education",
     hero_title: "S.A.N.E. <em>in Italy</em>",
     hero_sub: "The schools that have chosen to bring food education into the classroom",
     hero_desc: "A growing number of Italian schools have joined the S.A.N.E. Italia network, offering their students a scientifically validated food education programme. Each school contributes to building a generation more aware of their food choices.",
+    hero_photo_alt: "A class in the S.A.N.E. network during a lesson with the «Il Piatto Sano» game on the whiteboard",
+    hero_badge1_n: "March–April 2026",
+    hero_badge1_l: "first classroom pilot",
+    hero_badge2_n: "«Il Piatto Sano»",
+    hero_badge2_l: "in every pathway, kit or full",
     stats_eyebrow: "The network in numbers",
     stats_title: "The <em>measurable</em> impact of the programme in Italian schools.",
     stat1_label: "school part of the S.A.N.E. Italia network",
@@ -843,6 +861,7 @@ function render(l) {
   );
 
   document.getElementById('cta-btn1').href = t.cta_btn1_href;
+  document.getElementById('hero-photo').alt = t.hero_photo_alt;
 
   renderScuole(t);
   renderAderire(t);
@@ -866,6 +885,48 @@ function setLang(l) { render(l); }
 })();
 
 render('it');
+
+// Movimento: nav compatta, barra di lettura e reveal allo scroll — come
+// sulla home. Tutto opzionale: se il JS non parte (o con motion ridotto)
+// la pagina resta perfettamente leggibile.
+(function(){
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const nav = document.querySelector('body > nav');
+  const bar = document.getElementById('progressBar');
+  let ticking = false;
+  function onScroll(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      if (nav) nav.classList.toggle('scrolled', y > 40);
+      if (bar) {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(y / max, 1) : 0) + ')';
+      }
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Senza IntersectionObserver (o con motion ridotto) si toglie la classe:
+  // i contenuti tornano visibili invece di restare nascosti per sempre.
+  if (reduced || !('IntersectionObserver' in window)) {
+    document.documentElement.classList.remove('js-reveal');
+    return;
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('is-in');
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: .12 });
+  document.querySelectorAll('[data-reveal],[data-reveal-stagger]').forEach(el => io.observe(el));
+})();
 </script>
 </body>
 </html>
