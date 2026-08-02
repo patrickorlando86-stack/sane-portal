@@ -50,12 +50,8 @@
 .page-hero{background:var(--grad-navy);padding:9.5rem var(--pad-x) 6rem;position:relative;overflow:hidden}
 .page-hero::before{content:'';position:absolute;width:640px;height:640px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.2) 0%,transparent 68%);top:-220px;right:-120px;pointer-events:none}
 .page-hero::after{content:'';position:absolute;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle,rgba(244,162,97,.12) 0%,transparent 68%);bottom:-140px;left:2%;pointer-events:none}
-.page-hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.5fr .9fr;gap:3.5rem;align-items:center;max-width:1180px}
+.page-hero-grid{position:relative;z-index:2;max-width:1180px}
 .hero-inner{max-width:780px}
-.hero-visual{display:flex;justify-content:center}
-.hero-visual-card{background:#fff;border-radius:var(--r-lg);padding:2rem 2.2rem;box-shadow:var(--sh-dark);animation:float 7s var(--ease-out) infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
-.hero-visual-card img{width:100%;max-width:210px;height:auto;display:block}
 .page-hero .eyebrow{color:var(--gl)}
 .page-hero-title{font-size:clamp(2.3rem,4.4vw,4rem);line-height:1.06;font-weight:800;letter-spacing:-.032em;color:#fff;margin-bottom:1.3rem}
 .page-hero-title em{font-style:normal;background:linear-gradient(100deg,var(--gl) 0%,#3FD9C4 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--gl)}
@@ -137,8 +133,6 @@
 @media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}.candidatura-inner{grid-template-columns:1fr;gap:2.5rem}.biologi-cols{grid-template-columns:1fr;gap:2rem}}
 @media(max-width:860px){
   .page-hero{padding:7rem 1.5rem 4rem}
-  .page-hero-grid{grid-template-columns:1fr}
-  .hero-visual{display:none}
   .stats-sec,.biologi-sec,.map-sec,.candidatura-sec,.cta-scuole-sec{padding:3.4rem 1.5rem}
   .candidatura-card{padding:1.7rem}
   .stat-num{font-size:2.6rem}
@@ -197,11 +191,6 @@
       <h1 class="page-hero-title" data-k="hero_title"></h1>
       <p class="page-hero-sub" data-k="hero_sub"></p>
       <p class="page-hero-desc" data-k="hero_desc"></p>
-    </div>
-    <div class="hero-visual">
-      <div class="hero-visual-card">
-        <img src="/immagini/logo/logo2.webp" alt="S.A.N.E. Italia">
-      </div>
     </div>
   </div>
 </section>
