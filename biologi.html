@@ -19,6 +19,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-T5V2HS6D0R"></script>
 <script defer src="/js/consent.js"></script>
 <script defer src="/js/ga-events.js"></script>
+<script defer src="/js/ui.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>I Biologi S.A.N.E. | S.A.N.E. Italia — Rete Biologi Nutrizionisti</title>
@@ -46,102 +47,110 @@
 <link rel="stylesheet" href="/css/site.css">
 <style>
 /* HERO */
-.page-hero{background:linear-gradient(135deg,var(--g) 0%,#0d3460 100%);padding:8rem var(--pad-x) 5rem;position:relative;overflow:hidden}
-.page-hero::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,168,150,.14) 0%,transparent 70%);top:-200px;right:-100px;pointer-events:none}
-.page-hero::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.08) 0%,transparent 70%);bottom:-100px;left:5%;pointer-events:none}
-.page-hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.5fr .9fr;gap:3rem;align-items:center;max-width:1180px}
-.hero-inner{max-width:760px}
+.page-hero{background:var(--grad-navy);padding:9.5rem var(--pad-x) 6rem;position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;width:640px;height:640px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.2) 0%,transparent 68%);top:-220px;right:-120px;pointer-events:none}
+.page-hero::after{content:'';position:absolute;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle,rgba(244,162,97,.12) 0%,transparent 68%);bottom:-140px;left:2%;pointer-events:none}
+.page-hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.5fr .9fr;gap:3.5rem;align-items:center;max-width:1180px}
+.hero-inner{max-width:780px}
 .hero-visual{display:flex;justify-content:center}
-.hero-visual-card{background:#fff;border-radius:24px;padding:1.8rem 2rem;box-shadow:0 18px 44px rgba(0,0,0,.28)}
+.hero-visual-card{background:#fff;border-radius:var(--r-lg);padding:2rem 2.2rem;box-shadow:var(--sh-dark);animation:float 7s var(--ease-out) infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 .hero-visual-card img{width:100%;max-width:210px;height:auto;display:block}
 .page-hero .eyebrow{color:var(--gl)}
-.page-hero-title{font-family:'Inter',sans-serif;font-size:clamp(2.2rem,4vw,3.8rem);line-height:1.08;font-weight:800;color:#fff;margin-bottom:1.2rem}
-.page-hero-title em{font-style:normal;color:var(--gl)}
-.page-hero-sub{font-size:1.05rem;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:.9rem;line-height:1.5}
-.page-hero-desc{font-size:.95rem;color:var(--on-navy-soft);line-height:1.85;max-width:640px}
+.page-hero-title{font-size:clamp(2.3rem,4.4vw,4rem);line-height:1.06;font-weight:800;letter-spacing:-.032em;color:#fff;margin-bottom:1.3rem}
+.page-hero-title em{font-style:normal;background:linear-gradient(100deg,var(--gl) 0%,#3FD9C4 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--gl)}
+.page-hero-sub{font-size:1.12rem;font-weight:600;color:rgba(255,255,255,.88);margin-bottom:1rem;line-height:1.55}
+.page-hero-desc{font-size:var(--fs-base);color:var(--on-navy-soft);line-height:1.8;max-width:660px}
+/* entrata scaglionata dell'hero: CSS puro, così non dipende dal JS */
+@keyframes heroIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.hero-inner>*{animation:heroIn .85s var(--ease-out) both}
+.hero-inner>*:nth-child(1){animation-delay:.04s}
+.hero-inner>*:nth-child(2){animation-delay:.12s}
+.hero-inner>*:nth-child(3){animation-delay:.2s}
+.hero-inner>*:nth-child(4){animation-delay:.28s}
 
 /* STATS */
-.stats-sec{background:#fff;padding:3.5rem var(--pad-x)}
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
-.stat-card{background:var(--g);padding:2.2rem 2rem;border-radius:14px;text-align:center;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(0,201,177,.08);top:-30px;right:-30px;pointer-events:none}
-.stat-num{font-family:'Inter',sans-serif;font-size:3rem;font-weight:800;color:var(--gl);line-height:1;margin-bottom:.5rem}
-.stat-label{font-size:.88rem;color:var(--on-navy-soft);line-height:1.5;font-weight:500}
+.stats-sec{background:linear-gradient(180deg,#fff 0%,var(--wh) 100%);padding:4.5rem var(--pad-x)}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.4rem}
+.stat-card{background:var(--grad-navy);padding:2.4rem 2rem;border-radius:var(--r-lg);text-align:center;position:relative;overflow:hidden;box-shadow:var(--sh-2);transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.stat-card::before{content:'';position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,177,.22) 0%,transparent 70%);top:-60px;right:-50px;pointer-events:none}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-teal)}
+.stat-card:hover{transform:translateY(-6px);box-shadow:var(--sh-3)}
+.stat-num{font-size:3.2rem;font-weight:800;line-height:1;margin-bottom:.55rem;letter-spacing:-.035em;font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#fff 0%,var(--gl) 130%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--gl);position:relative}
+.stat-label{font-size:.9rem;color:var(--on-navy-soft);line-height:1.5;font-weight:500;position:relative}
 
 /* SEZIONI */
-.sec-desc{font-size:.95rem;color:var(--gr);margin-top:.8rem;line-height:1.8;max-width:640px}
+.sec-desc{font-size:var(--fs-sm);color:var(--gr);margin-top:.9rem;line-height:1.8;max-width:660px}
 
 /* MAPPA */
-.map-sec{background:#fff;padding:4rem var(--pad-x)}
-.map-legend{display:flex;gap:1.5rem;margin:1.2rem 0;flex-wrap:wrap}
-.legend-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--g)}
-.legend-dot{width:14px;height:14px;border-radius:2px;flex-shrink:0}
+.map-sec{background:linear-gradient(180deg,var(--cr) 0%,#fff 100%);padding:5rem var(--pad-x)}
+.map-legend{display:flex;gap:1.5rem;margin:1.3rem 0;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:.55rem;font-size:.82rem;font-weight:600;color:var(--g)}
+.legend-dot{width:14px;height:14px;border-radius:4px;flex-shrink:0;box-shadow:var(--sh-1)}
 .legend-dot.attivo{background:var(--gm)}
 .legend-dot.espansione{background:#94a3b8}
-#mappa-biologi{width:100%;height:500px;border-radius:14px;border:1px solid rgba(10,38,71,.1);box-shadow:0 4px 24px rgba(10,38,71,.08)}
+#mappa-biologi{width:100%;height:520px;border-radius:var(--r-md);border:1px solid rgba(10,38,71,.08);box-shadow:var(--sh-2);overflow:hidden}
 
-/* BIOLOGI GRID */
-.biologi-sec{background:var(--cr);padding:4rem var(--pad-x)}
-.biologi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
-.biologo-card{background:var(--wh);border-radius:12px;overflow:hidden;border:1px solid rgba(10,38,71,.08);box-shadow:0 2px 16px rgba(10,38,71,.05);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column}
-.biologo-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(10,38,71,.12)}
-.biologo-top{background:linear-gradient(135deg,var(--g),#0d3460);padding:2rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.8rem}
-.biologo-avatar{width:72px;height:72px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:800;color:var(--g);overflow:hidden;border:3px solid rgba(255,255,255,.2)}
-.biologo-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:50%}
-.biologo-nome{font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;color:#fff;line-height:1.3}
-.biologo-titolo{font-size:.8rem;color:var(--gl);font-weight:500;letter-spacing:.03em}
-.biologo-body{padding:1.4rem;flex:1;display:flex;flex-direction:column;gap:.6rem}
-.biologo-ruolo{font-size:.82rem;font-weight:600;color:var(--g);line-height:1.4}
-.biologo-regione{font-size:.82rem;color:var(--gr);display:flex;align-items:center;gap:.4rem}
-.biologo-spec{font-size:.84rem;color:var(--gr);line-height:1.55;padding-top:.4rem;border-top:1px solid rgba(10,38,71,.07)}
-.cert-badge{display:inline-flex;align-items:center;gap:.35rem;background:rgba(0,168,150,.1);border:1px solid rgba(0,168,150,.25);color:var(--gm);font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .7rem;border-radius:20px;margin-top:auto;align-self:flex-start}
+/* LA RETE (testo + callout) */
+.biologi-sec{background:linear-gradient(180deg,var(--wh) 0%,var(--cr) 100%);padding:5rem var(--pad-x)}
 
 /* NOTA CONTATTI (callout) */
-.biologi-cols{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center;margin-top:1.5rem}
-.nota-box{background:rgba(0,168,150,.07);border:1px solid rgba(0,168,150,.22);border-left:4px solid var(--gm);border-radius:12px;padding:1.6rem 2rem}
+.biologi-cols{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center;margin-top:1.6rem}
+.nota-box{background:rgba(0,168,150,.07);border:1px solid rgba(0,168,150,.2);border-left:4px solid var(--gm);border-radius:var(--r-sm);padding:1.7rem 2rem;box-shadow:var(--sh-1)}
 .biologi-cols .nota-box{align-self:center}
-.nota-text{font-size:.95rem;color:var(--gr);line-height:1.8}
+.nota-text{font-size:var(--fs-sm);color:var(--gr);line-height:1.8}
 .nota-text strong{color:var(--g)}
 
 /* CANDIDATURA */
-.candidatura-sec{background:var(--cr);padding:4rem var(--pad-x)}
+.candidatura-sec{background:linear-gradient(180deg,var(--cr) 0%,var(--wh) 100%);padding:5rem var(--pad-x)}
 .candidatura-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
 .candidatura-text .sec-title{max-width:100%}
-.candidatura-text p{font-size:.95rem;color:var(--gr);margin-top:1rem;line-height:1.85}
-.candidatura-card{background:var(--g);border-radius:16px;padding:2.4rem;color:#fff}
-.candidatura-card-title{font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:.6rem}
-.candidatura-card-sub{font-size:.9rem;color:var(--on-navy-soft);margin-bottom:1.6rem;line-height:1.7}
-.req-list{list-style:none;display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.8rem}
-.req-list li{font-size:.88rem;color:var(--on-navy);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
+.candidatura-text p{font-size:var(--fs-sm);color:var(--gr);margin-top:1.1rem;line-height:1.85}
+.candidatura-card{background:var(--grad-navy);border-radius:var(--r-lg);padding:2.5rem;color:#fff;position:relative;overflow:hidden;box-shadow:var(--sh-3)}
+.candidatura-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 85% 5%,rgba(0,201,177,.18) 0%,transparent 58%);pointer-events:none}
+.candidatura-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-teal)}
+.candidatura-card>*{position:relative}
+.candidatura-card-title{font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:.65rem;letter-spacing:-.015em}
+.candidatura-card-sub{font-size:.92rem;color:var(--on-navy-soft);margin-bottom:1.7rem;line-height:1.7}
+.req-list{list-style:none;display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.9rem}
+.req-list li{font-size:.9rem;color:var(--on-navy);display:flex;align-items:flex-start;gap:.55rem;line-height:1.5}
 .req-list li::before{content:"→";color:var(--gl);font-weight:700;flex-shrink:0}
 .cand-btns{display:flex;flex-direction:column;gap:.7rem}
-.btn-cta{display:inline-block;background:var(--gm);color:#fff;padding:.8rem 1.8rem;font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;border-radius:8px;transition:all .2s;text-align:center}
-.btn-cta:hover{background:var(--gl);transform:translateY(-2px)}
-.btn-cta-outline{display:inline-block;background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.3);padding:.78rem 1.8rem;font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;border-radius:8px;transition:all .2s;text-align:center}
-.btn-cta-outline:hover{border-color:var(--gl);color:#fff;background:rgba(255,255,255,.07)}
+.btn-cta{display:inline-block;background:var(--grad-teal);color:#fff;padding:.88rem 1.8rem;font-size:.84rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;border-radius:var(--r-sm);transition:transform .22s var(--ease),box-shadow .22s var(--ease);text-align:center;box-shadow:var(--sh-teal)}
+.btn-cta:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(0,168,150,.45)}
+.btn-cta-outline{display:inline-block;background:rgba(255,255,255,.06);color:var(--on-navy);border:1.5px solid rgba(255,255,255,.25);padding:.86rem 1.8rem;font-size:.84rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;border-radius:var(--r-sm);transition:all .22s var(--ease);text-align:center}
+.btn-cta-outline:hover{border-color:var(--gl);color:#fff;background:rgba(255,255,255,.12);transform:translateY(-3px)}
 
 /* CTA SCUOLE */
-.cta-scuole-sec{background:linear-gradient(135deg,var(--gm) 0%,var(--gl) 100%);padding:4rem var(--pad-x);text-align:center}
-.cta-scuole-sec h2{font-family:'Inter',sans-serif;font-size:clamp(1.4rem,2.8vw,2rem);font-weight:800;color:#fff;margin-bottom:.9rem;line-height:1.2}
-.cta-scuole-sec p{font-size:.95rem;color:rgba(255,255,255,.85);margin-bottom:2rem;line-height:1.75;max-width:520px;margin-left:auto;margin-right:auto}
-.btn-white{background:#fff;color:var(--g);padding:.85rem 2.2rem;font-size:.9rem;font-weight:700;letter-spacing:.04em;text-decoration:none;border-radius:8px;transition:all .2s;display:inline-block}
-.btn-white:hover{background:var(--cr);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15)}
+.cta-scuole-sec{background:var(--grad-teal);padding:5rem var(--pad-x);text-align:center;position:relative;overflow:hidden}
+.cta-scuole-sec::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(255,255,255,.22) 0%,transparent 60%);pointer-events:none}
+.cta-scuole-sec>*{position:relative}
+.cta-scuole-sec h2{font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800;color:#fff;margin-bottom:1rem;line-height:1.18;letter-spacing:-.025em}
+.cta-scuole-sec p{font-size:var(--fs-base);color:rgba(255,255,255,.9);margin-bottom:2.2rem;line-height:1.75;max-width:540px;margin-left:auto;margin-right:auto}
+.btn-white{background:#fff;color:var(--g);padding:.92rem 2.3rem;font-size:.92rem;font-weight:700;letter-spacing:.01em;text-decoration:none;border-radius:var(--r-sm);transition:transform .22s var(--ease),box-shadow .22s var(--ease);display:inline-block;box-shadow:0 6px 18px rgba(4,40,36,.18)}
+.btn-white:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(4,40,36,.26)}
 
 /* LEAFLET TOOLTIP */
-.leaflet-tooltip{font-family:'Inter',sans-serif;font-size:.78rem;border:none;border-radius:6px;box-shadow:0 2px 12px rgba(10,38,71,.15);padding:.4rem .7rem}
+.leaflet-tooltip{font-family:'Inter',sans-serif;font-size:.78rem;border:none;border-radius:var(--r-xs);box-shadow:var(--sh-1);padding:.4rem .7rem}
 
 /* RESPONSIVE */
-@media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}.biologi-grid{grid-template-columns:1fr 1fr}.candidatura-inner{grid-template-columns:1fr}.biologi-cols{grid-template-columns:1fr;gap:2rem}}
+@media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}.candidatura-inner{grid-template-columns:1fr;gap:2.5rem}.biologi-cols{grid-template-columns:1fr;gap:2rem}}
 @media(max-width:860px){
-  .page-hero{padding:6rem 1.5rem 3.5rem}
+  .page-hero{padding:7rem 1.5rem 4rem}
   .page-hero-grid{grid-template-columns:1fr}
   .hero-visual{display:none}
-  .stats-sec,.biologi-sec,.map-sec,.candidatura-sec,.cta-scuole-sec{padding:2.5rem 1.5rem}
+  .stats-sec,.biologi-sec,.map-sec,.candidatura-sec,.cta-scuole-sec{padding:3.4rem 1.5rem}
+  .candidatura-card{padding:1.7rem}
+  .stat-num{font-size:2.6rem}
 }
-@media(max-width:600px){.stats-grid{grid-template-columns:1fr}.biologi-grid{grid-template-columns:1fr}#mappa-biologi{height:340px}}
+@media(max-width:600px){.stats-grid{grid-template-columns:1fr}#mappa-biologi{height:340px}}
 </style>
+<!-- Il reveal allo scroll si attiva solo se il JS è disponibile: senza JS
+     (o con motion ridotto) i contenuti restano visibili da subito. -->
+<script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('js-reveal');</script>
 </head>
 <body>
+<div class="progress-bar" id="progressBar" aria-hidden="true"></div>
 
 <!-- Sprite icone SVG -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
@@ -184,7 +193,7 @@
 <section class="page-hero">
   <div class="page-hero-grid">
     <div class="hero-inner">
-      <p class="eyebrow" data-k="hero_eyebrow"></p>
+      <p class="eyebrow" data-reveal data-k="hero_eyebrow"></p>
       <h1 class="page-hero-title" data-k="hero_title"></h1>
       <p class="page-hero-sub" data-k="hero_sub"></p>
       <p class="page-hero-desc" data-k="hero_desc"></p>
@@ -199,9 +208,9 @@
 
 <!-- STATISTICHE -->
 <section class="stats-sec">
-  <p class="eyebrow" data-k="stats_eyebrow"></p>
-  <h2 class="sec-title" data-k="stats_title"></h2>
-  <div class="stats-grid">
+  <p class="eyebrow" data-reveal data-k="stats_eyebrow"></p>
+  <h2 class="sec-title" data-reveal data-k="stats_title"></h2>
+  <div class="stats-grid" data-reveal-stagger>
     <div class="stat-card">
       <div class="stat-num">3</div>
       <div class="stat-label" data-k="stat1_label"></div>
@@ -221,11 +230,11 @@
 <section class="biologi-sec">
   <div class="biologi-cols">
     <div class="biologi-text">
-      <p class="eyebrow" data-k="biologi_eyebrow"></p>
-      <h2 class="sec-title" data-k="biologi_title"></h2>
+      <p class="eyebrow" data-reveal data-k="biologi_eyebrow"></p>
+      <h2 class="sec-title" data-reveal data-k="biologi_title"></h2>
       <p class="sec-desc" data-k="biologi_desc"></p>
     </div>
-    <div class="nota-box">
+    <div class="nota-box" data-reveal>
       <div class="nota-text" data-k="nota_text"></div>
     </div>
   </div>
@@ -233,29 +242,29 @@
 
 <!-- MAPPA REGIONI -->
 <section class="map-sec">
-  <p class="eyebrow" data-k="map_eyebrow"></p>
-  <h2 class="sec-title" data-k="map_title"></h2>
+  <p class="eyebrow" data-reveal data-k="map_eyebrow"></p>
+  <h2 class="sec-title" data-reveal data-k="map_title"></h2>
   <p class="sec-desc" data-k="map_desc"></p>
-  <div class="map-legend">
+  <div class="map-legend" data-reveal>
     <div class="legend-item"><div class="legend-dot attivo"></div> <span data-k="legend_attivo"></span></div>
     <div class="legend-item"><div class="legend-dot espansione"></div> <span data-k="legend_espansione"></span></div>
   </div>
-  <div id="mappa-biologi"></div>
+  <div id="mappa-biologi" data-reveal></div>
 </section>
 
 <!-- CANDIDATURA BIOLOGI -->
 <section class="candidatura-sec">
   <div class="candidatura-inner">
     <div class="candidatura-text">
-      <p class="eyebrow" data-k="cand_eyebrow"></p>
-      <h2 class="sec-title" data-k="cand_title"></h2>
+      <p class="eyebrow" data-reveal data-k="cand_eyebrow"></p>
+      <h2 class="sec-title" data-reveal data-k="cand_title"></h2>
       <p data-k="cand_p1"></p>
       <p data-k="cand_p2"></p>
     </div>
-    <div class="candidatura-card">
+    <div class="candidatura-card" data-reveal>
       <div class="candidatura-card-title" data-k="cand_card_title"></div>
       <div class="candidatura-card-sub" data-k="cand_card_sub"></div>
-      <ul class="req-list" id="req-list"></ul>
+      <ul class="req-list" id="req-list" data-reveal-stagger></ul>
       <div class="cand-btns">
         <a id="cand-cta-btn" href="#" class="btn-cta" data-k="cand_cta"></a>
         <a href="portale.html" class="btn-cta-outline" data-k="portale_btn"></a>
@@ -266,8 +275,8 @@
 
 <!-- CTA SCUOLE -->
 <section class="cta-scuole-sec">
-  <h2 data-k="cta_scuole_title"></h2>
-  <p data-k="cta_scuole_desc"></p>
+  <h2 data-reveal data-k="cta_scuole_title"></h2>
+  <p data-reveal data-k="cta_scuole_desc"></p>
   <a id="cta-scuole-btn" href="#" class="btn-white" data-k="cta_scuole_btn"></a>
 </section>
 
