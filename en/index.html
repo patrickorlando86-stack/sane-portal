@@ -439,8 +439,8 @@
 .ser-role{font-size:.8rem;color:var(--gl);margin-top:.3rem;letter-spacing:.02em;line-height:1.4}
 .ser-creds{margin-top:1.3rem;display:flex;flex-direction:column;gap:.5rem;text-align:left}
 .ser-cred{font-size:.81rem;line-height:1.45;padding:.55rem .75rem;background:rgba(255,255,255,.07);color:var(--on-navy);border-left:2px solid var(--gl);border-radius:0 var(--r-xs) var(--r-xs) 0}
-.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin:2.8rem auto 0;max-width:1200px}
-.team-card{position:relative;background:var(--grad-navy);color:#fff;padding:1.9rem 1.4rem;border-radius:var(--r-lg);align-self:start;text-align:center;box-shadow:var(--sh-2);overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.team-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:1.2rem;margin:2.8rem auto 0;max-width:1200px}
+.team-card{flex:0 1 calc(25% - .9rem);position:relative;background:var(--grad-navy);color:#fff;padding:1.9rem 1.4rem;border-radius:var(--r-lg);align-self:start;text-align:center;box-shadow:var(--sh-2);overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
 .team-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-teal)}
 .team-card:hover{transform:translateY(-6px);box-shadow:var(--sh-3)}
 .team-card-alt{background:#fff;color:var(--g);border:1px solid rgba(10,38,71,.06)}
@@ -520,7 +520,8 @@
 
 /* ---- RESPONSIVE homepage ---- */
 @media(max-width:1180px){
-  .team-grid{grid-template-columns:repeat(2,1fr);max-width:720px}
+  .team-grid{max-width:720px}
+  .team-card{flex-basis:calc(50% - .6rem)}
   .hero-badge-1{left:-.6rem}
   .hero-badge-2{right:-.6rem}
 }
@@ -554,7 +555,8 @@
   .quote-box::before{left:.8rem;font-size:6rem}
   .quote-text{font-size:1.06rem}
   .cards-grid{grid-template-columns:1fr}
-  .team-grid{grid-template-columns:1fr;max-width:440px}
+  .team-grid{max-width:440px}
+  .team-card{flex-basis:100%}
   .contact-wrap{grid-template-columns:1fr}
   .cc,.cform{padding:1.5rem 1.3rem}
 }
@@ -758,7 +760,7 @@
 <!-- TEAM (fondatori) -->
 <section id="team">
   <p class="eyebrow" data-reveal data-k="team_eyebrow">The team</p>
-  <h2 class="sec-title" data-reveal data-k="team_title">Four expertises, <em>one mission.</em></h2>
+  <h2 class="sec-title" data-reveal data-k="team_title">Five expertises, <em>one mission.</em></h2>
   <div class="team-grid" data-reveal-stagger>
     <div class="team-card">
       <div class="team-top">
@@ -814,6 +816,20 @@
       <div class="team-bio-wrap"><div class="team-bio-inner">
         <p class="team-bio" data-k="ame_p1">Dr. Amelia Zarauza is the project's medical advisor for South America. A paediatrician specialised in allergy, immunology and environmental medicine, she brings her clinical expertise to the content on allergies and food safety.</p>
         <p class="team-bio" data-k="ame_p2">Deputy Director of the Allergy & Immunology Specialisation programme at the University of Buenos Aires (UBA), she carried out the clinical review of «The Courage to Act» game and the allergy modules, and supports the scientific direction in developing the project in South America.</p>
+      </div></div>
+    </div>
+    <div class="team-card">
+      <div class="team-top">
+        <div class="ser-init">
+          <img src="/immagini/logo/gianna.webp" alt="Gianna Giuliana" width="330" height="440" loading="lazy">
+        </div>
+        <div><div class="ser-name">Gianna Giuliana</div><div class="ser-role" data-k="gia_role">Paediatrician · Paediatric Allergy & Nutrition</div></div>
+      </div>
+      <div class="ser-creds"><!-- @gen:gia-creds --><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-stethoscope'/></svg> Specialist in Paediatrics · Family paediatrician</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-pill'/></svg> Expert in Paediatric Allergy</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-microscope'/></svg> Paediatric nutrition & weaning · personalised protocols</div><div class="ser-cred"><svg class='ic' aria-hidden='true'><use href='#i-book'/></svg> Board member, Italian Society of Paediatric Allergy & national Food Allergy commission</div><!-- @/gen:gia-creds --></div>
+      <button class="bio-toggle" aria-expanded="false"><span data-k="bio_more">Read bio</span> <svg class="ic" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+      <div class="team-bio-wrap"><div class="team-bio-inner">
+        <p class="team-bio" data-k="gia_p1">Dr. Gianna Giuliana is a specialist in Paediatrics, with expertise in paediatric allergy and in paediatric nutrition and weaning. She graduated in Medicine and Surgery in Brescia and specialised with honours in Parma, after studying Dietetics and Human Nutrition.</p>
+        <p class="team-bio" data-k="gia_p2">She trained in paediatric allergic conditions at Italian and international university centres — the «P. Barilla» Children's Hospital in Parma, the Meyer Hospital in Florence and the Children's Hospital of Philadelphia. A board member of the Italian Society of Paediatric Allergy and of the national Food Allergy commission, she publishes regularly in national and international journals. In Rosignano she is a family paediatrician and runs a private practice in paediatric allergy, offering paediatric nutrition consultations with personalised protocols on weaning and early-childhood feeding.</p>
       </div></div>
     </div>
   </div>
