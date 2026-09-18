@@ -291,7 +291,7 @@
                 </label>
                 <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
                     <input type="checkbox" id="consentoDPA" style="margin-top:2px;accent-color:var(--teal);width:15px;height:15px;flex-shrink:0;">
-                    <span style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Ho letto e accetto l'<a href="https://docs.google.com/document/d/1c1d_n46JVl12eIvsLsiEgNjmTXHvhWTq/edit" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;font-weight:600;">Accordo sul Trattamento dei Dati (DPA)</a> e mi impegno a operare come Responsabile del trattamento ai sensi dell'art. 28 GDPR</span>
+                    <span style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Ho letto e accetto il <a href="https://docs.google.com/document/d/1c1d_n46JVl12eIvsLsiEgNjmTXHvhWTq/edit" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;font-weight:600;">DPA 1 — Accordo sul Trattamento dei Dati (S.A.N.E. → Biologo)</a> e mi impegno a operare come Responsabile del trattamento ai sensi dell'art. 28 GDPR</span>
                 </label>
             </div>
         </div>
@@ -700,7 +700,7 @@
                     <i class="fas fa-external-link-alt" style="position:absolute;top:12px;right:14px;color:rgba(255,255,255,0.6);font-size:12px;"></i>
                 </div>
                 <div class="card">
-                    <h4 style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:14px;"><i class="fas fa-file-download" style="color:var(--teal);margin-right:7px;"></i>Materiali Didattici</h4>
+                    <h4 style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:14px;"><i class="fas fa-file-download" style="color:var(--teal);margin-right:7px;"></i>Documenti e Materiali</h4>
                     <div id="dashDocumenti"></div>
                 </div>
             </div>
@@ -1845,21 +1845,28 @@ function aggiornaDashboard(){
 
     const _annoLbl=document.getElementById('dashAnnoLabel'); if(_annoLbl) _annoLbl.textContent='';
 
-    // Documenti scaricabili (link placeholder)
+    // Documenti del portale: materiali operativi + quadro legale
     const docs=[
-        {nome:'PMB — Presentazione Aule Scuole Primarie',icon:'fa-file-powerpoint',url:'https://docs.google.com/presentation/d/1O5-_wJHNpfbZrkg1L3K4TVszIrol1IWa/edit?usp=drive_link&ouid=111966764933940330192&rtpof=true&sd=true'},
-        {nome:'SANE Liberatoria (per genitori)',icon:'fa-file-alt',url:'https://docs.google.com/document/d/1stsOIfAbKL-POMw-QPHBOwfaqIx8kNcd/edit'},
-        {nome:'Liberatoria Immagini',icon:'fa-file-alt',url:'https://docs.google.com/document/d/15tuGdeLVdr8N8MeK1Vscuq4WVynTKYhN/edit'},
-        {nome:'DPA — Accordo Responsabile del Trattamento (Biologo → Scuola)',icon:'fa-file-contract',url:'https://docs.google.com/document/d/1kYN2Qe3cUWIhLWdDmgQaqozQU5tUFC6z/edit'},
-        {nome:'Policy Uso Brand S.A.N.E. Italia',icon:'fa-trademark',url:'https://docs.google.com/document/d/1hu-mbObp0JG9QUd9UChdHh7EXxjcuY3w/edit'},
-        {nome:'Checklist Biologo',icon:'fa-clipboard-check',url:'https://docs.google.com/document/d/1GU0eM2j4uy1wPGvet7R1pTIA8BSUr9a7/edit'},
+        {grp:'Materiali didattici',nome:'PMB — Presentazione Aule Scuole Primarie',icon:'fa-file-powerpoint',url:'https://docs.google.com/presentation/d/1O5-_wJHNpfbZrkg1L3K4TVszIrol1IWa/edit?usp=drive_link&ouid=111966764933940330192&rtpof=true&sd=true'},
+        {grp:'Materiali didattici',nome:'Checklist Biologo',icon:'fa-clipboard-check',url:'https://docs.google.com/document/d/1GU0eM2j4uy1wPGvet7R1pTIA8BSUr9a7/edit'},
+        {grp:'Materiali didattici',nome:'Policy Uso Brand S.A.N.E. Italia',icon:'fa-trademark',url:'https://docs.google.com/document/d/1hu-mbObp0JG9QUd9UChdHh7EXxjcuY3w/edit'},
+        {grp:'Da far firmare alla scuola',nome:'DPA 2 — Biologo → Scuola (art. 28 GDPR)',icon:'fa-handshake',url:'https://docs.google.com/document/d/1kYN2Qe3cUWIhLWdDmgQaqozQU5tUFC6z/edit'},
+        {grp:'Da far firmare alla scuola',nome:'SANE Liberatoria (per genitori)',icon:'fa-file-alt',url:'https://docs.google.com/document/d/1stsOIfAbKL-POMw-QPHBOwfaqIx8kNcd/edit'},
+        {grp:'Da far firmare alla scuola',nome:'Liberatoria Immagini',icon:'fa-file-alt',url:'https://docs.google.com/document/d/15tuGdeLVdr8N8MeK1Vscuq4WVynTKYhN/edit'},
+        {grp:'Il tuo accordo con S.A.N.E.',nome:'DPA 1 — S.A.N.E. → Biologo (art. 28 GDPR)',icon:'fa-file-contract',url:'https://docs.google.com/document/d/1c1d_n46JVl12eIvsLsiEgNjmTXHvhWTq/edit'},
+        {grp:'Il tuo accordo con S.A.N.E.',nome:'Termini di Servizio',icon:'fa-gavel',url:'https://legal.sane-italia.it/termini-di-servizio'},
+        {grp:'Il tuo accordo con S.A.N.E.',nome:'Informativa Privacy',icon:'fa-user-shield',url:'https://legal.sane-italia.it/informativa-privacy'},
+        {grp:'Il tuo accordo con S.A.N.E.',nome:'Consenso al Trattamento dei Dati',icon:'fa-file-signature',url:'https://docs.google.com/document/d/1ISQtNYIY9ui9GrTL6a8DivuBd6U0c1MA/edit'},
     ];
-    document.getElementById('dashDocumenti').innerHTML=docs.map((d,i)=>`
-        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i<docs.length-1?'border-bottom:1px solid #f1f5f9;':''}">
+    document.getElementById('dashDocumenti').innerHTML=[...new Set(docs.map(d=>d.grp))].map((grp,gi)=>`
+        <div style="${gi>0?'margin-top:16px;':''}font-size:10px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:#94a3b8;">${grp}</div>
+        ${docs.filter(d=>d.grp===grp).map((d,i,arr)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i<arr.length-1?'border-bottom:1px solid #f1f5f9;':''}">
             <i class="fas ${d.icon}" style="color:var(--teal);font-size:13px;width:18px;text-align:center;flex-shrink:0;"></i>
             <span style="flex:1;font-size:12px;color:var(--dark);font-weight:500;">${d.nome}</span>
             <a href="${d.url}" target="_blank" rel="noopener" style="color:var(--teal);font-size:10px;font-weight:700;text-decoration:none;padding:4px 10px;border:1.5px solid var(--teal);border-radius:8px;white-space:nowrap;"><i class="fas fa-external-link-alt" style="margin-right:3px;"></i>Apri</a>
         </div>
+        `).join('')}
     `).join('');
 
     // Avanzamento pacchetti — scuole con almeno un pacchetto, max 10 pacchetti attivi
