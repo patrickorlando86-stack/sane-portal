@@ -69,6 +69,7 @@
     <img src="/immagini/logo/logo2.webp" alt="S.A.N.E. Italia" width="800" height="800">
     <span class="logo-text">S.A.N.E. <span>Italia</span></span>
   </a>
+  <div class="nav-panel">
   <ul class="nav-links" id="navMenu">
     <li><a href="/#chisiamo">Chi siamo</a></li>
     <li><a href="/#method">Il programma</a></li>
@@ -79,6 +80,7 @@
   <div class="nav-right">
     <a href="/portale.html" class="nav-portale">🔐 Portale</a>
     <a href="/#contact" class="nav-cta">Contattaci</a>
+  </div>
   </div>
   <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="navMenu">
     <span></span><span></span><span></span>
@@ -158,6 +160,9 @@
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
   toggle.addEventListener('click', () => setOpen(!nav.classList.contains('nav-open')));
+  // chiudi cliccando fuori o con Esc
+  document.addEventListener('click', e => { if (!nav.contains(e.target)) setOpen(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
 })();
 </script>
 </body>
