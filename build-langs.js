@@ -15,7 +15,7 @@ const src = fs.readFileSync('index.html', 'utf8');
 const META = {
   es: { label: 'ES', ogLocale: 'es_ES',
     title: 'S.A.N.E. Italia — Educación Alimentaria y Seguridad Alimentaria en las Escuelas',
-    desc: 'S.A.N.E. Italia es la red de biólogos nutricionistas que lleva educación alimentaria y seguridad alimentaria a las escuelas. El programa «Mangiare Bene, Crescere Meglio» y el juego educativo «Il Piatto Sano» (web y Android), con gestión personalizada de los 14 alérgenos UE. Dirección científica Dott.ssa Serafina Cardaci, Bióloga Nutricionista.',
+    desc: 'Educación alimentaria en las escuelas con biólogos nutricionistas: programa en 6 módulos, juego educativo «Il Piatto Sano» y gestión de los 14 alérgenos UE.',
     ogTitle: 'S.A.N.E. Italia — Educación Alimentaria en las Escuelas',
     ogDesc: 'La red de biólogos nutricionistas para la educación y la seguridad alimentaria en las escuelas. Programa «Mangiare Bene, Crescere Meglio» y juego educativo «Il Piatto Sano» (web y Android) con gestión personalizada de los 14 alérgenos UE.',
     twDesc: 'Red de biólogos nutricionistas para educación y seguridad alimentaria en las escuelas. Programa «Mangiare Bene, Crescere Meglio» y juego «Il Piatto Sano» (web y Android), gestión 14 alérgenos UE.',
@@ -23,7 +23,7 @@ const META = {
     gplay: ['es_es', 'es', 'Disponible en Google Play'] },
   en: { label: 'EN', ogLocale: 'en_US',
     title: 'S.A.N.E. Italia — Food Education and Food Safety in Schools',
-    desc: 'S.A.N.E. Italia is the network of nutritionist biologists bringing food education and food safety into schools. The «Mangiare Bene, Crescere Meglio» programme and «Il Piatto Sano» educational game (web and Android), with personalised management of the 14 EU allergens. Scientific direction by Dott.ssa Serafina Cardaci, Nutritionist Biologist.',
+    desc: 'Food education in schools with nutritionist biologists: a 6-module programme, the «Il Piatto Sano» educational game and management of the 14 EU allergens.',
     ogTitle: 'S.A.N.E. Italia — Food Education in Schools',
     ogDesc: 'The network of nutritionist biologists for food education and safety in schools. The «Mangiare Bene, Crescere Meglio» programme and «Il Piatto Sano» game (web and Android) with management of the 14 EU allergens.',
     twDesc: 'Network of nutritionist biologists for food education and safety in schools. «Mangiare Bene, Crescere Meglio» programme and «Il Piatto Sano» game (web and Android), 14 EU allergens management.',
