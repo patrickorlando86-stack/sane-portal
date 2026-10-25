@@ -1,7 +1,7 @@
 -- ============================================================
 --  S.A.N.E. — Rinforzi di sicurezza (revisione ottobre 2026)
 --  Incolla nel SQL Editor di Supabase e "Run". Idempotente.
---  Tre blocchi indipendenti: puoi eseguirli anche uno alla volta.
+--  Cinque blocchi indipendenti: puoi eseguirli anche uno alla volta.
 -- ============================================================
 
 
@@ -143,8 +143,95 @@ end $$;
 grant execute on function public.autoval_submit(text, jsonb, int, int) to anon, authenticated;
 
 
+-- ── 4. RESPONSABILE REGIONALE: vede solo la propria regione ──
+--  Oggi il filtro per regione esiste solo in admin.html: dalla console
+--  del browser un regional_admin legge profili (email, scadenze, stripe_*)
+--  e dati di tutte le regioni. admin.html filtra già per regione e nasconde
+--  la vista nazionale, quindi il pannello non perde nulla.
+--  Anche qui policy RESTRICTIVE: valgono qualunque altra policy ci sia.
+--  Per admin e biologi non cambia niente.
+create or replace function public.is_regional_admin()
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (select 1 from public.profiles
+                 where id = auth.uid() and role = 'regional_admin');
+$$;
+
+-- vero se il biologo indicato è della regione del regional_admin corrente
+create or replace function public.in_mia_regione(p_biologo uuid)
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.profiles me
+    join public.profiles b on b.regione = me.regione
+    where me.id = auth.uid() and b.id = p_biologo
+  );
+$$;
+
+drop policy if exists "profiles_regione" on public.profiles;
+create policy "profiles_regione" on public.profiles
+  as restrictive for all to authenticated
+  using ( not public.is_regional_admin() or id = auth.uid() or public.in_mia_regione(id) );
+
+do $$
+declare t text;
+begin
+  foreach t in array array['scuole','pacchetti','classi','autovalutazioni','activity_log']
+  loop
+    execute format('drop policy if exists %I on public.%I;', t||'_regione', t);
+    execute format('create policy %I on public.%I as restrictive for all to authenticated
+                      using ( not public.is_regional_admin() or biologo_id = auth.uid()
+                              or public.in_mia_regione(biologo_id) );', t||'_regione', t);
+  end loop;
+end $$;
+
+drop policy if exists "risposte_regione" on public.risposte;
+create policy "risposte_regione" on public.risposte
+  as restrictive for all to authenticated
+  using ( not public.is_regional_admin() or exists (
+            select 1 from public.classi c
+            where c.id = risposte.classe_id
+              and (c.biologo_id = auth.uid() or public.in_mia_regione(c.biologo_id)) ) );
+
+drop policy if exists "risposte_autoval_regione" on public.risposte_autovalutazione;
+create policy "risposte_autoval_regione" on public.risposte_autovalutazione
+  as restrictive for all to authenticated
+  using ( not public.is_regional_admin() or exists (
+            select 1 from public.autovalutazioni a
+            where a.id = risposte_autovalutazione.autovalutazione_id
+              and (a.biologo_id = auth.uid() or public.in_mia_regione(a.biologo_id)) ) );
+
+
+-- ── 5. CODICI DI SBLOCCO: solo admin ────────────────────────
+--  admin.html nasconde la sezione Codici ai regional_admin, ma la policy
+--  li lasciava creare: un codice dà una licenza a chiunque, di qualsiasi
+--  regione, aggirando il limite regionale del trigger sui profili.
+drop policy if exists "admin gestisce codici" on public.codici_accesso;
+create policy "admin gestisce codici"
+  on public.codici_accesso
+  for all
+  using (
+    exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+  )
+  with check (
+    exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+  );
+
+
 -- ── VERIFICA ────────────────────────────────────────────────
 --  Dopo l'esecuzione, da un account biologo in attesa (console del browser):
 --    await db.from('scuole').insert({biologo_id:(await db.auth.getUser()).data.user.id,nome:'test',comune:'x',classi:1})
 --  deve dare errore "new row violates row-level security policy".
 --  Da un biologo attivo lo stesso insert deve funzionare.
+--  Da un Responsabile Regionale:
+--    await db.from('profiles').select('regione')
+--  deve restituire solo profili della sua regione (più il proprio).
