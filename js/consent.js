@@ -39,6 +39,14 @@
     }
   }
 
+  // Revoca: se l'utente aveva accettato e ora rifiuta, GA smette subito di
+  // usare i cookie anche nella pagina aperta
+  function deny() {
+    if (typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', { analytics_storage: 'denied' });
+    }
+  }
+
   function save(value) {
     try { localStorage.setItem(KEY, value); } catch (e) { /* storage pieno o bloccato */ }
   }
@@ -82,6 +90,7 @@
     reject.textContent = t.reject;
     reject.addEventListener('click', function () {
       save('denied');
+      deny();
       box.remove();
     });
 
