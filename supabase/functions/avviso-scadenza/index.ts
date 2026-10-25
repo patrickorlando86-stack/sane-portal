@@ -1,7 +1,39 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
-serve(async (_req) => {
+// nome/email arrivano dalla registrazione (testo libero dell'utente): vanno
+// escapati prima di finire nell'HTML dell'email
+function escHtml(v: unknown) {
+  return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!))
+}
+
+// Chi può chiamare questa funzione. "Verify JWT" acceso fa passare qualunque
+// JWT valido, compresa la chiave anon che è pubblica nel sito: senza questo
+// controllo chiunque potrebbe far partire email a nome S.A.N.E.
+// Ammessi: il database/cron con la service role key, oppure chi manda
+// l'header x-notify-secret uguale al secret NOTIFY_SECRET.
+// Finché NOTIFY_SECRET non è impostato si accetta tutto (come prima) ma si
+// scrive nei log il ruolo del chiamante, per capire cosa usano trigger e cron.
+function ruoloJwt(req: Request): string | null {
+  const t = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "")
+  try {
+    const payload = t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")
+    return JSON.parse(atob(payload)).role ?? null
+  } catch {
+    return null
+  }
+}
+function autorizzato(req: Request): boolean {
+  const ruolo = ruoloJwt(req)
+  if (ruolo === "service_role") return true
+  const secret = Deno.env.get("NOTIFY_SECRET")
+  if (secret) return req.headers.get("x-notify-secret") === secret
+  console.warn(`⚠️ NOTIFY_SECRET non impostato: accetto una chiamata con ruolo "${ruolo}"`)
+  return true
+}
+
+serve(async (req) => {
+  if (!autorizzato(req)) return new Response('non autorizzato', { status: 401 })
   const supabaseUrl  = Deno.env.get('SUPABASE_URL')!
   const supabaseKey  = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   const resendApiKey = Deno.env.get('RESEND_API_KEY')!
@@ -20,6 +52,9 @@ serve(async (_req) => {
     .select('id, nome, email, scadenza')
     .eq('stato', 'active')
     .in('scadenza', [target30, target7])
+    // Chi ha un abbonamento Stripe attivo si rinnova da solo: niente
+    // "contatta l'amministratore per rinnovare"
+    .is('stripe_subscription_id', null)
 
   if (error) {
     console.error('DB error:', error.message)
@@ -45,7 +80,7 @@ serve(async (_req) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: "S.A.N.E. Italia <onboarding@resend.dev>",
+        from: Deno.env.get("EMAIL_FROM") || "S.A.N.E. Italia <onboarding@resend.dev>",
         to: [b.email],
         subject: urgente
           ? `⚠️ La tua licenza S.A.N.E. scade tra 7 giorni`
@@ -61,7 +96,7 @@ serve(async (_req) => {
                 ${urgente ? '⚠️ Licenza in scadenza urgente' : '⏳ Licenza in scadenza'}
               </h2>
               <p style="color:#475569;font-size:14px;line-height:1.7;">
-                Ciao ${b.nome || b.email},<br><br>
+                Ciao ${escHtml(b.nome || b.email)},<br><br>
                 La tua licenza S.A.N.E. Italia scadrà il <strong>${dataFormattata}</strong>
                 (tra <strong style="color:${urgente ? '#ef4444' : '#F4A261'}">${giorni} giorni</strong>).<br><br>
                 ${urgente

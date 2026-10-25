@@ -1,6 +1,38 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
+// nome/email arrivano dalla registrazione (testo libero dell'utente): vanno
+// escapati prima di finire nell'HTML dell'email
+function escHtml(v: unknown) {
+  return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!))
+}
+
+// Chi può chiamare questa funzione. "Verify JWT" acceso fa passare qualunque
+// JWT valido, compresa la chiave anon che è pubblica nel sito: senza questo
+// controllo chiunque potrebbe far partire email a nome S.A.N.E.
+// Ammessi: il database/cron con la service role key, oppure chi manda
+// l'header x-notify-secret uguale al secret NOTIFY_SECRET.
+// Finché NOTIFY_SECRET non è impostato si accetta tutto (come prima) ma si
+// scrive nei log il ruolo del chiamante, per capire cosa usano trigger e cron.
+function ruoloJwt(req: Request): string | null {
+  const t = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "")
+  try {
+    const payload = t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")
+    return JSON.parse(atob(payload)).role ?? null
+  } catch {
+    return null
+  }
+}
+function autorizzato(req: Request): boolean {
+  const ruolo = ruoloJwt(req)
+  if (ruolo === "service_role") return true
+  const secret = Deno.env.get("NOTIFY_SECRET")
+  if (secret) return req.headers.get("x-notify-secret") === secret
+  console.warn(`⚠️ NOTIFY_SECRET non impostato: accetto una chiamata con ruolo "${ruolo}"`)
+  return true
+}
+
 serve(async (req) => {
+  if (!autorizzato(req)) return new Response('non autorizzato', { status: 401 })
   const body = await req.json()
 
   // Supporta sia trigger SQL {email, nome} che webhook {record, old_record}
@@ -25,7 +57,7 @@ serve(async (req) => {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      from: "S.A.N.E. Italia <onboarding@resend.dev>",
+      from: Deno.env.get("EMAIL_FROM") || "S.A.N.E. Italia <onboarding@resend.dev>",
       to: [email],
       subject: "Il tuo account S.A.N.E. Italia è stato attivato!",
       html: `
@@ -36,7 +68,7 @@ serve(async (req) => {
           </div>
           <div style="background:white;border-radius:16px;padding:28px;">
             <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">🎉 Account attivato!</h2>
-            <p style="color:#475569;font-size:14px;line-height:1.7;">Ciao ${nome},<br><br>
+            <p style="color:#475569;font-size:14px;line-height:1.7;">Ciao ${escHtml(nome)},<br><br>
             Il tuo account S.A.N.E. Italia è stato <strong>approvato e attivato</strong>. Puoi ora accedere al portale e iniziare a lavorare.</p>
             <a href="https://sane-italia.it/biologo.html"
                style="display:block;background:#00A896;color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">

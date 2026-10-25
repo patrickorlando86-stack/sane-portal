@@ -7,8 +7,8 @@
     <title>S.A.N.E. Italia | Portale Biologi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <script src="js/reportProfessionale.js"></script>
     <script src="js/relazioneFull.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -2150,7 +2150,7 @@ function aggiornaScuole(){
                     </div>`;
                 })()}
                 <div style="display:flex;gap:8px;margin-top:8px;" class="no-print">
-                    <button onclick="event.stopPropagation();apriNuovoPacchetto('${s.id}','${esc(s.nome)}')" class="btn-ghost" style="font-size:11px;padding:7px 13px;flex:1;justify-content:center;touch-action:manipulation;"><i class="fas fa-plus" style="margin-right:3px;"></i>Pacchetto</button>
+                    <button onclick="event.stopPropagation();apriNuovoPacchetto('${s.id}')" class="btn-ghost" style="font-size:11px;padding:7px 13px;flex:1;justify-content:center;touch-action:manipulation;"><i class="fas fa-plus" style="margin-right:3px;"></i>Pacchetto</button>
                 </div>
             </div>`:''}
         </div>`;
@@ -2173,7 +2173,9 @@ function codicePacket(p, s){
     return `${scuolaCode}-${annoEnd}-${seq}`;
 }
 
-function apriNuovoPacchetto(scuolaId, scuolaNome){
+function apriNuovoPacchetto(scuolaId){
+    // Il nome si legge qui e non dall'onclick: un apostrofo (Sant'Anna) rompeva la stringa JS
+    const scuolaNome=(appState.scuole.find(x=>x.id===scuolaId)||{}).nome||'';
     _editPacchettoId=null;
     document.getElementById('pacchettoModalTitolo').textContent='Nuovo Pacchetto';
     document.getElementById('pacchettoModalBtn').innerHTML='<i class="fas fa-plus"></i>Aggiungi Pacchetto';

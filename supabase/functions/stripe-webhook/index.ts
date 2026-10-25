@@ -33,6 +33,23 @@ function unixToDate(sec: number | null | undefined) {
   return new Date(sec * 1000).toISOString().split("T")[0];
 }
 
+// Dalla versione API Stripe 2025-03-31 (basil) alcuni campi sono stati spostati:
+//   subscription.current_period_end -> subscription.items.data[].current_period_end
+//   invoice.subscription            -> invoice.parent.subscription_details.subscription
+// Leggiamo entrambe le forme, così funziona con qualunque versione dell'account.
+// deno-lint-ignore no-explicit-any
+function periodEnd(sub: any): number | null {
+  return sub?.current_period_end ?? sub?.items?.data?.[0]?.current_period_end ?? null;
+}
+// deno-lint-ignore no-explicit-any
+function invoiceSubscriptionId(inv: any): string | null {
+  return inv?.subscription ?? inv?.parent?.subscription_details?.subscription ?? null;
+}
+
+function escHtml(v: unknown) {
+  return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+
 // Email di avviso all'admin quando arriva un nuovo abbonato.
 // Riusa Resend come notifica-approvazione. Blindata: non lancia mai
 // (il webhook deve rispondere 200 a Stripe anche se l'email fallisce).
@@ -45,7 +62,7 @@ async function notificaAdminNuovoAbbonato(subscriberEmail: string | null) {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: "S.A.N.E. Italia <onboarding@resend.dev>",
+        from: Deno.env.get("EMAIL_FROM") || "S.A.N.E. Italia <onboarding@resend.dev>",
         to: [ADMIN_EMAIL],
         subject: "💳 Nuovo abbonato al Portale Biologi",
         html: `
@@ -57,7 +74,7 @@ async function notificaAdminNuovoAbbonato(subscriberEmail: string | null) {
             <div style="background:white;border-radius:16px;padding:28px;">
               <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">💳 Nuovo abbonato</h2>
               <p style="color:#475569;font-size:14px;line-height:1.7;">Un nuovo biologo ha sottoscritto l'abbonamento al Portale (€50/anno).<br><br>
-              <strong>Email:</strong> ${subscriberEmail ?? "(non disponibile)"}</p>
+              <strong>Email:</strong> ${escHtml(subscriberEmail ?? "(non disponibile)")}</p>
             </div>
             <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · notifica automatica</p>
           </div>
@@ -96,8 +113,11 @@ async function verifySignature(rawBody: string, sigHeader: string | null, secret
 async function attivaDaSubscription(subId: string, opts: { userId?: string } = {}) {
   const sub = await getSubscription(subId);
   if (!sub) { console.error("⚠️ subscription non trovata:", subId); return; }
-  const scadenza = unixToDate(sub.current_period_end);
-  const patch = { stato: "active", scadenza, stripe_subscription_id: sub.id, stripe_customer_id: sub.customer };
+  const scadenza = unixToDate(periodEnd(sub));
+  const patch: Record<string, unknown> = { stato: "active", stripe_subscription_id: sub.id, stripe_customer_id: sub.customer };
+  // Mai scrivere scadenza=null: un profilo attivo senza scadenza non scade più
+  if (scadenza) patch.scadenza = scadenza;
+  else console.error("⚠️ current_period_end assente nella subscription", sub.id);
   const userId = opts.userId || sub.metadata?.supabase_user_id;
   const filtro = userId ? `id=eq.${userId}` : `stripe_subscription_id=eq.${encodeURIComponent(sub.id)}`;
   let r = await svc(`profiles?${filtro}`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(patch) });
@@ -142,11 +162,21 @@ serve(async (req) => {
       case "invoice.paid":
       case "invoice.payment_succeeded": {
         const inv = evt.data.object;
-        if (inv.subscription) await attivaDaSubscription(inv.subscription);
+        const subId = invoiceSubscriptionId(inv);
+        if (subId) await attivaDaSubscription(subId);
         break;
       }
       case "customer.subscription.deleted": {
         const sub = evt.data.object;
+        // Profili attivati prima del fix su current_period_end possono avere
+        // scadenza vuota: alla disdetta gliela diamo, altrimenti non scadrebbero mai
+        const fine = unixToDate(periodEnd(sub) ?? sub.ended_at);
+        if (fine) {
+          await svc(`profiles?stripe_subscription_id=eq.${encodeURIComponent(sub.id)}&scadenza=is.null`, {
+            method: "PATCH", headers: { Prefer: "return=minimal" },
+            body: JSON.stringify({ scadenza: fine }),
+          });
+        }
         await svc(`profiles?stripe_subscription_id=eq.${encodeURIComponent(sub.id)}`, {
           method: "PATCH", headers: { Prefer: "return=minimal" },
           body: JSON.stringify({ stripe_subscription_id: null }),

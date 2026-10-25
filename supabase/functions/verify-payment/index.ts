@@ -85,7 +85,11 @@ serve(async (req) => {
       const sr = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(session.subscription)}`, {
         headers: { Authorization: `Bearer ${secret}` },
       });
-      if (sr.ok) { const sub = await sr.json(); scadenza = unixToDate(sub.current_period_end); }
+      if (sr.ok) {
+        const sub = await sr.json();
+        // API Stripe >= 2025-03-31: current_period_end sta sugli item della subscription
+        scadenza = unixToDate(sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end);
+      }
     }
 
     const patch: Record<string, unknown> = { stato: "active", stripe_customer_id: session.customer, stripe_subscription_id: session.subscription };

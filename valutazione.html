@@ -23,7 +23,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>S.A.N.E. Italia | Autovalutazione Scuola</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -180,14 +180,15 @@ async function init(){
     _autovId=autov.id;
 
     // Nome scuola: restituito dalla RPC stessa
-    const nomeScuola=autov.scuola_nome||'Scuola';
-    const comune=autov.scuola_comune?' · '+autov.scuola_comune:'';
+    const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const nomeScuola=esc(autov.scuola_nome||'Scuola');
+    const comune=autov.scuola_comune?' · '+esc(autov.scuola_comune):'';
 
     document.getElementById('intestazione').innerHTML=`
         <div style="background:var(--dark);border-radius:16px;padding:20px 24px;color:white;margin-bottom:4px;">
             <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px;">Questionario per</div>
             <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;">${nomeScuola}${comune}</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">Anno Scolastico ${autov.anno_scolastico||'—'} · 25 domande · 5 aree</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">Anno Scolastico ${esc(autov.anno_scolastico||'—')} · 25 domande · 5 aree</div>
         </div>
     `;
 

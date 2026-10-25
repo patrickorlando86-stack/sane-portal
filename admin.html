@@ -10,8 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3"></script>
     <script src="js/reportProfessionale.js"></script>
     <script src="js/relazioneFull.js"></script>
     <style>
@@ -1547,9 +1546,9 @@ function generaPTOF(scuolaId){
         ? (classiConMig.reduce((a,c)=>a+(parseFloat(c.score_post)-parseFloat(c.score_pre)),0)/classiConMig.length).toFixed(1)
         : null;
 
-    const testo = `Nell'anno scolastico ${anno}, l'Istituto "${s.nome}" di ${esc(s.comune||'—')} ha aderito al progetto "Mangiare bene, crescere meglio" — Progetto di Educazione Alimentare promosso da S.A.N.E. Italia (Sicurezza · Alimentazione · Nutrizione · Educazione).
+    const testo = `Nell'anno scolastico ${anno}, l'Istituto "${s.nome}" di ${s.comune||'—'} ha aderito al progetto "Mangiare bene, crescere meglio" — Progetto di Educazione Alimentare promosso da S.A.N.E. Italia (Sicurezza · Alimentazione · Nutrizione · Educazione).
 
-Il progetto, condotto dal Biologo Nutrizionista ${esc(b.nome)}, ha coinvolto ${cl.length} class${cl.length===1?'e':'i'} per un totale di ${totStudenti} student${totStudenti===1?'e':'i'}${totOre>0?', con '+totOre+' ore di attività educativa strutturata':''}.
+Il progetto, condotto dal Biologo Nutrizionista ${b.nome}, ha coinvolto ${cl.length} class${cl.length===1?'e':'i'} per un totale di ${totStudenti} student${totStudenti===1?'e':'i'}${totOre>0?', con '+totOre+' ore di attività educativa strutturata':''}.
 
 Le attività hanno previsto interventi di educazione alimentare volti a promuovere corrette abitudini nutrizionali e uno stile di vita sano, in coerenza con le finalità del Piano Triennale dell'Offerta Formativa.${mig ? ' La valutazione delle conoscenze alimentari degli studenti attraverso questionari pre e post intervento ha registrato un miglioramento medio di +'+mig+' punti.' : ''}
 
