@@ -1,5 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
+// nome/email arrivano dalla registrazione (testo libero dell'utente): vanno
+// escapati prima di finire nell'HTML dell'email
+function escHtml(v: unknown) {
+  return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!))
+}
+
 serve(async (req) => {
   const body = await req.json()
 
@@ -25,7 +31,7 @@ serve(async (req) => {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      from: "S.A.N.E. Italia <onboarding@resend.dev>",
+      from: Deno.env.get("EMAIL_FROM") || "S.A.N.E. Italia <onboarding@resend.dev>",
       to: [email],
       subject: "Il tuo account S.A.N.E. Italia è stato attivato!",
       html: `
@@ -36,7 +42,7 @@ serve(async (req) => {
           </div>
           <div style="background:white;border-radius:16px;padding:28px;">
             <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">🎉 Account attivato!</h2>
-            <p style="color:#475569;font-size:14px;line-height:1.7;">Ciao ${nome},<br><br>
+            <p style="color:#475569;font-size:14px;line-height:1.7;">Ciao ${escHtml(nome)},<br><br>
             Il tuo account S.A.N.E. Italia è stato <strong>approvato e attivato</strong>. Puoi ora accedere al portale e iniziare a lavorare.</p>
             <a href="https://sane-italia.it/biologo.html"
                style="display:block;background:#00A896;color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">

@@ -1,5 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
+// nome/email arrivano dalla registrazione (testo libero dell'utente): vanno
+// escapati prima di finire nell'HTML dell'email
+function escHtml(v: unknown) {
+  return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!))
+}
+
 const ADMIN_EMAIL = "info@sane-italia.it"
 
 serve(async (req) => {
@@ -25,7 +31,7 @@ serve(async (req) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: "S.A.N.E. Italia <onboarding@resend.dev>",
+        from: Deno.env.get("EMAIL_FROM") || "S.A.N.E. Italia <onboarding@resend.dev>",
         to: [email],
         subject: "Registrazione S.A.N.E. Italia ricevuta",
         html: `
@@ -37,7 +43,7 @@ serve(async (req) => {
             <div style="background:white;border-radius:16px;padding:28px;">
               <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">📋 Registrazione ricevuta</h2>
               <p style="color:#475569;font-size:14px;line-height:1.7;">
-                Ciao ${nome},<br><br>
+                Ciao ${escHtml(nome)},<br><br>
                 Abbiamo ricevuto la tua richiesta di accesso al portale S.A.N.E. Italia.<br><br>
                 Il tuo account è attualmente in <strong>fase di verifica</strong>. Riceverai una email di conferma non appena il tuo profilo sarà approvato dall'amministratore.
               </p>
@@ -62,7 +68,7 @@ serve(async (req) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: "S.A.N.E. Italia <onboarding@resend.dev>",
+        from: Deno.env.get("EMAIL_FROM") || "S.A.N.E. Italia <onboarding@resend.dev>",
         to: [ADMIN_EMAIL],
         subject: `🆕 Nuova registrazione: ${nome}`,
         html: `
@@ -77,8 +83,8 @@ serve(async (req) => {
                 Un nuovo biologo ha completato la registrazione al portale S.A.N.E. Italia e attende approvazione.
               </p>
               <div style="background:#f8fafc;border-radius:10px;padding:16px;margin:20px 0;">
-                <p style="color:#475569;font-size:13px;margin:0 0 6px;"><strong>Nome:</strong> ${nome}</p>
-                <p style="color:#475569;font-size:13px;margin:0;"><strong>Email:</strong> ${email}</p>
+                <p style="color:#475569;font-size:13px;margin:0 0 6px;"><strong>Nome:</strong> ${escHtml(nome)}</p>
+                <p style="color:#475569;font-size:13px;margin:0;"><strong>Email:</strong> ${escHtml(email)}</p>
               </div>
               <a href="https://sane-italia.it/admin.html"
                  style="display:block;background:#00A896;color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">
