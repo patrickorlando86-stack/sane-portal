@@ -8,7 +8,33 @@ function escHtml(v: unknown) {
 
 const ADMIN_EMAIL = "info@sane-italia.it"
 
+// Chi può chiamare questa funzione. "Verify JWT" acceso fa passare qualunque
+// JWT valido, compresa la chiave anon che è pubblica nel sito: senza questo
+// controllo chiunque potrebbe far partire email a nome S.A.N.E.
+// Ammessi: il database/cron con la service role key, oppure chi manda
+// l'header x-notify-secret uguale al secret NOTIFY_SECRET.
+// Finché NOTIFY_SECRET non è impostato si accetta tutto (come prima) ma si
+// scrive nei log il ruolo del chiamante, per capire cosa usano trigger e cron.
+function ruoloJwt(req: Request): string | null {
+  const t = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "")
+  try {
+    const payload = t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")
+    return JSON.parse(atob(payload)).role ?? null
+  } catch {
+    return null
+  }
+}
+function autorizzato(req: Request): boolean {
+  const ruolo = ruoloJwt(req)
+  if (ruolo === "service_role") return true
+  const secret = Deno.env.get("NOTIFY_SECRET")
+  if (secret) return req.headers.get("x-notify-secret") === secret
+  console.warn(`⚠️ NOTIFY_SECRET non impostato: accetto una chiamata con ruolo "${ruolo}"`)
+  return true
+}
+
 serve(async (req) => {
+  if (!autorizzato(req)) return new Response('non autorizzato', { status: 401 })
   const body = await req.json()
   const email = body.email ?? body.record?.email
   const nome  = body.nome  ?? body.record?.nome ?? "Nuovo biologo"

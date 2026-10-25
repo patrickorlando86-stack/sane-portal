@@ -168,6 +168,15 @@ serve(async (req) => {
       }
       case "customer.subscription.deleted": {
         const sub = evt.data.object;
+        // Profili attivati prima del fix su current_period_end possono avere
+        // scadenza vuota: alla disdetta gliela diamo, altrimenti non scadrebbero mai
+        const fine = unixToDate(periodEnd(sub) ?? sub.ended_at);
+        if (fine) {
+          await svc(`profiles?stripe_subscription_id=eq.${encodeURIComponent(sub.id)}&scadenza=is.null`, {
+            method: "PATCH", headers: { Prefer: "return=minimal" },
+            body: JSON.stringify({ scadenza: fine }),
+          });
+        }
         await svc(`profiles?stripe_subscription_id=eq.${encodeURIComponent(sub.id)}`, {
           method: "PATCH", headers: { Prefer: "return=minimal" },
           body: JSON.stringify({ stripe_subscription_id: null }),
