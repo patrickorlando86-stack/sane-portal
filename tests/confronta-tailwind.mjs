@@ -76,7 +76,9 @@ async function confronta(browser, pagina, admin, passi) {
       if (sa.length !== sb.length) diff.push(`numero elementi diverso: ${sa.length} vs ${sb.length}`);
       for (let i = 0; i < Math.min(sa.length, sb.length); i++) {
         const [id, pa] = sa[i], pb = sb[i][1];
-        for (const k of Object.keys(pa)) if (pa[k] !== pb[k]) diff.push(`${id} ${k}: "${pa[k]}" → "${pb[k]}"`);
+        // le variabili interne --tw-* cambiano solo nella forma (rgb() vs rgba());
+        // il loro effetto è già nelle proprietà vere confrontate qui
+        for (const k of Object.keys(pa)) if (!k.startsWith("--tw-") && pa[k] !== pb[k]) diff.push(`${id} ${k}: "${pa[k]}" → "${pb[k]}"`);
       }
       totale += diff.length;
       console.log(`${diff.length ? "✗" : "✓"} ${pagina} ${width}px ${nome}: ${sa.length} elementi, ${diff.length} differenze`);
