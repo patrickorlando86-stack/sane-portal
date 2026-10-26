@@ -64,19 +64,3 @@ jobs:
             echo "::warning::css/tailwind.css non è aggiornato. Rigeneralo con: npx tailwindcss@3.4.17 -c tailwind.config.js -i css/tailwind.src.css -o css/tailwind.css --minify (su main lo fa da solo il workflow Tailwind)"
             exit 1
           fi
-
-  # TEMPORANEO: confronto stili CDN vs CSS compilato
-  confronto-tailwind:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: |
-          npm install --no-save --no-package-lock playwright@1.63.0
-          npx playwright install --with-deps chromium
-      - run: |
-          python3 -m http.server 8765 >/dev/null 2>&1 &
-          sleep 1
-      - run: node tests/confronta-tailwind.mjs
