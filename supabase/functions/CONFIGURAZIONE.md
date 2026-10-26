@@ -5,11 +5,11 @@ In ordine di importanza:
 
 | # | Cosa | Dove | Sezione |
 |---|---|---|---|
-| 1 | Eseguire i file SQL | Supabase → SQL Editor | 4 |
+| 1 | Eseguire i file SQL (fatto il 2026-10-26) | Supabase → SQL Editor | 4 |
 | 2 | Attivare il Customer Portal | Stripe → Settings → Billing | 3 |
 | 3 | Verificare il dominio e impostare `EMAIL_FROM` | Resend + Supabase | 1 |
 | 4 | Secret del backup | GitHub → Settings → Secrets | 5 |
-| 5 | `NOTIFY_SECRET` | Supabase | 2 |
+| 5 | `db/notifiche-protette.sql` + `NOTIFY_SECRET` | Supabase | 2 |
 
 Le funzioni si ridistribuiscono da sole a ogni push su `main`
 (`.github/workflows/deploy-functions.yml`). I secret invece si impostano a mano:
@@ -42,25 +42,26 @@ approvazione, scadenza) no. Nei log Resend compare l'errore
 
 Le tre funzioni di notifica hanno "Verify JWT" acceso, ma basta la chiave anon
 (pubblica, è nel codice del sito) per chiamarle: chiunque potrebbe far partire
-email a nome S.A.N.E. verso indirizzi a piacere. Il codice ora accetta solo:
+email a nome S.A.N.E. Il codice accetta solo la service role key oppure
+l'header `x-notify-secret` uguale al secret `NOTIFY_SECRET`. Finché il secret
+non è impostato si accetta tutto, come prima.
 
-- chiamate con la **service role key** (è quella che usano di solito i Database
-  Webhooks di Supabase), oppure
-- chiamate con l'header `x-notify-secret` uguale a `NOTIFY_SECRET`.
+I chiamanti (verificato il 2026-10-26) sono i trigger `trigger_nuova_registrazione`
+e `trigger_notifica_approvazione` su profiles e il cron `avviso-scadenza-daily`,
+tutti con la chiave anon. C'era anche un webhook `notifica-approvazione` che
+partiva a ogni modifica del profilo (email "account attivato" ripetute).
 
-Finché `NOTIFY_SECRET` non è impostato si accetta tutto come prima, ma nei log
-compare `⚠️ NOTIFY_SECRET non impostato: accetto una chiamata con ruolo "..."`.
+1. SQL Editor: esegui `db/notifiche-protette.sql`. Toglie il webhook doppione,
+   crea la parola segreta nel Vault e la fa mandare ai tre chiamanti.
+   L'ultima riga restituisce un valore lungo (`copia_in_notify_secret`).
+2. Edge Functions → Secrets → Add new secret: nome `NOTIFY_SECRET`, valore
+   quello appena restituito.
+3. Prova: registra un biologo di prova; l'email di benvenuto deve arrivare.
+   Se non arriva, Edge Functions → nuova-registrazione → Logs: un 401 vuol dire
+   che il valore incollato non coincide.
 
-1. Dopo una registrazione / un'approvazione / il giro di `avviso-scadenza`,
-   guarda i log della funzione (Edge Functions → funzione → Logs):
-   - nessun avviso, oppure ruolo `"service_role"` → il chiamante è già a posto;
-   - ruolo `"anon"` → il trigger/cron usa la chiave anon: aggiungi alla sua
-     chiamata l'header `x-notify-secret` (Database → Webhooks → modifica →
-     HTTP Headers; oppure nel `net.http_post` del cron, dentro `headers`).
-2. Imposta `NOTIFY_SECRET` con una stringa casuale lunga (la stessa messa
-   nell'header, se serve).
-3. Riprova una registrazione di test: l'email deve arrivare. Se la funzione
-   risponde 401, il chiamante non manda né la service role key né l'header.
+Per rileggere il valore in futuro:
+`select decrypted_secret from vault.decrypted_secrets where name = 'notify_secret';`
 
 ## 3. Area abbonamento Stripe (Customer Portal)
 

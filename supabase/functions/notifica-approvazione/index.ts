@@ -8,8 +8,23 @@ import { escHtml, inviaEmail, layoutEmail, notificaAutorizzata, SITE_URL } from 
 serve(async (req) => {
   if (!notificaAutorizzata(req)) return new Response("non autorizzato", { status: 401 })
   const body = await req.json().catch(() => ({}))
+
+  // Un Database Webhook su UPDATE parte a OGNI modifica del profilo (nome,
+  // rinnovo, scadenza notturna...): l'email va solo quando lo stato DIVENTA
+  // 'active', altrimenti il biologo riceverebbe "account attivato" ogni volta
+  if (body.record && "old_record" in body) {
+    if (body.record.stato !== "active" || body.old_record?.stato === "active") {
+      return new Response("ignorato: non è un'attivazione", { status: 200 })
+    }
+  }
+
   const email = body.email ?? body.record?.email
   const nome  = body.nome  ?? body.record?.nome ?? email
+
+  // Profili eliminati: email fittizia deleted+...@sane-italia.invalid
+  if (typeof email === "string" && email.endsWith(".invalid")) {
+    return new Response("ignorato: profilo eliminato", { status: 200 })
+  }
 
   if (!email) {
     console.error("Missing email in body:", JSON.stringify(body))
