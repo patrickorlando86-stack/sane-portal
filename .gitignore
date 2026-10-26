@@ -8,3 +8,6 @@ supabase/.temp/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Dipendenze dei test (le installa la CI)
+node_modules/
