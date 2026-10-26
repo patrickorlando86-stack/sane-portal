@@ -1,92 +1,33 @@
+// supabase/functions/notifica-approvazione/index.ts
+// Innescata dal database quando un profilo diventa attivo: avvisa il biologo.
+// Supporta sia trigger SQL {email, nome} che webhook {record, old_record}.
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-
-// nome/email arrivano dalla registrazione (testo libero dell'utente): vanno
-// escapati prima di finire nell'HTML dell'email
-function escHtml(v: unknown) {
-  return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!))
-}
-
-// Chi può chiamare questa funzione. "Verify JWT" acceso fa passare qualunque
-// JWT valido, compresa la chiave anon che è pubblica nel sito: senza questo
-// controllo chiunque potrebbe far partire email a nome S.A.N.E.
-// Ammessi: il database/cron con la service role key, oppure chi manda
-// l'header x-notify-secret uguale al secret NOTIFY_SECRET.
-// Finché NOTIFY_SECRET non è impostato si accetta tutto (come prima) ma si
-// scrive nei log il ruolo del chiamante, per capire cosa usano trigger e cron.
-function ruoloJwt(req: Request): string | null {
-  const t = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "")
-  try {
-    const payload = t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")
-    return JSON.parse(atob(payload)).role ?? null
-  } catch {
-    return null
-  }
-}
-function autorizzato(req: Request): boolean {
-  const ruolo = ruoloJwt(req)
-  if (ruolo === "service_role") return true
-  const secret = Deno.env.get("NOTIFY_SECRET")
-  if (secret) return req.headers.get("x-notify-secret") === secret
-  console.warn(`⚠️ NOTIFY_SECRET non impostato: accetto una chiamata con ruolo "${ruolo}"`)
-  return true
-}
+import { escHtml, inviaEmail, layoutEmail, notificaAutorizzata, SITE_URL } from "../_shared/utils.ts"
 
 serve(async (req) => {
-  if (!autorizzato(req)) return new Response('non autorizzato', { status: 401 })
-  const body = await req.json()
-
-  // Supporta sia trigger SQL {email, nome} che webhook {record, old_record}
+  if (!notificaAutorizzata(req)) return new Response("non autorizzato", { status: 401 })
+  const body = await req.json().catch(() => ({}))
   const email = body.email ?? body.record?.email
   const nome  = body.nome  ?? body.record?.nome ?? email
 
   if (!email) {
-    console.error('Missing email in body:', JSON.stringify(body))
-    return new Response('missing email', { status: 400 })
+    console.error("Missing email in body:", JSON.stringify(body))
+    return new Response("missing email", { status: 400 })
   }
 
-  const apiKey = Deno.env.get('RESEND_API_KEY')
-  if (!apiKey) {
-    console.error('RESEND_API_KEY not set')
-    return new Response('missing api key', { status: 500 })
-  }
-
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      from: Deno.env.get("EMAIL_FROM") || "S.A.N.E. Italia <onboarding@resend.dev>",
-      to: [email],
-      subject: "Il tuo account S.A.N.E. Italia è stato attivato!",
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#f0f4f8;padding:32px 20px;">
-          <div style="background:#0A2647;border-radius:16px;padding:28px;text-align:center;margin-bottom:20px;">
-            <h1 style="color:white;font-size:22px;margin:0;">S.A.N.E. Italia</h1>
-            <p style="color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin:6px 0 0;">Portale Biologi Certificati</p>
-          </div>
-          <div style="background:white;border-radius:16px;padding:28px;">
-            <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">🎉 Account attivato!</h2>
-            <p style="color:#475569;font-size:14px;line-height:1.7;">Ciao ${escHtml(nome)},<br><br>
-            Il tuo account S.A.N.E. Italia è stato <strong>approvato e attivato</strong>. Puoi ora accedere al portale e iniziare a lavorare.</p>
-            <a href="https://sane-italia.it/biologo.html"
-               style="display:block;background:#00A896;color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">
-              Accedi al Portale →
-            </a>
-            <p style="color:#94a3b8;font-size:11px;text-align:center;margin:0;">Usa la tua email e la password scelta in fase di registrazione.</p>
-          </div>
-          <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · info@sane-italia.it</p>
-        </div>
-      `
-    })
-  })
-
-  const data = await res.json()
-  console.log('Resend response:', JSON.stringify(data))
+  const { ok, data } = await inviaEmail(email, "Il tuo account S.A.N.E. Italia è stato attivato!", layoutEmail("Portale Biologi Certificati", `
+    <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">🎉 Account attivato!</h2>
+    <p style="color:#475569;font-size:14px;line-height:1.7;">Ciao ${escHtml(nome)},<br><br>
+    Il tuo account S.A.N.E. Italia è stato <strong>approvato e attivato</strong>. Puoi ora accedere al portale e iniziare a lavorare.</p>
+    <a href="${SITE_URL}/biologo.html"
+       style="display:block;background:#00A896;color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">
+      Accedi al Portale →
+    </a>
+    <p style="color:#94a3b8;font-size:11px;text-align:center;margin:0;">Usa la tua email e la password scelta in fase di registrazione.</p>`))
 
   return new Response(JSON.stringify(data), {
-    status: res.ok ? 200 : 500,
-    headers: { 'Content-Type': 'application/json' }
+    status: ok ? 200 : 500,
+    headers: { "Content-Type": "application/json" },
   })
 })

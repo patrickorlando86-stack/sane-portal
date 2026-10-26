@@ -4,44 +4,11 @@
 // KEY che sia davvero 'admin' (non ci fidiamo del front-end), (3) ANONIMIZZIAMO
 // il profilo mantenendolo nel DB (scuole/statistiche restano), (4) neutralizziamo
 // l'account Auth (email liberata + ban) SENZA cancellarlo (niente cascade).
+// Se aveva un abbonamento Stripe, lo annulla subito (niente addebiti futuri).
 // Deploy con --no-verify-jwt (l'auth è sul token nel body).
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const SUPABASE_URL      = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
-
-const ALLOWED_ORIGINS = [
-  "https://sane-italia.it",
-  "https://www.sane-italia.it",
-  "https://saneportal.netlify.app",
-];
-function cors(req: Request): Record<string, string> {
-  const origin = req.headers.get("origin") || "";
-  const allow = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    "Access-Control-Allow-Origin": allow,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
-    "Vary": "Origin",
-  };
-}
-
-async function getUser(token: string) {
-  const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
-  });
-  if (!r.ok) return null;
-  return await r.json();
-}
-
-function svc(path: string, opts: RequestInit = {}) {
-  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    ...opts,
-    headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", ...(opts.headers || {}) },
-  });
-}
+import { avvisaAdmin, cors, getProfilo, getUser, stripe, SUPABASE_URL, svc } from "../_shared/utils.ts";
 
 serve(async (req) => {
   const CORS = cors(req);
@@ -83,6 +50,18 @@ serve(async (req) => {
 
     const tombstone = `deleted+${userId}@sane-italia.invalid`;
 
+    // 3b) Abbonamento Stripe ancora attivo: va annullato, altrimenti Stripe
+    // continuerebbe ad addebitare ogni anno un account che non esiste più
+    const prima = await getProfilo(userId, "stripe_subscription_id,email");
+    if (prima?.stripe_subscription_id) {
+      const del = await stripe(`subscriptions/${encodeURIComponent(prima.stripe_subscription_id)}`, undefined, "DELETE");
+      if (!del.ok && del.status !== 404) {
+        const errore = await del.text();
+        await avvisaAdmin("elimina-utente", "Impossibile annullare l'abbonamento Stripe del biologo eliminato: annullalo a mano dal pannello Stripe", { subscription: prima.stripe_subscription_id, email: prima.email, errore });
+        return json(502, { ok: false, error: "Errore annullamento abbonamento Stripe" });
+      }
+    }
+
     // 4) ANONIMIZZA il profilo, lasciandolo nel DB (scuole/statistiche intatte)
     await svc(`profiles?id=eq.${userId}`, {
       method: "PATCH",
@@ -111,7 +90,7 @@ serve(async (req) => {
 
     return json(200, { ok: true });
   } catch (err) {
-    console.error("🔥 elimina-utente:", err);
+    await avvisaAdmin("elimina-utente", "Errore interno", String(err));
     return json(500, { ok: false, error: "Errore interno" });
   }
 });

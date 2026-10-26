@@ -1,126 +1,78 @@
+// supabase/functions/avviso-scadenza/index.ts
+// Lanciata ogni giorno (cron): avvisa i biologi la cui licenza scade tra 30 o
+// 7 giorni. Chi ha già un abbonamento Stripe si rinnova da solo e non riceve
+// nulla. Il pulsante porta al portale con ?rinnova=1, che apre subito il
+// pagamento (con prova fino alla scadenza attuale: nessun giorno perso).
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { avvisaAdmin, escHtml, inviaEmail, layoutEmail, notificaAutorizzata, SITE_URL } from "../_shared/utils.ts"
 
-// nome/email arrivano dalla registrazione (testo libero dell'utente): vanno
-// escapati prima di finire nell'HTML dell'email
-function escHtml(v: unknown) {
-  return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!))
-}
-
-// Chi può chiamare questa funzione. "Verify JWT" acceso fa passare qualunque
-// JWT valido, compresa la chiave anon che è pubblica nel sito: senza questo
-// controllo chiunque potrebbe far partire email a nome S.A.N.E.
-// Ammessi: il database/cron con la service role key, oppure chi manda
-// l'header x-notify-secret uguale al secret NOTIFY_SECRET.
-// Finché NOTIFY_SECRET non è impostato si accetta tutto (come prima) ma si
-// scrive nei log il ruolo del chiamante, per capire cosa usano trigger e cron.
-function ruoloJwt(req: Request): string | null {
-  const t = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "")
-  try {
-    const payload = t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")
-    return JSON.parse(atob(payload)).role ?? null
-  } catch {
-    return null
-  }
-}
-function autorizzato(req: Request): boolean {
-  const ruolo = ruoloJwt(req)
-  if (ruolo === "service_role") return true
-  const secret = Deno.env.get("NOTIFY_SECRET")
-  if (secret) return req.headers.get("x-notify-secret") === secret
-  console.warn(`⚠️ NOTIFY_SECRET non impostato: accetto una chiamata con ruolo "${ruolo}"`)
-  return true
-}
+type Biologo = { id: string; nome: string | null; email: string; scadenza: string }
 
 serve(async (req) => {
-  if (!autorizzato(req)) return new Response('non autorizzato', { status: 401 })
-  const supabaseUrl  = Deno.env.get('SUPABASE_URL')!
-  const supabaseKey  = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-  const resendApiKey = Deno.env.get('RESEND_API_KEY')!
+  if (!notificaAutorizzata(req)) return new Response("non autorizzato", { status: 401 })
+  const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!)
 
-  const db = createClient(supabaseUrl, supabaseKey)
-
-  const oggi  = new Date()
+  const oggi   = new Date()
   const date30 = new Date(oggi); date30.setDate(oggi.getDate() + 30)
   const date7  = new Date(oggi); date7.setDate(oggi.getDate() + 7)
-  const target30 = date30.toISOString().split('T')[0]
-  const target7  = date7.toISOString().split('T')[0]
+  const target30 = date30.toISOString().split("T")[0]
+  const target7  = date7.toISOString().split("T")[0]
 
-  // Prendi biologi che scadono tra 30 o 7 giorni
-  const { data: biologi, error } = await db
-    .from('profiles')
-    .select('id, nome, email, scadenza')
-    .eq('stato', 'active')
-    .in('scadenza', [target30, target7])
-    // Chi ha un abbonamento Stripe attivo si rinnova da solo: niente
-    // "contatta l'amministratore per rinnovare"
-    .is('stripe_subscription_id', null)
+  // Biologi che scadono tra 30 o 7 giorni
+  const { data, error } = await db
+    .from("profiles")
+    .select("id, nome, email, scadenza")
+    .eq("stato", "active")
+    .in("scadenza", [target30, target7])
+    .is("stripe_subscription_id", null)
 
   if (error) {
-    console.error('DB error:', error.message)
+    await avvisaAdmin("avviso-scadenza", "Lettura dei profili in scadenza fallita", error.message)
     return new Response(JSON.stringify({ error: error.message }), { status: 500 })
   }
-
-  if (!biologi || biologi.length === 0) {
-    console.log('Nessun biologo in scadenza oggi')
-    return new Response('nessuno', { status: 200 })
+  const biologi = (data ?? []) as Biologo[]
+  if (biologi.length === 0) {
+    console.log("Nessun biologo in scadenza oggi")
+    return new Response("nessuno", { status: 200 })
   }
 
-  console.log(`Invio avvisi a ${biologi.length} biolog${biologi.length === 1 ? 'o' : 'i'}`)
+  console.log(`Invio avvisi a ${biologi.length} biolog${biologi.length === 1 ? "o" : "i"}`)
 
   const risultati = await Promise.all(biologi.map(async (b) => {
     const giorni = b.scadenza === target7 ? 7 : 30
     const urgente = giorni === 7
-    const dataFormattata = new Date(b.scadenza).toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric' })
+    const colore = urgente ? "#ef4444" : "#F4A261"
+    const dataFormattata = new Date(b.scadenza).toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" })
 
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        from: Deno.env.get("EMAIL_FROM") || "S.A.N.E. Italia <onboarding@resend.dev>",
-        to: [b.email],
-        subject: urgente
-          ? `⚠️ La tua licenza S.A.N.E. scade tra 7 giorni`
-          : `La tua licenza S.A.N.E. scade tra 30 giorni`,
-        html: `
-          <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#f0f4f8;padding:32px 20px;">
-            <div style="background:#0A2647;border-radius:16px;padding:28px;text-align:center;margin-bottom:20px;">
-              <h1 style="color:white;font-size:22px;margin:0;">S.A.N.E. Italia</h1>
-              <p style="color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin:6px 0 0;">Portale Biologi Certificati</p>
-            </div>
-            <div style="background:white;border-radius:16px;padding:28px;">
-              <h2 style="color:${urgente ? '#ef4444' : '#F4A261'};font-size:18px;margin:0 0 12px;">
-                ${urgente ? '⚠️ Licenza in scadenza urgente' : '⏳ Licenza in scadenza'}
-              </h2>
-              <p style="color:#475569;font-size:14px;line-height:1.7;">
-                Ciao ${escHtml(b.nome || b.email)},<br><br>
-                La tua licenza S.A.N.E. Italia scadrà il <strong>${dataFormattata}</strong>
-                (tra <strong style="color:${urgente ? '#ef4444' : '#F4A261'}">${giorni} giorni</strong>).<br><br>
-                ${urgente
-                  ? 'Questo è un <strong>ultimo promemoria</strong>. Dopo la scadenza non potrai più accedere al portale.'
-                  : 'Per continuare ad accedere al portale è necessario rinnovare la licenza.'}
-              </p>
-              <a href="mailto:info@sane-italia.it?subject=Rinnovo licenza SANE Italia"
-                 style="display:block;background:${urgente ? '#ef4444' : '#F4A261'};color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">
-                Contatta l'amministratore →
-              </a>
-              <p style="color:#94a3b8;font-size:11px;text-align:center;margin:0;">Se hai già rinnovato, ignora questa email.</p>
-            </div>
-            <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · info@sane-italia.it</p>
-          </div>
-        `
-      })
-    })
-    const data = await res.json()
-    console.log(`[${giorni}gg] Email a ${b.email}:`, JSON.stringify(data))
-    return { email: b.email, giorni, ok: res.ok }
+    const { ok } = await inviaEmail(
+      b.email,
+      urgente ? "⚠️ La tua licenza S.A.N.E. scade tra 7 giorni" : "La tua licenza S.A.N.E. scade tra 30 giorni",
+      layoutEmail("Portale Biologi Certificati", `
+        <h2 style="color:${colore};font-size:18px;margin:0 0 12px;">
+          ${urgente ? "⚠️ Licenza in scadenza urgente" : "⏳ Licenza in scadenza"}
+        </h2>
+        <p style="color:#475569;font-size:14px;line-height:1.7;">
+          Ciao ${escHtml(b.nome || b.email)},<br><br>
+          La tua licenza S.A.N.E. Italia scadrà il <strong>${dataFormattata}</strong>
+          (tra <strong style="color:${colore}">${giorni} giorni</strong>).<br><br>
+          Puoi rinnovarla subito con l'abbonamento annuale: il primo addebito arriva
+          solo il giorno della scadenza, quindi non perdi nessun giorno.
+          ${urgente ? "<br><br>Questo è un <strong>ultimo promemoria</strong>. Dopo la scadenza non potrai più accedere al portale." : ""}
+        </p>
+        <a href="${SITE_URL}/biologo.html?rinnova=1"
+           style="display:block;background:${colore};color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">
+          Rinnova ora →
+        </a>
+        <p style="color:#94a3b8;font-size:11px;text-align:center;margin:0;">Hai un codice di sblocco o domande? Scrivi a <a href="mailto:info@sane-italia.it?subject=Rinnovo licenza SANE Italia" style="color:#00A896;">info@sane-italia.it</a>.<br>Se hai già rinnovato, ignora questa email.</p>`),
+    )
+    console.log(`[${giorni}gg] Email a ${b.email}: ${ok ? "ok" : "ERRORE"}`)
+    return { email: b.email, giorni, ok }
   }))
 
   return new Response(JSON.stringify({ inviati: risultati.length, risultati }), {
     status: 200,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { "Content-Type": "application/json" },
   })
 })

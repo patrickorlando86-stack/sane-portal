@@ -625,6 +625,9 @@
                 <i class="fas fa-clipboard-check"></i><span class="label">Autovalutazione Scuola</span>
                 <span id="navBadgeAutov" style="display:none;position:absolute;top:7px;right:7px;background:#ef4444;color:white;font-size:7px;font-weight:700;min-width:15px;height:15px;border-radius:99px;align-items:center;justify-content:center;padding:0 3px;line-height:1;"></span>
             </div>
+            <div class="nav-item" id="navAbbonamento" onclick="gestisciAbbonamento()" title="Rinnovo, carta di pagamento, ricevute">
+                <i class="fas fa-credit-card"></i><span class="label">Abbonamento</span>
+            </div>
             <div class="nav-item" onclick="window.location.href='mailto:info@sane-italia.it'" title="Contatta S.A.N.E.">
                 <i class="fas fa-envelope"></i><span class="label">Contatta S.A.N.E.</span>
             </div>
@@ -1346,7 +1349,8 @@ async function inizializzaApp(user){
         mostraPaywall(profilo);
         return;
     }
-    appState.utente={nome:profilo.nome||user.email.split('@')[0],email:user.email,id:user.id,regione:profilo.regione||null,ordine:profilo.ordine||null,genere:profilo.genere||null};
+    appState.utente={nome:profilo.nome||user.email.split('@')[0],email:user.email,id:user.id,regione:profilo.regione||null,ordine:profilo.ordine||null,genere:profilo.genere||null,
+        scadenza:profilo.scadenza||null,abbonato:!!profilo.stripe_subscription_id,clienteStripe:!!profilo.stripe_customer_id};
     await caricaDati();
     const classiIdsAttivi = new Set(appState.classi.map(c => c.id));
     Object.keys(localStorage)
@@ -1364,6 +1368,11 @@ async function inizializzaApp(user){
             logActivity('login');
             resetSessionTimer();
             showToast('Bentornato, '+appState.utente.nome+'!');
+            // Link "Rinnova ora" dell'email di scadenza: apre subito il pagamento
+            if(new URLSearchParams(window.location.search).get('rinnova')==='1'){
+                pulisciUrlCheckout();
+                gestisciAbbonamento();
+            }
             // Onboarding per nuovi utenti
             setTimeout(()=>mostraOnboarding(user.id), 1000);
         } catch(e){ console.error('[SANE] aggiornaUI error:',e); }
@@ -1399,9 +1408,36 @@ async function avviaAbbonamento(){
         const r=await fetch(FN_BASE+'/crea-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:token})});
         const j=await r.json();
         if(j.url){ window.location.href=j.url; return; }
+        if(j.portale){ await apriPortaleStripe(); return; }
         showToast(j.error||'Errore avvio pagamento','error');
     }catch(e){ showToast('Errore di rete, riprova','error'); }
     finally{ if(btn){ btn.disabled=false; btn.textContent='Abbonati ora'; } }
+}
+// Pagina Stripe dell'abbonato: cambio carta, ricevute, disdetta
+async function apriPortaleStripe(){
+    try{
+        const token=await _accessToken();
+        if(!token){ showToast('Sessione scaduta, rientra','error'); return; }
+        showToast('Apertura area abbonamento...');
+        const r=await fetch(FN_BASE+'/crea-portale',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:token})});
+        const j=await r.json();
+        if(j.url){ window.location.href=j.url; return; }
+        showToast(j.error||'Errore apertura area abbonamento','error');
+    }catch(e){ showToast('Errore di rete, riprova','error'); }
+}
+// Voce "Abbonamento" del menu: chi ha già un abbonamento lo gestisce su
+// Stripe, gli altri lo attivano (con prova fino alla scadenza attuale, vedi
+// crea-checkout: nessun giorno perso)
+async function gestisciAbbonamento(){
+    if(_viewAsMode){ showToast('Modalità sola lettura','error'); return; }
+    const u=appState.utente;
+    if(u?.abbonato) return apriPortaleStripe();
+    const giorni=u?.scadenza ? (new Date(u.scadenza+'T12:00:00')-new Date())/864e5 : 0;
+    const msg=giorni>2
+        ? `Attivi l'abbonamento annuale (€50/anno) con rinnovo automatico.\n\nIl primo addebito avverrà il ${new Date(u.scadenza+'T12:00:00').toLocaleDateString('it-IT')}, alla scadenza della licenza attuale.\n\nProcedere al pagamento sicuro Stripe?`
+        : `Attivi l'abbonamento annuale (€50/anno) con rinnovo automatico.\n\nProcedere al pagamento sicuro Stripe?`;
+    if(!confirm(msg)) return;
+    return avviaAbbonamento();
 }
 async function riscattaCodice(){
     const inp=document.getElementById('paywallCodice');
@@ -1789,10 +1825,29 @@ function aggiornaUI(){
         const chips=[];
         if(u?.regione) chips.push(`<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-map-marker-alt" style="font-size:9px;color:var(--teal);"></i>${esc(u.regione)}</span>`);
         if(u?.ordine&&u.ordine!=='—') chips.push(`<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-id-card" style="font-size:9px;color:var(--teal);"></i>N° ${esc(u.ordine)}</span>`);
+        const lic=chipLicenza(u);
+        if(lic) chips.push(lic);
         info.innerHTML=chips.join('');
     }
     aggiornaBadgeProfilo();
+    const navAbb=document.getElementById('navAbbonamento');
+    if(navAbb) navAbb.style.display=_viewAsMode?'none':'';
     aggiornaDashboard();aggiornaGrafico();
+}
+
+// Chip "Licenza fino al ..." nella dashboard. Senza abbonamento automatico e
+// con meno di 30 giorni residui diventa arancione e porta al rinnovo.
+function chipLicenza(u){
+    if(!u?.scadenza || _viewAsMode) return '';
+    const data=new Date(u.scadenza+'T12:00:00').toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'});
+    const giorni=Math.round((new Date(u.scadenza+'T12:00:00')-new Date())/864e5);
+    if(u.abbonato){
+        return `<span onclick="gestisciAbbonamento()" title="Gestisci abbonamento" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;background:#ecfdf5;color:#065f46;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-sync-alt" style="font-size:9px;"></i>Rinnovo automatico il ${data}</span>`;
+    }
+    if(giorni<=30){
+        return `<span onclick="gestisciAbbonamento()" title="Rinnova ora" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;background:#fff7ed;color:#9a3412;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;"><i class="fas fa-exclamation-circle" style="font-size:9px;"></i>Licenza in scadenza il ${data} · Rinnova</span>`;
+    }
+    return `<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;"><i class="fas fa-calendar-check" style="font-size:9px;color:var(--teal);"></i>Licenza fino al ${data}</span>`;
 }
 
 function aggiornaDashboard(){

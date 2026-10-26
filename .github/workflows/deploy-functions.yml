@@ -48,6 +48,7 @@ jobs:
           supabase functions deploy riscatta-codice --project-ref "$PROJECT_REF" --no-verify-jwt
           supabase functions deploy elimina-utente  --project-ref "$PROJECT_REF" --no-verify-jwt
           supabase functions deploy stripe-webhook  --project-ref "$PROJECT_REF" --no-verify-jwt
+          supabase functions deploy crea-portale    --project-ref "$PROJECT_REF" --no-verify-jwt
 
       # Funzioni di notifica, innescate da trigger/webhook del database.
       # Verificato sul pannello il 2026-07-27: tutte e tre hanno "Verify JWT"

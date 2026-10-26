@@ -7,41 +7,7 @@
 // Deploy con --no-verify-jwt (l'auth è sul token nel body).
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const SUPABASE_URL      = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
-
-const ALLOWED_ORIGINS = [
-  "https://sane-italia.it",
-  "https://www.sane-italia.it",
-  "https://saneportal.netlify.app",
-];
-function cors(req: Request): Record<string, string> {
-  const origin = req.headers.get("origin") || "";
-  const allow = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    "Access-Control-Allow-Origin": allow,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
-    "Vary": "Origin",
-  };
-}
-
-async function getUser(token: string) {
-  const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
-  });
-  if (!r.ok) return null;
-  return await r.json();
-}
-
-function svc(path: string, opts: RequestInit = {}) {
-  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    ...opts,
-    headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", ...(opts.headers || {}) },
-  });
-}
+import { avvisaAdmin, cors, getUser, svc } from "../_shared/utils.ts";
 
 // ── Rate limit (difesa in profondità) ──────────────────────────────────
 const RL_WINDOW_MIN = 15;
@@ -152,14 +118,15 @@ serve(async (req) => {
       body: JSON.stringify({ stato: "active", scadenza: c.scadenza }),
     });
     if (!pUp.ok) {
-      console.error("⚠️ Aggiornamento profilo non OK:", pUp.status, await pUp.text());
+      // Il codice ora risulta usato ma il biologo non è attivo: va sistemato a mano
+      await avvisaAdmin("riscatta-codice", `Codice ${codice} segnato come usato ma profilo non attivato (${pUp.status})`, { user: user.id, email: user.email, errore: await pUp.text() });
       return json(500, { ok: false, error: "Errore attivazione profilo" });
     }
 
     await logTentativo(user.id, ip, "ok");
     return json(200, { ok: true, scadenza: c.scadenza });
   } catch (err) {
-    console.error("🔥 riscatta-codice:", err);
+    await avvisaAdmin("riscatta-codice", "Errore interno", String(err));
     return json(500, { ok: false, error: "Errore interno" });
   }
 });
