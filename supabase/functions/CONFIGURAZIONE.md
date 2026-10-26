@@ -129,6 +129,8 @@ invece di sovrascrivere quello in uso.
 - **Tailwind**: le pagine del portale usano `css/tailwind.css`, generato dalle
   classi presenti nel codice. Su main si rigenera da solo
   (`.github/workflows/tailwind.yml`).
-- **Header di sicurezza (HSTS, CSP)**: il sito è su GitHub Pages, che non
-  permette di impostarli. Servirebbe spostare l'hosting (Netlify o Cloudflare
-  Pages, gratuiti per un sito così). Non è urgente: il traffico è già HTTPS.
+- **Header di sicurezza (HSTS, CSP)**: il repo è pubblicato sia da GitHub Pages
+  (file CNAME) sia da Netlify (saneportal.netlify.app). GitHub Pages non permette
+  di impostarli; se il dominio sane-italia.it punta a Netlify si possono
+  aggiungere con un file `_headers`. Controllate dal registrar dove punta il
+  dominio e tenete un solo hosting. Non è urgente: il traffico è già HTTPS.
