@@ -1,0 +1,44 @@
+# Rigenera css/tailwind.css quando cambiano le pagine del portale.
+#
+# Prima Tailwind si caricava dal CDN e compilava gli stili nel browser a ogni
+# apertura (circa 120 KB di JavaScript). Ora c'è un CSS già pronto di pochi KB,
+# che però va rigenerato se nel codice compaiono classi Tailwind nuove.
+# Questo workflow lo fa da solo: se il file cambia, fa un commit su main.
+
+name: Tailwind
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'biologo.html'
+      - 'admin.html'
+      - 'js/**'
+      - 'tailwind.config.js'
+      - 'css/tailwind.src.css'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Compila
+        run: npx --yes tailwindcss@3.4.17 -c tailwind.config.js -i css/tailwind.src.css -o css/tailwind.css --minify
+      - name: Commit se è cambiato
+        run: |
+          if git diff --quiet css/tailwind.css; then
+            echo "css/tailwind.css già aggiornato"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add css/tailwind.css
+          git commit -m "css: rigenera tailwind.css"
+          git push
