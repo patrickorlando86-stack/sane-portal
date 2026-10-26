@@ -1,135 +1,57 @@
+// supabase/functions/nuova-registrazione/index.ts
+// Innescata dal database a ogni nuovo profilo: email di benvenuto al biologo
+// e avviso all'admin. Accetta sia il body di un trigger SQL {email, nome} sia
+// quello di un Database Webhook {record: {...}}.
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-
-// nome/email arrivano dalla registrazione (testo libero dell'utente): vanno
-// escapati prima di finire nell'HTML dell'email
-function escHtml(v: unknown) {
-  return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!))
-}
-
-const ADMIN_EMAIL = "info@sane-italia.it"
-
-// Chi può chiamare questa funzione. "Verify JWT" acceso fa passare qualunque
-// JWT valido, compresa la chiave anon che è pubblica nel sito: senza questo
-// controllo chiunque potrebbe far partire email a nome S.A.N.E.
-// Ammessi: il database/cron con la service role key, oppure chi manda
-// l'header x-notify-secret uguale al secret NOTIFY_SECRET.
-// Finché NOTIFY_SECRET non è impostato si accetta tutto (come prima) ma si
-// scrive nei log il ruolo del chiamante, per capire cosa usano trigger e cron.
-function ruoloJwt(req: Request): string | null {
-  const t = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "")
-  try {
-    const payload = t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")
-    return JSON.parse(atob(payload)).role ?? null
-  } catch {
-    return null
-  }
-}
-function autorizzato(req: Request): boolean {
-  const ruolo = ruoloJwt(req)
-  if (ruolo === "service_role") return true
-  const secret = Deno.env.get("NOTIFY_SECRET")
-  if (secret) return req.headers.get("x-notify-secret") === secret
-  console.warn(`⚠️ NOTIFY_SECRET non impostato: accetto una chiamata con ruolo "${ruolo}"`)
-  return true
-}
+import { ADMIN_EMAIL, escHtml, inviaEmail, layoutEmail, notificaAutorizzata, SITE_URL } from "../_shared/utils.ts"
 
 serve(async (req) => {
-  if (!autorizzato(req)) return new Response('non autorizzato', { status: 401 })
-  const body = await req.json()
+  if (!notificaAutorizzata(req)) return new Response("non autorizzato", { status: 401 })
+  const body = await req.json().catch(() => ({}))
   const email = body.email ?? body.record?.email
   const nome  = body.nome  ?? body.record?.nome ?? "Nuovo biologo"
 
   if (!email) {
-    console.error('Missing email:', JSON.stringify(body))
-    return new Response('missing email', { status: 400 })
+    console.error("Missing email:", JSON.stringify(body))
+    return new Response("missing email", { status: 400 })
   }
 
-  const apiKey = Deno.env.get('RESEND_API_KEY')!
-
-  // Invia entrambe le email in parallelo
-  const [emailBiologo, emailAdmin] = await Promise.all([
-
-    // 1. Email di benvenuto al biologo
-    fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        from: Deno.env.get("EMAIL_FROM") || "S.A.N.E. Italia <onboarding@resend.dev>",
-        to: [email],
-        subject: "Registrazione S.A.N.E. Italia ricevuta",
-        html: `
-          <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#f0f4f8;padding:32px 20px;">
-            <div style="background:#0A2647;border-radius:16px;padding:28px;text-align:center;margin-bottom:20px;">
-              <h1 style="color:white;font-size:22px;margin:0;">S.A.N.E. Italia</h1>
-              <p style="color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin:6px 0 0;">Portale Biologi Certificati</p>
-            </div>
-            <div style="background:white;border-radius:16px;padding:28px;">
-              <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">📋 Registrazione ricevuta</h2>
-              <p style="color:#475569;font-size:14px;line-height:1.7;">
-                Ciao ${escHtml(nome)},<br><br>
-                Abbiamo ricevuto la tua richiesta di accesso al portale S.A.N.E. Italia.<br><br>
-                Il tuo account è attualmente in <strong>fase di verifica</strong>. Riceverai una email di conferma non appena il tuo profilo sarà approvato dall'amministratore.
-              </p>
-              <div style="background:#f8fafc;border-radius:10px;padding:16px;margin:20px 0;border-left:4px solid #00A896;">
-                <p style="color:#475569;font-size:13px;margin:0;line-height:1.6;">
-                  ⏱ I tempi di approvazione sono solitamente di <strong>24-48 ore</strong> lavorative.
-                </p>
-              </div>
-              <p style="color:#94a3b8;font-size:11px;text-align:center;margin:0;">Per informazioni: <a href="mailto:info@sane-italia.it" style="color:#00A896;">info@sane-italia.it</a></p>
-            </div>
-            <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · info@sane-italia.it</p>
-          </div>
-        `
-      })
-    }),
+  const [biologo, admin] = await Promise.all([
+    // 1. Benvenuto al biologo: dopo la registrazione il portale chiede
+    //    abbonamento o codice di sblocco, quindi glielo diciamo subito
+    inviaEmail(email, "Benvenuto nel Portale Biologi S.A.N.E. Italia", layoutEmail("Portale Biologi Certificati", `
+      <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">📋 Registrazione completata</h2>
+      <p style="color:#475569;font-size:14px;line-height:1.7;">
+        Ciao ${escHtml(nome)},<br><br>
+        il tuo account sul portale S.A.N.E. Italia è stato creato.<br><br>
+        Per iniziare a lavorare accedi al portale e attiva l'<strong>abbonamento annuale</strong>
+        oppure inserisci il <strong>codice di sblocco</strong> che ti abbiamo fornito.
+      </p>
+      <a href="${SITE_URL}/biologo.html"
+         style="display:block;background:#00A896;color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">
+        Accedi al Portale →
+      </a>
+      <p style="color:#94a3b8;font-size:11px;text-align:center;margin:0;">Per informazioni: <a href="mailto:info@sane-italia.it" style="color:#00A896;">info@sane-italia.it</a></p>`)),
 
     // 2. Notifica admin
-    fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        from: Deno.env.get("EMAIL_FROM") || "S.A.N.E. Italia <onboarding@resend.dev>",
-        to: [ADMIN_EMAIL],
-        subject: `🆕 Nuova registrazione: ${nome}`,
-        html: `
-          <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#f0f4f8;padding:32px 20px;">
-            <div style="background:#0A2647;border-radius:16px;padding:28px;text-align:center;margin-bottom:20px;">
-              <h1 style="color:white;font-size:22px;margin:0;">S.A.N.E. Admin</h1>
-              <p style="color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin:6px 0 0;">Notifica sistema</p>
-            </div>
-            <div style="background:white;border-radius:16px;padding:28px;">
-              <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">🆕 Nuovo biologo registrato</h2>
-              <p style="color:#475569;font-size:14px;line-height:1.7;">
-                Un nuovo biologo ha completato la registrazione al portale S.A.N.E. Italia e attende approvazione.
-              </p>
-              <div style="background:#f8fafc;border-radius:10px;padding:16px;margin:20px 0;">
-                <p style="color:#475569;font-size:13px;margin:0 0 6px;"><strong>Nome:</strong> ${escHtml(nome)}</p>
-                <p style="color:#475569;font-size:13px;margin:0;"><strong>Email:</strong> ${escHtml(email)}</p>
-              </div>
-              <a href="https://sane-italia.it/admin.html"
-                 style="display:block;background:#00A896;color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">
-                Vai al pannello Admin →
-              </a>
-            </div>
-            <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · Sistema automatico</p>
-          </div>
-        `
-      })
-    })
+    inviaEmail(ADMIN_EMAIL, `🆕 Nuova registrazione: ${nome}`, layoutEmail("Notifica sistema", `
+      <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">🆕 Nuovo biologo registrato</h2>
+      <p style="color:#475569;font-size:14px;line-height:1.7;">
+        Un nuovo biologo si è registrato al portale S.A.N.E. Italia.
+      </p>
+      <div style="background:#f8fafc;border-radius:10px;padding:16px;margin:20px 0;">
+        <p style="color:#475569;font-size:13px;margin:0 0 6px;"><strong>Nome:</strong> ${escHtml(nome)}</p>
+        <p style="color:#475569;font-size:13px;margin:0;"><strong>Email:</strong> ${escHtml(email)}</p>
+      </div>
+      <a href="${SITE_URL}/admin.html"
+         style="display:block;background:#00A896;color:white;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:20px 0;">
+        Vai al pannello Admin →
+      </a>`, "S.A.N.E. Italia · Sistema automatico")),
   ])
 
-  const [d1, d2] = await Promise.all([emailBiologo.json(), emailAdmin.json()])
-  console.log('Email biologo:', JSON.stringify(d1))
-  console.log('Email admin:', JSON.stringify(d2))
-
-  return new Response(JSON.stringify({ biologo: d1, admin: d2 }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' }
+  return new Response(JSON.stringify({ biologo: biologo.data, admin: admin.data }), {
+    status: biologo.ok && admin.ok ? 200 : 500,
+    headers: { "Content-Type": "application/json" },
   })
 })

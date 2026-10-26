@@ -1,0 +1,66 @@
+# Controlli automatici a ogni modifica (push su qualsiasi branch e pull request).
+#
+# Se qualcosa si rompe lo vedi qui (spunta rossa nella tab Actions e sulla
+# pull request) PRIMA che vada online, invece di scoprirlo dai biologi.
+#   - funzioni: lint e controllo dei tipi delle Edge Functions
+#   - pagine:   apre tutte le pagine in un browser vero (telefono e desktop),
+#               fallisce su errori JavaScript o layout che scorre di lato, e
+#               prova il login nel portale biologo (vedi tests/smoke.mjs)
+#   - css:      css/tailwind.css corrisponde alle classi usate nel codice
+#               (su main lo rigenera comunque .github/workflows/tailwind.yml)
+
+name: Controlli
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  funzioni:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Lint
+        run: deno lint supabase/functions
+      - name: Controllo dei tipi
+        run: deno check supabase/functions/*/index.ts
+
+  pagine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Installa Playwright
+        run: |
+          npm install --no-save --no-package-lock playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Avvia il sito in locale
+        run: |
+          python3 -m http.server 8765 >/dev/null 2>&1 &
+          sleep 1
+      - name: Prova le pagine
+        run: node tests/smoke.mjs
+
+  css:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: css/tailwind.css è aggiornato?
+        run: |
+          npx --yes tailwindcss@3.4.17 -c tailwind.config.js -i css/tailwind.src.css -o css/tailwind.css --minify
+          if ! git diff --quiet css/tailwind.css; then
+            echo "::warning::css/tailwind.css non è aggiornato. Rigeneralo con: npx tailwindcss@3.4.17 -c tailwind.config.js -i css/tailwind.src.css -o css/tailwind.css --minify (su main lo fa da solo il workflow Tailwind)"
+            exit 1
+          fi

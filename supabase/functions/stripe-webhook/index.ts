@@ -3,86 +3,33 @@
 //   checkout.session.completed     -> lega customer+subscription al profilo e attiva
 //   invoice.paid / payment_succeeded -> rinnovo: aggiorna la scadenza
 //   customer.subscription.deleted  -> disdetta: stop rinnovo (accesso fino a scadenza)
+// Ogni anomalia (pagamento senza profilo, config mancante, errore) manda una
+// email all'admin con avvisaAdmin.
 // La firma è verificata a mano con HMAC-SHA256 via Web Crypto (nessuna dipendenza).
 // IMPORTANTE: deploy con --no-verify-jwt (Stripe non manda un JWT Supabase; la
 // sicurezza è data dalla verifica della firma qui sotto).
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-
-function svc(path: string, opts: RequestInit = {}) {
-  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    ...opts,
-    headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", ...(opts.headers || {}) },
-  });
-}
+import {
+  ADMIN_EMAIL, avvisaAdmin, escHtml, inviaEmail, invoiceSubscriptionId, layoutEmail,
+  periodEnd, stripe, svc, unixToDate,
+} from "../_shared/utils.ts";
 
 async function getSubscription(id: string) {
-  const secret = Deno.env.get("STRIPE_SECRET_KEY");
-  const r = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(id)}`, {
-    headers: { Authorization: `Bearer ${secret}` },
-  });
+  const r = await stripe(`subscriptions/${encodeURIComponent(id)}`);
   if (!r.ok) return null;
   return await r.json();
 }
 
-function unixToDate(sec: number | null | undefined) {
-  if (!sec) return null;
-  return new Date(sec * 1000).toISOString().split("T")[0];
-}
-
-// Dalla versione API Stripe 2025-03-31 (basil) alcuni campi sono stati spostati:
-//   subscription.current_period_end -> subscription.items.data[].current_period_end
-//   invoice.subscription            -> invoice.parent.subscription_details.subscription
-// Leggiamo entrambe le forme, così funziona con qualunque versione dell'account.
-// deno-lint-ignore no-explicit-any
-function periodEnd(sub: any): number | null {
-  return sub?.current_period_end ?? sub?.items?.data?.[0]?.current_period_end ?? null;
-}
-// deno-lint-ignore no-explicit-any
-function invoiceSubscriptionId(inv: any): string | null {
-  return inv?.subscription ?? inv?.parent?.subscription_details?.subscription ?? null;
-}
-
-function escHtml(v: unknown) {
-  return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
-}
-
 // Email di avviso all'admin quando arriva un nuovo abbonato.
-// Riusa Resend come notifica-approvazione. Blindata: non lancia mai
-// (il webhook deve rispondere 200 a Stripe anche se l'email fallisce).
-const ADMIN_EMAIL = "info@sane-italia.it";
+// Blindata: non lancia mai (il webhook deve rispondere 200 a Stripe anche se
+// l'email fallisce).
 async function notificaAdminNuovoAbbonato(subscriberEmail: string | null) {
-  const apiKey = Deno.env.get("RESEND_API_KEY");
-  if (!apiKey) { console.error("⚠️ RESEND_API_KEY non impostata: salto l'email di notifica"); return; }
   try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: Deno.env.get("EMAIL_FROM") || "S.A.N.E. Italia <onboarding@resend.dev>",
-        to: [ADMIN_EMAIL],
-        subject: "💳 Nuovo abbonato al Portale Biologi",
-        html: `
-          <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#f0f4f8;padding:32px 20px;">
-            <div style="background:#0A2647;border-radius:16px;padding:28px;text-align:center;margin-bottom:20px;">
-              <h1 style="color:white;font-size:22px;margin:0;">S.A.N.E. Italia</h1>
-              <p style="color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin:6px 0 0;">Notifica abbonamenti</p>
-            </div>
-            <div style="background:white;border-radius:16px;padding:28px;">
-              <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">💳 Nuovo abbonato</h2>
-              <p style="color:#475569;font-size:14px;line-height:1.7;">Un nuovo biologo ha sottoscritto l'abbonamento al Portale (€50/anno).<br><br>
-              <strong>Email:</strong> ${escHtml(subscriberEmail ?? "(non disponibile)")}</p>
-            </div>
-            <p style="color:#94a3b8;font-size:10px;text-align:center;margin-top:16px;">S.A.N.E. Italia · notifica automatica</p>
-          </div>
-        `,
-      }),
-    });
-    const data = await res.json();
-    console.log("Resend (notifica abbonato):", res.status, JSON.stringify(data));
+    await inviaEmail(ADMIN_EMAIL, "💳 Nuovo abbonato al Portale Biologi", layoutEmail("Notifica abbonamenti", `
+      <h2 style="color:#0A2647;font-size:18px;margin:0 0 12px;">💳 Nuovo abbonato</h2>
+      <p style="color:#475569;font-size:14px;line-height:1.7;">Un nuovo biologo ha sottoscritto l'abbonamento al Portale (€50/anno).<br><br>
+      <strong>Email:</strong> ${escHtml(subscriberEmail ?? "(non disponibile)")}</p>`, "S.A.N.E. Italia · notifica automatica"));
   } catch (err) {
     console.error("⚠️ invio email notifica abbonato fallito (ignorato):", err);
   }
@@ -112,23 +59,27 @@ async function verifySignature(rawBody: string, sigHeader: string | null, secret
 
 async function attivaDaSubscription(subId: string, opts: { userId?: string } = {}) {
   const sub = await getSubscription(subId);
-  if (!sub) { console.error("⚠️ subscription non trovata:", subId); return; }
+  if (!sub) { await avvisaAdmin("stripe-webhook", `Subscription ${subId} non trovata su Stripe`); return; }
   const scadenza = unixToDate(periodEnd(sub));
   const patch: Record<string, unknown> = { stato: "active", stripe_subscription_id: sub.id, stripe_customer_id: sub.customer };
   // Mai scrivere scadenza=null: un profilo attivo senza scadenza non scade più
   if (scadenza) patch.scadenza = scadenza;
-  else console.error("⚠️ current_period_end assente nella subscription", sub.id);
+  else await avvisaAdmin("stripe-webhook", `current_period_end assente nella subscription ${sub.id}: scadenza non aggiornata`);
   const userId = opts.userId || sub.metadata?.supabase_user_id;
-  const filtro = userId ? `id=eq.${userId}` : `stripe_subscription_id=eq.${encodeURIComponent(sub.id)}`;
+  // Un profilo eliminato non va mai riattivato, anche se Stripe continua a mandare eventi
+  const filtro = (userId ? `id=eq.${encodeURIComponent(userId)}` : `stripe_subscription_id=eq.${encodeURIComponent(sub.id)}`) + "&stato=neq.eliminato";
   let r = await svc(`profiles?${filtro}`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(patch) });
   let rows = await r.json();
   if ((!Array.isArray(rows) || rows.length === 0) && !userId) {
-    r = await svc(`profiles?stripe_customer_id=eq.${encodeURIComponent(sub.customer)}`, {
+    r = await svc(`profiles?stripe_customer_id=eq.${encodeURIComponent(sub.customer)}&stato=neq.eliminato`, {
       method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(patch),
     });
     rows = await r.json();
   }
-  if (!Array.isArray(rows) || rows.length === 0) console.error("⚠️ nessun profilo aggiornato per sub", sub.id, "user", userId);
+  if (!Array.isArray(rows) || rows.length === 0) {
+    // Qualcuno paga ma nessun profilo risulta attivo: va controllato a mano
+    await avvisaAdmin("stripe-webhook", "Pagamento ricevuto ma nessun profilo aggiornato", { subscription: sub.id, customer: sub.customer, user: userId ?? null, risposta: rows });
+  }
 }
 
 serve(async (req) => {
@@ -136,7 +87,7 @@ serve(async (req) => {
 
   const secret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
   if (!secret || !Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")) {
-    console.error("❌ STRIPE_WEBHOOK_SECRET o SERVICE_ROLE_KEY mancanti");
+    await avvisaAdmin("stripe-webhook", "STRIPE_WEBHOOK_SECRET o SUPABASE_SERVICE_ROLE_KEY mancanti: i pagamenti non attivano i profili");
     return new Response("Config mancante", { status: 500 });
   }
 
@@ -188,7 +139,7 @@ serve(async (req) => {
     }
     return new Response(JSON.stringify({ received: true }), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (err) {
-    console.error("🔥 stripe-webhook:", err);
+    await avvisaAdmin("stripe-webhook", `Errore interno sull'evento ${evt?.type} (Stripe riproverà)`, String(err));
     return new Response("Errore interno", { status: 500 });
   }
 });

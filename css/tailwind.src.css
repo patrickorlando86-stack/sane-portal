@@ -1,0 +1,4 @@
+/* Sorgente di css/tailwind.css (vedi tailwind.config.js). Non modificare tailwind.css a mano. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
