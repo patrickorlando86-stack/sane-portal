@@ -17,6 +17,14 @@
 #                       (gestore password): senza, i backup sono illeggibili.
 #
 # Ripristino: vedi supabase/functions/CONFIGURAZIONE.md, sezione Backup.
+#
+# Ogni settimana il backup viene anche RIPRISTINATO per prova in un Supabase
+# locale, usato e buttato dentro il runner, con gli stessi comandi della guida.
+# Se il ripristino fallisce o il numero di righe non torna, il workflow
+# fallisce e arriva l'email. Poi si controlla che il file cifrato si riapra.
+#
+# GitHub sospende i workflow programmati dopo 60 giorni senza commit: il job
+# "resta-attivo" lo riattiva via API a ogni giro, così il conto riparte.
 
 name: Backup database
 
@@ -27,6 +35,18 @@ on:
 
 permissions:
   contents: read
+
+env:
+  # Conta le righe di ogni tabella in public e degli utenti: stesso risultato atteso
+  # tra il database vero e quello ripristinato.
+  CONTA_RIGHE: >-
+    select table_schema || '.' || table_name || ' ' ||
+      (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from %I.%I',
+        table_schema, table_name), false, true, '')))[1]::text
+    from information_schema.tables
+    where table_type = 'BASE TABLE' and (table_schema = 'public'
+      or (table_schema = 'auth' and table_name in ('users', 'identities')))
+    order by 1
 
 jobs:
   backup:
@@ -52,8 +72,43 @@ jobs:
           mkdir -p backup
           supabase db dump --db-url "$DB_URL" -f backup/roles.sql --role-only
           supabase db dump --db-url "$DB_URL" -f backup/schema.sql
-          supabase db dump --db-url "$DB_URL" -f backup/data.sql --use-copy --data-only
+          # Solo i dati di public (le tabelle del portale) e auth (gli utenti).
+          # Le tabelle interne di Storage le gestisce Supabase: includerle fa
+          # fallire il ripristino ("permission denied for table buckets_vectors").
+          supabase db dump --db-url "$DB_URL" -f backup/data.sql --use-copy --data-only --schema public,auth
           ls -la backup
+          # Righe nel database vero, subito dopo l'export (per il confronto)
+          psql "$DB_URL" -X -tA -c "$CONTA_RIGHE" > righe-origine.txt
+          # File su Supabase Storage: NON sono nel backup. Avvisa se ce ne sono.
+          FILE_STORAGE=$(psql "$DB_URL" -X -tA -c 'select count(*) from storage.objects')
+          if [ "$FILE_STORAGE" != "0" ]; then
+            echo "::warning::Ci sono $FILE_STORAGE file su Supabase Storage: il backup copre solo il database, non quei file"
+          fi
+          # Stessa versione principale di Postgres per la prova di ripristino
+          echo "PG_MAJOR=$(psql "$DB_URL" -X -tA -c 'show server_version_num' | cut -c1-2)" >> "$GITHUB_ENV"
+
+      - name: Prova di ripristino in un Supabase locale
+        run: |
+          mkdir -p "$RUNNER_TEMP/prova" && cd "$RUNNER_TEMP/prova"
+          supabase init < /dev/null
+          sed -i "s/^major_version = .*/major_version = $PG_MAJOR/" supabase/config.toml
+          # Servono solo il database e i servizi che creano le tabelle auth/storage
+          supabase start -x realtime,imgproxy,studio,edge-runtime,logflare,vector,mailpit,postgres-meta,supavisor
+          LOCALE=postgresql://postgres:postgres@127.0.0.1:54322/postgres
+          cd "$GITHUB_WORKSPACE"
+          # Stesso comando della guida (CONFIGURAZIONE.md, sezione Backup)
+          psql --single-transaction --variable ON_ERROR_STOP=1 -X -q \
+            --file backup/roles.sql --file backup/schema.sql \
+            --command 'SET session_replication_role = replica' \
+            --file backup/data.sql --dbname "$LOCALE" > /dev/null
+          psql "$LOCALE" -X -tA -c "$CONTA_RIGHE" > righe-ripristino.txt
+          if ! diff righe-origine.txt righe-ripristino.txt; then
+            echo "::error::Il database ripristinato non ha le stesse righe dell'originale (sopra le differenze)"
+            exit 1
+          fi
+          echo "Ripristino riuscito: $(wc -l < righe-ripristino.txt) tabelle, righe identiche"
+          awk '{s+=$2} END {print "Righe totali: " s}' righe-ripristino.txt
+          (cd "$RUNNER_TEMP/prova" && supabase stop --no-backup)
 
       - name: Cifra
         run: |
@@ -62,8 +117,18 @@ jobs:
           tar czf - backup | gpg --batch --yes --pinentry-mode loopback \
             --passphrase "$PASSPHRASE" --symmetric --cipher-algo AES256 \
             -o "$NOME.tar.gz.gpg"
-          rm -rf backup
           ls -la "$NOME.tar.gz.gpg"
+
+      - name: Controlla che il file cifrato si riapra
+        run: |
+          mkdir verifica
+          gpg --batch --pinentry-mode loopback --passphrase "$PASSPHRASE" \
+            -d "$NOME.tar.gz.gpg" | tar xzf - -C verifica
+          for f in roles.sql schema.sql data.sql; do
+            cmp "backup/$f" "verifica/backup/$f"
+          done
+          echo "Decifrato e identico all'originale"
+          rm -rf backup verifica righe-*.txt
 
       - uses: actions/upload-artifact@v4
         with:
@@ -71,3 +136,16 @@ jobs:
           path: ${{ env.NOME }}.tar.gz.gpg
           retention-days: 90
           if-no-files-found: error
+
+  # Senza commit per 60 giorni GitHub sospende i workflow programmati.
+  # Riattivarlo via API (anche se è già attivo) fa ripartire il conto.
+  resta-attivo:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Riattiva il workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/$GITHUB_REPOSITORY/actions/workflows/backup-database.yml/enable"
