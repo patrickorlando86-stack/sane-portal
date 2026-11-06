@@ -72,7 +72,10 @@ jobs:
           mkdir -p backup
           supabase db dump --db-url "$DB_URL" -f backup/roles.sql --role-only
           supabase db dump --db-url "$DB_URL" -f backup/schema.sql
-          supabase db dump --db-url "$DB_URL" -f backup/data.sql --use-copy --data-only
+          # Solo i dati di public (le tabelle del portale) e auth (gli utenti).
+          # Le tabelle interne di Storage le gestisce Supabase: includerle fa
+          # fallire il ripristino ("permission denied for table buckets_vectors").
+          supabase db dump --db-url "$DB_URL" -f backup/data.sql --use-copy --data-only --schema public,auth
           ls -la backup
           # Righe nel database vero, subito dopo l'export (per il confronto)
           psql "$DB_URL" -X -tA -c "$CONTA_RIGHE" > righe-origine.txt
