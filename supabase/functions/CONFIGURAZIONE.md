@@ -107,8 +107,20 @@ pubblico: senza cifratura chiunque potrebbe scaricarli.
 Poi Actions → *Backup database* → **Run workflow** per provarlo subito.
 Se fallisce, GitHub ti manda un'email.
 
-Nota: GitHub sospende i workflow programmati dei repo pubblici dopo 60 giorni
-senza commit. Se succede, nella tab Actions compare un pulsante per riattivarli.
+Ogni giro fa anche tre controlli, e se uno fallisce arriva l'email:
+- **prova di ripristino**: il backup viene ripristinato in un Supabase locale
+  dentro il runner, con il comando qui sotto, e il numero di righe di ogni
+  tabella deve coincidere con il database vero;
+- **file cifrato**: viene decifrato e confrontato con l'originale;
+- **Supabase Storage**: il backup copre solo il database. Se compaiono file
+  caricati su Storage (oggi il portale non ne usa), il log mostra un avviso.
+
+Resta una cosa che nessun controllo automatico può fare: la passphrase deve
+stare nel gestore password. GitHub la usa ma non la mostra più.
+
+GitHub sospende i workflow programmati dopo 60 giorni senza commit: il job
+*resta-attivo* lo riattiva da solo ogni lunedì. Se un giorno risultasse
+comunque sospeso, nella tab Actions c'è il pulsante per riattivarlo.
 
 **Ripristino** (serve un computer con `gpg` e `psql`):
 ```bash
